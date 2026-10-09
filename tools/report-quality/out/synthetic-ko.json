@@ -1,0 +1,3904 @@
+{
+ "report": {
+  "version": "v4.0",
+  "generatedAt": "2026-10-09T02:20:44.481Z",
+  "profile": {
+   "name": "합성 독자",
+   "email": "synthetic@example.invalid",
+   "recvMethod": "email",
+   "submittedAt": "1970-01-01"
+  },
+  "tone": {
+   "key": "visionary_creator",
+   "label": "헌신을 중심에 두고 안정으로 끝까지 해내 의미를 남기는 결",
+   "valueCategory": "관계지향",
+   "topAxis": "self_execution",
+   "_labelScheme": "pr72.synth.unique",
+   "signatureShort": "끝까지 매듭짓는 한 뼘씩 자라는 안정의",
+   "signatureHeader": "어제보다 오늘 더 깊어지는 삶, 예측할 수 있는 하루로."
+  },
+  "inputContractVersion": "input-v2",
+  "scoringVersion": "scores-v2-text-excluded",
+  "scores": {
+   "axisPct": {
+    "self_understanding": 66.19897959183673,
+    "self_expression": 68.26923076923076,
+    "self_design": 69.39203354297693,
+    "self_execution": 83.27272727272727
+   },
+   "axisRanking": [
+    {
+     "axis": "self_execution",
+     "pct": 83.27272727272727
+    },
+    {
+     "axis": "self_design",
+     "pct": 69.39203354297693
+    },
+    {
+     "axis": "self_expression",
+     "pct": 68.26923076923076
+    },
+    {
+     "axis": "self_understanding",
+     "pct": 66.19897959183673
+    }
+   ],
+   "sectionPct": {
+    "summary": 77.94117647058823,
+    "mission_vision": 70.5263157894737,
+    "execution_profile": 67.30401529636713,
+    "growth_map": 60,
+    "career_education": 86.61971830985917,
+    "application": 84.375
+   }
+  },
+  "lang": "ko",
+  "pdfFilename": "인생포트폴리오_Synthetic Evidence Reader_1970-01-01.pdf",
+  "sections": [
+   {
+    "step": 1,
+    "id": "summary",
+    "icon": "📘",
+    "title": "전체 요약 문장",
+    "content": {
+     "header": "Synthetic Evidence Reader님의 인생포트폴리오",
+     "submittedAt": "1970-01-01",
+     "typeLine": "어제보다 오늘 더 깊어지는 삶에서, 예측할 수 있는 하루로, 실천으로 자기다움을 다지는 한 사람",
+     "coreOneLine": "Synthetic Evidence Reader님은 어제보다 오늘 더 깊어지는 삶에서 예측할 수 있는 하루로, 실천으로 자기다움을 다지는 한 사람입니다.",
+     "_signatureVars": {
+      "valueAnchor": "어제보다 오늘 더 깊어지는 삶",
+      "compassPhrase": "예측할 수 있는 하루로",
+      "axisLeadVerb": "실천으로 자기다움을 다지는",
+      "axisSig": "eeea",
+      "topAxis": "self_execution",
+      "secondAxis": "self_design",
+      "weakAxis": "self_understanding",
+      "traitColor": "",
+      "primaryDomain": "의료",
+      "secondaryDomain": "디자인",
+      "valueRaw": "헌신",
+      "compassRaw": "안정성 / 안전 / 예측 가능성",
+      "traitRaw": "창의적인",
+      "fingerprint": 932248486
+     },
+     "_signatureScheme": "pr57.synth.v1",
+     "_headerScheme": "pr73.neutral.title"
+    }
+   },
+   {
+    "step": 2,
+    "id": "mission_vision",
+    "icon": "🔵",
+    "title": "사명 & 비전 제안 문장",
+    "content": {
+     "mission": "생각을 잇는 추진력으로 먼저 자신을 내어 준다.",
+     "vision": "든든히 서로를 위해 내어 주는 세상을 만든다.",
+     "footer": "🔍 활동 응답(사람들과 아이디어를 나누거나 토론하기)와 가치·관심 분야 응답을 기반으로 도출되었습니다.",
+     "_slots": {
+      "primary_domain": "의료",
+      "secondary_domain": "디자인",
+      "all_domains": [
+       "의료",
+       "디자인"
+      ],
+      "topic_scene": "특히 사회의 어려운 일에서",
+      "mission_verbs": [
+       "내 시간을 들여 누군가의 일을 함께 들어 주고",
+       "서두르지 않고 자기 속도를 지키며 살아가고"
+      ],
+      "vision_identity": "받은 것보다 한 뼘 더 내어 주는 사람",
+      "secondary_identities": [
+       "흔들리지 않고 자기 호흡을 지키는 사람"
+      ],
+      "compass_mission": "급하지 않게, 멀리 가는 걸음으로",
+      "compass_vision": "오래 버티는 단단한 한 사람",
+      "compass_raw": [
+       "안정성 / 안전 / 예측 가능성",
+       "성장 가능성 / 배움의 기회"
+      ],
+      "diary_why": "흔들리지 않는 자기 자리를",
+      "diary_field": "생명을 다듬어 아름다움으로 연결하는 자리",
+      "diary_who": "곁에 있는 사람들",
+      "diary_identity_a": "마음을 열어주는 따뜻한 사람",
+      "diary_identity_b": "곁에 있어주는 사람",
+      "diary_identity_c": "함께 있으면 마음이 편해지는 사람",
+      "diary_why_identity": "흔들림 없는 자리를 지킨 사람",
+      "anchor": "비전",
+      "descriptor": "틀을 다시 짜는",
+      "verb": "실현해 가는",
+      "target": "사람들의 상상",
+      "essence": "상상의 설계자",
+      "horizon": "새 시대의 흐름",
+      "intro_descriptor": "한발 앞서 지친 몸을",
+      "intro_essence": "살려 주는 사람",
+      "intro_line": "한발 앞서 지친 몸을 살려 주는 사람.",
+      "diag_name": "생명을 돌보는 사람",
+      "diag_badge": "생명 돌보는 사람",
+      "act_labels": [
+       "생명을 돌보는 일",
+       "작품을 돌보는 일"
+      ],
+      "values_phrase": "헌신·평화",
+      "values_categories": [
+       "관계지향",
+       "자유지향"
+      ],
+      "values_primary_category": "관계지향",
+      "values_raw": [
+       "헌신",
+       "평화"
+      ]
+     },
+     "missionHeadline": "생각을 잇는 추진력으로 먼저 자신을 내어 준다",
+     "missionSubline": "생명을 다듬어 아름다움으로 연결하는 자리에서 좋은 흔적을 남깁니다.",
+     "diaryMission": "",
+     "visionHeadline": "든든히 서로를 위해 내어 주는 세상을 만든다",
+     "visionSubline": "생명을 다듬어 아름다움으로 연결하는 자리에서 흔들림 없이 안정된 미래를 세웁니다.",
+     "diaryVision": "",
+     "headline": "생각을 잇는 추진력으로 먼저 자신을 내어 준다",
+     "subline": "생명을 다듬어 아름다움으로 연결하는 자리에서, 단단함을 나침반 삼아.",
+     "missionDetail": "생명을 다듬어 아름다움으로 연결하는 자리에서 좋은 흔적을 남깁니다.",
+     "visionDetail": "생명을 다듬어 아름다움으로 연결하는 자리에서 흔들림 없이 안정된 미래를 세웁니다."
+    }
+   },
+   {
+    "step": 3,
+    "id": "execution_profile",
+    "icon": "🔶",
+    "title": "실행 프로파일 카드",
+    "content": {
+     "type": "새로 짜서 시작하고, 누군가에게 준 도움에서 닫습니다. 생각 나누기를 하며 나온 것을 조용한 자리에 모아 적습니다. 그다음 계획한 시간에 끝낼 하나와 완료 기준을 정합니다. 마지막으로 조용한 자리에서 한 번 검토하고 전달로 닫습니다.",
+     "style": "생각 나누기를 먼저 한곳에 모읍니다. 소리가 없는 조용한 자리에서 그 하나를 어느 계획한 시간에 놓을지 정합니다. 끝으로 누군가에게 도움이 됐다고 확인될 때까지 한 번 검토하고 닫습니다.",
+     "drivers": "기꺼이 내어주는 것과 부딪힘 없이 흐르는 것이 함께 갈 때 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.",
+     "environment": "조용한 자리에서 새로 짜서 계획한 시간 동안 그 하나만 눈에 둡니다. 알림을 끄고 한 가지만 펼쳐 두면 그 하나부터 손을 댑니다. 흔들리지 않는 쪽으로 갔는지 그날 바로 적어 둡니다.",
+     "activities": "옳고 그름이 걸린 문제 쪽에서 사람들과 생각을 주고받으며 다듬는 일에 강점이 있습니다. 마음을 알아차리고 말로 옮기는 일도 함께 힘을 냅니다.",
+     "tools": "생각이 한자리에서 막히면 먼저 한곳에 적어 둡니다. 준비가 덜 됐다고 느껴지면 더 알아보기보다 계획표에 적어 둔 시간을 잡습니다. 완료 기준부터 정합니다. 마음이 복잡해지면 흔들리지 않는 쪽으로 돌아갑니다.",
+     "activitiesEg": "누가 불리해지는지 따져 보는 일",
+     "_strategy": {
+      "version": "execution-strategy.v2",
+      "lang": "ko",
+      "source": {
+       "values": [
+        "헌신",
+        "평화"
+       ],
+       "activities": [
+        "사람들과 아이디어를 나누거나 토론하기",
+        "감정을 표현하거나 공감하는 활동"
+       ],
+       "topics": [
+        "사회 문제나 정의 이슈",
+        "철학, 종교, 영성"
+       ],
+       "places": [
+        "조용한 공간 (도서관, 독서실 등)",
+        "음악이나 분위기가 있는 공간"
+       ],
+       "rhythms": [
+        "계획표에 따라 움직이는 하루",
+        "내 기분이나 감정에 따라 유동적인 하루"
+       ],
+       "achievementCue": "누군가에게 좋은 영향을 미쳤을 때",
+       "strengthTraits": [
+        "창의적인",
+        "신중한",
+        "익숙한 것에서 새로움을 발견하는 안목",
+        "연결되지 않던 것을 잇는 창의력",
+        "숙고된 결단력"
+       ],
+       "compass": [
+        "안정성 / 안전 / 예측 가능성",
+        "성장 가능성 / 배움의 기회"
+       ],
+       "domains": [
+        "의료",
+        "디자인"
+       ]
+      },
+      "koCoords": {
+       "where": "소리가 없는 조용한 자리",
+       "block": "계획표에 적어 둔 시간",
+       "when": "미리 정해 둔 시간",
+       "actNoun": "사람들과 생각을 주고받으며 다듬는 일",
+       "doneWord": "누군가에게 준 도움",
+       "done": "누군가에게 도움이 됐다고 확인될 때",
+       "trait0": "새로 짜서",
+       "compass0": "흔들리지 않는 쪽",
+       "compass1": "더 자라는 쪽",
+       "topic0": "옳고 그름이 걸린 문제",
+       "fp": 932248486,
+       "actShort": "생각 나누기",
+       "whereShort": "조용한 자리",
+       "blockShort": "계획한 시간"
+      },
+      "signals": {
+       "leadAxis": "self_execution",
+       "supportAxis": "self_design",
+       "frictionAxis": "self_understanding",
+       "patterns": [
+        "structure-before-action"
+       ],
+       "tensions": [
+        {
+         "key": "analysis-vs-start",
+         "left": "충분히 구조화하려는 경향",
+         "right": "첫 결과물을 빨리 확인할 필요",
+         "evidenceRefs": [
+          "axis:self_execution",
+          "Q39",
+          "Q49",
+          "Q73"
+         ]
+        }
+       ]
+      },
+      "diagnosis": {
+       "crux": "사람들과 생각을 주고받으며 다듬는 일을 깊게 파고듭니다. 그런데 누군가에게 준 도움이 흐릿하면 계획표에 적어 둔 시간이 계속 늘어납니다.",
+       "opportunity": "누군가에게 준 도움으로 끝을 맞춰 두면, 계획표에 적어 둔 시간은 그대로 남는 결과가 됩니다.",
+       "evidenceRefs": [
+        "Q39",
+        "Q49",
+        "Q73",
+        "axis:self_execution",
+        "axis:self_design"
+       ]
+      },
+      "guidingPolicy": {
+       "identityKey": "새로 짜서 시작하고, 누군가에게 준 도움에서 닫습니다.",
+       "do": [
+        "사람들과 생각을 주고받으며 다듬는 일을 먼저 한곳에 모읍니다.",
+        "소리가 없는 조용한 자리에서 그 하나를 어느 계획한 시간에 놓을지 정합니다.",
+        "누군가에게 도움이 됐다고 확인될 때까지 한 번 검토하고 닫습니다."
+       ],
+       "dont": [
+        "사람들과 생각을 주고받으며 다듬는 일을 다 갖출 때까지 시작을 미루지 않습니다.",
+        "새 요청 때문에 완료 기준을 계속 넓히지 않습니다."
+       ],
+       "decisionRule": "흔들리지 않는 쪽과 더 자라는 쪽이 부딪히면 흔들리지 않는 쪽을 먼저 봅니다.",
+       "_safeValues": [
+        "헌신",
+        "평화"
+       ]
+      },
+      "coherentActions": [
+       {
+        "order": 1,
+        "key": "capture",
+        "action": "사람들과 생각을 주고받으며 다듬는 일을 하며 나온 것을 소리가 없는 조용한 자리에 모아 적습니다.",
+        "doneWhen": "계획표에 적어 둔 시간에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다."
+       },
+       {
+        "order": 2,
+        "key": "define",
+        "action": "계획표에 적어 둔 시간에 끝낼 하나와 완료 기준을 정합니다.",
+        "doneWhen": "누군가에게 준 도움이 무엇인지 한 문장으로 적혀 있습니다."
+       },
+       {
+        "order": 3,
+        "key": "finish",
+        "action": "소리가 없는 조용한 자리에서 한 번 검토하고 전달로 닫습니다.",
+        "doneWhen": "계획표에 적어 둔 시간에서 닫은 것이 받을 사람 손에 닿았습니다."
+       }
+      ],
+      "implementationIntentions": [
+       {
+        "cue": "생각이 한자리에서 막히면",
+        "response": "먼저 한곳에 적어 둡니다.",
+        "sourceRefs": [
+         "Q39"
+        ]
+       },
+       {
+        "cue": "준비가 덜 됐다고 느껴지면",
+        "response": "더 알아보기보다 계획표에 적어 둔 시간을 잡습니다. 완료 기준부터 정합니다.",
+        "sourceRefs": [
+         "Q49",
+         "axis:self_design"
+        ]
+       },
+       {
+        "cue": "마음이 복잡해지면",
+        "response": "흔들리지 않는 쪽으로 돌아갑니다.",
+        "sourceRefs": [
+         "Q63",
+         "axis:self_understanding"
+        ]
+       }
+      ],
+      "environmentDesign": {
+       "setup": "소리가 없는 조용한 자리에서 새로 짜서 계획한 시간 동안 그 하나만 눈에 둡니다. 알림을 끄고 한 가지만 펼쳐 두면 그 하나부터 손을 댑니다.",
+       "capabilitySupport": "완료 기준을 소리가 없는 조용한 자리에 적어 둡니다. 계획표에 적어 둔 시간 앞에 한 번 더 볼 여유를 미리 남겨 둡니다.",
+       "opportunitySupport": "미리 정해 둔 시간에 누가 봐 줄지 시작 전에 정합니다.",
+       "motivationSupport": "흔들리지 않는 쪽으로 갔는지 그날 바로 적어 둡니다."
+      },
+      "contributionFit": {
+       "condition": "옳고 그름이 걸린 문제 쪽에서 사람들과 생각을 주고받으며 다듬는 일과 마음을 알아차리고 말로 옮기는 일",
+       "topicEg": "누가 불리해지는지 따져 보는 일",
+       "conditionFirst": "옳고 그름이 걸린 문제 쪽에서 사람들과 생각을 주고받으며 다듬는 일",
+       "conditionSecond": "마음을 알아차리고 말로 옮기는 일",
+       "contribution": "사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환",
+       "contributionShort": "그 일에서 누군가에게 준 도움이 나오게 하는 것"
+      },
+      "nextAction": {
+       "action": "계획한 시간 동안 할 하나를 적고 완료 기준(누군가에게 준 도움)을 한 문장으로 정합니다.",
+       "timeboxMinutes": 10,
+       "doneWhen": "그 하나와 ‘누군가에게 준 도움’이 소리가 없는 조용한 자리에 나란히 적혀 있습니다."
+      },
+      "provenance": {
+       "values": [
+        {
+         "qid": "Q13",
+         "kind": "direct",
+         "rawIndex": 0,
+         "answers": [
+          "헌신",
+          "평화"
+         ]
+        }
+       ],
+       "activities": [
+        {
+         "qid": "Q39",
+         "kind": "direct",
+         "rawIndex": 0,
+         "answers": [
+          "사람들과 아이디어를 나누거나 토론하기",
+          "감정을 표현하거나 공감하는 활동"
+         ]
+        }
+       ],
+       "topics": [
+        {
+         "qid": "Q41",
+         "kind": "direct",
+         "rawIndex": 0,
+         "answers": [
+          "사회 문제나 정의 이슈",
+          "철학, 종교, 영성"
+         ]
+        }
+       ],
+       "places": [
+        {
+         "qid": "Q47",
+         "kind": "direct",
+         "rawIndex": 0,
+         "answers": [
+          "조용한 공간 (도서관, 독서실 등)",
+          "음악이나 분위기가 있는 공간"
+         ]
+        }
+       ],
+       "rhythms": [
+        {
+         "qid": "Q49",
+         "kind": "direct",
+         "rawIndex": 0,
+         "answers": [
+          "계획표에 따라 움직이는 하루",
+          "내 기분이나 감정에 따라 유동적인 하루"
+         ]
+        }
+       ],
+       "achievementCue": [
+        {
+         "qid": "Q73",
+         "kind": "direct",
+         "rawIndex": 0,
+         "answers": [
+          "누군가에게 좋은 영향을 미쳤을 때"
+         ]
+        }
+       ]
+      },
+      "generatedBy": {
+       "scheme": "execution-strategy.v2",
+       "fingerprint": 932248486,
+       "compiler": "execution-profile-compiler.v2"
+      },
+      "confidence": {
+       "overall": 1,
+       "level": "high",
+       "dimensions": {
+        "diagnosis": 1,
+        "guidingPolicy": 1,
+        "environmentDesign": 1,
+        "contributionFit": 0.96
+       },
+       "reasons": [
+        "직접 응답 근거 6종",
+        "긴장 양쪽 근거 존재"
+       ]
+      },
+      "customerConfirmation": {
+       "required": false,
+       "prompt": "이 방식이 실제로 일을 시작하고 끝내는 모습과 얼마나 닮았나요?",
+       "options": [
+        "매우 닮음",
+        "대체로 닮음",
+        "일부 다름",
+        "많이 다름"
+       ]
+      }
+     }
+    }
+   },
+   {
+    "step": 4,
+    "id": "growth_map",
+    "icon": "🔴",
+    "title": "성장 가이드맵 요약",
+    "content": {
+     "strengthsLabel": "강점",
+     "growthLabel": "성장 포인트",
+     "strengths": [
+      "익숙한 것에서 새로움을 발견하는 안목",
+      "연결되지 않던 것을 잇는 창의력",
+      "숙고된 결단력"
+     ],
+     "growth": [
+      "행동 전환 가속",
+      "감정 표현 확장"
+     ]
+    }
+   },
+   {
+    "step": 5,
+    "id": "career_education",
+    "icon": "📐",
+    "title": "진로·경력·교육 큐레이션",
+    "content": {
+     "careers": [
+      "생명을 빠짐없이 챙기는 사람",
+      "생명을 깊이 파고드는 사람",
+      "생명을 곁에서 지켜 내는 사람"
+     ],
+     "education": [
+      "생명의 첫 감각을 여는 과정",
+      "생명을 다루는 힘을 다지는 여정",
+      "생명을 향한 크게 보는 눈"
+     ],
+     "directions": [
+      "생명을 붙들고 아름다움으로 열매 맺어 가면, '든든히 서로를 위해 내어 주는 세상을 만든다'라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
+      "생명과 아름다움의 교차점에서 아직 없는 카테고리를 찾아 이름을 붙여 갑니다",
+      "생명의 상상을 아름다움 영역의 실제 작품·서비스로 끌어내려 갑니다"
+     ],
+     "careerExamples": [
+      "창작자",
+      "저자",
+      "강연자",
+      "다큐 디렉터"
+     ],
+     "careerGuideNote": "딱 맞는 직업이 아직 없을 수 있습니다. 그건 이 길을 당신이 처음 걷는다는 뜻입니다. 생명을 다루는 일과 아름다움을 다루는 일, 둘을 고르세요. 한 사람이 맡는 형태로 적어 보세요.",
+     "domainExpansion": {
+      "primaryDomain": "생명",
+      "secondaryDomain": "아름다움",
+      "pathLine": "생명을 붙들고 아름다움으로 열매 맺어 가면, '든든히 서로를 위해 내어 주는 세상을 만든다'라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
+      "pathMode": "vision-bridge-fuse",
+      "pathTmplIdx": 3,
+      "pathBy": "vision+Q63",
+      "pathCount": 441,
+      "subDirections": [
+       "생명과 아름다움의 교차점에서 아직 없는 카테고리를 찾아 이름을 붙여 갑니다",
+       "생명의 상상을 아름다움 영역의 실제 작품·서비스로 끌어내려 갑니다"
+      ],
+      "jobWord": "생명을 빠짐없이 챙기는 사람",
+      "eduWord": "생명의 첫 감각을 여는 과정",
+      "visionPhrase": "든든히 서로를 위해 내어 주는 세상을 만든다"
+     },
+     "educationExamples": [
+      "멘토링 프로그램",
+      "자격 취득 과정",
+      "로드맵 설계 워크숍",
+      "퍼실리테이션 과정"
+     ]
+    }
+   },
+   {
+    "step": 6,
+    "id": "application",
+    "icon": "📍",
+    "title": "활용 예시 및 다음 단계",
+    "content": {
+     "job": "옳고 그름이 걸린 문제 쪽에서 생각 나누기를 맡을 때 힘이 납니다. 마음을 알아차리고 말로 옮기는 일을 함께 맡으면 더 잘 됩니다. 이때 당신의 몫은 그 일에서 누군가에게 준 도움이 나오게 하는 것입니다.",
+     "learning": "더 배우기보다, 바로 시작할 준비를 갖추는 게 먼저입니다. 완료 기준을 조용한 자리에 적어 둡니다. 계획한 시간 앞에 한 번 더 볼 여유를 미리 남겨 둡니다. 그러면 ‘누군가에게 준 도움’이 한 줄로 남습니다.",
+     "tasks": "1) 생각 나누기를 하며 나온 것을 조용한 자리에 모아 적습니다 (완료: 계획한 시간에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다)  2) 계획한 시간에 끝낼 하나와 완료 기준을 정합니다 (완료: 누군가에게 준 도움이 무엇인지 한 문장으로 적혀 있습니다)  3) 조용한 자리에서 한 번 검토하고 전달로 닫습니다 (완료: 계획한 시간에서 닫은 것이 받을 사람 손에 닿았습니다)",
+     "firstActionsLabel": "✅ 지금 10분 안에 할 첫 행동",
+     "firstActions": [
+      "지금 10분, 계획한 시간 동안 할 하나를 적고 완료 기준을 한 문장으로 정합니다 (완료: 그 하나와 ‘누군가에게 준 도움’이 소리가 없는 조용한 자리에 나란히 적혀 있습니다)",
+      "사람들과 생각을 주고받으며 다듬는 일을 하며 나온 것을 조용한 자리에 모아 적습니다 (완료: 계획한 시간에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다)",
+      "계획표에 적어 둔 시간에 끝낼 하나와 완료 기준을 정합니다 (완료: 누군가에게 준 도움이 무엇인지 한 문장으로 적혀 있습니다)"
+     ],
+     "jobEg": "누가 불리해지는지 따져 보는 일",
+     "_strategy": {
+      "scheme": "execution-strategy.v2",
+      "policyRef": "guidingPolicy",
+      "actionRefs": [
+       "capture",
+       "define",
+       "finish"
+      ],
+      "nextActionRef": "nextAction",
+      "fallbackUsed": false
+     }
+    }
+   },
+   {
+    "step": 7,
+    "id": "self_understanding",
+    "icon": "🧠",
+    "title": "자기이해 (Self-Understanding)",
+    "content": {
+     "pct": 66,
+     "core": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+     "emotional": "함께 고른 기준을 한 선택 안에서 읽었습니다. 어느 쪽이 더 중요한지는 단정하지 않고, 실제로 한 선택과 대조합니다.계획하거나 신중히 살피는 성향은 결정 전에 필요한 조건을 확인하는 데 써 볼 수 있습니다.특히 약속을 지키기 어려운 장면에서 이 기준이 어떻게 작용했는지 살펴보세요.",
+     "keywords": [
+      "신중한",
+      "실패 복기",
+      "콘텐츠 학습",
+      "감정 기록"
+     ],
+     "tier": "emerging",
+     "tierLabel": "내적 통찰의 발현",
+     "tierComment": "서두르지 않는 성향으로, 자기 이해가 막 피어나는 때입니다. 성찰 일기를 쓰거나 코칭 대화를 하면 빨라집니다. 새로움을 길어 올리는 성향도 함께 작동합니다.",
+     "closerLine": "서두르지 않는 성향으로, 자기 이해가 막 피어나는 때입니다. 성찰 일기를 쓰거나 코칭 대화를 하면 빨라집니다. 새로움을 길어 올리는 성향도 함께 작동합니다.",
+     "pairedNarrative": "신중한 판단으로 위험을 줄이는 결단력",
+     "roleLabel": "연결 다리",
+     "roleNote": "실행 프로그램에서 만든 것을 이 영역이 사람에게 건넵니다. 다른 영역을 잇는 자리입니다.",
+     "_axisFnDef": "선택의 근거와 반복되는 패턴을 알아차리는 힘",
+     "_axisPlace": "생각을 사람과 결과로 잇는 다리입니다",
+     "_strategyRole": {
+      "role": "bridge",
+      "roleLabel": "연결 다리",
+      "diagnosisRef": "diagnosis",
+      "policyRefs": [
+       "guidingPolicy"
+      ],
+      "actionRefs": [
+       "finish"
+      ],
+      "evidenceRefs": [],
+      "support": {
+       "comB": [
+        "motivation"
+       ],
+       "design": "소리가 없는 조용한 자리에서 새로 짜서 계획한 시간 동안 그 하나만 눈에 둡니다. 알림을 끄고 한 가지만 펼쳐 두면 그 하나부터 손을 댑니다."
+      }
+     },
+     "evidenceReader": {
+      "version": "evidence-reader-v1",
+      "inferenceVersion": "relations-v2",
+      "core": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+      "detail": "함께 고른 기준을 한 선택 안에서 읽었습니다. 어느 쪽이 더 중요한지는 단정하지 않고, 실제로 한 선택과 대조합니다.계획하거나 신중히 살피는 성향은 결정 전에 필요한 조건을 확인하는 데 써 볼 수 있습니다.특히 약속을 지키기 어려운 장면에서 이 기준이 어떻게 작용했는지 살펴보세요.",
+      "action": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+      "reflection": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+      "evidenceRefs": [
+       "Q6",
+       "Q7",
+       "Q13",
+       "Q14",
+       "Q19",
+       "Q21",
+       "Q26",
+       "Q63",
+       "Q65"
+      ],
+      "relationKind": "interpretation-hypothesis",
+      "decisionRule": "co-held-criteria",
+      "unresolvedRefs": [],
+      "directTextPolicy": "supported-relations-or-explicit-clarification",
+      "additionalEvidence": 0
+     }
+    }
+   },
+   {
+    "step": 8,
+    "id": "self_expression",
+    "icon": "🎙",
+    "title": "자기표현 (Self-Expression)",
+    "content": {
+     "pct": 68,
+     "core": "솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.",
+     "emotional": "감정을 전한다고 응답한 방식과 관계에서 지키려는 것을 함께 읽었습니다. 상대가 실제로 어떻게 받아들였는지는 별도로 확인해야 합니다.",
+     "keywords": [
+      "솔직한 표현",
+      "행동적 표현",
+      "따뜻함",
+      "소통"
+     ],
+     "tier": "emerging",
+     "tierLabel": "자기표현의 발현",
+     "tierComment": "서두르지 않는 성향으로, 자기표현이 막 피어나는 때입니다. 짧은 글쓰기나 한 사람과의 대화로 단단해집니다. 새로움을 길어 올리는 성향도 함께 작동합니다.",
+     "closerLine": "서두르지 않는 성향으로, 자기표현이 막 피어나는 때입니다. 짧은 글쓰기나 한 사람과의 대화로 단단해집니다. 새로움을 길어 올리는 성향도 함께 작동합니다.",
+     "pairedNarrative": "자라나는 표현 위에 서두르지 않는 속도가 더해지는 전달력",
+     "roleLabel": "보완 설계",
+     "roleNote": "실행 프로그램에서 이 영역은 미리 받쳐 둡니다. 약한 고리를 환경과 도구로 메웁니다.",
+     "_axisFnDef": "발견한 의미를 사람과 결과물로 옮겨 전하는 힘",
+     "_axisPlace": "환경과 도구로 완성을 받치는 축입니다",
+     "_strategyRole": {
+      "role": "constraint",
+      "roleLabel": "보완 설계",
+      "diagnosisRef": "diagnosis",
+      "policyRefs": [
+       "guidingPolicy"
+      ],
+      "actionRefs": [
+       "define"
+      ],
+      "evidenceRefs": [],
+      "support": {
+       "comB": [
+        "capability",
+        "opportunity"
+       ],
+       "design": "소리가 없는 조용한 자리에서 새로 짜서 계획한 시간 동안 그 하나만 눈에 둡니다. 알림을 끄고 한 가지만 펼쳐 두면 그 하나부터 손을 댑니다."
+      }
+     },
+     "pairedSource": "axis_synth_v59",
+     "evidenceReader": {
+      "version": "evidence-reader-v1",
+      "inferenceVersion": "relations-v2",
+      "core": "솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.",
+      "detail": "감정을 전한다고 응답한 방식과 관계에서 지키려는 것을 함께 읽었습니다. 상대가 실제로 어떻게 받아들였는지는 별도로 확인해야 합니다.",
+      "action": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+      "reflection": "내 의도와 다르게 전해진 부분은 무엇이었나요?",
+      "evidenceRefs": [
+       "Q28",
+       "Q31",
+       "Q33"
+      ],
+      "relationKind": "interpretation-hypothesis",
+      "decisionRule": "expression-in-relationship",
+      "unresolvedRefs": [],
+      "directTextPolicy": "supported-relations-or-explicit-clarification",
+      "additionalEvidence": 0
+     }
+    }
+   },
+   {
+    "step": 9,
+    "id": "self_design",
+    "icon": "🎯",
+    "title": "자기설계 (Self-Design)",
+    "content": {
+     "pct": 69,
+     "core": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+     "emotional": "몰입하는 활동과 성취를 느끼는 순간은 다른 단서입니다. 무엇을 해 볼지와 어디까지 하면 마쳤다고 볼지를 나누어 계획합니다.함께 고른 활동은 같은 완료 기준으로 비교해 본 뒤, 먼저 시험할 것을 정해 보세요.집중하기 편하다고 고른 조용한 환경에서 먼저 확인해 보세요.",
+     "keywords": [
+      "창의 설계",
+      "조용한 환경",
+      "계획 기반 리듬",
+      "안정적 설계"
+     ],
+     "tier": "emerging",
+     "tierLabel": "자기설계의 발현",
+     "tierComment": "새로움을 길어 올리는 성향으로, 자기설계가 막 피어나는 때입니다. 작은 주간 계획부터 키워 보세요. 서두르지 않는 성향도 함께 작동합니다.",
+     "closerLine": "새로움을 길어 올리는 성향으로, 자기설계가 막 피어나는 때입니다. 작은 주간 계획부터 키워 보세요. 서두르지 않는 성향도 함께 작동합니다.",
+     "pairedNarrative": "연결되지 않던 것을 잇는 창의력",
+     "roleLabel": "핵심 자원",
+     "roleNote": "실행 프로그램에서 이 영역을 가장 먼저 씁니다. 힘이 실려 있어서 결과가 빨리 나옵니다.",
+     "_axisFnDef": "우선순위와 순서, 그리고 '언제 끝인지'를 미리 세워 두는 힘",
+     "_axisPlace": "당신 전략의 출발점입니다",
+     "_strategyRole": {
+      "role": "resource",
+      "roleLabel": "핵심 자원",
+      "diagnosisRef": "diagnosis",
+      "policyRefs": [
+       "guidingPolicy"
+      ],
+      "actionRefs": [
+       "define"
+      ],
+      "evidenceRefs": [
+       "axis:self_design"
+      ],
+      "support": {
+       "comB": [
+        "motivation"
+       ],
+       "design": "소리가 없는 조용한 자리에서 새로 짜서 계획한 시간 동안 그 하나만 눈에 둡니다. 알림을 끄고 한 가지만 펼쳐 두면 그 하나부터 손을 댑니다."
+      }
+     },
+     "evidenceReader": {
+      "version": "evidence-reader-v1",
+      "inferenceVersion": "relations-v2",
+      "core": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+      "detail": "몰입하는 활동과 성취를 느끼는 순간은 다른 단서입니다. 무엇을 해 볼지와 어디까지 하면 마쳤다고 볼지를 나누어 계획합니다.함께 고른 활동은 같은 완료 기준으로 비교해 본 뒤, 먼저 시험할 것을 정해 보세요.집중하기 편하다고 고른 조용한 환경에서 먼저 확인해 보세요.",
+      "action": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+      "reflection": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+      "evidenceRefs": [
+       "Q39",
+       "Q41",
+       "Q47",
+       "Q49",
+       "Q63",
+       "Q73"
+      ],
+      "relationKind": "interpretation-hypothesis",
+      "decisionRule": "activity-to-completion",
+      "unresolvedRefs": [],
+      "directTextPolicy": "supported-relations-or-explicit-clarification",
+      "additionalEvidence": 0
+     }
+    }
+   },
+   {
+    "step": 10,
+    "id": "self_execution",
+    "icon": "🚀",
+    "title": "자기실행 (Self-Execution)",
+    "content": {
+     "pct": 83,
+     "core": "시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.",
+     "emotional": "시작 동기와 꾸준히 해낼 수 있었던 이유를 같은 것으로 단정하지 않습니다. 실제 시도에서 무엇이 시작을 돕고 무엇이 지속을 도왔는지 나누어 봅니다.",
+     "keywords": [
+      "마감 추진력",
+      "장기 추진",
+      "영향력 성취",
+      "몰입 환경"
+     ],
+     "tier": "active",
+     "tierLabel": "자기실행의 활성화",
+     "tierComment": "새로움을 길어 올리는 성향으로, 자기실행이 활발합니다. 프로젝트나 팀 단위의 더 큰 약속으로 넓힐 수 있습니다. 서두르지 않는 성향도 함께 작동합니다.",
+     "closerLine": "새로움을 길어 올리는 성향으로, 자기실행이 활발합니다. 프로젝트나 팀 단위의 더 큰 약속으로 넓힐 수 있습니다. 서두르지 않는 성향도 함께 작동합니다.",
+     "pairedNarrative": "정한 신호에 따라 곧바로 움직이는 새로움을 길어 올리는 추진력",
+     "roleLabel": "실행 점화",
+     "roleNote": "실행 프로그램의 첫 동작을 이 영역이 엽니다. 시작이 막힐 때 여기부터 손을 댑니다.",
+     "_axisFnDef": "정한 신호에 따라 곧바로 움직이고, 끝낸 증거를 남기는 힘",
+     "_axisPlace": "시작과 마무리에 불을 붙이는 축입니다",
+     "_strategyRole": {
+      "role": "activation",
+      "roleLabel": "실행 점화",
+      "diagnosisRef": "diagnosis",
+      "policyRefs": [
+       "guidingPolicy"
+      ],
+      "actionRefs": [
+       "capture"
+      ],
+      "evidenceRefs": [
+       "axis:self_execution"
+      ],
+      "support": {
+       "comB": [
+        "capability",
+        "opportunity"
+       ],
+       "design": "소리가 없는 조용한 자리에서 새로 짜서 계획한 시간 동안 그 하나만 눈에 둡니다. 알림을 끄고 한 가지만 펼쳐 두면 그 하나부터 손을 댑니다."
+      }
+     },
+     "pairedSource": "axis_synth_v59",
+     "evidenceReader": {
+      "version": "evidence-reader-v1",
+      "inferenceVersion": "relations-v2",
+      "core": "시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.",
+      "detail": "시작 동기와 꾸준히 해낼 수 있었던 이유를 같은 것으로 단정하지 않습니다. 실제 시도에서 무엇이 시작을 돕고 무엇이 지속을 도왔는지 나누어 봅니다.",
+      "action": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.",
+      "reflection": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+      "evidenceRefs": [
+       "Q55",
+       "Q57",
+       "Q71",
+       "Q73",
+       "Q75",
+       "Q77"
+      ],
+      "relationKind": "interpretation-hypothesis",
+      "decisionRule": "start-versus-maintenance",
+      "unresolvedRefs": [],
+      "directTextPolicy": "supported-relations-or-explicit-clarification",
+      "additionalEvidence": 0
+     }
+    }
+   },
+   {
+    "step": 11,
+    "id": "summary_close",
+    "icon": "📦",
+    "title": "요약하자면",
+    "content": {
+     "line1": "한마디로, Synthetic Evidence Reader님은 ‘생각을 잇는 추진력으로 먼저 자신을 내어 준다’ — 이 한 가지를 살아가는 사람입니다.",
+     "line2": "그 길을 꾸준히 걸으면, ‘든든히 서로를 위해 내어 주는 세상을 만든다’ — 바로 그 모습에 가까워집니다.",
+     "items": [
+      {
+       "icon": "🎯",
+       "label": "사명·비전 정교화",
+       "desc": "당신의 사명 ‘생각을 잇는 추진력으로 먼저 자신을 내어 준다ʼ를 본인의 언어로, 단 한 줄로 다듬어 보세요.",
+       "due": "오늘",
+       "dueDays": 0
+      },
+      {
+       "icon": "🛠",
+       "label": "실행 전략 설계",
+       "desc": "실행 프로파일과 성장 포인트(행동 전환 가속)을 토대로 12주 실행 계획을 세워 보세요.",
+       "due": "12주 안",
+       "dueDays": 84
+      },
+      {
+       "icon": "🎓",
+       "label": "진로·교육 설계",
+       "desc": "추천 진로 중 ‘생명을 빠짐없이 챙기는 사람ʼ부터 30일 안에 한 걸음 시작해 보세요.",
+       "due": "30일 안",
+       "dueDays": 30
+      }
+     ]
+    }
+   },
+   {
+    "step": 12,
+    "id": "report_meta",
+    "icon": "🔎",
+    "title": "이 리포트는…",
+    "content": {
+     "fixedText": "이 리포트는 혼합형 V2 인생포트폴리오 검사(총 11개 영역)의 Synthetic Evidence Reader님의 실제 응답 데이터를 기반으로 작성된 개인 맞춤 리포트입니다.",
+     "autoNotice": "이 제안은 당신이 작성한 인생포트폴리오 응답 데이터를 바탕으로 생성된 방향성 제안입니다.\n실제 삶의 여정과 더 깊은 내면의 성찰을 통해\n더 정확한 사명과 비전 문장으로 발전시킬 수 있습니다."
+    }
+   }
+  ],
+  "engineVersion": "v4.1",
+  "_v4Meta": {
+   "fingerprint": 1376135130,
+   "fingerprint64": "7104a384af96fcd2",
+   "generatedAt": "2026-10-09T02:20:44.484Z",
+   "engineVersion": "v4.1",
+   "strengthsStemGuard": "applied",
+   "focusEnvDirectExposure": "keywords_only",
+   "_focusEnv": {
+    "label": "조용한 공간 (도서관, 독서실 등) · 계획표에 따라 움직이는 하루",
+    "labelEn": "조용한 공간 (도서관, 독서실 등) · 계획표에 따라 움직이는 하루",
+    "q47": "조용한 공간 (도서관, 독서실 등)",
+    "q49": "계획표에 따라 움직이는 하루"
+   },
+   "toneResolution": {
+    "toneKey": "visionary_creator",
+    "topAxis": "self_execution",
+    "top2Axis": "self_design",
+    "candidates": [
+     {
+      "key": "visionary_creator",
+      "score": 6.4,
+      "aux": 1.4
+     },
+     {
+      "key": "pragmatic_achiever",
+      "score": 5.8,
+      "aux": 2.8
+     },
+     {
+      "key": "principled_designer",
+      "score": 4.4,
+      "aux": 1.4
+     },
+     {
+      "key": "reflective_explorer",
+      "score": 4,
+      "aux": 0
+     },
+     {
+      "key": "warm_connector",
+      "score": 2,
+      "aux": 0
+     }
+    ],
+    "score": 6.4,
+    "vcMatch": true,
+    "ax1Match": true,
+    "ax2Match": true,
+    "reason": "cats=[관계지향,자유지향] dom=원칙지향 top1=self_execution top2=self_design score=6.4 (vc:2 ax:3 aux:1.4 dom:0) value=warm_connector → visionary_creator"
+   },
+   "toneRecommendation": {
+    "current": "warm_connector",
+    "recommended": "visionary_creator",
+    "reason": "cats=[관계지향,자유지향] dom=원칙지향 top1=self_execution top2=self_design score=6.4 (vc:2 ax:3 aux:1.4 dom:0) value=warm_connector → visionary_creator",
+    "applied": true
+   },
+   "applicationRebuilt": "visionary_creator",
+   "executionProfileRebuilt": "visionary_creator",
+   "missionVisionSource": "response-direct",
+   "signatureVars": {
+    "valueAnchor": "어제보다 오늘 더 깊어지는 삶",
+    "compassPhrase": "예측할 수 있는 하루로",
+    "axisLeadVerb": "실천으로 자기다움을 다지는",
+    "axisSig": "eeea",
+    "topAxis": "self_execution",
+    "secondAxis": "self_design",
+    "weakAxis": "self_understanding",
+    "traitColor": "",
+    "primaryDomain": "의료",
+    "secondaryDomain": "디자인",
+    "valueRaw": "헌신",
+    "compassRaw": "안정성 / 안전 / 예측 가능성",
+    "traitRaw": "창의적인",
+    "fingerprint": 932248486
+   },
+   "signatureScheme": "pr57.synth.v2",
+   "executionStrategyScheme": "execution-strategy.v2",
+   "executionStrategyConfidence": 1,
+   "executionStrategyFallback": false,
+   "executionStrategyError": "",
+   "executionStrategyConsumers": {
+    "application": {
+     "scheme": "execution-strategy.v2",
+     "fallbackUsed": false
+    },
+    "axes": {
+     "scheme": "execution-strategy.v2",
+     "fallbackUsed": false,
+     "coverage": {
+      "resource": [
+       "self_design"
+      ],
+      "bridge": [
+       "self_understanding"
+      ],
+      "constraint": [
+       "self_expression"
+      ],
+      "activation": [
+       "self_execution"
+      ]
+     }
+    }
+   },
+   "educationExamples": {
+    "by": "axisRanking+fingerprint64",
+    "count": 4
+   },
+   "pageCompression": {
+    "rule": "art29",
+    "pages": 6,
+    "pairs": 3
+   },
+   "semanticFingerprint": 932248486,
+   "semanticFingerprint64": "3f179e32a54d739e"
+  },
+  "toneKey": "visionary_creator",
+  "_responseEvidence": {
+   "version": "evidence-reader-v1",
+   "inferenceVersion": "relations-v2",
+   "inputContractVersion": "input-v2",
+   "lang": "ko",
+   "axes": {
+    "self_understanding": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+     "detail": "함께 고른 기준을 한 선택 안에서 읽었습니다. 어느 쪽이 더 중요한지는 단정하지 않고, 실제로 한 선택과 대조합니다.계획하거나 신중히 살피는 성향은 결정 전에 필요한 조건을 확인하는 데 써 볼 수 있습니다.특히 약속을 지키기 어려운 장면에서 이 기준이 어떻게 작용했는지 살펴보세요.",
+     "action": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+     "reflection": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "co-held-criteria",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    },
+    "self_expression": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.",
+     "detail": "감정을 전한다고 응답한 방식과 관계에서 지키려는 것을 함께 읽었습니다. 상대가 실제로 어떻게 받아들였는지는 별도로 확인해야 합니다.",
+     "action": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+     "reflection": "내 의도와 다르게 전해진 부분은 무엇이었나요?",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "expression-in-relationship",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    },
+    "self_design": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+     "detail": "몰입하는 활동과 성취를 느끼는 순간은 다른 단서입니다. 무엇을 해 볼지와 어디까지 하면 마쳤다고 볼지를 나누어 계획합니다.함께 고른 활동은 같은 완료 기준으로 비교해 본 뒤, 먼저 시험할 것을 정해 보세요.집중하기 편하다고 고른 조용한 환경에서 먼저 확인해 보세요.",
+     "action": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+     "reflection": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "activity-to-completion",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    },
+    "self_execution": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.",
+     "detail": "시작 동기와 꾸준히 해낼 수 있었던 이유를 같은 것으로 단정하지 않습니다. 실제 시도에서 무엇이 시작을 돕고 무엇이 지속을 도왔는지 나누어 봅니다.",
+     "action": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.",
+     "reflection": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+     "evidenceRefs": [
+      "Q55",
+      "Q57",
+      "Q71",
+      "Q73",
+      "Q75",
+      "Q77"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "start-versus-maintenance",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    }
+   },
+   "plans": [
+    {
+     "axis": "self_understanding",
+     "title": "선택의 이유 확인하기",
+     "action": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+     "methodId": "co-held-criteria",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    },
+    {
+     "axis": "self_expression",
+     "title": "전해진 뜻 확인하기",
+     "action": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "내 의도와 다르게 전해진 부분은 무엇이었나요?",
+     "methodId": "expression-in-relationship",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    },
+    {
+     "axis": "self_design",
+     "title": "작은 계획 시험하기",
+     "action": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+     "methodId": "activity-to-completion",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    },
+    {
+     "axis": "self_execution",
+     "title": "이어지는 조건 찾기",
+     "action": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+     "methodId": "start-versus-maintenance",
+     "evidenceRefs": [
+      "Q55",
+      "Q57",
+      "Q71",
+      "Q73",
+      "Q75",
+      "Q77"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    }
+   ],
+   "fields": {
+    "Q3": {
+     "qid": "Q3",
+     "question": "나는 나 자신의 감정이나 생각을 관찰하려고 노력한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q4": {
+     "qid": "Q4",
+     "question": "나는 실수나 실패 이후 내 행동을 되돌아보는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q5": {
+     "qid": "Q5",
+     "question": "나는 나 자신을 객관적으로 바라보려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q6": {
+     "qid": "Q6",
+     "question": "나를 가장 잘 설명하는 성향을 3개 고른다면? (최대 3개 선택)",
+     "selected": [
+      "창의적인",
+      "신중한"
+     ],
+     "display": [
+      "창의적인",
+      "신중한"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q7": {
+     "qid": "Q7",
+     "question": "나는 어떤 상황에서 '내가 어떤 사람인지'를 더 잘 느끼게 되나요? (1개 선택)",
+     "selected": [
+      "실패나 실수를 돌아볼 때"
+     ],
+     "display": [
+      "실패나 실수를 돌아볼 때"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q8",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q9": {
+     "qid": "Q9",
+     "question": "나는 중요한 결정을 할 때 내 안의 신념이나 가치에 따라 행동한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q10": {
+     "qid": "Q10",
+     "question": "나는 내 가치가 흔들릴 때마다 괴롭거나 불편함을 느낀다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q11": {
+     "qid": "Q11",
+     "question": "나는 다른 사람의 말보다 내 내면의 기준을 더 중요하게 생각한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q12": {
+     "qid": "Q12",
+     "question": "나는 나에게 중요한 가치를 계속 지키려고 노력한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q13": {
+     "qid": "Q13",
+     "question": "당신이 인생에서 가장 중요하게 여기는 가치는 무엇입니까? (최대 3개 선택)",
+     "selected": [
+      "헌신",
+      "평화"
+     ],
+     "display": [
+      "헌신",
+      "평화"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q14": {
+     "qid": "Q14",
+     "question": "나는 어떤 상황에서 '이건 꼭 지켜야 해'라고 느낀 적이 있나요? (1개 선택)",
+     "selected": [
+      "약속을 지키는 것이 힘들 때"
+     ],
+     "display": [
+      "약속을 지키는 것이 힘들 때"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q15",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q16": {
+     "qid": "Q16",
+     "question": "나는 어려움이 닥쳤을 때, 내 감정과 생각을 정리하려 노력한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q17": {
+     "qid": "Q17",
+     "question": "나는 시련을 겪고 나면 내 삶의 방향에 대해 다시 생각해본다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q18": {
+     "qid": "Q18",
+     "question": "나는 힘든 상황에서도 결국 배울 것이 있다고 믿는다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q19": {
+     "qid": "Q19",
+     "question": "당신 삶의 방향이나 태도에 영향을 준 전환 경험은 어떤 것이었나요? (최대 2개 선택)",
+     "selected": [
+      "독서, 영상, 강연 등의 콘텐츠로 인한 변화",
+      "멘토, 리더, 공동체로부터 받은 영향"
+     ],
+     "display": [
+      "독서, 영상, 강연 등의 콘텐츠로 인한 변화",
+      "멘토, 리더, 공동체로부터 받은 영향"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q20",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q21": {
+     "qid": "Q21",
+     "question": "어려움을 겪을 때, 당신은 주로 어떤 방식으로 회복하나요? (최대 2개 선택)",
+     "selected": [
+      "일이나 프로젝트에 몰입하기",
+      "잠이나 휴식으로 감정 해소하기"
+     ],
+     "display": [
+      "일이나 프로젝트에 몰입하기",
+      "잠이나 휴식으로 감정 해소하기"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q22",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q23": {
+     "qid": "Q23",
+     "question": "나는 내 감정이 무엇인지 잘 인식하는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q24": {
+     "qid": "Q24",
+     "question": "나는 감정을 억누르지 않고 적절히 표현하려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q25": {
+     "qid": "Q25",
+     "question": "나는 감정이 행동에 미치는 영향을 자주 성찰한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q26": {
+     "qid": "Q26",
+     "question": "당신은 감정이 격할 때 보통 어떤 방식으로 자신을 다스리나요? (최대 2개 선택)",
+     "selected": [
+      "생각을 글이나 그림으로 표현하기",
+      "기도나 명상 등으로 마음을 정리하기"
+     ],
+     "display": [
+      "생각을 글이나 그림으로 표현하기",
+      "기도나 명상 등으로 마음을 정리하기"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q27",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q28": {
+     "qid": "Q28",
+     "question": "다른 사람들이 당신의 감정을 어떻게 표현한다고 자주 말하나요? (최대 2개 선택)",
+     "selected": [
+      "감정을 솔직하게 말하는 편이다",
+      "감정을 행동(표현/돌봄 등)으로 전달하는 편이다"
+     ],
+     "display": [
+      "감정을 솔직하게 말하는 편이다",
+      "감정을 행동(표현/돌봄 등)으로 전달하는 편이다"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q29",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q30": {
+     "qid": "Q30",
+     "question": "나는 주변 사람들과 깊은 정서적 연결을 맺고 있다고 느낀다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q31": {
+     "qid": "Q31",
+     "question": "사람들이 당신과 함께 있을 때 자주 느끼는 인상은 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "문제를 해결해주는 사람",
+      "책임지는 사람"
+     ],
+     "display": [
+      "문제를 해결해주는 사람",
+      "책임지는 사람"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q32",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q33": {
+     "qid": "Q33",
+     "question": "나의 관계에서 가장 중요하게 여기는 요소는 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "따뜻함",
+      "소통"
+     ],
+     "display": [
+      "따뜻함",
+      "소통"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q34",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q35": {
+     "qid": "Q35",
+     "question": "나는 특정 주제에 몰입하면 시간 가는 줄 모른다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q36": {
+     "qid": "Q36",
+     "question": "나는 어떤 일에 열정을 느끼면 주변에 자주 알리고 싶어진다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q37": {
+     "qid": "Q37",
+     "question": "나는 보상이 없어도 하고 싶은 일이 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q38": {
+     "qid": "Q38",
+     "question": "나는 나의 관심사를 꾸준히 발전시키고 싶다는 열망이 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q39": {
+     "qid": "Q39",
+     "question": "당신이 가장 쉽게 몰입하거나 흥미를 느끼는 활동 유형은 무엇입니까? (최대 2개 선택)",
+     "selected": [
+      "사람들과 아이디어를 나누거나 토론하기",
+      "감정을 표현하거나 공감하는 활동"
+     ],
+     "display": [
+      "사람들과 아이디어를 나누거나 토론하기",
+      "감정을 표현하거나 공감하는 활동"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q40",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q41": {
+     "qid": "Q41",
+     "question": "당신이 지금 가장 열정을 느끼거나 관심을 갖는 주제는 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "사회 문제나 정의 이슈",
+      "철학, 종교, 영성"
+     ],
+     "display": [
+      "사회 문제나 정의 이슈",
+      "철학, 종교, 영성"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q42",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q43": {
+     "qid": "Q43",
+     "question": "나는 어떤 장소에 있느냐에 따라 기분과 집중력이 크게 달라진다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q44": {
+     "qid": "Q44",
+     "question": "나는 일정한 생활 패턴이 유지되면 더 안정감을 느낀다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q45": {
+     "qid": "Q45",
+     "question": "나는 나에게 잘 맞는 하루 루틴이 있을 때 에너지가 효율적으로 유지된다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q46": {
+     "qid": "Q46",
+     "question": "나는 특정 시간대에 더 활기차고 집중력이 높아지는 경향이 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q47": {
+     "qid": "Q47",
+     "question": "기분이 좋아지고 집중이 잘 되는 장소는 어디인가요? (최대 2개 선택)",
+     "selected": [
+      "조용한 공간 (도서관, 독서실 등)",
+      "음악이나 분위기가 있는 공간"
+     ],
+     "display": [
+      "조용한 공간 (도서관, 독서실 등)",
+      "음악이나 분위기가 있는 공간"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q48",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q49": {
+     "qid": "Q49",
+     "question": "당신이 가장 편하게 느끼는 하루 리듬은 어떤가요? (최대 2개 선택)",
+     "selected": [
+      "계획표에 따라 움직이는 하루",
+      "내 기분이나 감정에 따라 유동적인 하루"
+     ],
+     "display": [
+      "계획표에 따라 움직이는 하루",
+      "내 기분이나 감정에 따라 유동적인 하루"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q50",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q51": {
+     "qid": "Q51",
+     "question": "나는 목표가 생기면 빠르게 행동으로 옮기려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q52": {
+     "qid": "Q52",
+     "question": "나는 결과보다 과정이나 의미에 동기부여를 느끼는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q53": {
+     "qid": "Q53",
+     "question": "나는 외부 자극보다 내 마음에서 우러난 이유로 더 움직인다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q54": {
+     "qid": "Q54",
+     "question": "나는 어떤 일에 몰입할 때 스스로 동기를 유지하는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q55": {
+     "qid": "Q55",
+     "question": "당신은 어떤 상황에서 가장 의욕이 생기고 행동하게 되나요? (최대 2개 선택)",
+     "selected": [
+      "내가 의미 있다고 느끼는 일이기 때문에",
+      "누군가에게 도움이 되기 때문에"
+     ],
+     "display": [
+      "내가 의미 있다고 느끼는 일이기 때문에",
+      "누군가에게 도움이 되기 때문에"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q56",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q57": {
+     "qid": "Q57",
+     "question": "당신이 어떤 일을 꾸준히 해낼 수 있었던 가장 큰 이유가 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "해야만 하는 책임이 있었기 때문에",
+      "재미있고 즐거웠기 때문에"
+     ],
+     "display": [
+      "해야만 하는 책임이 있었기 때문에",
+      "재미있고 즐거웠기 때문에"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q58",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q59": {
+     "qid": "Q59",
+     "question": "나는 중요한 결정을 내릴 때 어떤 기준으로 선택했는지 분명하게 설명할 수 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q60": {
+     "qid": "Q60",
+     "question": "나는 감정보다 원칙이나 논리에 따라 결정을 내리는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q61": {
+     "qid": "Q61",
+     "question": "나는 선택이 내 삶의 방향성과 맞는지 고민한 후 행동한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q62": {
+     "qid": "Q62",
+     "question": "나는 작은 결정이라도 반복되는 기준을 갖고 선택하려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q63": {
+     "qid": "Q63",
+     "question": "당신이 어떤 선택을 할 때 가장 중요하게 여기는 기준은 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "안정성 / 안전 / 예측 가능성",
+      "성장 가능성 / 배움의 기회"
+     ],
+     "display": [
+      "안정성 / 안전 / 예측 가능성",
+      "성장 가능성 / 배움의 기회"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q64",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q65": {
+     "qid": "Q65",
+     "question": "당신은 선택의 순간에 누구의 영향을 가장 많이 받는 편인가요? (1개 선택)",
+     "selected": [
+      "사회적 분위기나 유행"
+     ],
+     "display": [
+      "사회적 분위기나 유행"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q66",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q67": {
+     "qid": "Q67",
+     "question": "나는 목표를 세우면 행동으로 옮기기 위해 바로 계획을 세운다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q68": {
+     "qid": "Q68",
+     "question": "나는 작은 일이라도 실행을 반복하며 성과를 쌓아가는 것을 선호한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q69": {
+     "qid": "Q69",
+     "question": "나는 성취 경험을 통해 내 자신을 더 신뢰하게 된다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q70": {
+     "qid": "Q70",
+     "question": "나는 실행보다는 아이디어나 구상에 더 머무는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q71": {
+     "qid": "Q71",
+     "question": "당신은 어떤 방식으로 목표를 이루는 데 강점을 가지고 있나요? (최대 2개 선택)",
+     "selected": [
+      "기한을 정해놓고 마감 맞추기",
+      "멀리 내다보며 흐름을 설계하기"
+     ],
+     "display": [
+      "기한을 정해놓고 마감 맞추기",
+      "멀리 내다보며 흐름을 설계하기"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q72",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q73": {
+     "qid": "Q73",
+     "question": "당신이 성취를 느끼는 순간은 보통 언제인가요? (1개 선택)",
+     "selected": [
+      "누군가에게 좋은 영향을 미쳤을 때"
+     ],
+     "display": [
+      "누군가에게 좋은 영향을 미쳤을 때"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q74",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q75": {
+     "qid": "Q75",
+     "question": "당신이 자연스럽게 관심이 가는 분야는 무엇입니까? (최대 3개 선택)",
+     "selected": [
+      "의료",
+      "디자인"
+     ],
+     "display": [
+      "의료",
+      "디자인"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q76",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q77": {
+     "qid": "Q77",
+     "question": "관심 있는 분야에서 당신이 특히 좋아하거나 의미 있게 여기는 활동 유형은 무엇입니까? (최대 2개 선택)",
+     "selected": [
+      "문제를 해결하거나 정책을 만드는 활동",
+      "기획하고 조직을 운영하는 활동"
+     ],
+     "display": [
+      "문제를 해결하거나 정책을 만드는 활동",
+      "기획하고 조직을 운영하는 활동"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q78",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    }
+   },
+   "observations": [],
+   "experiments": [],
+   "relations": [
+    {
+     "id": "self_understanding:co-held-criteria",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "co-held-criteria",
+     "decisionRule": "co-held-criteria",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    },
+    {
+     "id": "self_expression:expression-in-relationship",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "expression-in-relationship",
+     "decisionRule": "expression-in-relationship",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    },
+    {
+     "id": "self_design:activity-to-completion",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "activity-to-completion",
+     "decisionRule": "activity-to-completion",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    },
+    {
+     "id": "self_execution:start-versus-maintenance",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "start-versus-maintenance",
+     "decisionRule": "start-versus-maintenance",
+     "evidenceRefs": [
+      "Q55",
+      "Q57",
+      "Q71",
+      "Q73",
+      "Q75",
+      "Q77"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    }
+   ],
+   "semanticEdges": [],
+   "principles": {
+    "dignity": {
+     "basis": "Genesis 1:27; Romans 12:3-8",
+     "rule": "No worth/rank/hidden-calling claims"
+    },
+    "truth": {
+     "basis": "Ephesians 4:15; Psalm 139",
+     "rule": "Direct evidence, interpretation and proposal remain separate; unresolved speaker, negation or modality vetoes affirmative recommendations"
+    },
+    "intelligibility": {
+     "basis": "1 Corinthians 14:9; Nehemiah 8",
+     "rule": "Situational prose; no trait/value lists as insight"
+    },
+    "stewardship": {
+     "basis": "1 Peter 4:10",
+     "rule": "Each proposal names an observable result and possible reuse"
+    },
+    "information": {
+     "basis": "Data processing inequality",
+     "rule": "Keep raw evidence and relations before projection"
+    },
+    "compression": {
+     "basis": "Rate-distortion as a design constraint, not a calibrated metric",
+     "rule": "Never drop negation/condition/uncertainty to fit a headline"
+    },
+    "decision": {
+     "basis": "Decision value and within-person testing",
+     "rule": "Different meaningful evidence must change a decision or a needed question"
+    },
+    "benchmarks": {
+     "basis": "Gallup/Birkman/InBody/Hogan learning principles",
+     "rule": "Interpretation, operating conditions, grounded comparisons and open reflection; no copied norms"
+    }
+   },
+   "coverage": {
+    "activeDirectInputs": 0,
+    "supported": 0,
+    "needsConfirmation": []
+   }
+  },
+  "_axisProjection": {
+   "version": "axis-projection-v1",
+   "lang": "ko",
+   "scope": "VII-only",
+   "requiresReview": false,
+   "axes": {
+    "self_understanding": {
+     "question": "나는 어떤 사람인가",
+     "concept": "내 생각과 감정, 중요하게 여기는 것을 알아가는 일",
+     "core": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+     "detail": "함께 고른 기준을 한 선택 안에서 읽었습니다. 어느 쪽이 더 중요한지는 단정하지 않고, 실제로 한 선택과 대조합니다.계획하거나 신중히 살피는 성향은 결정 전에 필요한 조건을 확인하는 데 써 볼 수 있습니다.특히 약속을 지키기 어려운 장면에서 이 기준이 어떻게 작용했는지 살펴보세요.",
+     "keywords": [
+      "신중한",
+      "실패 복기",
+      "콘텐츠 학습",
+      "감정 기록"
+     ],
+     "action": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+     "reflection": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+     "actionLabel": "활용 제안",
+     "reflectionLabel": "돌아볼 질문"
+    },
+    "self_expression": {
+     "question": "나는 나를 어떻게 전하는가",
+     "concept": "내 생각과 감정을 나다운 방식으로 전하는 일",
+     "core": "솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.",
+     "detail": "감정을 전한다고 응답한 방식과 관계에서 지키려는 것을 함께 읽었습니다. 상대가 실제로 어떻게 받아들였는지는 별도로 확인해야 합니다.",
+     "keywords": [
+      "솔직한 표현",
+      "행동적 표현",
+      "따뜻함",
+      "소통"
+     ],
+     "action": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+     "reflection": "내 의도와 다르게 전해진 부분은 무엇이었나요?",
+     "actionLabel": "활용 제안",
+     "reflectionLabel": "돌아볼 질문"
+    },
+    "self_design": {
+     "question": "나는 삶과 일을 어떻게 설계하는가",
+     "concept": "삶의 방향과 선택 기준을 세우고 계획하는 일",
+     "core": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+     "detail": "몰입하는 활동과 성취를 느끼는 순간은 다른 단서입니다. 무엇을 해 볼지와 어디까지 하면 마쳤다고 볼지를 나누어 계획합니다.함께 고른 활동은 같은 완료 기준으로 비교해 본 뒤, 먼저 시험할 것을 정해 보세요.집중하기 편하다고 고른 조용한 환경에서 먼저 확인해 보세요.",
+     "keywords": [
+      "창의 설계",
+      "조용한 환경",
+      "계획 기반 리듬",
+      "안정적 설계"
+     ],
+     "action": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+     "reflection": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+     "actionLabel": "활용 제안",
+     "reflectionLabel": "돌아볼 질문"
+    },
+    "self_execution": {
+     "question": "나는 정한 것을 어떻게 실제로 해내는가",
+     "concept": "정한 것을 행동으로 옮겨 결과로 이어 가는 일",
+     "core": "시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.",
+     "detail": "시작 동기와 꾸준히 해낼 수 있었던 이유를 같은 것으로 단정하지 않습니다. 실제 시도에서 무엇이 시작을 돕고 무엇이 지속을 도왔는지 나누어 봅니다.",
+     "keywords": [
+      "마감 추진력",
+      "장기 추진",
+      "영향력 성취",
+      "몰입 환경"
+     ],
+     "action": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.",
+     "reflection": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+     "actionLabel": "활용 제안",
+     "reflectionLabel": "돌아볼 질문"
+    }
+   },
+   "facts": {
+    "Q6": {
+     "kind": "reported-selection",
+     "values": [
+      "창의적인",
+      "신중한"
+     ],
+     "ranked": false
+    },
+    "Q7": {
+     "kind": "reported-selection",
+     "values": [
+      "실패나 실수를 돌아볼 때"
+     ],
+     "ranked": false
+    },
+    "Q13": {
+     "kind": "reported-selection",
+     "values": [
+      "헌신",
+      "평화"
+     ],
+     "ranked": false
+    },
+    "Q14": {
+     "kind": "reported-selection",
+     "values": [
+      "약속을 지키는 것이 힘들 때"
+     ],
+     "ranked": false
+    },
+    "Q19": {
+     "kind": "reported-selection",
+     "values": [
+      "독서, 영상, 강연 등의 콘텐츠로 인한 변화",
+      "멘토, 리더, 공동체로부터 받은 영향"
+     ],
+     "ranked": false
+    },
+    "Q21": {
+     "kind": "reported-selection",
+     "values": [
+      "일이나 프로젝트에 몰입하기",
+      "잠이나 휴식으로 감정 해소하기"
+     ],
+     "ranked": false
+    },
+    "Q26": {
+     "kind": "reported-selection",
+     "values": [
+      "생각을 글이나 그림으로 표현하기",
+      "기도나 명상 등으로 마음을 정리하기"
+     ],
+     "ranked": false
+    },
+    "Q28": {
+     "kind": "reported-selection",
+     "values": [
+      "감정을 솔직하게 말하는 편이다",
+      "감정을 행동(표현/돌봄 등)으로 전달하는 편이다"
+     ],
+     "ranked": false
+    },
+    "Q31": {
+     "kind": "reported-selection",
+     "values": [
+      "문제를 해결해주는 사람",
+      "책임지는 사람"
+     ],
+     "ranked": false
+    },
+    "Q33": {
+     "kind": "reported-selection",
+     "values": [
+      "따뜻함",
+      "소통"
+     ],
+     "ranked": false
+    },
+    "Q39": {
+     "kind": "reported-selection",
+     "values": [
+      "사람들과 아이디어를 나누거나 토론하기",
+      "감정을 표현하거나 공감하는 활동"
+     ],
+     "ranked": false
+    },
+    "Q41": {
+     "kind": "reported-selection",
+     "values": [
+      "사회 문제나 정의 이슈",
+      "철학, 종교, 영성"
+     ],
+     "ranked": false
+    },
+    "Q47": {
+     "kind": "reported-selection",
+     "values": [
+      "조용한 공간 (도서관, 독서실 등)",
+      "음악이나 분위기가 있는 공간"
+     ],
+     "ranked": false
+    },
+    "Q49": {
+     "kind": "reported-selection",
+     "values": [
+      "계획표에 따라 움직이는 하루",
+      "내 기분이나 감정에 따라 유동적인 하루"
+     ],
+     "ranked": false
+    },
+    "Q55": {
+     "kind": "reported-selection",
+     "values": [
+      "내가 의미 있다고 느끼는 일이기 때문에",
+      "누군가에게 도움이 되기 때문에"
+     ],
+     "ranked": false
+    },
+    "Q57": {
+     "kind": "reported-selection",
+     "values": [
+      "해야만 하는 책임이 있었기 때문에",
+      "재미있고 즐거웠기 때문에"
+     ],
+     "ranked": false
+    },
+    "Q63": {
+     "kind": "reported-selection",
+     "values": [
+      "안정성 / 안전 / 예측 가능성",
+      "성장 가능성 / 배움의 기회"
+     ],
+     "ranked": false
+    },
+    "Q65": {
+     "kind": "reported-selection",
+     "values": [
+      "사회적 분위기나 유행"
+     ],
+     "ranked": false
+    },
+    "Q71": {
+     "kind": "reported-selection",
+     "values": [
+      "기한을 정해놓고 마감 맞추기",
+      "멀리 내다보며 흐름을 설계하기"
+     ],
+     "ranked": false
+    },
+    "Q73": {
+     "kind": "reported-selection",
+     "values": [
+      "누군가에게 좋은 영향을 미쳤을 때"
+     ],
+     "ranked": false
+    },
+    "Q75": {
+     "kind": "reported-selection",
+     "values": [
+      "의료",
+      "디자인"
+     ],
+     "ranked": false
+    },
+    "Q77": {
+     "kind": "reported-selection",
+     "values": [
+      "문제를 해결하거나 정책을 만드는 활동",
+      "기획하고 조직을 운영하는 활동"
+     ],
+     "ranked": false
+    }
+   },
+   "decisions": [],
+   "fieldSources": {
+    "self_understanding": {},
+    "self_expression": {},
+    "self_design": {},
+    "self_execution": {}
+   },
+   "unresolved": [],
+   "coverage": {
+    "usedEvidence": [],
+    "notInterpreted": [
+     "Q6",
+     "Q7",
+     "Q13",
+     "Q14",
+     "Q19",
+     "Q21",
+     "Q26",
+     "Q28",
+     "Q31",
+     "Q33",
+     "Q39",
+     "Q41",
+     "Q47",
+     "Q49",
+     "Q55",
+     "Q57",
+     "Q63",
+     "Q65",
+     "Q71",
+     "Q73",
+     "Q75",
+     "Q77"
+    ]
+   },
+   "protected": [
+    "source-report",
+    "scores",
+    "fingerprints",
+    "non-VII-sections",
+    "program",
+    "keywords"
+   ],
+   "principleContract": {
+    "foundation": "Scripture is the highest normative criterion; not evidence of algorithm validity",
+    "evidence": "Reported fact / interpretation hypothesis / proposed test remain separate",
+    "compression": "Baseline wording stays unless a supported relation changes its meaning",
+    "validation": "Counterfactual decision and artifact checks, not phrase counts"
+   }
+  }
+ },
+ "program": {
+  "meta": {
+   "engine": "ProgramEngine",
+   "version": "v1.2",
+   "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+   "generatedAt": "2026-10-09T02:20:44.500Z",
+   "publishedAt": "2026.10.09",
+   "name": "합성 독자",
+   "toneKey": "visionary_creator",
+   "toneLabel": "헌신을 중심에 두고 안정으로 끝까지 해내 의미를 남기는 결",
+   "sourceReportSid": null,
+   "axes": {
+    "self_understanding": 66.19897959183673,
+    "self_expression": 68.26923076923076,
+    "self_design": 69.39203354297693,
+    "self_execution": 83.27272727272727
+   },
+   "strongAxis": "self_execution",
+   "weakAxis": "self_understanding",
+   "keywords": [
+    "신중한",
+    "실패 복기",
+    "콘텐츠 학습",
+    "감정 기록",
+    "솔직한 표현",
+    "행동적 표현",
+    "따뜻함",
+    "소통"
+   ],
+   "lang": "ko",
+   "_uniqGuard": {
+    "v": 2,
+    "fingerprint": 1376135130,
+    "fingerprint64": "7104a384af96fcd2",
+    "uniqSig": 559263910,
+    "skelLines": 22,
+    "variantApplied": true,
+    "scope": "legacy-sections-before-evidence-overlay"
+   },
+   "_strategy": {
+    "scheme": "execution-strategy.v2",
+    "consumers": {
+     "quarter": true,
+     "weeks": true,
+     "month3": true,
+     "year1": true,
+     "modules": true,
+     "nextStepsRisks": true
+    },
+    "bundle": true,
+    "mode": "v2",
+    "errors": []
+   },
+   "evidenceVersion": "evidence-reader-v1",
+   "cardShape": "rq-01"
+  },
+  "cover": {
+   "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+   "subtitle": "합성 독자님을 위한 성장 & 실행 전략 안내서",
+   "service": "인생포트폴리오",
+   "publishedAt": "2026.10.09",
+   "typeLine": "합성 독자님의 고유한 결 — 생명을 간직하는 사람 — 익숙한 것에서 새로움을 발견하는 안목은 세상에 하나뿐인 재능입니다.",
+   "coreOneLine": "Synthetic Evidence Reader님은 어제보다 오늘 더 깊어지는 삶에서 예측할 수 있는 하루로, 실천으로 자기다움을 다지는 한 사람입니다.",
+   "diagBadge": "생명 돌보는 사람",
+   "introLine": "한발 앞서 지친 몸을 살려 주는 사람.",
+   "quote": "“이 프로그램은 합성 독자님의 사명 — ‘생각을 잇는 추진력으로 먼저 자신을 내어 준다’ — 을 하루하루 실천으로 옮겨 갑니다.”",
+   "summary": {
+    "traits": "사람의 단단함을 끌어안으며 새로운 결을 작품으로 펼친다",
+    "strengths": "익숙한 것에서 새로움을 발견하는 안목이 중심에 있습니다. 연결되지 않던 것을 잇는 창의력이 그 뒤를 잡아 줍니다. 숙고된 결단력이 마무리를 맡습니다.",
+    "gaps": "내 생각을 한 줄로 적어 보는 연습을 더한다 — 소리가 없는 조용한 자리에서 한 번씩",
+    "env": "발행과 실험이 빠르게 굴러가고 자율 창작 시간이 보장되는 자리가 잘 맞습니다. 사람들과 마음이 잘 통하는 자리라면 더 좋습니다.",
+    "newPaths": "콘텐츠 크리에이터로 갈 수 있습니다. 이어서 프로덕트 디자이너가 열립니다. 나아가 신사업 기획자도 가능합니다.",
+    "traitsHead": "단단함을 펼치는 작품",
+    "strengthsHead": "생각 나누기에서 끝까지 가는 힘",
+    "gapsHead": "계획한 시간부터 한 줄로 적어 보는 힘",
+    "envHead": "조용한 자리에서 잘 흐르는 결",
+    "newPathsHead": "‘누군가에게 준 도움’ 뒤로 이어지는 길"
+   },
+   "arrowLine": "👉 실행 프로그램은 ‘아이디어 캡처 → 단단함 지키기 → 비전 정련’ 루틴으로 설계됩니다."
+  },
+  "quarter": {
+   "icon": "📐",
+   "title": "분기 테마",
+   "heading": "나의 조건을 실행으로 확인하고, 도움이 된 것을 남깁니다",
+   "subline": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+   "paragraphs": [
+    "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+    "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+    "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다."
+   ],
+   "_strategy": {
+    "diagnosisRef": "diagnosis",
+    "policyRefs": [
+     "guidingPolicy.do",
+     "guidingPolicy.dont"
+    ],
+    "actionRefs": [
+     "capture",
+     "define",
+     "finish"
+    ]
+   }
+  },
+  "program": {
+   "weeks": [
+    {
+     "week": 1,
+     "title": "선택의 이유 확인하기",
+     "subline": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+     "guide": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+     "actions": [
+      "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요."
+     ],
+     "effects": [
+      "시도·관찰한 결과·다음에 바꿀 점을 남깁니다."
+     ],
+     "_strategy": {
+      "evidenceRefs": [
+       "Q6",
+       "Q7",
+       "Q13",
+       "Q14",
+       "Q19",
+       "Q21",
+       "Q26",
+       "Q63",
+       "Q65"
+      ],
+      "hypothesisSource": "report-VII-core",
+      "cardShape": "rq-01"
+     }
+    },
+    {
+     "week": 2,
+     "title": "작은 계획 시험하기",
+     "subline": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+     "guide": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+     "actions": [
+      "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다."
+     ],
+     "effects": [
+      "시도·관찰한 결과·다음에 바꿀 점을 남깁니다."
+     ],
+     "_strategy": {
+      "evidenceRefs": [
+       "Q39",
+       "Q41",
+       "Q47",
+       "Q49",
+       "Q63",
+       "Q73"
+      ],
+      "hypothesisSource": "report-VII-core",
+      "cardShape": "rq-01"
+     }
+    },
+    {
+     "week": 3,
+     "title": "이어지는 조건 찾기",
+     "subline": "시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.",
+     "guide": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+     "actions": [
+      "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다."
+     ],
+     "effects": [
+      "시도·관찰한 결과·다음에 바꿀 점을 남깁니다."
+     ],
+     "_strategy": {
+      "evidenceRefs": [
+       "Q55",
+       "Q57",
+       "Q71",
+       "Q73",
+       "Q75",
+       "Q77"
+      ],
+      "hypothesisSource": "report-VII-core",
+      "cardShape": "rq-01"
+     }
+    }
+   ],
+   "month3": {
+    "guide": "3개월 뒤 손에 남길 결과를 완료 기준(누군가에게 준 도움)과 함께 미리 정해 둔다.",
+    "goals": [
+     {
+      "title": "생각 나누기 재료를 한 화면에 모은다",
+      "criterion": "도착 증거: 계획표에 적어 둔 시간에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다"
+     },
+     {
+      "title": "‘누군가에게 준 도움’을 한 문장으로 정한다",
+      "criterion": "도착 증거: 누군가에게 준 도움이 무엇인지 한 문장으로 적혀 있습니다"
+     },
+     {
+      "title": "조용한 자리에서 검토를 지나 전달로 닫는다",
+      "criterion": "도착 증거: 계획표에 적어 둔 시간에서 닫은 것이 받을 사람 손에 닿았습니다"
+     },
+     {
+      "title": "계획한 시간에 결과 하나를 손에 닿게 전달한다",
+      "criterion": "도착 증거: 사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환 — 지정한 검토자에게 전달 완료"
+     },
+     {
+      "title": "생각 나누기에서 보여 줄 결과물 하나를 만든다",
+      "criterion": "도착 증거: ‘누군가에게 도움이 됐다고 확인될 때’ 그 상태가 담긴 결과물 1개"
+     }
+    ],
+    "effects": [
+     "익힌 방법: 사람들과 생각을 주고받으며 다듬는 일에서 익힌 방법이 반복 가능한 형태로 남습니다",
+     "닿은 기여: ‘누군가에게 준 도움’을 지난 결과 하나가 필요한 사람에게 닿습니다",
+     "남는 자산: 소리가 없는 조용한 자리에 다시 쓸 수 있는 결과물이 남습니다"
+    ],
+    "_effectKinds": [
+     "capability",
+     "contribution",
+     "asset"
+    ]
+   },
+   "year1": {
+    "guide": "비전을 '누군가에게 준 도움'으로 확인 가능한 상태로 번역합니다. 한 줄 비전과 3개월 결과물을 쌓아 올린 마일스톤으로 남깁니다.",
+    "vision": [
+     "1년 뒤, 사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환을 반복해 내는 사람으로 서 있습니다. 가리킬 수 있는 결과가 함께 있습니다."
+    ],
+    "milestones": [
+     "소리가 없는 조용한 자리에서 3개월 결과물을 밑거름 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
+     "분기 결과를 사람들과 생각을 주고받으며 다듬는 일에서 자란 힘, 곧 이름 붙일 수 있는 힘 하나로 쌓는다",
+     "그 힘을 실제 기여로 전달한다: 사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환",
+     "한 해의 결과물을 다시 쓸 수 있는 자산 하나로 모으고 미리 정해 둔 시간에 다음 방향을 정한다"
+    ],
+    "effects": [
+     "소리가 없는 조용한 자리에서 쓰는 이름 붙일 수 있는 힘이 분기마다 축적된다",
+     "사람들과 생각을 주고받으며 다듬는 일에서 쌓은 기여와 신뢰가 자산으로 쌓인다",
+     "소리가 없는 조용한 자리에 다시 쓸 수 있는 자산 기반이 남는다",
+     "다음 해 방향이 '누군가에게 준 도움'이라는 증거에서 열린다"
+    ]
+   }
+  },
+  "modules": [
+   {
+    "index": 1,
+    "type": "선택의 이유 확인하기",
+    "title": "선택의 이유 확인하기",
+    "summary": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+    "actions": [
+     "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요."
+    ],
+    "tools": [
+     "돌아볼 질문: 그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?"
+    ],
+    "_strategy": {
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "hypothesisSource": "report-VII-core",
+     "cardShape": "rq-01"
+    }
+   },
+   {
+    "index": 2,
+    "type": "전해진 뜻 확인하기",
+    "title": "전해진 뜻 확인하기",
+    "summary": "솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.",
+    "actions": [
+     "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요."
+    ],
+    "tools": [
+     "돌아볼 질문: 내 의도와 다르게 전해진 부분은 무엇이었나요?"
+    ],
+    "_strategy": {
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "hypothesisSource": "report-VII-core",
+     "cardShape": "rq-01"
+    }
+   },
+   {
+    "index": 3,
+    "type": "작은 계획 시험하기",
+    "title": "작은 계획 시험하기",
+    "summary": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+    "actions": [
+     "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다."
+    ],
+    "tools": [
+     "돌아볼 질문: 완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?"
+    ],
+    "_strategy": {
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "hypothesisSource": "report-VII-core",
+     "cardShape": "rq-01"
+    }
+   }
+  ],
+  "board": {
+   "columns": [
+    "주차",
+    "실행 과제",
+    "완료 여부",
+    "성찰 메모"
+   ],
+   "rowsExample": [
+    {
+     "week": "1주차",
+     "task": "마음이 단단해진 순간을 만들 거리로 한 가지 메모했는가",
+     "done": "",
+     "memo": ""
+    },
+    {
+     "week": "1주차",
+     "task": "초안을 한 사람에게 보여 줬는가",
+     "done": "",
+     "memo": ""
+    },
+    {
+     "week": "1주차",
+     "task": "사람을 생각하며 만든 결과물 한 장면을 기록했는가",
+     "done": "",
+     "memo": ""
+    }
+   ],
+   "monthly": [
+    "사람들이 원하는 것을 모은 기록이 늘고 있는가",
+    "사람을 생각하며 공개한 결과가 쌓였는가",
+    "사람을 위해 만든 결과물이 쌓이고 있는가"
+   ],
+   "hint": "이 표는 1주차 예시입니다. 합성 독자님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다. 기록은 익숙한 공간(조용한 공간)에서 하세요."
+  },
+  "effects": {
+   "fitJob": "직무 적합성: 생명을 간직하는 흐름 위에서 기획 · 콘텐츠 · 브랜딩 · 신사업 · 디자인 직무 적합성 강화",
+   "expansion": "직업 확장성: 같은 생명의 자리에서 1인 크리에이터 / 솔로 프로듀서 / 사이드 프로젝트로 확장 가능",
+   "career": "경력 성장: 사람들과 생각을 주고받으며 다듬는 일에서 쌓인 힘으로 발행 이력 자체가 포트폴리오 자산으로 누적",
+   "vision": "인생 설계 비전: 흔들리지 않는 쪽을 지키면서 “상상한 것을 작품으로 증명하는 창조자가 된다”",
+   "newPaths": [
+    "생명을 간직하는 자리에서 열리는 길",
+    "콘텐츠 크리에이터",
+    "프로덕트 디자이너",
+    "신사업 기획자"
+   ]
+  },
+  "nextSteps": [
+   {
+    "when": "선택의 이유 확인하기",
+    "task": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요."
+   },
+   {
+    "when": "전해진 뜻 확인하기",
+    "task": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요."
+   },
+   {
+    "when": "작은 계획 시험하기",
+    "task": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다."
+   },
+   {
+    "when": "이어지는 조건 찾기",
+    "task": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다."
+   }
+  ],
+  "risks": [
+   {
+    "risk": "'충분히 구조화하려는 경향' 쪽으로 기울어 '첫 결과물을 빨리 확인할 필요'보다 앞설 때가 있습니다. 그러면 시작과 공유가 밀립니다.",
+    "mitigation": "만약 준비가 덜 됐다고 느껴지면, 더 알아보기보다 계획표에 적어 둔 시간을 잡습니다. 완료 기준부터 정합니다. 회복은 계획표에 적어 둔 시간에서 닫은 것이 받을 사람 손에 닿았습니다로 확인합니다."
+   }
+  ],
+  "closing": [
+   "이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.",
+   "이미 합성 독자님 안에 자리 잡은 사명 — ‘생각을 잇는 추진력으로 먼저 자신을 내어 준다’ — 을 세상이 만질 수 있는 작품으로, 매일 이어지도록 빚어 가는 구조입니다.",
+   "오늘의 단단함 한 줄 메모부터 시작하면 충분합니다."
+  ],
+  "footer": {
+   "notice": [
+    "이 실행 프로그램은 합성 독자님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+    "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+   ],
+   "checklist": [
+    "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+    "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+   ]
+  },
+  "lang": "ko",
+  "_responseEvidence": {
+   "version": "evidence-reader-v1",
+   "inferenceVersion": "relations-v2",
+   "inputContractVersion": "input-v2",
+   "lang": "ko",
+   "axes": {
+    "self_understanding": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.",
+     "detail": "함께 고른 기준을 한 선택 안에서 읽었습니다. 어느 쪽이 더 중요한지는 단정하지 않고, 실제로 한 선택과 대조합니다.계획하거나 신중히 살피는 성향은 결정 전에 필요한 조건을 확인하는 데 써 볼 수 있습니다.특히 약속을 지키기 어려운 장면에서 이 기준이 어떻게 작용했는지 살펴보세요.",
+     "action": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+     "reflection": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "co-held-criteria",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    },
+    "self_expression": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.",
+     "detail": "감정을 전한다고 응답한 방식과 관계에서 지키려는 것을 함께 읽었습니다. 상대가 실제로 어떻게 받아들였는지는 별도로 확인해야 합니다.",
+     "action": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+     "reflection": "내 의도와 다르게 전해진 부분은 무엇이었나요?",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "expression-in-relationship",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    },
+    "self_design": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.",
+     "detail": "몰입하는 활동과 성취를 느끼는 순간은 다른 단서입니다. 무엇을 해 볼지와 어디까지 하면 마쳤다고 볼지를 나누어 계획합니다.함께 고른 활동은 같은 완료 기준으로 비교해 본 뒤, 먼저 시험할 것을 정해 보세요.집중하기 편하다고 고른 조용한 환경에서 먼저 확인해 보세요.",
+     "action": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+     "reflection": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "activity-to-completion",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    },
+    "self_execution": {
+     "version": "evidence-reader-v1",
+     "inferenceVersion": "relations-v2",
+     "core": "시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.",
+     "detail": "시작 동기와 꾸준히 해낼 수 있었던 이유를 같은 것으로 단정하지 않습니다. 실제 시도에서 무엇이 시작을 돕고 무엇이 지속을 도왔는지 나누어 봅니다.",
+     "action": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.",
+     "reflection": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+     "evidenceRefs": [
+      "Q55",
+      "Q57",
+      "Q71",
+      "Q73",
+      "Q75",
+      "Q77"
+     ],
+     "relationKind": "interpretation-hypothesis",
+     "decisionRule": "start-versus-maintenance",
+     "unresolvedRefs": [],
+     "directTextPolicy": "supported-relations-or-explicit-clarification",
+     "additionalEvidence": 0
+    }
+   },
+   "plans": [
+    {
+     "axis": "self_understanding",
+     "title": "선택의 이유 확인하기",
+     "action": "주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+     "methodId": "co-held-criteria",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    },
+    {
+     "axis": "self_expression",
+     "title": "전해진 뜻 확인하기",
+     "action": "전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "내 의도와 다르게 전해진 부분은 무엇이었나요?",
+     "methodId": "expression-in-relationship",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    },
+    {
+     "axis": "self_design",
+     "title": "작은 계획 시험하기",
+     "action": "함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+     "methodId": "activity-to-completion",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    },
+    {
+     "axis": "self_execution",
+     "title": "이어지는 조건 찾기",
+     "action": "의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.",
+     "doneWhen": "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+     "reflection": "처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?",
+     "methodId": "start-versus-maintenance",
+     "evidenceRefs": [
+      "Q55",
+      "Q57",
+      "Q71",
+      "Q73",
+      "Q75",
+      "Q77"
+     ],
+     "principleRefs": [
+      "stewardship",
+      "decision",
+      "truth"
+     ]
+    }
+   ],
+   "fields": {
+    "Q3": {
+     "qid": "Q3",
+     "question": "나는 나 자신의 감정이나 생각을 관찰하려고 노력한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q4": {
+     "qid": "Q4",
+     "question": "나는 실수나 실패 이후 내 행동을 되돌아보는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q5": {
+     "qid": "Q5",
+     "question": "나는 나 자신을 객관적으로 바라보려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q6": {
+     "qid": "Q6",
+     "question": "나를 가장 잘 설명하는 성향을 3개 고른다면? (최대 3개 선택)",
+     "selected": [
+      "창의적인",
+      "신중한"
+     ],
+     "display": [
+      "창의적인",
+      "신중한"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q7": {
+     "qid": "Q7",
+     "question": "나는 어떤 상황에서 '내가 어떤 사람인지'를 더 잘 느끼게 되나요? (1개 선택)",
+     "selected": [
+      "실패나 실수를 돌아볼 때"
+     ],
+     "display": [
+      "실패나 실수를 돌아볼 때"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q8",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q9": {
+     "qid": "Q9",
+     "question": "나는 중요한 결정을 할 때 내 안의 신념이나 가치에 따라 행동한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q10": {
+     "qid": "Q10",
+     "question": "나는 내 가치가 흔들릴 때마다 괴롭거나 불편함을 느낀다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q11": {
+     "qid": "Q11",
+     "question": "나는 다른 사람의 말보다 내 내면의 기준을 더 중요하게 생각한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q12": {
+     "qid": "Q12",
+     "question": "나는 나에게 중요한 가치를 계속 지키려고 노력한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q13": {
+     "qid": "Q13",
+     "question": "당신이 인생에서 가장 중요하게 여기는 가치는 무엇입니까? (최대 3개 선택)",
+     "selected": [
+      "헌신",
+      "평화"
+     ],
+     "display": [
+      "헌신",
+      "평화"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q14": {
+     "qid": "Q14",
+     "question": "나는 어떤 상황에서 '이건 꼭 지켜야 해'라고 느낀 적이 있나요? (1개 선택)",
+     "selected": [
+      "약속을 지키는 것이 힘들 때"
+     ],
+     "display": [
+      "약속을 지키는 것이 힘들 때"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q15",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q16": {
+     "qid": "Q16",
+     "question": "나는 어려움이 닥쳤을 때, 내 감정과 생각을 정리하려 노력한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q17": {
+     "qid": "Q17",
+     "question": "나는 시련을 겪고 나면 내 삶의 방향에 대해 다시 생각해본다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q18": {
+     "qid": "Q18",
+     "question": "나는 힘든 상황에서도 결국 배울 것이 있다고 믿는다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q19": {
+     "qid": "Q19",
+     "question": "당신 삶의 방향이나 태도에 영향을 준 전환 경험은 어떤 것이었나요? (최대 2개 선택)",
+     "selected": [
+      "독서, 영상, 강연 등의 콘텐츠로 인한 변화",
+      "멘토, 리더, 공동체로부터 받은 영향"
+     ],
+     "display": [
+      "독서, 영상, 강연 등의 콘텐츠로 인한 변화",
+      "멘토, 리더, 공동체로부터 받은 영향"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q20",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q21": {
+     "qid": "Q21",
+     "question": "어려움을 겪을 때, 당신은 주로 어떤 방식으로 회복하나요? (최대 2개 선택)",
+     "selected": [
+      "일이나 프로젝트에 몰입하기",
+      "잠이나 휴식으로 감정 해소하기"
+     ],
+     "display": [
+      "일이나 프로젝트에 몰입하기",
+      "잠이나 휴식으로 감정 해소하기"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q22",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q23": {
+     "qid": "Q23",
+     "question": "나는 내 감정이 무엇인지 잘 인식하는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q24": {
+     "qid": "Q24",
+     "question": "나는 감정을 억누르지 않고 적절히 표현하려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q25": {
+     "qid": "Q25",
+     "question": "나는 감정이 행동에 미치는 영향을 자주 성찰한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q26": {
+     "qid": "Q26",
+     "question": "당신은 감정이 격할 때 보통 어떤 방식으로 자신을 다스리나요? (최대 2개 선택)",
+     "selected": [
+      "생각을 글이나 그림으로 표현하기",
+      "기도나 명상 등으로 마음을 정리하기"
+     ],
+     "display": [
+      "생각을 글이나 그림으로 표현하기",
+      "기도나 명상 등으로 마음을 정리하기"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q27",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q28": {
+     "qid": "Q28",
+     "question": "다른 사람들이 당신의 감정을 어떻게 표현한다고 자주 말하나요? (최대 2개 선택)",
+     "selected": [
+      "감정을 솔직하게 말하는 편이다",
+      "감정을 행동(표현/돌봄 등)으로 전달하는 편이다"
+     ],
+     "display": [
+      "감정을 솔직하게 말하는 편이다",
+      "감정을 행동(표현/돌봄 등)으로 전달하는 편이다"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q29",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q30": {
+     "qid": "Q30",
+     "question": "나는 주변 사람들과 깊은 정서적 연결을 맺고 있다고 느낀다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q31": {
+     "qid": "Q31",
+     "question": "사람들이 당신과 함께 있을 때 자주 느끼는 인상은 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "문제를 해결해주는 사람",
+      "책임지는 사람"
+     ],
+     "display": [
+      "문제를 해결해주는 사람",
+      "책임지는 사람"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q32",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q33": {
+     "qid": "Q33",
+     "question": "나의 관계에서 가장 중요하게 여기는 요소는 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "따뜻함",
+      "소통"
+     ],
+     "display": [
+      "따뜻함",
+      "소통"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q34",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q35": {
+     "qid": "Q35",
+     "question": "나는 특정 주제에 몰입하면 시간 가는 줄 모른다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q36": {
+     "qid": "Q36",
+     "question": "나는 어떤 일에 열정을 느끼면 주변에 자주 알리고 싶어진다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q37": {
+     "qid": "Q37",
+     "question": "나는 보상이 없어도 하고 싶은 일이 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q38": {
+     "qid": "Q38",
+     "question": "나는 나의 관심사를 꾸준히 발전시키고 싶다는 열망이 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q39": {
+     "qid": "Q39",
+     "question": "당신이 가장 쉽게 몰입하거나 흥미를 느끼는 활동 유형은 무엇입니까? (최대 2개 선택)",
+     "selected": [
+      "사람들과 아이디어를 나누거나 토론하기",
+      "감정을 표현하거나 공감하는 활동"
+     ],
+     "display": [
+      "사람들과 아이디어를 나누거나 토론하기",
+      "감정을 표현하거나 공감하는 활동"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q40",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q41": {
+     "qid": "Q41",
+     "question": "당신이 지금 가장 열정을 느끼거나 관심을 갖는 주제는 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "사회 문제나 정의 이슈",
+      "철학, 종교, 영성"
+     ],
+     "display": [
+      "사회 문제나 정의 이슈",
+      "철학, 종교, 영성"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q42",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q43": {
+     "qid": "Q43",
+     "question": "나는 어떤 장소에 있느냐에 따라 기분과 집중력이 크게 달라진다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q44": {
+     "qid": "Q44",
+     "question": "나는 일정한 생활 패턴이 유지되면 더 안정감을 느낀다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q45": {
+     "qid": "Q45",
+     "question": "나는 나에게 잘 맞는 하루 루틴이 있을 때 에너지가 효율적으로 유지된다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q46": {
+     "qid": "Q46",
+     "question": "나는 특정 시간대에 더 활기차고 집중력이 높아지는 경향이 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q47": {
+     "qid": "Q47",
+     "question": "기분이 좋아지고 집중이 잘 되는 장소는 어디인가요? (최대 2개 선택)",
+     "selected": [
+      "조용한 공간 (도서관, 독서실 등)",
+      "음악이나 분위기가 있는 공간"
+     ],
+     "display": [
+      "조용한 공간 (도서관, 독서실 등)",
+      "음악이나 분위기가 있는 공간"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q48",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q49": {
+     "qid": "Q49",
+     "question": "당신이 가장 편하게 느끼는 하루 리듬은 어떤가요? (최대 2개 선택)",
+     "selected": [
+      "계획표에 따라 움직이는 하루",
+      "내 기분이나 감정에 따라 유동적인 하루"
+     ],
+     "display": [
+      "계획표에 따라 움직이는 하루",
+      "내 기분이나 감정에 따라 유동적인 하루"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q50",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q51": {
+     "qid": "Q51",
+     "question": "나는 목표가 생기면 빠르게 행동으로 옮기려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q52": {
+     "qid": "Q52",
+     "question": "나는 결과보다 과정이나 의미에 동기부여를 느끼는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q53": {
+     "qid": "Q53",
+     "question": "나는 외부 자극보다 내 마음에서 우러난 이유로 더 움직인다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q54": {
+     "qid": "Q54",
+     "question": "나는 어떤 일에 몰입할 때 스스로 동기를 유지하는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q55": {
+     "qid": "Q55",
+     "question": "당신은 어떤 상황에서 가장 의욕이 생기고 행동하게 되나요? (최대 2개 선택)",
+     "selected": [
+      "내가 의미 있다고 느끼는 일이기 때문에",
+      "누군가에게 도움이 되기 때문에"
+     ],
+     "display": [
+      "내가 의미 있다고 느끼는 일이기 때문에",
+      "누군가에게 도움이 되기 때문에"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q56",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q57": {
+     "qid": "Q57",
+     "question": "당신이 어떤 일을 꾸준히 해낼 수 있었던 가장 큰 이유가 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "해야만 하는 책임이 있었기 때문에",
+      "재미있고 즐거웠기 때문에"
+     ],
+     "display": [
+      "해야만 하는 책임이 있었기 때문에",
+      "재미있고 즐거웠기 때문에"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q58",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q59": {
+     "qid": "Q59",
+     "question": "나는 중요한 결정을 내릴 때 어떤 기준으로 선택했는지 분명하게 설명할 수 있다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q60": {
+     "qid": "Q60",
+     "question": "나는 감정보다 원칙이나 논리에 따라 결정을 내리는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q61": {
+     "qid": "Q61",
+     "question": "나는 선택이 내 삶의 방향성과 맞는지 고민한 후 행동한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q62": {
+     "qid": "Q62",
+     "question": "나는 작은 결정이라도 반복되는 기준을 갖고 선택하려고 한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q63": {
+     "qid": "Q63",
+     "question": "당신이 어떤 선택을 할 때 가장 중요하게 여기는 기준은 무엇인가요? (최대 2개 선택)",
+     "selected": [
+      "안정성 / 안전 / 예측 가능성",
+      "성장 가능성 / 배움의 기회"
+     ],
+     "display": [
+      "안정성 / 안전 / 예측 가능성",
+      "성장 가능성 / 배움의 기회"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q64",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q65": {
+     "qid": "Q65",
+     "question": "당신은 선택의 순간에 누구의 영향을 가장 많이 받는 편인가요? (1개 선택)",
+     "selected": [
+      "사회적 분위기나 유행"
+     ],
+     "display": [
+      "사회적 분위기나 유행"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q66",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q67": {
+     "qid": "Q67",
+     "question": "나는 목표를 세우면 행동으로 옮기기 위해 바로 계획을 세운다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q68": {
+     "qid": "Q68",
+     "question": "나는 작은 일이라도 실행을 반복하며 성과를 쌓아가는 것을 선호한다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q69": {
+     "qid": "Q69",
+     "question": "나는 성취 경험을 통해 내 자신을 더 신뢰하게 된다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q70": {
+     "qid": "Q70",
+     "question": "나는 실행보다는 아이디어나 구상에 더 머무는 편이다.",
+     "selected": [],
+     "display": [],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false
+    },
+    "Q71": {
+     "qid": "Q71",
+     "question": "당신은 어떤 방식으로 목표를 이루는 데 강점을 가지고 있나요? (최대 2개 선택)",
+     "selected": [
+      "기한을 정해놓고 마감 맞추기",
+      "멀리 내다보며 흐름을 설계하기"
+     ],
+     "display": [
+      "기한을 정해놓고 마감 맞추기",
+      "멀리 내다보며 흐름을 설계하기"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q72",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q73": {
+     "qid": "Q73",
+     "question": "당신이 성취를 느끼는 순간은 보통 언제인가요? (1개 선택)",
+     "selected": [
+      "누군가에게 좋은 영향을 미쳤을 때"
+     ],
+     "display": [
+      "누군가에게 좋은 영향을 미쳤을 때"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q74",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q75": {
+     "qid": "Q75",
+     "question": "당신이 자연스럽게 관심이 가는 분야는 무엇입니까? (최대 3개 선택)",
+     "selected": [
+      "의료",
+      "디자인"
+     ],
+     "display": [
+      "의료",
+      "디자인"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q76",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    },
+    "Q77": {
+     "qid": "Q77",
+     "question": "관심 있는 분야에서 당신이 특히 좋아하거나 의미 있게 여기는 활동 유형은 무엇입니까? (최대 2개 선택)",
+     "selected": [
+      "문제를 해결하거나 정책을 만드는 활동",
+      "기획하고 조직을 운영하는 활동"
+     ],
+     "display": [
+      "문제를 해결하거나 정책을 만드는 활동",
+      "기획하고 조직을 운영하는 활동"
+     ],
+     "unknown": [],
+     "kind": "direct-selection",
+     "ranked": false,
+     "other": {
+      "qid": "Q78",
+      "rawText": "",
+      "state": "empty",
+      "kind": "direct-text",
+      "interpretation": "context-only"
+     }
+    }
+   },
+   "observations": [],
+   "experiments": [],
+   "relations": [
+    {
+     "id": "self_understanding:co-held-criteria",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "co-held-criteria",
+     "decisionRule": "co-held-criteria",
+     "evidenceRefs": [
+      "Q6",
+      "Q7",
+      "Q13",
+      "Q14",
+      "Q19",
+      "Q21",
+      "Q26",
+      "Q63",
+      "Q65"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    },
+    {
+     "id": "self_expression:expression-in-relationship",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "expression-in-relationship",
+     "decisionRule": "expression-in-relationship",
+     "evidenceRefs": [
+      "Q28",
+      "Q31",
+      "Q33"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    },
+    {
+     "id": "self_design:activity-to-completion",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "activity-to-completion",
+     "decisionRule": "activity-to-completion",
+     "evidenceRefs": [
+      "Q39",
+      "Q41",
+      "Q47",
+      "Q49",
+      "Q63",
+      "Q73"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    },
+    {
+     "id": "self_execution:start-versus-maintenance",
+     "kind": "interpretation-hypothesis",
+     "ruleId": "start-versus-maintenance",
+     "decisionRule": "start-versus-maintenance",
+     "evidenceRefs": [
+      "Q55",
+      "Q57",
+      "Q71",
+      "Q73",
+      "Q75",
+      "Q77"
+     ],
+     "excludedClaims": [
+      "priority-from-order",
+      "causality-from-co-selection",
+      "ability-from-interest",
+      "worth-from-score"
+     ],
+     "principleRefs": [
+      "dignity",
+      "truth",
+      "intelligibility",
+      "information",
+      "compression",
+      "decision",
+      "benchmarks"
+     ],
+     "conflictRefs": [],
+     "unresolvedRefs": []
+    }
+   ],
+   "semanticEdges": [],
+   "principles": {
+    "dignity": {
+     "basis": "Genesis 1:27; Romans 12:3-8",
+     "rule": "No worth/rank/hidden-calling claims"
+    },
+    "truth": {
+     "basis": "Ephesians 4:15; Psalm 139",
+     "rule": "Direct evidence, interpretation and proposal remain separate; unresolved speaker, negation or modality vetoes affirmative recommendations"
+    },
+    "intelligibility": {
+     "basis": "1 Corinthians 14:9; Nehemiah 8",
+     "rule": "Situational prose; no trait/value lists as insight"
+    },
+    "stewardship": {
+     "basis": "1 Peter 4:10",
+     "rule": "Each proposal names an observable result and possible reuse"
+    },
+    "information": {
+     "basis": "Data processing inequality",
+     "rule": "Keep raw evidence and relations before projection"
+    },
+    "compression": {
+     "basis": "Rate-distortion as a design constraint, not a calibrated metric",
+     "rule": "Never drop negation/condition/uncertainty to fit a headline"
+    },
+    "decision": {
+     "basis": "Decision value and within-person testing",
+     "rule": "Different meaningful evidence must change a decision or a needed question"
+    },
+    "benchmarks": {
+     "basis": "Gallup/Birkman/InBody/Hogan learning principles",
+     "rule": "Interpretation, operating conditions, grounded comparisons and open reflection; no copied norms"
+    }
+   },
+   "coverage": {
+    "activeDirectInputs": 0,
+    "supported": 0,
+    "needsConfirmation": []
+   }
+  }
+ }
+}

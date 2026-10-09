@@ -45,9 +45,10 @@ export const REQUIRED_ON_PAGE = [
   { key: 'no_say',      needle: '우리가 쓰지 않는 말',                    why: '⑤항목7 금지표현 목록 지면 명시', ch: 9 },
   { key: 'no_say_item', needle: '>심리검사<',                            why: '⑤항목7 목록 실항목 렌더', ch: 9 },
   { key: 'footer_gen',  needle: '생성일 ',                               why: '생성일 각주(고객 정보)', ch: 9 },
-  // ── X 「발견을 실천과 기록으로」 — 「증명된 것과 아직 아닌 것」은 IX 하단 잘림(KO PDF p13 실측) 때문에 X로 이동(대원칙-E-1) ──
-  { key: 'claim',       needle: '증명된 것과 아직 아닌 것',               why: '⑤항목8 한계 정면 명시(X장)', ch: 10 },
-  { key: 'claim_unmet', needle: '아직 아님',                             why: '⑤항목8 미증명 라벨', ch: 10 },
+  // ── X 「발견을 실천과 기록으로」 — RQ-02(2026-10-09): 회사 품질 상태표 → 고객 관점 「이 리포트를 믿고 쓰는 법」. 한계·비예측·재현성만 확인 문구는 유지(A5) ──
+  { key: 'claim',       needle: '이 리포트를 믿고 쓰는 법',               why: 'RQ-02 고객 관점 신뢰 사용법(X장)', ch: 10 },
+  { key: 'claim_limit', needle: '심리검사가 아니며 미래를 예측하지 않습니다', why: '⑤항목8 한계 정면 명시 유지(완화 없음)', ch: 10 },
+  { key: 'claim_perf',  needle: '공개 성능표',                           why: 'RQ-02 품질 상태표의 이동 위치 명시', ch: 10 },
   { key: 'record',      needle: 'acc__fv--code',                         why: '다음 기록용 고유코드 칸', ch: 10 }
 ];
 
