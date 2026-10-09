@@ -1,0 +1,321 @@
+{
+ "file": "program.html",
+ "width": 1280,
+ "lang": "ko",
+ "mode": "livingbook",
+ "pageCount": 14,
+ "errors": [
+  "console: Failed to load resource: net::ERR_FAILED",
+  "console: Failed to load resource: net::ERR_FAILED",
+  "console: Loading the stylesheet 'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap' violates the following Content Security Policy dire",
+  "console: Loading the stylesheet 'https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap' violates the following Content Security Policy dire",
+  "console: Access to script at 'https://unpkg.com/web-vitals@4/dist/web-vitals.attribution.iife.js' from origin 'https://reader.invalid' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header i",
+  "console: Failed to load resource: net::ERR_FAILED",
+  "console: Access to script at 'https://cdn.jsdelivr.net/npm/web-vitals@4/dist/web-vitals.attribution.iife.js' from origin 'https://reader.invalid' has been blocked by CORS policy: No 'Access-Control-Allow-Origi",
+  "console: Failed to load resource: net::ERR_FAILED"
+ ],
+ "writes": [],
+ "external": [
+  "www.googletagmanager.com",
+  "unpkg.com",
+  "cdn.jsdelivr.net"
+ ],
+ "writesInPage": 0,
+ "pages": [
+  {
+   "i": 0,
+   "id": "",
+   "cls": "page page--cover lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "인생포트폴리오\n맞춤 실행 프로그램"
+   ],
+   "chars": 55,
+   "words": 13,
+   "smallFont": 0,
+   "minFont": 12.6667,
+   "ctas": []
+  },
+  {
+   "i": 1,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "목차"
+   ],
+   "chars": 258,
+   "words": 80,
+   "smallFont": 2,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 2,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "I. 한눈에 보는 나"
+   ],
+   "chars": 677,
+   "words": 183,
+   "smallFont": 3,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 3,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "II. 분기 테마"
+   ],
+   "chars": 381,
+   "words": 103,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 4,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "III. 주차별 실행 루틴",
+    "선택의 이유 확인하기"
+   ],
+   "chars": 248,
+   "words": 67,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 5,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "작은 계획 시험하기",
+    "이어지는 조건 찾기"
+   ],
+   "chars": 412,
+   "words": 109,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 6,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "IV. 3개월 · 1년 목표",
+    "🎯 3개월 목표"
+   ],
+   "chars": 603,
+   "words": 162,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 7,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "🌱 1년 뒤 나의 모습",
+    "닿았다는 증거"
+   ],
+   "chars": 604,
+   "words": 161,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 8,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "V. 실행 모듈",
+    "선택의 이유 확인하기"
+   ],
+   "chars": 258,
+   "words": 69,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 9,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "전해진 뜻 확인하기",
+    "작은 계획 시험하기"
+   ],
+   "chars": 413,
+   "words": 106,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 10,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 438,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "VI. 성과 추적 보드",
+    "📅 월간 점검"
+   ],
+   "chars": 564,
+   "words": 163,
+   "smallFont": 10,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 11,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "VII. 기대 효과",
+    "🚪 이 사명이 여는 길"
+   ],
+   "chars": 344,
+   "words": 91,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 12,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "VIII. 다음 단계 · 리스크",
+    "↗ 이 사이클을 닫은 다음, 이렇게 잇습니다",
+    "🛡 미리 정해 두는 회복 시나리오"
+   ],
+   "chars": 574,
+   "words": 151,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  },
+  {
+   "i": 13,
+   "id": "",
+   "cls": "page page--runhead lb-active",
+   "w": 519,
+   "h": 735,
+   "overflow": false,
+   "contentOverflow": false,
+   "clippedBoxes": 0,
+   "heads": [
+    "IX. 마무리"
+   ],
+   "chars": 589,
+   "words": 147,
+   "smallFont": 1,
+   "minFont": 10,
+   "ctas": []
+  }
+ ],
+ "texts": [
+  "인생포트폴리오\n맞춤 실행 프로그램\n· 맞춤 실행 전략 ·\n합성 독자\nEXECUTION PROGRAM",
+  "CONTENTS\n02\nCONTENTS\n목차\nI\n한눈에 보는 나\n지금의 나를 한 장으로\n03\nII\n분기 테마\n이번 3개월의 방향\n04\nIII\n주차별 실행 루틴\n매주 하나씩 실천하기\n05\nIV\n3개월·1년 목표\n손에 남길 결과\n07\nV\n실행 모듈\n할 일과 완료 기준\n09\nVI\n성과 추적 보드\n해 본 일과 다음 할 일\n11\nVII\n기대 효과\n이 실행이 여는 길\n12\nVIII\n다음 단계 · 리스크\n이어 가기 · 지켜 내기\n13\nIX\n마무리\n오늘 시작하는 한 줄\n14",
+  "실행 프로그램 · 합성 독자\n03\nI. 한눈에 보는 나\n이 프로그램이 함께할 ‘나’\n생명 돌보는 사람\n한발 앞서 지친 몸을 살려 주는 사람.\n당신의 응답이 발견해 남긴, 당신만의 한 문장.\n사명\n생각을 잇는 추진력으로 먼저 자신을 내어 준다\n📐 나의 실행 흐름\n실행 프로그램은 ‘아이디어 캡처 → 단단함 지키기 → 비전 정련’ 루틴으로 설계됩니다.\n나는 이런 사람입니다\n🌿 나의 결·성향\n단단함을 펼치는 작품\n사람의 단단함을 끌어안으며 새로운 결을 작품으로 펼친다\n💎 나를 받쳐 주는 힘\n생각 나누기에서 끝까지 가는 힘\n익숙한 것에서 새로움을 발견하는 안목이 중심에 있습니다. 연결되지 않던 것을 잇는 창의력이 그 뒤를 잡아 줍니다. 숙고된 결단력이 마무리를 맡습니다.\n그래서 이렇게 나아갑니다\n지금 시작 · 첫걸음\n🌱 더할 연습\n계획한 시간부터 한 줄로 적어 보는 힘\n내 생각을 한 줄로 적어 보는 연습을 더한다 — 소리가 없는 조용한 자리에서 한 번씩\n🏡 잘 맞는 자리\n조용한 자리에서 잘 흐르는 결\n발행과 실험이 빠르게 굴러가고 자율 창작 시간이 보장되는 자리가 잘 맞습니다. 사람들과 마음이 잘 통하는 자리라면 더 좋습니다.\n🚪 이 사명이 여는 길\n‘누군가에게 준 도움’ 뒤로 이어지는 길\n크리에이터로 갈 수 있습니다. 이어서 프로덕트 디자이너가 열립니다. 나아가 신사업 기획자도 가능합니다.",
+  "실행 프로그램 · 합성 독자\n04\nII. 분기 테마\n이번 분기의 목적\n📐 나의 조건을 실행으로 확인하고, 도움이 된 것을 남깁니다\n함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.\n주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.\n전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.\n🎯 3개월 뒤 손에 남길 것\n의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.\n👉 실행 프로그램은 ‘아이디어 캡처 → 단단함 지키기 → 비전 정련’ 루틴으로 설계됩니다.",
+  "실행 프로그램 · 합성 독자\n05\nIII. 주차별 실행 루틴\n한 주에 하나씩, 작게 시작합니다. 각 주가 끝나면 확인할 수 있는 결과 하나가 남습니다.\n1주차\n선택의 이유 확인하기\n선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.\n그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?\n주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.\n✓ 이번 주 변화와 결과\n시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+  "실행 프로그램 · 합성 독자\n06\n2주차\n작은 계획 시험하기\n생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.\n완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?\n함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.\n✓ 이번 주 변화와 결과\n시도·관찰한 결과·다음에 바꿀 점을 남깁니다.\n3주차\n이어지는 조건 찾기\n시작하게 하는 마음과, 끝까지 이어 가게 하는 조건을 함께 살핍니다.\n처음의 의욕이 약한 날에도 이어 가게 한 것은 무엇이었나요?\n의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.\n✓ 이번 주 변화와 결과\n시도·관찰한 결과·다음에 바꿀 점을 남깁니다.",
+  "실행 프로그램 · 합성 독자\n07\nIV. 3개월 · 1년 목표\n🎯 3개월 목표\n3개월 뒤 손에 남길 결과를 완료 기준(누군가에게 준 도움)과 함께 미리 정해 둔다.\n01\n생각 나누기 재료를 한 화면에 모은다\n도착 증거: 계획표에 적어 둔 시간에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다\n02\n‘누군가에게 준 도움’을 한 문장으로 정한다\n도착 증거: 누군가에게 준 도움이 무엇인지 한 문장으로 적혀 있습니다\n03\n조용한 자리에서 검토를 지나 전달로 닫는다\n도착 증거: 계획표에 적어 둔 시간에서 닫은 것이 받을 사람 손에 닿았습니다\n04\n계획한 시간에 결과 하나를 손에 닿게 전달한다\n도착 증거: 사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환 — 지정한 검토자에게 전달 완료\n05\n생각 나누기에서 보여 줄 결과물 하나를 만든다\n도착 증거: ‘누군가에게 도움이 됐다고 확인될 때’ 그 상태가 담긴 결과물 1개\n📦 3개월 뒤, 이렇게 쌓입니다\n사람들과 생각을 주고받으며 다듬는 일에서 익힌 방법이 반복 가능한 형태로 남습니다\n‘누군가에게 준 도움’을 지난 결과 하나가 필요한 사람에게 닿습니다\n소리가 없는 조용한 자리에 다시 쓸 수 있는 결과물이 남습니다",
+  "실행 프로그램 · 합성 독자\n08\n🌱 1년 뒤 나의 모습\n비전을 '누군가에게 준 도움'으로 확인 가능한 상태로 번역합니다. 한 줄 비전과 3개월 결과물을 쌓아 올린 마일스톤으로 남깁니다.\nVISION\n1년 뒤, 사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환을 반복해 내는 사람으로 서 있습니다. 가리킬 수 있는 결과가 함께 있습니다.\n닿았다는 증거\n소리가 없는 조용한 자리에서 3개월 결과물을 밑거름 삼아 분기 사이클을 한 바퀴 끝까지 반복한다\n분기 결과를 사람들과 생각을 주고받으며 다듬는 일에서 자란 힘, 곧 이름 붙일 수 있는 힘 하나로 쌓는다\n그 힘을 실제 기여로 전달한다: 사람들과 생각을 주고받으며 다듬는 일을 누군가에게 준 도움으로 전환\n한 해의 결과물을 다시 쓸 수 있는 자산 하나로 모으고 미리 정해 둔 시간에 다음 방향을 정한다\n🏆 1년 뒤, 이렇게 쌓입니다\n소리가 없는 조용한 자리에서 쓰는 이름 붙일 수 있는 힘이 분기마다 축적된다\n사람들과 생각을 주고받으며 다듬는 일에서 쌓은 기여와 신뢰가 자산으로 쌓인다\n소리가 없는 조용한 자리에 다시 쓸 수 있는 자산 기반이 남는다\n다음 해 방향이 '누군가에게 준 도움'이라는 증거에서 열린다",
+  "실행 프로그램 · 합성 독자\n09\nV. 실행 모듈\n할 일을 작게 나눈 활동 카드입니다. 하나씩 해 보고, 완료 기준으로 마쳤는지 확인하세요.\n선택의 이유 확인하기\n선택의 이유 확인하기\n선택의 순간, 기반을 지키며 새로 배울 수 있는 길을 살핍니다.\n실행\n주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.\n✓ 완료 기준\n시도·관찰한 결과·다음에 바꿀 점을 남깁니다.\n도구\n돌아볼 질문: 그 상황에서는 어떤 기준이 더 중요했고, 왜 그랬나요?",
+  "실행 프로그램 · 합성 독자\n10\n전해진 뜻 확인하기\n전해진 뜻 확인하기\n솔직한 말에 담은 마음을, 돌봄과 행동으로도 이어 갑니다.\n실행\n전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.\n✓ 완료 기준\n시도·관찰한 결과·다음에 바꿀 점을 남깁니다.\n도구\n돌아볼 질문: 내 의도와 다르게 전해진 부분은 무엇이었나요?\n작은 계획 시험하기\n작은 계획 시험하기\n생각을 주고받으며, 누군가에게 실제로 도움이 되는 끝을 그려 봅니다.\n실행\n함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.\n✓ 완료 기준\n시도·관찰한 결과·다음에 바꿀 점을 남깁니다.\n도구\n돌아볼 질문: 완료 기준에 내가 정말 남기고 싶은 것이 담겼나요?",
+  "실행 프로그램 · 합성 독자\n11\nVI. 성과 추적 보드\n아래 3가지 점검이 한 주의 한 바퀴입니다. 다 채우면 그 주가 닫히고, 그 기록이 다음 주의 출발선이 됩니다.\n1\n기록\n›\n2\n회고\n›\n3\n다음 결정\n1주차\n점검 1/3\n마음이 단단해진 순간을 만들 거리로 한 가지 메모했는가\n이번 주 과제를 끝냈다\n✎ 남은 것 · 알게 된 것\n1주차\n점검 2/3\n초안을 한 사람에게 보여 줬는가\n이번 주 과제를 끝냈다\n✎ 남은 것 · 알게 된 것\n1주차\n점검 3/3\n사람을 생각하며 만든 결과물 한 장면을 기록했는가\n이번 주 과제를 끝냈다\n✎ 남은 것 · 알게 된 것\n📅 월간 점검\n사람들이 원하는 것을 모은 기록이 늘고 있는가\n사람을 생각하며 공개한 결과가 쌓였는가\n사람을 위해 만든 결과물이 쌓이고 있는가\n이 표는 1주차 예시입니다. 합성 독자님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다. 기록은 익숙한 공간(조용한 공간)에서 하세요.\n여기에 적은 문장이 당신의 기록입니다. 한 주를 닫을 때 이 페이지를 다시 읽으면, 다음 주에 무엇을 바꿀지 스스로 답이 나옵니다.",
+  "실행 프로그램 · 합성 독자\n12\nVII. 기대 효과\n이 프로그램을 끝까지 굴렸을 때, 손에 남는 변화입니다.\n💼\n직무 적합성\n생명을 간직하는 흐름 위에서 기획· 브랜딩· 신사업· 디자인 직무 적합성 강화\n📈\n직업 확장성\n같은 생명의 자리에서 1인 크리에이터 / 솔로 프로듀서 / 사이드 프로젝트로 확장 가능\n🌿\n경력 성장\n사람들과 생각을 주고받으며 다듬는 일에서 쌓인 힘으로 발행 이력 자체가 포트폴리오 자산으로 누적\n🔭\n인생 설계 비전\n흔들리지 않는 쪽을 지키면서 “상상한 것을 작품으로 증명하는 창조자가 된다”\n🚪 이 사명이 여는 길\n생명을 간직하는 자리에서 열리는 길\n프로덕트 디자이너\n신사업 기획자",
+  "실행 프로그램 · 합성 독자\n13\nVIII. 다음 단계 · 리스크\n↗ 이 사이클을 닫은 다음, 이렇게 잇습니다\n01\n선택의 이유 확인하기\n주변의 흐름을 따른 이유와 내 기준으로 고른 이유를 나누어 적어 보세요.\n02\n전해진 뜻 확인하기\n전하려는 마음 하나를 말과 작은 행동으로 각각 전해 보고, 같은 뜻으로 받아들여졌는지 물어보세요.\n03\n작은 계획 시험하기\n함께 고른 활동을 작은 단위로 각각 해 보고, 같은 완료 기준으로 비교해 보세요. 실제로 도움이 된 쪽을 다음 계획에 반영합니다.\n04\n이어지는 조건 찾기\n의미 있게 고른 활동을 작은 사례로 각각 해 보세요. 누구에게 도움이 됐고 무엇이 남았는지 비교한 뒤 다음 실행을 정합니다.\n🛡 미리 정해 두는 회복 시나리오\n이럴 때\n'충분히 구조화하려는 경향' 쪽으로 기울어 '첫 결과물을 빨리 확인할 필요'보다 앞설 때가 있습니다. 그러면 시작과 공유가 밀립니다.\n이렇게 회복\n만약 준비가 덜 됐다고 느껴지면, 더 알아보기보다 계획표에 적어 둔 시간을 잡습니다. 완료 기준부터 정합니다. 회복은 계획표에 적어 둔 시간에서 닫은 것이 받을 사람 손에 닿았습니다로 확인합니다.",
+  "실행 프로그램 · 합성 독자\n14\nIX. 마무리\n이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.\n이미 합성 독자님 안에 자리 잡은 사명\n생각을 잇는 추진력으로 먼저 자신을 내어 준다\n을 세상이 만질 수 있는 작품으로, 매일 이어지도록 빚어 가는 구조입니다.\n오늘의 단단함 한 줄 메모부터 시작하면 충분합니다.\n이 실행 프로그램은 합성 독자님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.\n실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다.\n재현성 · 당신만의 고유 코드\n같은 응답은 언제 다시 계산해도 정확히 같은 프로그램으로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값이며, 당신의 리포트와 같은 코드입니다. 이 프로그램이 그 리포트에서 이어진 당신만의 실행안임을 나타냅니다.\nLP-7104a384af96fcd2\n맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대. · 실행 엔진 v1.2 · 발행일 2026.10.09"
+ ],
+ "shots": [
+  "program-ko-1280-p01.png",
+  "program-ko-1280-p02.png",
+  "program-ko-1280-p03.png",
+  "program-ko-1280-p04.png",
+  "program-ko-1280-p05.png",
+  "program-ko-1280-p06.png",
+  "program-ko-1280-p07.png",
+  "program-ko-1280-p08.png",
+  "program-ko-1280-p09.png",
+  "program-ko-1280-p10.png",
+  "program-ko-1280-p11.png",
+  "program-ko-1280-p12.png",
+  "program-ko-1280-p13.png",
+  "program-ko-1280-p14.png"
+ ],
+ "bodyText": "본문으로 바로가기\n인생포트폴리오\n마이페이지\n📄 인생포트폴리오 리포트\n🔄 프로그램 재생성\n📧 메일 앱 열기\n🔗 링크 복사\n🖨 인쇄\n📄 프로그램 다운로드 (화면판)\n📘 프로그램 다운로드 (소장판)\n📖 해설서\n늦은 시간 다시 오셨네요. 미뤄둔 ‘나에 대한 답’, 오늘 밤 만나보시겠어요? 지난번 보시던 흐름을 이어서 안내해 드릴게요.\n×\n인생포트폴리오 실행 프로그램\n합성 독자\nEXECUTION PROGRAM\n목차\n·\n📔\n표지\n·\n📑\n목차\nI\n👤\n한눈에 보는 나\nII\n📐\n분기 테마\nIII\n📅\n주차별 실행 루틴\nIV\n🎯\n3개월 · 1년 목표\nV\n⚙\n실행 모듈\nVI\n📊\n성과 추적 보드\nVII\n📈\n기대 효과\nVIII\n↗\n다음 단계 · 리스크\nIX\n✅\n마무리\n📘 소장판 저장\n📄 내 리포트\n이전\n페이지 1 / 14\n다음\n−\n100%\n+\n한 화면\n전체화면\n응답 근거\n\n더 나은 서비스를 위해 익명 통계(방문·전환)를 수집해도 될까요? 동의하지 않아도 모든 기능을 그대로 쓸 수 있어요. 자세히\n\n거부\n동의\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\nsyn***@example.invalid · 2026-10-09 02:21 UTC\n함께 이야기하기\n×\n나누기\n?\n무엇이든 물어보기"
+}

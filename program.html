@@ -5430,7 +5430,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           careerRules: _careerRules, mapping: _mapping,   // [PR-진로직합성] 응답 기반 직업 매칭
           name: name, sourceSid: currentSid, publishedAt: new Date(),
           lang: _lockedLang,
-          axisProgram: true   // PROG-01: explicit regeneration also links grounded four-axis decisions
+          axisProgram: true,  // PROG-01: explicit regeneration also links grounded four-axis decisions
+          cardShape: "rq-01"  // RQ-01: one chain per card, no repeated lines
         });
 
         // RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환

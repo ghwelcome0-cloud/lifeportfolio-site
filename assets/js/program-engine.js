@@ -1287,6 +1287,41 @@
     return links;
   }
 
+  /* RQ-01 — one chain per card. Opt-in via opts.cardShape === "rq-01" (new generation only).
+   * Reads the same-language VII projection: hypothesis (core) and reflection question, verbatim.
+   * Rewrites nothing stored; keeps the legacy shape when the projection is unusable. */
+  function axisCardSources(projection, lang) {
+    if (!projection || projection.version !== "axis-projection-v1" || projection.scope !== "VII-only" ||
+        projection.lang !== lang || projection.requiresReview === true || !projection.axes) return null;
+    var isEn = lang === "en", out = {}, any = false;
+    var text = function(v){ return typeof v === "string" ? v.trim() : ""; };
+    Object.keys(projection.axes).forEach(function(key){
+      var a = projection.axes[key] || {}, core = text(a.core), reflection = text(a.reflection), action = text(a.action);
+      if (!core || !reflection || !action) return;
+      if (isEn && /[\uac00-\ud7a3]/.test(core + reflection)) return;
+      if (core === action || reflection === action) return;
+      out[key] = { core: core, reflection: reflection }; any = true;
+    });
+    return any ? out : null;
+  }
+  function applyCardShapeRq01(output, report, evidence, lang, axisLinks) {
+    var isEn = lang === "en", src = axisCardSources(report && report._axisProjection, lang);
+    if (!src) return;
+    var linkedBy = {}; (axisLinks || []).forEach(function(l){ linkedBy[l.planIndex] = l; });
+    var qLabel = isEn ? "Question to revisit: " : "돌아볼 질문: ";
+    evidence.plans.forEach(function(plan, idx){
+      var a = src[plan.axis], link = linkedBy[idx], m = idx < 3 ? output.modules[idx] : null, w = output.program.weeks[[0,2,3].indexOf(idx)];
+      var hypothesis = link ? link.hypothesis : (a && a.core), question = link ? (link.reflection || (a && a.reflection)) : (a && a.reflection);
+      if (!hypothesis || !question) return;
+      // Module card: summary=hypothesis · actions=[action] · badge=done-when · tools: PROG-01 keeps artifact/next-use, otherwise the question.
+      if (m && !link) { m.summary = hypothesis; m.tools = [qLabel + question]; m._strategy.hypothesisSource = "report-VII-core"; m._strategy.cardShape = "rq-01"; }
+      if (m && link) { m._strategy.cardShape = "rq-01"; }
+      // Week card: ① focus=hypothesis ② look-at=question ③ how=action ④ change=done-when — four different lines.
+      if (w) { w.subline = hypothesis; w.guide = question; w._strategy.hypothesisSource = "report-VII-core"; w._strategy.cardShape = "rq-01"; }
+    });
+    output.meta.cardShape = "rq-01";
+  }
+
   /* ========================================================================
    *  메인 빌더
    * ====================================================================== */
@@ -3028,6 +3063,8 @@
           output.nextSteps[idx] = { when: output.nextSteps[idx].when, task: link.action + " " + link.reuseLine };
         });
       }
+      // RQ-01: after PROG-01, reshape cards so no sentence repeats inside a module or a week.
+      if (opts.cardShape === "rq-01") applyCardShapeRq01(output, report, evidence, lang, axisLinks);
     }
     return output;
   }
