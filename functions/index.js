@@ -4227,6 +4227,51 @@ exports.lookupPaymentByEmail = onCall(
 );
 
 // 2) 복구: 이메일 → paid:true 부여 (이미 paid 면 멱등 스킵)
+// ═════════════════════════════════════════════════════════════════
+// 🧾 anonymizeMyPaymentOnWithdraw — 회원 탈퇴 시 결제 기록 익명화 (서버 전용)
+//   [배경 · OBS-006 2026-10-08] 탈퇴 흐름(mypage.html)이 클라이언트에서
+//          payments/{uid} → payments_anonymized/{anonId} 이동을 시도했으나,
+//          payments 쓰기는 규칙상 클라이언트에 허용되지 않아(DEF-002 이후 전면
+//          .write:false) 조용히 실패(401)해 왔다. 전자상거래법 5년 보존 의무가
+//          있는 결제 기록은 서버가 이동해야 한다.
+//   [동작] 호출자 본인(request.auth.uid)의 payments 노드만 다룬다.
+//          · 기록 없음 → {moved:false}
+//          · 기록 있음 → payments_anonymized/withdrawn_{ts}_{rand} 에 복사
+//            (uid·이메일 등 식별자 미포함, 보존 기한 5년 메타만 추가) 후 원본 삭제
+//          · 멱등: 같은 호출이 반복돼도 중복 생성 없음(원본이 없으면 즉시 반환)
+//   [보안] 본인 외 어떤 uid 도 지정 불가(입력 파라미터 없음) · 레이트리밋
+// ─────────────────────────────────────────────────────────────────
+exports.anonymizeMyPaymentOnWithdraw = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    if (!request.auth || !request.auth.uid) {
+      throw new HttpsError("unauthenticated", "로그인이 필요합니다.");
+    }
+    await checkCallableRateLimit(request, "anonymizeMyPaymentOnWithdraw", { perMinute: 3, perHour: 10 });
+    const uid = request.auth.uid;
+    const db = admin.database();
+    const src = db.ref("payments/" + uid);
+    const snap = await src.once("value");
+    if (!snap.exists()) return { ok: true, moved: false };
+    const val = snap.val() || {};
+    const anonId = "withdrawn_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+    const now = Date.now();
+    const record = Object.assign({}, val, {
+      _withdrawnAt: now,
+      _retainUntilYear: 5,
+      _retainUntilTs: now + 5 * 365 * 24 * 60 * 60 * 1000,
+      _movedBy: "anonymizeMyPaymentOnWithdraw"
+    });
+    delete record._pending;
+    const updates = {};
+    updates["payments_anonymized/" + anonId] = record;
+    updates["payments/" + uid] = null;
+    await db.ref().update(updates);
+    logger.info("[withdraw] payment anonymized", { anonId }); // uid 미기록
+    return { ok: true, moved: true, anonId };
+  }
+);
+
 exports.grantPaidByEmail = onCall(
   { region: "asia-northeast3", cors: true },
   async (request) => {
