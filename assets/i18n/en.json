@@ -934,7 +934,8 @@
     "stage3_title": "Curate Mission · Vision · Career",
     "stage4_desc": "Finalizing the report per the standard v3 rule book.",
     "stage4_title": "Assemble 12 report sections",
-    "sih_saved": "Quietly kept."
+    "sih_saved": "Quietly kept.",
+    "err_invalid_answers": "The answer for item {id} is missing or in a format that can't be saved, so the report can't be created. Please answer that item again on the <a data-fix-link>diagnostic page</a>. ({n} issue(s))"
   },
   "program_loading": {
     "meta_title": "Generating Action Program | Life Portfolio",
@@ -1424,7 +1425,9 @@
     "done_cta": "View report →",
     "ax_nav_info_template": "{cur} / {total} questions",
     "ax_step_title_template": "{title} · {cur} / {total}",
-    "ax_foot_template": "{cur} / {total} questions"
+    "ax_foot_template": "{cur} / {total} questions",
+    "fix_missing": "Item {id} hasn't been answered yet. Taking you to that item.",
+    "fix_invalid": "The answer for item {id} isn't in a format we can save. Please choose again on that item."
   },
   "proof": {
     "box1_h": "76 questions · 11 areas",
