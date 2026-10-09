@@ -1,0 +1,256 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>G17 공개 성능표 — 비교대상 사전 측정판</title>
+<style>
+:root{--ink:#111827;--mut:#6b7280;--line:#e5e7eb;--bg:#f8fafc;--own:#fff7ed;--l5:#15803d;--l4:#65a30d;--l3:#ca8a04;--l2:#ea580c;--l1:#dc2626}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:14px/1.5 -apple-system,"Pretendard","Noto Sans KR","Apple SD Gothic Neo",Segoe UI,Roboto,sans-serif;width:1600px}
+.wrap{padding:36px 40px}
+h1{font-size:30px;margin:0 0 6px;letter-spacing:-.01em}.lead{color:var(--mut);margin:0 0 18px;font-size:15px}
+.tag{display:inline-block;background:#fee2e2;color:#991b1b;border-radius:999px;padding:3px 12px;font-weight:700;font-size:13px;margin-right:8px}
+.tag.g{background:#dcfce7;color:#166534}.tag.b{background:#dbeafe;color:#1e40af}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:18px 0 22px}
+.k{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px 16px}.k b{display:block;font-size:26px;letter-spacing:-.02em}.k span{color:var(--mut);font-size:12.5px}
+.k.warn{background:#fff1f2;border-color:#fecdd3}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:12.5px}
+th{background:#0f172a;color:#fff;text-align:left;padding:10px 10px;font-weight:600;font-size:12px;vertical-align:bottom;line-height:1.3}
+th small{display:block;color:#cbd5e1;font-weight:400;font-size:10.5px;margin-top:3px}
+td{border-bottom:1px solid var(--line);padding:9px 10px;vertical-align:top}
+tr:nth-child(even) td{background:#fafafa}
+td.nm{width:230px}.rid{display:inline-block;font-size:10.5px;color:#fff;background:#64748b;border-radius:4px;padding:1px 6px;margin-bottom:3px}
+td.nm strong{display:block;font-size:13px;line-height:1.25}td.nm em{font-style:normal;color:var(--mut);font-size:11px}
+.lv{display:inline-block;min-width:30px;text-align:center;color:#fff;border-radius:6px;padding:2px 6px;font-weight:800;font-size:12px;margin-right:6px}
+.l5{background:var(--l5)}.l4{background:var(--l4)}.l3{background:var(--l3)}.l2{background:var(--l2)}.l1{background:var(--l1)}
+.sub{color:#374151;font-size:11.5px;line-height:1.35;display:inline-block;max-width:170px;vertical-align:top}
+.na{color:#9ca3af;font-size:11.5px}.unm{color:#9ca3af;font-weight:600;text-align:center}.unm small{display:block;font-weight:400;font-size:11px}
+.bar{display:flex;align-items:center;gap:8px}.bar div{position:relative;height:14px;flex:1;background:#e5e7eb;border-radius:4px;overflow:hidden}.bar div::after{content:'';position:absolute;inset:0;width:var(--w);background:linear-gradient(90deg,#60a5fa,#2563eb)}.bar b{font-size:15px;min-width:36px;text-align:right}.bar i{font-style:normal;font-size:11px;color:#64748b}
+td.pt{width:170px}.good{color:var(--l5)}.bad{color:var(--l1)}.ok{color:var(--l5);font-weight:700}.warn{color:#b45309;font-weight:700;display:block}
+tr.own td{background:var(--own)!important;border-top:2px solid #f59e0b;border-bottom:2px solid #f59e0b}
+.blank{display:flex;align-items:center;gap:14px;color:#9a3412;font-size:13px}.blank span{font-family:ui-monospace,monospace;font-size:28px;font-weight:800;color:#f59e0b;letter-spacing:.1em}
+h2{font-size:18px;margin:30px 0 8px}.note{background:var(--bg);border-left:4px solid #0f172a;padding:12px 16px;border-radius:0 10px 10px 0;margin:10px 0;font-size:13px}
+.note b{display:block;margin-bottom:4px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+ul{margin:6px 0 0 18px;padding:0}li{margin:3px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--mut);font-size:12px;margin:8px 0 14px}.legend .lv{min-width:26px}
+.foot{color:var(--mut);font-size:11.5px;margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
+</style></head><body><div class="wrap">
+<div><span class="tag">대표 열람용 · 외부 게시 금지</span><span class="tag b">G17 사전 측정판</span><span class="tag g">자사 칸 의도적 공란</span></div>
+<h1>공개 성능표 — 비교대상 26곳 사전 측정 (같은 자, 문 밖에서 잴 수 있는 것만)</h1>
+<p class="lead">측정 2026-10-09 06:4x UTC · 각 회사 <b>공개 첫 페이지 1장</b>을 iPhone 폭(390px)으로 열어 기계로 잰 값입니다. 로그인·응시·구매·문항 열람 없음. 7축 25지표 중 공개 표면에서 잴 수 있는 <b>9지표</b>만 있고, 나머지는 <b>미측정(0점 아님)</b>이라 어느 회사도 총점은 내지 않았습니다.</p>
+<div class="kpis">
+<div class="k"><b>14<small>/24</small></b><span>A6.1 모바일 적합 충족<br>미충족 = 확대 차단 5 · 가로 넘침 6</span></div>
+<div class="k"><b>10<small>/24</small></b><span>A6.3 본문 16px↑ 75% 이상<br>12px 미만 글자 있는 곳 7</span></div>
+<div class="k warn"><b>5<small>/24</small></b><span>A6.4 버튼 44px 50% 이상<br>대부분 미달 — 업계 공통 약점</span></div>
+<div class="k"><b>4.80<small>/9</small></b><span>A6 부분합 중앙값<br>상위: 태니지먼트 강점 리포트 8.55 · Insights Discovery 7.95 · BetterUp 7.50 · CoachHub 7.35 · Everything DiSC Workplace 7.05</span></div>
+<div class="k warn"><b>2<small>/26</small></b><span>A7.1 보안 헤더 5/5<br>0/5인 곳 6 (국내 4곳 포함)</span></div>
+<div class="k"><b>5<small>/26</small></b><span>A7.6 CSP 위반 보고 설정<br>비공개 경로 탐침 노출 1 (메타파일)</span></div>
+</div>
+<div class="legend"><span class="lv l5">L5</span>전수 충족 <span class="lv l4">L4</span>75%↑ <span class="lv l3">L3</span>50%↑ <span class="lv l2">L2</span>25%↑ <span class="lv l1">L1</span>25% 미만 · <b>미측정</b> = 재지 않음(점수 없음) · <b>비적용</b> = 해당 없음</div>
+<table><thead><tr>
+<th>대상<small>G18 1판 행 ID</small></th>
+<th>A6.1 모바일 적합<small>viewport · 확대 허용 · 390px 넘침 0</small></th>
+<th>A6.3 본문 가독성<small>computed font-size ≥16px 비율 · &lt;12px 0</small></th>
+<th>A6.4 터치 타깃<small>≥44×44 CSS px 비율 (≥24px 병기)</small></th>
+<th>A6 부분합<small>3지표(60/100) → 배점 9/15</small></th>
+<th>A7.1 전송·헤더<small>HTTPS + HSTS·XCTO·Frame·Referrer·Permissions</small></th>
+<th>A7.6 CSP 보고<small>report-to / report-uri</small></th>
+<th>A7.5 비공개 경로<small>/.env /.git /wp-config 등 6경로</small></th>
+<th>A5.8 한계 고지<small>G18 D3 기존증거</small></th>
+<th>A5.9 신뢰도 근거<small>G18 D4 기존증거</small></th>
+</tr></thead><tbody>
+<tr><td class="nm"><span class="rid">M01</span><strong>CliftonStrengths 34 (Gallup)</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 63% (43/68) · &lt;12px 9개</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 11% (2/19) · ≥24px 89%</span></td>
+<td class="pt"><div class="bar"><b>6.00</b><i>/ 9</i><div style="--w:66.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">2/5</b><br>Frame · Permissions</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">M02</span><strong>Everything DiSC Workplace (Wiley)</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 77% (93/121)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 36% (5/14) · ≥24px 50%</span></td>
+<td class="pt"><div class="bar"><b>7.05</b><i>/ 9</i><div style="--w:78.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">2/5</b><br>HSTS · Frame</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">M03</span><strong>MBTI Complete (Myers-Briggs Co.)</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 72% (46/64)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 36% (4/11) · ≥24px 82%</span></td>
+<td class="pt"><div class="bar"><b>6.45</b><i>/ 9</i><div style="--w:71.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">2/5</b><br>HSTS · Referrer</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">G01</span><strong>VIA Survey (VIA Institute)</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 55% (37/67)</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 24% (9/37) · ≥24px 68%</span></td>
+<td class="pt"><div class="bar"><b>6.00</b><i>/ 9</i><div style="--w:66.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">1/5</b><br>HSTS</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G02a</span><strong>IPIP Big-Five 50 (ORI)</strong><em>진단 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">viewport 없음 · 가로 980px</span></td>
+<td><span class="lv l5">L5</span><span class="sub">≥16px 100% (59/59)</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 0% (0/7) · ≥24px 14%</span></td>
+<td class="pt"><div class="bar"><b>4.20</b><i>/ 9</i><div style="--w:46.7%"></div></div></td><td><span class="lv l1">L1</span><span class="sub">HTTPS O · 헤더 <b class="bad">0/5</b></span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">G03</span><strong>HEXACO-PI-R 60</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥16px 7% (2/27) · &lt;12px 8개</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 0% (0/119) · ≥24px 82%</span></td>
+<td class="pt"><div class="bar"><b>4.80</b><i>/ 9</i><div style="--w:53.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">1/5</b><br>Frame</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="warn">관측 /.DS_Store</span><span class="sub">6경로 중 1 · 메타파일, 비밀정보 아님</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">G04</span><strong>Hogan Insight</strong><em>진단 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">확대 차단</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 95% (53/56)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 42% (8/19) · ≥24px 84%</span></td>
+<td class="pt"><div class="bar"><b>4.05</b><i>/ 9</i><div style="--w:45.0%"></div></div></td><td><span class="lv l1">L1</span><span class="sub">HTTPS O · 헤더 <b class="bad">0/5</b></span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G06</span><strong>Birkman Signature</strong><em>진단 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">확대 차단</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥16px 41% (34/82) · &lt;12px 1개</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 32% (30/95) · ≥24px 55%</span></td>
+<td class="pt"><div class="bar"><b>2.85</b><i>/ 9</i><div style="--w:31.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">3/5</b><br>XCTO · Frame · Referrer</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G07</span><strong>PI Behavioral Assessment</strong><em>진단 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">가로 421px</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 72% (38/53)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 44% (4/9) · ≥24px 78%</span></td>
+<td class="pt"><div class="bar"><b>3.45</b><i>/ 9</i><div style="--w:38.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">4/5</b><br>HSTS · XCTO · Frame · Permissions</span></td>
+<td><span class="lv l2">L2</span><span class="sub">CSP X · 보고 <b class="good">O</b></span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G08</span><strong>Insights Discovery</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 78% (29/37)</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥44px 86% (12/14) · ≥24px 100%</span></td>
+<td class="pt"><div class="bar"><b>7.95</b><i>/ 9</i><div style="--w:88.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">4/5</b><br>HSTS · XCTO · Frame · Referrer</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G11</span><strong>16Personalities Premium Career Suite</strong><em>진단 도구</em></td><td colspan="4" class="unm">미측정<small>봇 차단 403 — 공개 페이지가 자동 측정을 거부</small></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">4/5</b><br>XCTO · Frame · Referrer · Permissions</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G12</span><strong>Strengths Profile (Cappfinity)</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 92% (33/36)</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 20% (4/20) · ≥24px 65%</span></td>
+<td class="pt"><div class="bar"><b>6.60</b><i>/ 9</i><div style="--w:73.3%"></div></div></td><td><span class="lv l3">L3</span><span class="sub">HTTPS O · 헤더 <b class="good">5/5</b><br>HSTS · XCTO · Frame · Referrer · Permissions</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G13</span><strong>Working Genius</strong><em>진단 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">확대 차단</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 57% (26/46)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 29% (4/14) · ≥24px 93%</span></td>
+<td class="pt"><div class="bar"><b>3.45</b><i>/ 9</i><div style="--w:38.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">4/5</b><br>HSTS · XCTO · Frame · Referrer</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G14</span><strong>Strong Interest Inventory</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 63% (22/35)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 36% (5/14) · ≥24px 86%</span></td>
+<td class="pt"><div class="bar"><b>6.45</b><i>/ 9</i><div style="--w:71.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">2/5</b><br>HSTS · Referrer</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D3</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">G15a</span><strong>O*NET Interest Profiler</strong><em>진단 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥16px 7% (2/30)</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 0% (0/38) · ≥24px 63%</span></td>
+<td class="pt"><div class="bar"><b>4.80</b><i>/ 9</i><div style="--w:53.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">1/5</b><br>HSTS</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">G15b</span><strong>Self-Directed Search (PAR)</strong><em>진단 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">확대 차단</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 90% (18/20)</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 22% (5/23) · ≥24px 70%</span></td>
+<td class="pt"><div class="bar"><b>3.60</b><i>/ 9</i><div style="--w:40.0%"></div></div></td><td><span class="lv l1">L1</span><span class="sub">HTTPS O · 헤더 <b class="bad">0/5</b></span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">E01</span><strong>BetterUp</strong><em>실행·축적 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 80% (35/44)</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥44px 50% (6/12) · ≥24px 83%</span></td>
+<td class="pt"><div class="bar"><b>7.50</b><i>/ 9</i><div style="--w:83.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">4/5</b><br>HSTS · XCTO · Frame · Referrer</span></td>
+<td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">E02</span><strong>CoachHub</strong><em>실행·축적 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥16px 64% (54/85) · &lt;12px 4개</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥44px 81% (13/16) · ≥24px 81%</span></td>
+<td class="pt"><div class="bar"><b>7.35</b><i>/ 9</i><div style="--w:81.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">2/5</b><br>HSTS · Frame</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">E06</span><strong>Full Focus Planner</strong><em>실행·축적 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥16px 20% (1/5)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 25% (1/4) · ≥24px 75%</span></td>
+<td class="pt"><div class="bar"><b>5.25</b><i>/ 9</i><div style="--w:58.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">3/5</b><br>HSTS · XCTO · Frame</span></td>
+<td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">비적용 (검사 아님)</span></td></tr>
+<tr><td class="nm"><span class="rid">E07</span><strong>BestSelf Self Journal</strong><em>실행·축적 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">가로 427px</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥16px 38% (28/73) · &lt;12px 1개</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 38% (35/93) · ≥24px 70%</span></td>
+<td class="pt"><div class="bar"><b>2.85</b><i>/ 9</i><div style="--w:31.7%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">3/5</b><br>HSTS · XCTO · Frame</span></td>
+<td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">비적용 (검사 아님)</span></td></tr>
+<tr><td class="nm"><span class="rid">E11</span><strong>15Five Perform</strong><em>실행·축적 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">가로 396px</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 94% (106/113)</span></td>
+<td><span class="lv l3">L3</span><span class="sub">≥44px 74% (14/19) · ≥24px 100%</span></td>
+<td class="pt"><div class="bar"><b>4.50</b><i>/ 9</i><div style="--w:50.0%"></div></div></td><td><span class="lv l3">L3</span><span class="sub">HTTPS O · 헤더 <b class="good">5/5</b><br>HSTS · XCTO · Frame · Referrer · Permissions</span></td>
+<td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">비적용 (검사 아님)</span></td></tr>
+<tr><td class="nm"><span class="rid">E12</span><strong>Lattice Performance</strong><em>실행·축적 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥16px 9% (8/89) · &lt;12px 40개</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥44px 5% (2/38) · ≥24px 53%</span></td>
+<td class="pt"><div class="bar"><b>4.80</b><i>/ 9</i><div style="--w:53.3%"></div></div></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">2/5</b><br>HSTS · Frame</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP O · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">비적용 (검사 아님)</span></td></tr>
+<tr><td class="nm"><span class="rid">K01</span><strong>고용24 직업선호도검사</strong><em>국내 도구</em></td><td colspan="4" class="unm">미측정<small>60초 응답 없음 ×2 — 측정 불가</small></td><td><span class="lv l2">L2</span><span class="sub">HTTPS O · 헤더 <b class="">1/5</b><br>XCTO</span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">K02</span><strong>커리어넷 직업흥미검사 H형</strong><em>국내 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">가로 1380px</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥16px 89% (8/9)</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 43% (17/40) · ≥24px 80%</span></td>
+<td class="pt"><div class="bar"><b>4.05</b><i>/ 9</i><div style="--w:45.0%"></div></div></td><td><span class="lv l1">L1</span><span class="sub">HTTPS O · 헤더 <b class="bad">0/5</b></span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="lv l2">L2</span><span class="sub">기존증거 D4</span></td></tr>
+<tr><td class="nm"><span class="rid">K03</span><strong>어세스타 STRONG II</strong><em>국내 도구</em></td>
+<td><span class="lv l1">L1</span><span class="sub">확대 차단 · 가로 400px</span></td>
+<td><span class="lv l1">L1</span><span class="sub">≥16px 17% (1/6) · &lt;12px 3개</span></td>
+<td><span class="lv l2">L2</span><span class="sub">≥44px 39% (9/23) · ≥24px 57%</span></td>
+<td class="pt"><div class="bar"><b>2.25</b><i>/ 9</i><div style="--w:25.0%"></div></div></td><td><span class="lv l1">L1</span><span class="sub">HTTPS O · 헤더 <b class="bad">0/5</b></span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr><td class="nm"><span class="rid">K05</span><strong>태니지먼트 강점 리포트</strong><em>국내 도구</em></td>
+<td><span class="lv l5">L5</span><span class="sub">viewport·확대·폭 모두 OK</span></td>
+<td><span class="lv l5">L5</span><span class="sub">≥16px 100% (1/1)</span></td>
+<td><span class="lv l4">L4</span><span class="sub">≥44px 82% (9/11) · ≥24px 91%</span></td>
+<td class="pt"><div class="bar"><b>8.55</b><i>/ 9</i><div style="--w:95.0%"></div></div></td><td><span class="lv l1">L1</span><span class="sub">HTTPS O · 헤더 <b class="bad">0/5</b></span></td>
+<td><span class="lv l1">L1</span><span class="sub">CSP X · 보고 X</span></td>
+<td><span class="ok">0 / 6</span></td><td><span class="na">미측정</span></td><td><span class="na">미측정</span></td></tr>
+<tr class="own"><td class="nm"><span class="rid">OWN</span><strong>인생포트폴리오 (자사)</strong><em>자사</em></td><td colspan="9"><div class="blank"><span>__</span> 자사 칸은 2회차 봉인·블라인드 판정 뒤에만 채웁니다 (E-2). 지금 숫자를 넣으면 이 표가 거짓이 됩니다.</div></td></tr>
+</tbody></table>
+
+<div class="grid2">
+<div class="note"><b>이 표에서 읽을 수 있는 것</b><ul>
+<li>보안 헤더를 다 갖춘 곳은 Cappfinity(Strengths Profile)·15Five 두 곳뿐. 국내 4곳(커리어넷·어세스타·태니지먼트·고용24)과 Hogan·IPIP·SDS는 HTTPS 외 보안 헤더 0.</li>
+<li>모바일 확대를 막아 둔 곳 5(Hogan·Birkman·Working Genius·SDS·어세스타) — 접근성 기본 위반. 커리어넷은 모바일 레이아웃이 없어 1380px로 열림.</li>
+<li>44px 버튼은 업계 공통으로 안 지켜짐(24px 기준은 대부분 50%↑). 우리도 해설서에서 같은 문제.</li>
+<li>HEXACO 사이트는 <code>/.DS_Store</code>가 열림(디렉터리 메타파일, 비밀정보 아님).</li></ul></div>
+<div class="note"><b>이 표가 말하지 못하는 것 (게시 시 그대로 적을 한계)</b><ul>
+<li><b>같은 자가 아닙니다.</b> 타사는 공개 대문 1장, 우리 2회차는 설문·리포트·프로그램 전체 화면을 잽니다. 그래서 우열 문장은 쓸 수 없습니다(템플릿 §0.2-6).</li>
+<li>A1~A4(직관성·자기인식·실행·축적)와 A5 대부분은 응시 없이는 잴 수 없어 전부 미측정.</li>
+<li>A7은 공개 1경로만 봐서 L2 천장(전체 전송보호 검증 주장 불가).</li>
+<li>마케팅 랜딩은 큰 헤드라인이 많아 16px 비율이 쉽게 오르고, 각주가 많으면 12px 미만에 걸립니다(Lattice 40개). 측정 편향을 숨기지 않습니다.</li>
+<li>16Personalities는 봇 차단, 고용24는 무응답 — 측정 불가이지 결함이 아님.</li></ul></div>
+</div>
+
+<h2>표 밖 참고 — 같은 스크립트를 자사 공개 페이지에 돌린 값 (점수 아님 · 봉인·블라인드 없음)</h2>
+<table><thead><tr><th>페이지</th><th>A6.1</th><th>A6.3 본문 가독성</th><th>A6.4 터치</th><th>A6 부분합</th><th>A7.1</th><th>A7.6</th><th>A7.5</th></tr></thead><tbody><tr><td class="nm"><strong>lifeportfolio.co.kr /</strong></td><td><span class="lv l5">L5</span><span class="sub">충족</span></td><td><span class="lv l1">L1</span><span class="sub">≥16px 3% (2/64) · &lt;12px 1개</span></td><td><span class="lv l4">L4</span><span class="sub">≥44px 95% (18/19)</span></td><td class="pt"><div class="bar"><b>6.15</b><i>/ 9</i><div style="--w:68.3%"></div></div></td><td><span class="lv l3">L3</span><span class="sub">HTTPS O · 헤더 <b class="good">5/5</b></span></td><td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td><td><span class="ok">0 / 6</span></td></tr><tr><td class="nm"><strong>/suvey (비로그인 화면)</strong></td><td><span class="lv l5">L5</span><span class="sub">충족</span></td><td><span class="lv l1">L1</span><span class="sub">≥16px 0% (0/8)</span></td><td><span class="lv l2">L2</span><span class="sub">≥44px 45% (9/20)</span></td><td class="pt"><div class="bar"><b>5.25</b><i>/ 9</i><div style="--w:58.3%"></div></div></td><td><span class="lv l3">L3</span><span class="sub">HTTPS O · 헤더 <b class="good">5/5</b></span></td><td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td><td><span class="ok">0 / 6</span></td></tr><tr><td class="nm"><strong>/report-guide</strong></td><td><span class="lv l5">L5</span><span class="sub">충족</span></td><td><span class="lv l1">L1</span><span class="sub">≥16px 7% (7/105)</span></td><td><span class="lv l1">L1</span><span class="sub">≥44px 0% (0/15)</span></td><td class="pt"><div class="bar"><b>4.80</b><i>/ 9</i><div style="--w:53.3%"></div></div></td><td><span class="lv l3">L3</span><span class="sub">HTTPS O · 헤더 <b class="good">5/5</b></span></td><td><span class="lv l2">L2</span><span class="sub">CSP O · 보고 <b class="good">O</b></span></td><td><span class="ok">0 / 6</span></td></tr></tbody></table>
+<div class="note" style="border-color:#dc2626;background:#fff1f2"><b>참고값에서 발견된 자사 결함 — 2회차 전 수정 대상</b><ul>
+<li><b>모바일 본문 글자 12~15px.</b> 홈 14px 35블록·12px 12블록, 해설서 14.5px 50블록·12.5px 15블록. 계약 A6.3("모바일 본문 16px 이상, 12px 미만 0")대로면 2회차 A6.3은 <b>L1(최저)</b>이 됩니다. 비교대상 24곳 중 16px 75%↑가 10곳이므로 이 지표에서 우리는 하위권입니다.</li>
+<li><b>해설서 텍스트 링크 44px 미만.</b> 사전 동등 타깃 예외를 결박하거나 링크 패딩을 키워야 합니다.</li>
+<li>보안 헤더 5/5·CSP 보고·탐침 0은 비교대상 최상위(Cappfinity·15Five)와 동급.</li>
+<li>2회차 judge가 보는 <b>설문 진행 화면·리포트·프로그램 화면</b>은 이 참고값에 없습니다. 재동결 전에 그 화면들도 같은 스크립트로 재야 합니다.</li></ul></div>
+<p class="foot">출처: 계약 c25fff3a… 지표 A6.1·6.3·6.4·A7.1·7.5·7.6·A5.8·5.9 앵커 · 명부 G18 1판(51행 중 URL 있는 비중복 26행) · 원자료 docs/q90/g18-premeasure/results.json (932d01d7…) · 스크립트 measure.cjs/score.cjs · 재측정: node measure.cjs && node score.cjs. 이 문서는 AI·기계 측정 기반 대체 평가이며 인증·순위·우열 주장이 아닙니다. 타사 상표는 식별 목적으로만 표기.</p>
+</div></body></html>

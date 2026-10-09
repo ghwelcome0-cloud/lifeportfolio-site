@@ -1,0 +1,173 @@
+[
+ {
+  "row": "OWN-home",
+  "name": "lifeportfolio.co.kr /",
+  "group": "자사",
+  "url": "https://lifeportfolio.co.kr/",
+  "at": "2026-10-09T06:55:35.789Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.03125,
+   "level": 1,
+   "ge16": 2,
+   "blocks": 64,
+   "lt12": 1
+  },
+  "a64": {
+   "ratio": 0.9473684210526315,
+   "level": 4,
+   "ok44": 18,
+   "ok24": 18,
+   "total": 19,
+   "ratio24": 0.9473684210526315
+  },
+  "a6partial": {
+   "points": 6.15,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 5,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 3
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "OWN-survey",
+  "name": "/suvey (비로그인 화면)",
+  "group": "자사",
+  "url": "https://lifeportfolio.co.kr/suvey",
+  "at": "2026-10-09T06:55:42.291Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0,
+   "level": 1,
+   "ge16": 0,
+   "blocks": 8,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.45,
+   "level": 2,
+   "ok44": 9,
+   "ok24": 18,
+   "total": 20,
+   "ratio24": 0.9
+  },
+  "a6partial": {
+   "points": 5.25,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 5,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 3
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "OWN-guide",
+  "name": "/report-guide",
+  "group": "자사",
+  "url": "https://lifeportfolio.co.kr/report-guide",
+  "at": "2026-10-09T06:55:47.161Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.06666666666666667,
+   "level": 1,
+   "ge16": 7,
+   "blocks": 105,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0,
+   "level": 1,
+   "ok44": 0,
+   "ok24": 2,
+   "total": 15,
+   "ratio24": 0.13333333333333333
+  },
+  "a6partial": {
+   "points": 4.8,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 5,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 3
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ }
+]
