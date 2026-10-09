@@ -493,7 +493,7 @@
       return view;
     }
 
-  function attachAxes(report,questions,answers){
+  function attachAxes(report,questions,answers,opts){
     if(!report||!Array.isArray(report.sections)||!questions||!answers||typeof answers!=='object'||Array.isArray(answers))throw new Error('Axis evidence unavailable; existing report preserved');
     var baseline={},lang=report.lang==='en'?'en':'ko';
     AXES.forEach(function(key){
@@ -502,6 +502,20 @@
       baseline[key]=baselineAxisView(report,key,section.content,lang);
     });
     var model=projectAxes({questions:questions,answers:answers,baseline:baseline,lang:lang});
+    // RQ-03 (opt-in): compositional generation for axes without an authored decision.
+    // opts.compose = { engine: AxisCompose, lexicon: axis-lexicon-v1 }. Default path is byte-identical to before.
+    if(opts&&opts.compose&&opts.compose.engine&&opts.compose.lexicon&&!model.requiresReview){
+      var composed=opts.compose.engine.compose({questions:questions,answers:answers,lexicon:opts.compose.lexicon,lang:lang,existingDecisions:model.decisions});
+      Object.keys(composed.axes).forEach(function(key){
+        var r=composed.axes[key];
+        ['core','detail','action','reflection'].forEach(function(field){model.axes[key][field]=r[field];model.fieldSources[key][field]={rule:r.rule,evidenceRefs:r.evidenceRefs.slice()};});
+        model.axes[key].decisionRule=r.rule;model.axes[key].evidenceRefs=r.evidenceRefs.slice();model.axes[key].relationKind='composed-hypothesis';model.axes[key].composedDoneWhen=r.doneWhen;
+        model.decisions.push({axis:key,rule:r.rule,kind:'composed-hypothesis',evidenceRefs:r.evidenceRefs.slice(),decision:{operation:'compose-from-selected-options',template:r.template,slots:r.slots,doneWhen:r.doneWhen,artifact:r.doneWhen.replace(/\s*(을|를)?\s*적어 두면 완료입니다\.?$/,'').replace(/(을|를)$/,'').replace(/^Done when\s+/,'').replace(/\s+(is|are) written( down)?\.?$/,''),reuse:lang==='en'?'A record to compare against the next similar situation':'다음 유사한 장면에서 같은 판단 기준이 맞는지 비교할 기록'},outputFields:['core','detail','action','reflection'],
+          principles:['truth','information','compression','decision','stewardship'],excludedClaims:['ability-from-interest','priority-from-order','worth-from-score','causality-from-co-selection']});
+        r.evidenceRefs.forEach(function(ref){if(model.coverage.notInterpreted.indexOf(ref)>=0){model.coverage.notInterpreted.splice(model.coverage.notInterpreted.indexOf(ref),1);model.coverage.usedEvidence.push(ref);}});
+      });
+      model.composeVersion=composed.version;model.lexiconVersion=composed.lexiconVersion;
+    }
     var output=JSON.parse(JSON.stringify(report));output._axisProjection=model;
     return output;
   }

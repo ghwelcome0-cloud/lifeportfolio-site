@@ -14,7 +14,8 @@ fs.mkdirSync(outDir,{recursive:true});
 
 function synth(lang){
   const a=T.base(seed);a.Q1=lang==='en'?'Synthetic Reader':'합성 독자';
-  const report=R.attachAxes(T.build(a,lang,'input-v2').r,questions,a);
+  const C=require('../../assets/js/axis-compose.js'),lexicon=require('../../data/axis-lexicon.json');
+  const report=R.attachAxes(T.build(a,lang,'input-v2').r,questions,a,process.env.RQ_NO_COMPOSE?undefined:{compose:{engine:C,lexicon}});
   report.lang=lang;report.profile=Object.assign({},report.profile,{name:a.Q1,email:'synthetic@example.invalid'});
   let program=null;try{program=P.build({report,rules:require('../../data/program-rules.json'),name:a.Q1,lang,axisProgram:true,cardShape:'rq-01'});}catch(e){program={_error:e.message};}
   return {report,program};

@@ -2000,6 +2000,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
+  <script src="assets/js/axis-compose.js?v=axis-compose-v1"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -7340,7 +7341,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const qResponse=await fetch('data/questions.json?v=axis-projection-v1',{cache:'no-store',signal:AbortSignal.timeout(15000)});
       if(!qResponse.ok)throw new Error('문항 근거를 불러오지 못했습니다.');
       const questions=await qResponse.json();assertUser();
-      const nextReport=window.LPResponseEvidence.attachAxes(prev.report,questions,session.answers);
+      // RQ-03: compositional generation for axes without an authored decision (same opt-in as report-loading).
+      let __axisCompose=null;
+      try{const lxRes=await fetch('data/axis-lexicon.json?v=axis-lexicon-v1',{cache:'no-store',signal:AbortSignal.timeout(15000)});
+        if(lxRes.ok&&window.AxisCompose?.compose){__axisCompose={engine:window.AxisCompose,lexicon:await lxRes.json()};}
+      }catch(_lxErr){console.warn('[Report] axis-compose unavailable; authored path only:',_lxErr&&_lxErr.message);}
+      assertUser();
+      const nextReport=window.LPResponseEvidence.attachAxes(prev.report,questions,session.answers,__axisCompose?{compose:__axisCompose}:undefined);
       let saved=prev;
       if(!sameProjection(prev.report._axisProjection,nextReport._axisProjection)){
         if(!etag)throw new Error('저장본 버전 확인에 실패했습니다. 덮어쓰지 않았습니다.');
