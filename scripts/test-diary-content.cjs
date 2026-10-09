@@ -37,6 +37,7 @@ t('page-published-with-security-headers',()=>{const allow=fs.readFileSync(path.j
   const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide|'));
   const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');assert.equal((idx.match(/_diary_module/g)||[]).length,2);assert.match(idx,/^exports\.diaryPurgeOnUserDelete = /m);assert.match(idx,/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m);
   assert.match(files[2][1],/<meta name="robots" content="noindex,nofollow">/);});
+t('mypage-pathfind-shortcut',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.equal((m.match(/lp-path-link/g)||[]).length,1);assert.match(m,/'&open=path'/);assert.ok(m.includes("cardLang === 'en') ? '' :"));});
 t('mypage-button-on',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = true;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});
 t('help-covers-every-template-and-spot',()=>{const H=require('../assets/js/diary-help.js');Object.keys(S.TEMPLATES).forEach(k=>{assert.ok(H.PAGE[k]&&H.PAGE[k].why&&H.PAGE[k].how,k);assert.ok((H.PAGE[k].why+H.PAGE[k].how).length<=260,'tip too long '+k);});
   const app=files[1][1];['pct','copy','stages','ifthen','score','quick','oneq','service'].forEach(k=>{assert.ok(H.SPOT[k],k);assert.ok(app.includes('tip("spot", "'+k+'")'),'spot used '+k);});
