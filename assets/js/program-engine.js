@@ -1256,6 +1256,58 @@
     return byTone[primaryCat] || byTone["성장지향"] || byTone["관계지향"] || byTone["원칙지향"] || byTone["자유지향"] || null;
   }
 
+  /* asset-fan-v1 (2026-10-09, owner-approved mapping) — 「자산화 부채꼴」.
+   * Report XI 「자산화 길 찾기」 -> program -> diary as ONE direction (고유성 기반 자산화).
+   * A person's asset is modelled as a sector (부채꼴) of a circle:
+   *   angle  θ = the changes seen in MY answers (main + up to 2 others; θ_k = k·40°, never a single type),
+   *   radius r = who it reaches (ring 1 나·가까운 사람, ring 2 이웃·모임, ring 3 일터·지역),
+   *   depth  s = 남김 단계 0~5 (diary's own six stages: 해 봤어요 … 다시 쓰였어요).
+   * Value grows like the sector area A = ½·θ·r²·(1+s): widening reach counts quadratically, leaving
+   * something counts linearly, and adding a change widens the angle. A is the PRINCIPLE behind the
+   * order of steps only — it is never shown as a score and never compares people.
+   * Horizons map to (r, s): 30일 (1, 0→1) · 3개월 (2, 2) · 1년 (3, 5). Every line is built from the
+   * person's own path (first step, artifact, asset kinds, other changes) and own words (scene, strength #1)
+   * — uniqueness × intuitiveness × 자산화.
+   * Pure, deterministic, Korean only; absent/invalid path => null (program unchanged). */
+  function assetFan(ap) {
+    if (!ap || ap.version !== "asset-path-v1" || !ap.type || !ap.type.name || !ap.firstStep) return null;
+    var STAGE = ["해 봤어요", "결과물을 남겼어요", "동료 피드백", "멘토와 확인", "실제 반응", "다시 쓰였어요"];
+    var RING = [null, "나 · 가까운 사람", "이웃 · 모임", "일터 · 지역"];
+    var art = "";
+    (ap.days || []).forEach(function (d) { var m = /^(.+) 남기기$/.exec(d && d.v || ""); if (m && !art) art = m[1]; });
+    if (!art) return null;
+    // 1-year goal stands on a non-financial asset kind (never reads as investment advice).
+    var a0 = (ap.assets || []).filter(function (x) { return x && x.k && !/금융/.test(x.k); })[0] || null;
+    // 고유성: the person's own words from the report (Q41 scene, strength #1), never a shared label.
+    var bs = ap.basis || {}, scene = /에서$/.test(bs.scene || "") ? bs.scene : "", strength = String(bs.strength || "").trim();
+    var jb = function (w) { var c = String(w).replace(/[\s)」]+$/, "").slice(-1).charCodeAt(0); return c >= 0xac00 && c <= 0xd7a3 ? (c - 0xac00) % 28 : -1; };
+    var eul = function (w) { var b = jb(w); return w + (b === 0 ? "를" : b > 0 ? "을" : "을(를)"); };
+    var ga = function (w) { var b = jb(w); return w + (b === 0 ? "가" : b > 0 ? "이" : "이(가)"); };
+    var ro = function (w) { var b = jb(w); return w + (b === 0 || b === 8 ? "로" : b > 0 ? "으로" : "(으)로"); };
+    var others = (ap.others || []).filter(function (o) { return o && o.name; }).slice(0, 2);
+    var changes = [ap.type.name].concat(others.map(function (o) { return o.name; }));
+    var theta = changes.length * 40;
+    var area = function (r, s) { return 0.5 * (theta * Math.PI / 180) * r * r * (1 + s); };
+    var rings = [
+      { r: 1, s: 1, when: "30일", who: RING[1], stage: STAGE[1], line: "30일 · " + RING[1] + " — " + ap.firstStep + " (" + STAGE[1] + ")" },
+      { r: 2, s: 2, when: "3개월", who: RING[2], stage: STAGE[2], line: "3개월 · " + RING[2] + " — " + (scene ? scene + " 만난 사람들에게 " : "") + eul(art) + " 보여 주고 의견을 들어 고쳐 쓰기 (" + STAGE[2] + ")" },
+      { r: 3, s: 5, when: "1년", who: RING[3], stage: STAGE[5], line: "1년 · " + RING[3] + " — " + (strength ? "내 " + ro(strength) + " 쌓은 " : "") + ga(a0 ? a0.k : art) + " 다른 사람에게 다시 쓰이게 하기" + " (" + STAGE[5] + ")" }
+    ];
+    rings.forEach(function (g) { g.area = Math.round(area(g.r, g.s) * 100) / 100; });
+    return {
+      version: "asset-fan-v1", type: ap.type.name, focus: ap.type.focus || "", changes: changes, theta: theta,
+      rings: rings,
+      weekly: [
+        "💎 " + STAGE[0] + " — " + ap.firstStep,
+        "💎 " + STAGE[1] + " — " + art,
+        "💎 한 사람에게 보여 주기 — 들은 말 한 줄을 다이어리에 남겨요"
+      ],
+      accrue: (ap.assets || []).slice(0, 2).map(function (x) { return "자산화: " + x.k + " — " + x.v; }),
+      widen: others.map(function (o) { return o.name + (o.focus ? " · " + o.focus : ""); }),
+      rule: "A = ½·θ·r²·(1+s)"
+    };
+  }
+
   /* PROG-01 — four-axis decision → execution link (pure, deterministic). */
   function axisProgramLinks(projection, evidence, lang) {
     if (!projection || projection.version !== "axis-projection-v1" || projection.scope !== "VII-only" ||
@@ -3084,11 +3136,24 @@
       if (opts.cardShape === "rq-01") applyCardShapeRq01(output, report, evidence, lang, axisLinks);
       // X1-P (2026-10-09, owner-approved mapping): report XI 「자산화 길 찾기」 -> program -> diary, one flow.
       // Rule: opt-in builds only (new + explicit regeneration); only a Korean report carrying a valid
-      // _assetPath; adds ONE next step (its first thing to leave) and a link record. Nothing else changes.
+      // _assetPath; adds ONE next step (its first thing to leave) and a link record, plus the asset-fan-v1
+      // lines below (append-only). Nothing else changes.
       var ap = report && report._assetPath;
       if (opts.axisProgram === true && !isEn && ap && ap.version === "asset-path-v1" && ap.type && ap.type.name && ap.firstStep) {
         output.nextSteps.push({ when: "자산화 길 · 30일 (" + ap.type.name + ")", task: ap.firstStep + " → 남긴 것은 다이어리 「오늘 해 봤어요」에 한 줄로 기록합니다." });
         output._assetLink = { version: "asset-link-v1", pathVersion: ap.version, type: ap.type.name, firstStep: ap.firstStep };
+        var fan = assetFan(ap);
+        if (fan) {
+          output._assetFan = fan;
+          output.meta.assetFanVersion = fan.version;
+          // Week cards: one 남김-stage line each (stage 0 -> 1 -> 2), built from this person's own first step and artifact.
+          var wk = output.program.weeks || [];
+          fan.weekly.forEach(function (line, i) { if (wk[i]) { wk[i].effects = (wk[i].effects || []).concat([line]); } });
+          // 3 months: what accrues (the person's own asset kinds). 1 year: reach widens (radius 3).
+          var m3 = output.program.month3, y1 = output.program.year1;
+          if (m3) m3.effects = (m3.effects || []).concat(fan.accrue);
+          if (y1 && Array.isArray(y1.milestones)) y1.milestones = y1.milestones.concat([fan.rings[2].line]);
+        }
       }
     }
     return output;
