@@ -1,0 +1,30 @@
+{
+ "seed": 0,
+ "generatedAt": "2026-10-09T02:21:16.704Z",
+ "runs": [
+  {
+   "tag": "report-ko-1280",
+   "file": "report.html",
+   "lang": "ko",
+   "width": 1280,
+   "mode": "livingbook",
+   "pages": 14,
+   "errors": 7,
+   "writes": 0,
+   "overflowPages": 0,
+   "shots": 14
+  },
+  {
+   "tag": "program-ko-1280",
+   "file": "program.html",
+   "lang": "ko",
+   "width": 1280,
+   "mode": "livingbook",
+   "pages": 14,
+   "errors": 8,
+   "writes": 0,
+   "overflowPages": 0,
+   "shots": 14
+  }
+ ]
+}

@@ -88,7 +88,7 @@ try{
  // Those four are compared structurally (tag sequence) instead of byte-for-byte; the other seven non-VII pages stay exact.
  const COPY_PAGES=[1,2];const REWRITE_PAGES=[12,13];const tagSeq=h=>(h.match(/<[a-z0-9-]+/g)||[]).join(',');
  // IX/X are redesigned pages: the three PR294 evidence panels must survive, no runtime/internal fields may leak, and X must keep the record block.
- const IX_MUST=['전체 매핑 · 56문항이 어디로 갔는가','우리가 쓰지 않는 말','mp-repro__code'];const X_MUST=['acc__fv--code','dv-grid','증명된 것과 아직 아닌 것'];const LEAK=['분석 엔진','확장코드','engineVersion','rulesVersion','_v4ApplyError','10^'];
+ const IX_MUST=['전체 매핑 · 56문항이 어디로 갔는가','우리가 쓰지 않는 말','mp-repro__code'];const X_MUST=['acc__fv--code','dv-grid','이 리포트를 믿고 쓰는 법'];const LEAK=['분석 엔진','확장코드','engineVersion','rulesVersion','_v4ApplyError','10^'];
  const unchangedBefore=await prior.page.evaluate(()=>[...document.querySelector('#lbFrame').contentDocument.querySelectorAll('.page__body')].filter((_,i)=>![8,9,10].includes(i)).map(e=>e.innerHTML));await prior.page.close();
  const next=await open(browser,reports[0],1280);
  const unchangedAfter=await next.page.evaluate(()=>[...document.querySelector('#lbFrame').contentDocument.querySelectorAll('.page__body')].filter((_,i)=>![8,9,10].includes(i)).map(e=>e.innerHTML));const NONVII=[0,1,2,3,4,5,6,7,11,12,13];NONVII.forEach((pg,i)=>{if(COPY_PAGES.includes(pg)){assert.equal(tagSeq(unchangedAfter[i]),tagSeq(unchangedBefore[i]),'Page '+pg+' may change copy only; tag structure must stay identical');}
