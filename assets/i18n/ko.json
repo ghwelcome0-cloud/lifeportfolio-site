@@ -934,7 +934,8 @@
     "stage3_title": "사명·비전·진로 큐레이션",
     "stage4_desc": "표준 v3 규칙서에 따라 리포트를 마무리합니다.",
     "stage4_title": "리포트 12 섹션 조립",
-    "sih_saved": "조용히 담아두었어요."
+    "sih_saved": "조용히 담아두었어요.",
+    "err_invalid_answers": "{id} 문항의 답이 비어 있거나 저장할 수 없는 형식이라 리포트를 만들 수 없습니다. <a data-fix-link>검사 페이지</a>에서 그 문항을 다시 답해 주세요. (문제 {n}건)"
   },
   "program_loading": {
     "meta_title": "실행 프로그램 생성 중 | 인생포트폴리오",
@@ -1414,7 +1415,9 @@
     "done_cta": "리포트 보기 →",
     "ax_nav_info_template": "{cur} / {total} 문항",
     "ax_step_title_template": "{title} · {cur} / {total}",
-    "ax_foot_template": "{cur} / {total} 문항"
+    "ax_foot_template": "{cur} / {total} 문항",
+    "fix_missing": "{id} 문항에 아직 답하지 않았어요. 그 문항으로 이동할게요.",
+    "fix_invalid": "{id} 문항의 답이 저장할 수 있는 형식이 아니에요. 그 문항에서 다시 선택해 주세요."
   },
   "proof": {
     "box1_h": "76문항 · 11개 영역",
