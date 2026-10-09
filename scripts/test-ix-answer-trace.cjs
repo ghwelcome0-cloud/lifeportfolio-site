@@ -66,7 +66,7 @@ for(const lang of ['ko','en']){
     const p=renderWith(inner,{readerLang:lang,meta:{generatedAt:'2026-10-09T00:00:00Z'},evidence:{head:lang==='en'?'Where your answers appear word for word':'당신의 답이 문장이 된 자리',qids:['Q13'],axisTrace:t},summary:{},axes:[]});
     const ix=p.ix.html;
     assert.ok(ix.includes(lang==='en'?'Where each of the four areas comes from':'네 영역 문장의 출처'),'trace block must render');checks++;
-    assert.ok(ix.includes('faise@lifeportfolio.co.kr'),'correction path must render');checks++;
+    assert.ok(ix.includes(lang==='en'?'with the item number':'문항 번호와 함께 알려 주세요'),'correction path must render');assert.ok(!/[\w.+-]+@[\w-]+\.[\w.]+/.test(ix.replace(/<[^>]+>/g,' ')),'IX must not print a raw e-mail address (public-contact DLP)');checks++;
     if(lang==='en'){
       const text=ix.replace(/<[^>]+>/g,' ');
       assert.ok(!HANGUL.test(text),`EN IX page must contain no Korean: ${(text.match(/[^\s]*[\uac00-\ud7a3][^\s]*/)||[''])[0]}`);checks++;
@@ -80,7 +80,7 @@ for(const lang of ['ko','en']){
   const t=buildTrace(legacy,'ko');assert.equal(t,null,'no projection → no trace');checks++;
   const p=renderWith(inner,{readerLang:'ko',meta:{},evidence:{head:'당신의 답이 문장이 된 자리',qids:['Q13'],axisTrace:null},summary:{},axes:[]});
   assert.ok(!p.ix.html.includes('네 영역 문장의 출처'),'legacy page must not show an empty trace block');checks++;
-  assert.ok(p.ix.html.includes('faise@lifeportfolio.co.kr')&&p.ix.html.includes('이 진단은 심리검사가 아닙니다'),'legacy page keeps correction path and limit line');checks++;
+  assert.ok(p.ix.html.includes('문항 번호와 함께 알려 주세요')&&p.ix.html.includes('이 진단은 심리검사가 아닙니다'),'legacy page keeps correction path and limit line');checks++;
 }
 // EN cited chips must be the engine's EN display values (no Korean canonical leaking into EN IX)
 {
@@ -92,7 +92,7 @@ for(const lang of ['ko','en']){
 // relocated content must exist in the guide (moved, not deleted)
 {
   const g=fs.readFileSync(path.join(root,'report-guide.html'),'utf8');
-  for(const k of ['id="g-evidence"','23.85','우리가 쓰지 않는 말','이 리포트를 믿고 쓰는 법','faise@lifeportfolio.co.kr','심리검사'])assert.ok(g.includes(k),'guide must carry relocated content: '+k);checks++;
+  for(const k of ['id="g-evidence"','23.85','우리가 쓰지 않는 말','이 리포트를 믿고 쓰는 법','문항 번호와 함께','심리검사'])assert.ok(g.includes(k),'guide must carry relocated content: '+k);checks++;
 }
 console.log(`PASS ${checks} checks; ${total} real-engine reports KO/EN; all-four-areas trace ${allFour}/${total}; EN pages Korean-free; legacy no-trace; guide carries relocated content`);
 })().catch(e=>{console.error(e);process.exitCode=1;});

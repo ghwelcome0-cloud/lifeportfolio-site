@@ -44,7 +44,7 @@ export const REQUIRED_ON_PAGE = [
   { key: 'axis_row_q',  needle: '>Q7 Q13<',                              why: 'RQ-04 근거행에 문항 번호 실렌더', ch: 9 },
   { key: 'select_rule', needle: '규칙은 하나입니다',                      why: 'A5.4 선택규칙·미공개범위 1문장(지수 계산 전용 문항 수 실측)', ch: 9 },
   { key: 'not_used_n',  needle: '12개는 네 영역 지수 계산에만',           why: 'notInterpreted 실측값이 문장에 도달', ch: 9 },
-  { key: 'correction',  needle: 'faise@lifeportfolio.co.kr',             why: 'A5.7 정정·이의제기 경로 지면 명시', ch: 9 },
+  { key: 'correction',  needle: '문항 번호와 함께 알려 주세요',           why: 'A5.7 정정·이의제기 경로 지면 명시(DLP: 주소는 승인 페이지 마이페이지에만)', ch: 9 },
   { key: 'limit_line',  needle: '이 진단은 심리검사가 아닙니다',           why: '⑤항목8 한계 1줄 유지(완화 없음)', ch: 9 },
   { key: 'moved_note',  needle: '해설서와 공개 성능표에 그대로 있습니다', why: '매핑표·금칙어·성능 상태의 이동 위치 명시(삭제 아님)', ch: 9 },
   { key: 'footer_gen',  needle: '생성일 ',                               why: '생성일 각주(고객 정보)', ch: 9 },
