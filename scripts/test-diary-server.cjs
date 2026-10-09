@@ -75,6 +75,26 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
  const url=(p,tok)=>'http://'+process.env.FIREBASE_DATABASE_EMULATOR_HOST+'/'+p+'.json?ns='+ns+'&auth='+encodeURIComponent(tok);
  const dr=await fetch(url('diary/'+uid,owner.idToken)),dw=await fetch(url('diary/'+uid+'/pages/mission',owner.idToken),{method:'PUT',body:JSON.stringify({doc:'{}'})}),dd=await fetch(url('diary/'+uid,owner.idToken),{method:'DELETE'});
  result('rules-deny-direct-client-read-write-delete',dr.status===401&&dw.status===401&&dd.status===401&&(await db('diary/'+uid+'/meta').get()).exists(),{r:dr.status,w:dw.status,d:dd.status});
+ // ---- 고유성 기반 자산화 길찾기 (asset-map v1) — reads own answers, never writes report/responses
+ {const AM=require('../assets/js/asset-map.js');
+  result('pathfind-no-report',(await call(uid,{action:'pathfind',reportSid:'s_1791440430847_none'})).found===false);
+  const na=await call(uid,{action:'pathfind',reportSid:sid});result('pathfind-without-answers-says-so',na.ok&&na.found&&na.noAnswers===true,na);
+  await db('responses/'+uid+'/'+sid+'/answers').set(a);const respBefore=JSON.stringify((await db('responses/'+uid+'/'+sid).get()).val());
+  const pf=await call(uid,{action:'pathfind',reportSid:sid});const exp=AM.view(AM.compute({answers:a,axisRanking:report.scores.axisRanking}));
+  result('pathfind-matches-engine',pf.ok&&JSON.stringify(pf.view)===JSON.stringify(exp)&&pf.view.items.length>=1&&pf.view.items[0].firstStep,pf);
+  result('pathfind-deterministic',JSON.stringify((await call(uid,{action:'pathfind',reportSid:sid})).view)===JSON.stringify(pf.view));
+  result('pathfind-hides-internal-ids',!/\bQ\d{1,3}\b|self_(understanding|expression|design|execution)|illuminate|"code"|evidence"/.test(JSON.stringify(pf)),JSON.stringify(pf).match(/\bQ\d{1,3}\b|illuminate|"code"/));
+  result('pathfind-other-user-cannot-read',(await call(other.localId,{action:'pathfind',reportSid:sid})).found===false);
+  result('pathfind-rejects-bad-probe',(await call(uid,{action:'pathfind',reportSid:sid,probes:{P9:'yes'}})).error==='invalid-argument'&&(await call(uid,{action:'pathfind',reportSid:sid,probes:{P1:'maybe'}})).error==='invalid-argument');
+  const askIds=pf.view.ask.map(q=>q.id);const yes=Object.fromEntries(askIds.map(k=>[k,'yes']));
+  const py=await call(uid,{action:'pathfind',reportSid:sid,probes:yes,env:'  조용한   공간 '});
+  result('probe-yes-never-changes-result',py.ok&&JSON.stringify(py.view.items)===JSON.stringify(pf.view.items)&&py.view.self.length===askIds.length&&py.env==='조용한 공간',py);
+  result('probe-answers-persist-in-diary-only',JSON.stringify((await call(uid,{action:'pathfind',reportSid:sid})).probes)===JSON.stringify(yes)&&(await db('diary/'+uid+'/pathfind/'+sid).get()).exists());
+  result('pathfind-never-writes-responses',JSON.stringify((await db('responses/'+uid+'/'+sid).get()).val())===respBefore);
+  result('pathfind-env-length-limit',(await call(uid,{action:'pathfind',reportSid:sid,env:'가'.repeat(301)})).error==='invalid-argument');
+  const sv=await call(uid,{action:'savePage',opId:'op_path0001',pageKey:'career',patch:{dirs:pf.view.items.slice(0,2).map(x=>x.name)}});
+  result('pathfind-names-save-into-diary-dirs',sv.ok&&sv.page.fields.dirs.length===Math.min(2,pf.view.items.length),sv);
+  result('asset-map-copy-byte-identical',fs.readFileSync(path.join(root,'functions/_asset_map.js'),'utf8')===fs.readFileSync(path.join(root,'assets/js/asset-map.js'),'utf8'));}
  result('report-and-program-never-modified',JSON.stringify((await db('reports/'+uid+'/'+sid).get()).val())+JSON.stringify((await db('programs/'+uid+'/'+sid).get()).val())===before);
 
  result('delete-log-needs-confirm',(await call(uid,{action:'deleteLog',logId:'log_000002'})).error==='failed-precondition');

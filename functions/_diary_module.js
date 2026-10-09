@@ -9,6 +9,7 @@
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const S = require("./_diary_schema.js");
+const AM = require("./_asset_map.js");
 
 const MAX_LOGS = 500, OPS_KEPT = 30;
 const ID = /^[A-Za-z0-9_-]{6,64}$/;
@@ -147,6 +148,41 @@ async function reset(uid, data) {
   await base(uid).remove();
   return { ok: true, reset: true };
 }
+
+// ---- 고유성 기반 자산화 길찾기 (asset-map v1) -------------------------------------------
+// Computed on demand from the owner's own stored answers + report axis ranking (read-only).
+// Nothing is written to reports/responses. Only the optional-question answers (D7 option C)
+// are kept, in diary/{uid}/pathfind/{sid}. They are never scored.
+const PROBE_IDS = ["P1", "P2", "P3", "P4"], PROBE_VALS = ["yes", "no", "skip"];
+async function pathfind(uid, data) {
+  const sid = data.reportSid;
+  if (!sid || !SID.test(sid)) fail("invalid-argument", "리포트 정보가 올바르지 않습니다.");
+  const [rep, res, mine] = await Promise.all([admin.database().ref(`reports/${uid}/${sid}`).get(),
+    admin.database().ref(`responses/${uid}/${sid}/answers`).get(), base(uid).child("pathfind").child(sid).get()]);
+  if (!rep.exists()) return { ok: true, found: false };
+  const answers = res.val();
+  if (!answers || typeof answers !== "object") return { ok: true, found: true, noAnswers: true };
+  const r = rep.val().report || {};
+  const axisRanking = (r.scores && Array.isArray(r.scores.axisRanking)) ? r.scores.axisRanking : [];
+  let saved = parse(mine.val()) || { probes: {}, env: "" };
+  if (data.probes !== undefined || data.env !== undefined) {
+    const next = { probes: Object.assign({}, saved.probes), env: saved.env || "" };
+    if (data.probes !== undefined) {
+      if (!data.probes || typeof data.probes !== "object" || Array.isArray(data.probes)) fail("invalid-argument", "답을 확인해 주세요.");
+      Object.keys(data.probes).forEach(k => { if (PROBE_IDS.indexOf(k) < 0 || PROBE_VALS.indexOf(data.probes[k]) < 0) fail("invalid-argument", "답을 확인해 주세요."); next.probes[k] = data.probes[k]; });
+    }
+    if (data.env !== undefined) {
+      if (typeof data.env !== "string" || data.env.length > 300) fail("invalid-argument", "한 줄로 짧게 적어 주세요.");
+      next.env = data.env.replace(/\s+/g, " ").trim();
+    }
+    await base(uid).child("pathfind").child(sid).set({ doc: JSON.stringify(next), updatedAt: now() });
+    saved = next;
+  }
+  const result = AM.compute({ answers, axisRanking, probes: saved.probes });
+  const view = AM.view(result);
+  if (INTERNAL.test(JSON.stringify(view))) fail("internal", "길찾기 결과를 만들지 못했습니다.");
+  return { ok: true, found: true, view, probes: saved.probes, env: saved.env || "" };
+}
 async function handle(request) {
   const uid = request && request.auth && request.auth.uid;
   if (!uid) fail("unauthenticated", "로그인하면 다이어리에 보관됩니다.");
@@ -159,6 +195,7 @@ async function handle(request) {
     case "keepLog": return keepLog(uid, data);
     case "deleteLog": return deleteLog(uid, data);
     case "reset": return reset(uid, data);
+    case "pathfind": return pathfind(uid, data);
     default: fail("invalid-argument", "지원하지 않는 요청입니다.");
   }
 }

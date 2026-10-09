@@ -15,7 +15,7 @@ async function seed(){
  const a=T.base(0);a.Q39=['기타 (직접 입력)'];a.Q40='입문 개발자에게 오류 원인을 코드 실행으로 설명합니다.';
  const r=R.attachAxes(T.build(a,'ko','input-v2').r,require(path.join(root,'data/questions.json')),a);r.profile.name='김하늘';
  const p=P.build({report:r,rules:require(path.join(root,'data/program-rules.json')),name:'김하늘',lang:'ko',publishedAt:new Date(0),axisProgram:true});
- await admin.database().ref('reports/'+UID+'/'+SID).set({sid:SID,report:r});await admin.database().ref('programs/'+UID+'/'+SID).set({sid:SID,program:p});
+ await admin.database().ref('reports/'+UID+'/'+SID).set({sid:SID,report:r});await admin.database().ref('responses/'+UID+'/'+SID+'/answers').set(a);await admin.database().ref('programs/'+UID+'/'+SID).set({sid:SID,program:p});
 }
 const shim=`<script>
 const initializeApp=()=>({}),getAuth=()=>({});
