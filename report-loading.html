@@ -350,6 +350,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </main>
 
   <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
+  <script src="assets/js/axis-compose.js?v=axis-compose-v1"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -905,7 +906,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         : null;
       if (session.meta && session.meta.inputContractVersion === "input-v2" && (!report._responseEvidence || report._responseEvidence.version !== "evidence-reader-v1" || !__v4Applied)) throw new Error("새 응답 해석 생성에 실패했습니다. 저장하지 않았습니다. 다시 시도해주세요.");
       if(!window.LPResponseEvidence?.attachAxes) throw new Error('네 축 해석 모듈을 불러오지 못했습니다. 저장하지 않았습니다.');
-      report=window.LPResponseEvidence.attachAxes(report,questions,session.answers||{});
+      // RQ-03: compositional four-axis generation (axis-lexicon-v1). If the lexicon or engine is unavailable the
+      // authored-decision path runs unchanged; nothing is invented and the save still proceeds.
+      let __axisCompose=null;
+      try{const lxRes=await fetch('data/axis-lexicon.json?v=axis-lexicon-v1',{cache:'no-store',signal:AbortSignal.timeout(15000)});
+        if(lxRes.ok&&window.AxisCompose?.compose){__axisCompose={engine:window.AxisCompose,lexicon:await lxRes.json()};}
+      }catch(_lxErr){console.warn('[ReportLoading] axis-compose unavailable; authored path only:',_lxErr&&_lxErr.message);}
+      report=window.LPResponseEvidence.attachAxes(report,questions,session.answers||{},__axisCompose?{compose:__axisCompose}:undefined);
       setStage(3, "done"); setProgress(88);
 
       // Stage 4: RTDB 저장 (PR#199: REST 우선 — SDK set/update hang 시 100%에서 멈춤 방지)

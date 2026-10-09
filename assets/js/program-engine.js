@@ -1263,7 +1263,7 @@
         !Array.isArray(projection.decisions) || !projection.decisions.length) return [];
     var isEn = lang === "en", seen = {}, links = [];
     projection.decisions.forEach(function(d){
-      if (!d || d.kind !== "interpretation-hypothesis" || seen[d.axis]) return;
+      if (!d || (d.kind !== "interpretation-hypothesis" && d.kind !== "composed-hypothesis") || seen[d.axis]) return;
       var planIndex = -1;
       evidence.plans.forEach(function(p, i){ if (planIndex < 0 && p && p.axis === d.axis) planIndex = i; });
       var axis = projection.axes[d.axis], det = d.decision || {};
@@ -1277,7 +1277,7 @@
       links.push({
         axis: d.axis, rule: String(d.rule || ""), planIndex: planIndex, evidenceRefs: refs,
         hypothesis: hypothesis, action: action,
-        doneWhen: isEn ? "Done when you have recorded: " + artifact + "." : artifact + "을 기록으로 남기면 완료입니다.",
+        doneWhen: isEn ? "Done when you have recorded: " + artifact + "." : artifact + (function(w){var c=w.charCodeAt(w.length-1);return (c>=0xAC00&&c<=0xD7A3&&((c-0xAC00)%28)!==0)?"을":"를";})(artifact) + " 기록으로 남기면 완료입니다.",
         artifact: artifact, reuse: reuse,
         artifactLine: (isEn ? "Artifact: " : "남길 기록: ") + artifact,
         reuseLine: (isEn ? "Next use: " : "다음 사용: ") + reuse,
