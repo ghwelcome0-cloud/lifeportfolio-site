@@ -30,7 +30,7 @@
 
   // Upcoming services, worded exactly as the homepage promises (no dates, no guarantees).
   var SERVICES = {
-    routes: { name: "고유성 기반 자산화 길찾기", line: "내 고유함이 일으키는 일곱 가지 변화 중 나의 것을 찾고, 처음 남길 것 하나부터 함께 정해요." },
+    routes: { name: "고유성 기반 자산화 길찾기", line: "내 고유함이 일으키는 일곱 가지 변화 중 나의 것을 찾고, 처음 남길 것 하나부터 함께 정해요.", available: true },
     practice: { name: "자산화 실행 훈련", line: "작은 실행이 실제 결과물로 남도록, 해보고 돌아보고 다시 다듬어요. 12주 실행 설계와 90일 훈련을 준비해요." },
     game: { name: "인생 훈련 게임", line: "30일 미션으로 일상에서 해볼 작은 시도를 이어가요. 내 속도로 쉬고 다시 시작할 수 있어요." },
     community: { name: "함께 배우는 소그룹", line: "한 주 동안 해본 일을 나누고, 주간 회고와 동료 피드백으로 서로의 다음 시도를 도와요." },

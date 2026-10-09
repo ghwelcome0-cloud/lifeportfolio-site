@@ -167,6 +167,8 @@
   }
   function svcCard(key) {
     var s = S.SERVICES[key]; if (!s) return "";
+    if (s.available) return '<aside class="svc svc-on" aria-label="이용 가능 서비스 ' + esc(s.name) + '"><div class="svc-top"><span class="badge on">이용 가능</span><span class="svc-n">' + esc(s.name) + '</span></div><p class="svc-l">' + esc(s.line) + '</p>' +
+      (st.reportFound && st.sid ? '<button type="button" class="btn gold svc-go" data-path>내 변화 찾기</button>' : '<p class="svc-note">마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어오면 내 리포트 응답으로 찾아 드려요.</p>') + "</aside>";
     return '<aside class="svc" aria-label="출시 준비중 서비스 ' + esc(s.name) + '"><div class="svc-top"><span class="badge">출시 준비중</span><span class="svc-n">' + esc(s.name) + '</span>' + tip("spot", "service") + '</div><p class="svc-l">' + esc(s.line) + '</p><p class="svc-note">' + esc(S.COMING_NOTE) + "</p></aside>";
   }
   function noReport() { return st.reportFound ? "" : '<p class="notice">리포트와 연결되지 않았어요. 마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어오면 리포트 내용이 미리 채워져요.</p>'; }
@@ -668,6 +670,8 @@
       else if (t.matches("[data-keep]")) keepLog(t.dataset.keep);
       else if (t.matches("[data-del-log]")) delLog(t.dataset.delLog);
       else if (t.matches("[data-reset]")) resetDiary();
+      else if (t.matches("[data-path]")) openPath();
+      else if (t.matches("[data-path-add]")) addPathDirs(t.dataset.pathAdd);
       else if (t.matches("[data-export]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openExport(); }
     });
     $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
@@ -678,6 +682,7 @@
     $("#sh-oneq").addEventListener("close", function () { flush(oq.pk); render(false); });
     $("#qr-next").onclick = quickNext; $("#qr-back").onclick = function () { if (qr.step === 2) { qr.kept = $("#qr-kept").value; qr.step = 1; renderQuick(); } else sheet("sh-quick").close(); };
     $("#start-save").onclick = saveStart;
+    $("#path-close").onclick = function () { sheet("sh-path").close(); }; $("#path-save").onclick = savePath;
     $("#sh-toc").addEventListener("submit", function (e) { e.preventDefault(); var n = +$("#toc-page").value, k = null; for (var i = n; i >= 3 && !k; i--) if (S.PAGES[i]) k = S.PAGES[i].key; if (k) { sheet("sh-toc").close(); goKey(k); } });
     $("#sh-toc").addEventListener("change", function (e) { if (e.target.id === "motion-toggle") { document.body.classList.toggle("no-motion", !e.target.checked); try { localStorage.setItem("lp_diary_motion", e.target.checked ? "1" : "0"); } catch (_) {} } });
     $$(".sh-x").forEach(function (b) { b.onclick = function () { b.closest("dialog").close(); }; });
@@ -823,6 +828,57 @@
     st.call({ action: "reset", confirm: t }).then(function () { st.pages = {}; st.logs = []; st.meta = null; go(0); toast("다이어리를 비웠어요."); }, function (e) { toast(e.message || "비우지 못했어요."); });
   }
 
+
+  // ---------------------------------------------------------------- 고유성 기반 자산화 길찾기 (asset-map v1)
+  // The server reads the owner's own answers and computes; the browser only shows names, sentences and the
+  // person's own chosen answers. Optional-question answers are shown as "내가 말한 변화" and never scored.
+  var path = { view: null, probes: {}, env: "" };
+  function openPath() {
+    var body = $("#path-body"); body.innerHTML = '<p class="sh-hint">내 리포트 응답을 읽는 중…</p>'; $("#path-save").hidden = true;
+    openSheet(sheet("sh-path"));
+    st.call({ action: "pathfind", reportSid: st.sid }).then(showPath, function (e) { body.innerHTML = '<p class="notice">' + esc(e.message || "길찾기 결과를 불러오지 못했어요.") + "</p>"; });
+  }
+  function showPath(r) {
+    var body = $("#path-body");
+    if (!r.found) { body.innerHTML = '<p class="notice">리포트를 찾지 못했어요. 마이페이지의 리포트 카드에서 다시 들어와 주세요.</p>'; return; }
+    if (r.noAnswers) { body.innerHTML = '<p class="notice">이 리포트에는 원래 응답이 남아 있지 않아 찾을 수 없어요. 다이어리에서 직접 골라 주세요.</p>'; return; }
+    path.view = r.view; path.probes = Object.assign({}, r.probes || {}); path.env = r.env || "";
+    var v = r.view, h = "";
+    if (v.insufficient) h += '<p class="notice">' + esc(v.insufficient) + "</p>";
+    v.items.forEach(function (it) {
+      h += '<section class="pf-item' + (it.first ? " pf-first" : "") + '"><p class="pf-k">' + (it.first ? "가장 먼저 보인 변화" : "함께 보인 변화") + '</p><h3 class="pf-n">' + esc(it.name) + ' <small>' + esc(it.line) + "</small></h3>" +
+        (it.summary ? '<p class="pf-s">' + esc(it.summary) + "</p>" : "") + (it.focus ? '<p class="pf-f"><b>특히</b> ' + esc(it.focus) + "</p>" : "") +
+        (it.firstStep ? '<p class="pf-step"><b>처음 남길 것 하나</b><br>' + esc(it.firstStep) + "</p>" : "") +
+        (it.reasons.length ? '<details class="pf-why"><summary>이렇게 본 이유</summary><ul>' + it.reasons.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></details>" : "") + "</section>";
+    });
+    if (v.self.length) h += '<section class="pf-item pf-self"><p class="pf-k">' + esc(v.selfLabel) + "</p>" + v.self.map(function (x) { return '<h3 class="pf-n">' + esc(x.name) + " <small>" + esc(x.line) + "</small></h3>"; }).join("") + '<p class="pf-s">' + esc(v.selfNote) + "</p></section>";
+    if (v.ask.length) {
+      h += '<section class="pf-ask"><p class="pf-k">조금 더 여쭤볼게요 <small>(골라도 되고, 건너뛰어도 돼요)</small></p><p class="sh-hint">응답만으로는 잘 드러나지 않는 삶도 있어요. 답은 결과를 바꾸지 않고, “' + esc(v.selfLabel) + '”로 따로 보여 드려요.</p>';
+      v.ask.forEach(function (q) {
+        h += '<fieldset class="pf-q"><legend>' + esc(q.text) + '</legend><div class="pills">' + [["yes", "네"], ["no", "아니요"], ["skip", "건너뛰기"]].map(function (o) {
+          return '<label class="pill"><input type="radio" name="pf-' + q.id + '" value="' + o[0] + '"' + (path.probes[q.id] === o[0] ? " checked" : "") + "><span>" + o[1] + "</span></label>"; }).join("") + "</div></fieldset>";
+      });
+      h += "</section>";
+    }
+    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '"></div>';
+    var names = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; })).slice(0, 2);
+    if (names.length) h += '<button type="button" class="btn line pf-add" data-path-add="' + esc(names.join(",")) + '">「' + esc(names.join(" · ")) + '」 다이어리 칸에 옮겨 적기</button>';
+    h += '<p class="notice">' + esc(v.addMore) + "</p><p class=\"pf-fixed\">" + esc(v.fixedLine) + "</p>";
+    $("#path-body").innerHTML = h; $("#path-save").hidden = false;
+  }
+  function savePath() {
+    var probes = {}; (path.view ? path.view.ask : []).forEach(function (q) { var c = $('input[name="pf-' + q.id + '"]:checked'); if (c) probes[q.id] = c.value; });
+    var env = ($("#pf-env") || {}).value || "";
+    $("#path-save").disabled = true;
+    st.call({ action: "pathfind", reportSid: st.sid, probes: probes, env: env }).then(function (r) { $("#path-save").disabled = false; showPath(r); toast("답을 저장했어요."); },
+      function (e) { $("#path-save").disabled = false; toast(e.message || "저장하지 못했어요."); });
+  }
+  function addPathDirs(list) {
+    var names = String(list || "").split(",").filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; }).slice(0, 2);
+    var cur = val("career", "dirs");
+    if (cur && cur.length && !confirm("이미 고른 변화가 있어요. 길찾기 결과로 바꿀까요?")) return;
+    queue("career", "dirs", names); flush("career"); sheet("sh-path").close(); render(false); toast("다이어리 칸에 옮겨 적었어요. 언제든 바꿀 수 있어요.");
+  }
   // ---------------------------------------------------------------- boot
   window.DiaryApp = {
     boot: function (opts) {
