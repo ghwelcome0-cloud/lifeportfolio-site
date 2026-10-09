@@ -200,6 +200,13 @@
     .report-meta .tag{padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
     .report-actions{display:flex;gap:6px;flex-shrink:0}
     .report-actions .btn{padding:8px 12px;font-size:13px}
+    /* 2026-10-09: 5 buttons — keep title/tag on word boundaries; actions drop below as one row when space is short (PC·tablet·mobile). */
+    .report-card{flex-wrap:wrap}
+    .report-info{flex:1 1 260px}
+    .report-title,.report-meta .tag{word-break:keep-all;overflow-wrap:break-word;line-height:1.45}
+    .report-actions{flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
+    .report-actions .btn{white-space:nowrap;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+    .report-title .tag{display:inline-block;margin-left:8px;vertical-align:2px;padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
     .recovery-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
     .recovery-heading .section-title{margin:0}
     .recovery-description{font-size:13px;color:var(--muted);line-height:1.65;margin:0 0 14px}
@@ -246,6 +253,8 @@
       .report-meta{font-size:12px;gap:8px}
       .report-actions{gap:6px}
       .report-actions .btn{padding:10px 12px;font-size:12.5px;min-width:0;flex:1 1 calc(50% - 3px)}
+      .report-actions .btn-accent{flex:1 1 calc(70% - 3px)}
+      .report-actions .report-delete-btn{flex:1 1 calc(30% - 3px)}
       .empty{padding:36px 18px}
       .empty .icon{font-size:40px}
       .section-title{font-size:16px;margin:20px 0 10px}

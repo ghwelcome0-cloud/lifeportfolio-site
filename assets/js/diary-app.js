@@ -565,7 +565,7 @@
   var qr = { step: 1, text: "", kept: "", date: null, logId: null };
   function openQuick() {
     if (!start()) { toast("먼저 다이어리를 시작해 주세요."); openStart(); return; }
-    qr = { step: 1, text: "", kept: "", date: todayISO(), logId: "log_" + uid6() };
+    qr = { step: 1, text: "", kept: "", change: null, date: todayISO(), logId: "log_" + uid6() };
     renderQuick(); openSheet(sheet("sh-quick"));
   }
   function renderQuick() {
@@ -579,7 +579,9 @@
       $("#qr-back").textContent = "닫기"; $("#qr-next").textContent = "다음"; $("#qr-next").hidden = false;
     } else if (qr.step === 2) {
       body.innerHTML = '<p class="sh-step">2 / 2 · 선택</p><label class="sh-q" for="qr-kept" style="display:block">해 보고 남은 것이 있나요?</label><p class="sh-hint">메모 · 자료 · 사진 · 대화처럼 남은 것의 이름만 적어요. 파일은 올리지 않아요. 없으면 건너뛰어도 돼요.</p>' +
-        '<input class="ln" type="text" id="qr-kept" maxlength="300" placeholder="예) 예상·실제 비교 메모 한 장" value="' + esc(qr.kept) + '">';
+        '<input class="ln" type="text" id="qr-kept" maxlength="300" placeholder="예) 예상·실제 비교 메모 한 장" value="' + esc(qr.kept) + '">' +
+        '<p class="fld-h" style="margin-top:12px">어떤 변화였나요? <small>(선택)</small></p><div class="pills" id="qr-change">' + S.ASSET_DIRECTIONS.map(function (n) { return '<label class="pill"><input type="radio" name="qr-change" value="' + esc(n) + '"' + (qr.change === n ? " checked" : "") + "><span>" + esc(n) + "</span></label>"; }).join("") + "</div>" +
+        '<p class="sh-hint">고르면 「내 변화 찾기」에 내 기록으로 쌓여요. 점수에는 들어가지 않아요.</p>';
       $("#qr-back").textContent = "이전"; $("#qr-next").textContent = qr.kept ? "저장" : "건너뛰고 저장";
     } else {
       var rng = weekRange(S.weekOf(start(), qr.date) || 1), n = logsIn(rng[0], rng[1]).length;
@@ -598,9 +600,10 @@
     }
     if (qr.step === 2) {
       qr.kept = $("#qr-kept").value.trim();
+      var qc = $('input[name="qr-change"]:checked'); qr.change = qc ? qc.value : null;
       var btn = $("#qr-next"); btn.disabled = true;
-      st.call({ action: "addLog", logId: qr.logId, log: { date: qr.date, text: qr.text, kept: qr.kept || null } }).then(function (r) {
-        btn.disabled = false; st.logs = st.logs.filter(function (l) { return l.id !== r.log.id; }); st.logs.unshift({ id: r.log.id, date: r.log.date, text: r.log.text, kept: r.log.kept || null, stage: r.log.stage });
+      st.call({ action: "addLog", logId: qr.logId, log: Object.assign({ date: qr.date, text: qr.text, kept: qr.kept || null }, qr.change ? { change: qr.change } : {}) }).then(function (r) {
+        btn.disabled = false; st.logs = st.logs.filter(function (l) { return l.id !== r.log.id; }); st.logs.unshift({ id: r.log.id, date: r.log.date, text: r.log.text, kept: r.log.kept || null, change: r.log.change || null, stage: r.log.stage });
         st.logs.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
         qr.step = 3; renderQuick(); render(false);
       }, function (e) { btn.disabled = false; toast((e && e.message) || "저장하지 못했어요. 다시 눌러 주세요."); });
@@ -684,7 +687,8 @@
     $("#start-save").onclick = saveStart;
     $("#path-close").onclick = function () { sheet("sh-path").close(); };
     $("#sh-path").addEventListener("change", function (e) { var t = e.target; if (t && t.name === "pf-pick") { var on = $$('#path-body input[name="pf-pick"]:checked'); if (on.length > 2) { t.checked = false; toast("최대 2개까지 고를 수 있어요."); } return; }
-      if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t); });
+      if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t);
+      if (t && t.id === "pf-consent") { pathStatus("저장 중…"); st.call({ action: "pathfind", reportSid: st.sid, consent: !!t.checked }).then(function () { pathStatus("✓ 저장했어요"); bubble(t.checked ? "동의했어요. 서비스가 열리면 그때 다시 알려 드려요." : "동의를 껐어요. 아무 데도 쓰이지 않아요."); }, function (e) { t.checked = !t.checked; pathStatus((e && e.message) || "저장하지 못했어요.", true); }); } });
     $("#sh-toc").addEventListener("submit", function (e) { e.preventDefault(); var n = +$("#toc-page").value, k = null; for (var i = n; i >= 3 && !k; i--) if (S.PAGES[i]) k = S.PAGES[i].key; if (k) { sheet("sh-toc").close(); goKey(k); } });
     $("#sh-toc").addEventListener("change", function (e) { if (e.target.id === "motion-toggle") { document.body.classList.toggle("no-motion", !e.target.checked); try { localStorage.setItem("lp_diary_motion", e.target.checked ? "1" : "0"); } catch (_) {} } });
     $$(".sh-x").forEach(function (b) { b.onclick = function () { b.closest("dialog").close(); }; });
@@ -873,6 +877,14 @@
     if (opts.length) h += '<section class="pf-pick"><p class="pf-k">내 다이어리에 남길 변화 <small>(내가 정해요 · 최대 2개)</small></p><p class="sh-hint">위 결과는 참고예요. 리포트와 비교해 보고, 내 것이라고 느끼는 변화를 골라 이 쪽의 「내가 잘 일으키는 변화」 칸에 남겨요. 안 골라도 괜찮아요.</p><div class="pills">' +
       opts.map(function (n) { return '<label class="pill"><input type="checkbox" name="pf-pick" value="' + esc(n) + '"' + (mine.indexOf(n) >= 0 ? " checked" : "") + "><span>" + esc(n) + "</span></label>"; }).join("") +
       '</div><p class="pf-echo" id="pf-pick-now">' + (mine.length ? "지금 다이어리 칸: " + esc(mine.join(" · ")) : "지금 다이어리 칸: 아직 고르지 않았어요") + '</p><button type="button" class="btn line pf-add" data-path-add>고른 변화를 다이어리 칸에 남기기</button></section>';
+    // X5: my own traces (diary records tagged with a change). Shown beside the result; never changes it.
+    var tr = r.traces || {}, tk = Object.keys(tr);
+    h += '<section class="pf-trace"><p class="pf-k">내 기록에서 보인 변화 <small>(「오늘 해 봤어요」에서 내가 고른 것)</small></p>' + (tk.length
+      ? '<ul class="pf-tr">' + tk.map(function (k) { return "<li><b>" + esc(k) + "</b> 기록 " + tr[k].n + "개" + (tr[k].kept ? " · 남긴 것 " + tr[k].kept + "개" : "") + "</li>"; }).join("") + "</ul><p class=\"sh-hint\">응답에서 읽은 결과는 그대로이고, 내 기록은 내가 확인하는 근거로 나란히 보여 드려요.</p>"
+      : '<p class="sh-hint">아직 없어요. 「오늘 해 봤어요」에 기록할 때 어떤 변화였는지 고르면 여기에 쌓여요.</p>') + "</section>";
+    // Service connection consent — off by default, can be turned off any time.
+    h += '<section class="pf-consent"><label class="pill"><input type="checkbox" id="pf-consent"' + (r.consent ? " checked" : "") + '><span>서비스가 열리면 내가 고른 변화와 「필요한 환경」을 쓰는 데 동의해요</span></label>' + tip("spot", "consent") +
+      '<p class="sh-hint">인생 훈련 게임 · 소그룹 · 멘토 · 현실 문제 해결 프로젝트(출시 준비중)가 내 길에 맞게 도울 때만 쓰여요. 지금은 어디에도 보내지 않아요. 언제든 끌 수 있어요.</p></section>';
     h += '<p class="notice">' + esc(v.addMore) + "</p><p class=\"pf-fixed\">" + esc(v.fixedLine) + "</p>";
     body.innerHTML = h;
     if (sc) sc.scrollTop = keepScroll ? top : 0;
