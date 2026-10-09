@@ -1309,15 +1309,32 @@
     if (!src) return;
     var linkedBy = {}; (axisLinks || []).forEach(function(l){ linkedBy[l.planIndex] = l; });
     var qLabel = isEn ? "Question to revisit: " : "돌아볼 질문: ";
+    // The shared default done-when is one generic sentence for all four axes; when a plan still
+    // carries it, name the axis's own record instead (what this axis's action asks you to keep).
+    var GENERIC = isEn ? "Keep the attempt, observed result and next adjustment." : "시도·관찰한 결과·다음에 바꿀 점을 남깁니다.";
+    var AXIS_DONE = isEn ? {
+      self_understanding: "Done when you have written the criterion you kept and the cost you accepted for one real choice.",
+      self_expression: "Done when you have recorded what you meant, what reached the other person, and the one difference.",
+      self_design: "Done when you have recorded the small unit you tried, whether it met your completion criterion, and what you would change.",
+      self_execution: "Done when you have recorded three attempts with what helped or interrupted each one."
+    } : {
+      self_understanding: "실제 선택 하나에서 지킨 기준과 감수한 점을 적어 두면 완료입니다.",
+      self_expression: "전하려던 뜻·상대에게 닿은 뜻·달랐던 부분 하나를 기록하면 완료입니다.",
+      self_design: "시도한 작은 단위·완료 기준 충족 여부·다음에 바꿀 점을 기록하면 완료입니다.",
+      self_execution: "세 번의 시도와 각각을 돕거나 멈추게 한 조건을 기록하면 완료입니다."
+    };
     evidence.plans.forEach(function(plan, idx){
       var a = src[plan.axis], link = linkedBy[idx], m = idx < 3 ? output.modules[idx] : null, w = output.program.weeks[[0,2,3].indexOf(idx)];
       var hypothesis = link ? link.hypothesis : (a && a.core), question = link ? (link.reflection || (a && a.reflection)) : (a && a.reflection);
       if (!hypothesis || !question) return;
       // Module card: summary=hypothesis · actions=[action] · badge=done-when · tools: PROG-01 keeps artifact/next-use, otherwise the question.
-      if (m && !link) { m.summary = hypothesis; m.tools = [qLabel + question]; m._strategy.hypothesisSource = "report-VII-core"; m._strategy.cardShape = "rq-01"; }
+      var done = (!link && plan.doneWhen === GENERIC && AXIS_DONE[plan.axis]) ? AXIS_DONE[plan.axis] : null;
+      if (m && !link) { m.summary = hypothesis; m.tools = [qLabel + question]; m._strategy.hypothesisSource = "report-VII-core"; m._strategy.cardShape = "rq-01";
+        if (done) { m._strategy.doneWhen = done; m._strategy.doneWhenSource = "axis-specific-default"; } }
       if (m && link) { m._strategy.cardShape = "rq-01"; }
       // Week card: ① focus=hypothesis ② look-at=question ③ how=action ④ change=done-when — four different lines.
-      if (w) { w.subline = hypothesis; w.guide = question; w._strategy.hypothesisSource = "report-VII-core"; w._strategy.cardShape = "rq-01"; }
+      if (w) { w.subline = hypothesis; w.guide = question; w._strategy.hypothesisSource = "report-VII-core"; w._strategy.cardShape = "rq-01";
+        if (done) w.effects = [done]; }
     });
     output.meta.cardShape = "rq-01";
   }

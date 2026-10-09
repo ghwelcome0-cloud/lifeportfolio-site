@@ -48,6 +48,9 @@ for(const lang of ['ko','en']){
       else if(m._strategy.axisRule){/* PROG-01 decision hypothesis — covered by test-axis-program-link */}
       else{assert.equal(m.summary,plan.action,'legacy shape only when VII source is unusable');}});
     checks++;
+    // (g) done-when is axis-specific: rq-01 cards never share one generic sentence across modules
+    const dws=prog.modules.filter(m=>m._strategy.cardShape==='rq-01').map(m=>m._strategy.doneWhen);
+    assert.equal(new Set(dws).size,dws.length,`${lang} seed${seed}: identical done-when across modules`);checks++;
     // (e) EN program: no Hangul in any card text
     if(lang==='en'){const all=[...prog.modules,...prog.program.weeks].flatMap(sentences).join('\n');assert.ok(!HANGUL.test(all),'EN program leaked Korean');checks++;}
     // (f) opt-out (no cardShape) keeps the legacy shape exactly (summary===action, tools===[doneWhen])
