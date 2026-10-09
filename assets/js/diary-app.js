@@ -877,6 +877,15 @@
     body.innerHTML = h;
     if (sc) sc.scrollTop = keepScroll ? top : 0;
   }
+  function bubble(t) { var el = $("#pf-bubble"); if (!el) return; el.textContent = t; el.hidden = false; el.classList.remove("out"); void el.offsetWidth; el.classList.add("in");
+    clearTimeout(bubble.t); bubble.t = setTimeout(function () { el.classList.add("out"); setTimeout(function () { el.hidden = true; }, 320); }, 2600); }
+  function bubbleText(q, val, was) {
+    if (!q) return "";
+    if (val === "yes") return "「" + q.name + "」이 ‘내가 말한 변화’에 더해졌어요. 위 결과는 그대로예요.";
+    if (val === "no") return was ? "「" + q.name + "」은 ‘내가 말한 변화’에서 빠졌어요. 위 결과는 그대로예요." : "알려 주셔서 고마워요. 위 결과는 그대로예요.";
+    if (val === "skip") return was ? "건너뛰었어요. 「" + q.name + "」은 ‘내가 말한 변화’에서 빠졌어요." : "건너뛰었어요. 언제든 다시 고를 수 있어요.";
+    return "";
+  }
   function echo(q, val) {
     if (val === "yes") return "✓ 「" + esc(q.name) + "」을 ‘내가 말한 변화’로 위에 함께 보여 드려요.";
     if (val === "no") return "✓ 알려 주셔서 고마워요. 결과는 그대로예요.";
@@ -893,7 +902,10 @@
       return st.call({ action: "pathfind", reportSid: st.sid, probes: probes, env: env }).then(function (r) {
         if (my !== path.seq) return;
         var ae = document.activeElement, aeId = ae && ae.id, aeName = ae && ae.name, aeVal = ae && ae.value;
+        var before = (v.self || []).map(function (x) { return x.name; }).join(","), after = (r.view.self || []).map(function (x) { return x.name; }).join(",");
         showPath(r, true); pathStatus("✓ 저장했어요");
+        if (src && /^pf-P\d$/.test(src.name || "")) { var qq = r.view.ask.filter(function (x) { return "pf-" + x.id === src.name; })[0]; bubble(bubbleText(qq, src.value, qq && before.split(",").indexOf(qq.name) >= 0) || (before !== after ? "‘내가 말한 변화’가 바뀌었어요." : "저장했어요.")); }
+        else if (src && src.id === "pf-env") bubble("필요한 환경·도움을 적어 두었어요.");
         var back = aeId ? document.getElementById(aeId) : (aeName ? $('input[name="' + aeName + '"][value="' + aeVal + '"]') : null); if (back) back.focus({ preventScroll: true });
         if (r.view.self.length && src && src.value === "yes") { var s = $("#pf-self"); if (s) { s.classList.add("pf-flash"); setTimeout(function () { s.classList.remove("pf-flash"); }, 1600); } }
       }, function (e) { if (my === path.seq) pathStatus(e.message || "저장하지 못했어요. 다시 골라 주세요.", true); });
