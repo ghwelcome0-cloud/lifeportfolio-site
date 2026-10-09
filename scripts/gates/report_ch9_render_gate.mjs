@@ -37,13 +37,16 @@ const TARGET = path.join(ROOT, 'report.html');
 export const REQUIRED_ON_PAGE = [
   // ── IX 「내 답변과 결과 이해하기」 (2026-10-08 고객표시 개정 · PR #340) ──
   { key: 'ch9_title',   needle: 'IX. 내 답변과 결과 이해하기',           why: '장 제목(개정)', ch: 9 },
-  { key: 'steps',       needle: 'mp-steps',                              why: '측정 3단계(기존)', ch: 9 },
-  { key: 'repro',       needle: '이번 응답 기록의 고유코드',               why: '⑤항목1 고유코드 지면 명시(개정 문안)', ch: 9 },
-  { key: 'map_all',     needle: '전체 매핑 · 56문항이 어디로 갔는가',      why: '⑤항목4 전체 매핑 공개', ch: 9 },
-  { key: 'map_weight',  needle: '23.85',                                 why: '⑤항목4 가중합 실측치(엔진 axisMax 와 동일)', ch: 9 },
-  { key: 'map_nondisc', needle: '공개하지 않는 것도 밝힙니다',            why: '⑤항목4 부분공개 선정기준 병기', ch: 9 },
-  { key: 'no_say',      needle: '우리가 쓰지 않는 말',                    why: '⑤항목7 금지표현 목록 지면 명시', ch: 9 },
-  { key: 'no_say_item', needle: '>심리검사<',                            why: '⑤항목7 목록 실항목 렌더', ch: 9 },
+  // ── [RQ-04 · 2026-10-09] IX = 「내가 준 답 → 리포트가 만든 문장」 대조 페이지. 3단계·고유코드(X장 중복)·매핑표·금칙어는 해설서/성능표로 이동 ──
+  { key: 'lead_fit',    needle: '그 줄의 내 답을 먼저 보세요',            why: 'RQ-04 리드: X장 1단계(맞는 한 문장 고르기)와 연결', ch: 9 },
+  { key: 'evd_head',    needle: '당신의 답이 문장이 된 자리',             why: '원문 그대로 실린 답(기존 6행) 유지', ch: 9 },
+  { key: 'axis_rows',   needle: '네 영역 문장의 출처',                    why: 'RQ-04 VII 네 영역 근거행(엔진 evidenceRefs·display 그대로)', ch: 9 },
+  { key: 'axis_row_q',  needle: '>Q7 Q13<',                              why: 'RQ-04 근거행에 문항 번호 실렌더', ch: 9 },
+  { key: 'select_rule', needle: '규칙은 하나입니다',                      why: 'A5.4 선택규칙·미공개범위 1문장(지수 계산 전용 문항 수 실측)', ch: 9 },
+  { key: 'not_used_n',  needle: '12개는 네 영역 지수 계산에만',           why: 'notInterpreted 실측값이 문장에 도달', ch: 9 },
+  { key: 'correction',  needle: '문항 번호와 함께 알려 주세요',           why: 'A5.7 정정·이의제기 경로 지면 명시(DLP: 주소는 승인 페이지 마이페이지에만)', ch: 9 },
+  { key: 'limit_line',  needle: '이 진단은 심리검사가 아닙니다',           why: '⑤항목8 한계 1줄 유지(완화 없음)', ch: 9 },
+  { key: 'moved_note',  needle: '해설서와 공개 성능표에 그대로 있습니다', why: '매핑표·금칙어·성능 상태의 이동 위치 명시(삭제 아님)', ch: 9 },
   { key: 'footer_gen',  needle: '생성일 ',                               why: '생성일 각주(고객 정보)', ch: 9 },
   // ── X 「발견을 실천과 기록으로」 — RQ-02(2026-10-09): 회사 품질 상태표 → 고객 관점 「이 리포트를 믿고 쓰는 법」. 한계·비예측·재현성만 확인 문구는 유지(A5) ──
   { key: 'claim',       needle: '이 리포트를 믿고 쓰는 법',               why: 'RQ-02 고객 관점 신뢰 사용법(X장)', ch: 10 },
@@ -69,8 +72,17 @@ function makeData(withCited) {
       coverage: '이 리포트는 56문항을 모두 읽었습니다.',
       cols: { ask: '무엇을 물었나', ans: '당신의 답', q: '문항' },
       labels: { role_a: '가치의 방향' },
-      cited: [{ qid: 'Q13', role: 'role_a', answers: ['매우 그렇다'] }]
-    } : { head: '당신의 답이 문장이 된 자리', qids: ['Q13', 'Q39'] },
+      cited: [{ qid: 'Q13', role: 'role_a', answers: ['매우 그렇다'] }],
+      axisTrace: { rows: [
+        { axis: 'self_understanding', name: '자기이해', items: [{ qid: 'Q7', answers: ['실패나 실수를 돌아볼 때'] }, { qid: 'Q13', answers: ['헌신', '평화'] }] },
+        { axis: 'self_expression', name: '자기표현', items: [{ qid: 'Q28', answers: ['감정을 솔직하게 말하기'] }] },
+        { axis: 'self_design', name: '자기설계', items: [{ qid: 'Q63', answers: ['안정과 예측 가능성'] }] },
+        { axis: 'self_execution', name: '자기실행', items: [{ qid: 'Q71', answers: ['기한을 정해 마감 맞추기'] }] }
+      ], skipped: 0, notInterpreted: 12, allFour: true }
+    } : { head: '당신의 답이 문장이 된 자리', qids: ['Q13', 'Q39'],
+      axisTrace: { rows: [
+        { axis: 'self_understanding', name: '자기이해', items: [{ qid: 'Q7', answers: ['실패나 실수를 돌아볼 때'] }, { qid: 'Q13', answers: ['헌신', '평화'] }] }
+      ], skipped: 1, notInterpreted: 12, allFour: false } },
     discriminant: { randomCalls: 0, singleQTested: 38 },
     summary: {}, axes: []
   };
@@ -166,13 +178,13 @@ export function run(htmlText) {
 /** 음성 통제군 — 삽입 블록을 제거한 판본에서 이 게이트가 FAIL 을 내는가 */
 export function selfTest(htmlText) {
   const t = [];
-  const NEEDLE = '+_mapAll+_noSay+footHTML';
+  const NEEDLE = '+_evdPanel+_axisRows+_fix+_lim+footHTML';
   const NEEDLE_X = '+acc+(window._lpClaim||';
   t.push({ name: 'insertion_wired_in_repo', pass: htmlText.includes(NEEDLE) && htmlText.includes(NEEDLE_X) });
 
   // 결함 삽입본: 렌더 호출에서 세 블록을 떼어낸다
   // X장 결함본: 삽입 패널 참조를 undefined 로 바꿔 떼어낸다(소스는 큰따옴표 문자열 안이라 문자열 안전 치환).
-  const mutated = htmlText.replace(NEEDLE, '+footHTML').replace(NEEDLE_X, '+acc+(undefined||');
+  const mutated = htmlText.replace(NEEDLE, '+_evdPanel+footHTML').replace(NEEDLE_X, '+acc+(undefined||');
   t.push({ name: 'mutation_applied', pass: mutated !== htmlText });
   let negFail = -1, negErr = null;
   try {
@@ -193,7 +205,7 @@ export function selfTest(htmlText) {
   let keptOld = false;
   try {
     const r = run(mutated);
-    keptOld = r.cases.every(c => c.rows.filter(x => ['ch9_title', 'steps', 'repro', 'footer_gen', 'record'].includes(x.key)).every(x => x.ok));
+    keptOld = r.cases.every(c => c.rows.filter(x => ['ch9_title', 'evd_head', 'footer_gen', 'record'].includes(x.key)).every(x => x.ok));
   } catch (_) {}
   t.push({ name: 'existing_content_unaffected_by_mutation', pass: keptOld });
 
