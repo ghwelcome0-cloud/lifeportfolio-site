@@ -82,7 +82,7 @@ async function open(uid, data) {
     reportFound: !!seed, reportSid: seed ? sid : null, seed, pages, logs: listLogs(snap.logs) };
 }
 function listLogs(node) {
-  return Object.keys(node || {}).map(id => { const d = parse(node[id]); return d && { id, date: d.date, text: d.text, kept: d.kept || null, stage: node[id].stage || 0, createdAt: node[id].createdAt || 0 }; })
+  return Object.keys(node || {}).map(id => { const d = parse(node[id]); return d && { id, date: d.date, text: d.text, kept: d.kept || null, change: d.change || null, stage: node[id].stage || 0, createdAt: node[id].createdAt || 0 }; })
     .filter(Boolean).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (b.createdAt - a.createdAt) || a.id.localeCompare(b.id)));
 }
 async function start(uid, data) {
@@ -171,8 +171,14 @@ async function pathfind(uid, data) {
   const r = rep.val().report || {};
   const axisRanking = (r.scores && Array.isArray(r.scores.axisRanking)) ? r.scores.axisRanking : [];
   let saved = parse(mine.val()) || { probes: {}, env: "" };
-  if (data.probes !== undefined || data.env !== undefined) {
-    const next = { probes: Object.assign({}, saved.probes), env: saved.env || "" };
+  if (data.probes !== undefined || data.env !== undefined || data.consent !== undefined) {
+    const next = { probes: Object.assign({}, saved.probes), env: saved.env || "", consent: saved.consent || null };
+    // Service connection consent (2026-10-09): off by default, revocable. Stored only; nothing is sent anywhere
+    // until a service launches and shows its own notice.
+    if (data.consent !== undefined) {
+      if (typeof data.consent !== "boolean") fail("invalid-argument", "동의 여부를 확인해 주세요.");
+      next.consent = data.consent ? { on: true, at: Date.now(), scope: "dirs+env", version: "svc-consent-v1" } : null;
+    }
     if (data.probes !== undefined) {
       if (!data.probes || typeof data.probes !== "object" || Array.isArray(data.probes)) fail("invalid-argument", "답을 확인해 주세요.");
       Object.keys(data.probes).forEach(k => { if (PROBE_IDS.indexOf(k) < 0 || PROBE_VALS.indexOf(data.probes[k]) < 0) fail("invalid-argument", "답을 확인해 주세요."); next.probes[k] = data.probes[k]; });
@@ -187,7 +193,11 @@ async function pathfind(uid, data) {
   const result = AM.compute({ answers, axisRanking, probes: saved.probes });
   const view = AM.view(result);
   if (INTERNAL.test(JSON.stringify(view))) fail("internal", "길찾기 결과를 만들지 못했습니다.");
-  return { ok: true, found: true, view, probes: saved.probes, env: saved.env || "" };
+  // X5: my own diary traces per change (count + how many left something). Display only, never scored.
+  const logs = listLogs((await base(uid).child("logs").get()).val());
+  const traces = {};
+  logs.forEach(l => { if (!l.change) return; const t = traces[l.change] || (traces[l.change] = { n: 0, kept: 0 }); t.n++; if (l.kept) t.kept++; });
+  return { ok: true, found: true, view, probes: saved.probes, env: saved.env || "", consent: !!(saved.consent && saved.consent.on), traces };
 }
 async function handle(request) {
   const uid = request && request.auth && request.auth.uid;

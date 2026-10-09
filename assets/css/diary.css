@@ -379,3 +379,7 @@ body.no-motion .dy-book{transition:none}
 body.no-motion .pf-bubble{transition:none}
 .pf-intro{font-size:14px;line-height:1.7;color:var(--ink-2);margin:0 0 12px;background:#f7f0df;border-radius:10px;padding:10px 12px}
 .pf-more{margin:-4px 0 12px;font-size:14px}.pf-more a{color:var(--brg);font-weight:600;text-underline-offset:3px;display:inline-flex;min-height:44px;align-items:center}
+/* X5 traces + service consent (2026-10-09) */
+.pf-trace,.pf-consent{margin:14px 0;padding:12px 14px;border:1px solid #d9e2dc;border-radius:12px;background:#fbfcfa}
+.pf-tr{margin:6px 0;padding-left:18px;line-height:1.7}
+.pf-consent .pill{white-space:normal;word-break:keep-all;text-align:left}

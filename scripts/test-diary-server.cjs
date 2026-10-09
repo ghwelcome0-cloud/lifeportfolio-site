@@ -94,6 +94,18 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
   result('pathfind-env-length-limit',(await call(uid,{action:'pathfind',reportSid:sid,env:'가'.repeat(301)})).error==='invalid-argument');
   const sv=await call(uid,{action:'savePage',opId:'op_path0001',pageKey:'career',patch:{dirs:pf.view.items.slice(0,2).map(x=>x.name)}});
   result('pathfind-names-save-into-diary-dirs',sv.ok&&sv.page.fields.dirs.length===Math.min(2,pf.view.items.length),sv);
+  result('consent-off-by-default',(await call(uid,{action:'pathfind',reportSid:sid})).consent===false);
+  const con=await call(uid,{action:'pathfind',reportSid:sid,consent:true});result('consent-on-saved-result-unchanged',con.consent===true&&JSON.stringify(con.view.items)===JSON.stringify(pf.view.items),con.consent);
+  result('consent-off-revocable',(await call(uid,{action:'pathfind',reportSid:sid,consent:false})).consent===false);
+  result('consent-rejects-non-boolean',(await call(uid,{action:'pathfind',reportSid:sid,consent:'yes'})).error==='invalid-argument');
+  {const u5=(await signUp()).localId;await db('reports/'+u5+'/'+sid).set({sid,report});await db('responses/'+u5+'/'+sid+'/answers').set(a);
+  const p5=await call(u5,{action:'pathfind',reportSid:sid});const ch=p5.view.items[0].name;
+  await call(u5,{action:'addLog',logId:'log_trace01',log:{date:'2026-10-01',text:'약속 다섯 가지를 적어 봤어요',kept:'약속 메모',change:ch}});
+  await call(u5,{action:'addLog',logId:'log_trace02',log:{date:'2026-10-02',text:'한 번 더 해 봤어요',change:ch}});
+  const tr=await call(u5,{action:'pathfind',reportSid:sid});const t0=tr.traces&&tr.traces[ch];
+  result('x5-traces-counted-not-scored',t0&&t0.n===2&&t0.kept===1&&JSON.stringify(tr.view)===JSON.stringify(p5.view),tr.traces);
+  result('x5-log-change-validated',(await call(u5,{action:'addLog',logId:'log_trace03',log:{date:'2026-10-02',text:'x',change:'없는변화'}})).error==='invalid-argument');
+  result('x5-other-user-sees-no-traces',Object.keys((await call(uid,{action:'pathfind',reportSid:sid})).traces||{}).length===0);}
   result('asset-map-copy-byte-identical',fs.readFileSync(path.join(root,'functions/_asset_map.js'),'utf8')===fs.readFileSync(path.join(root,'assets/js/asset-map.js'),'utf8'));}
  {const u3=(await signUp()).localId;await db('reports/'+u3+'/s_1700000000000_old').set({sid:'s_1700000000000_old',report});await db('reports/'+u3+'/s_1791440430847_new').set({sid:'s_1791440430847_new',report});
   const o3=await call(u3,{action:'open',latest:true});result('open-latest-picks-own-newest-report',o3.ok&&o3.reportFound&&o3.reportSid==='s_1791440430847_new',o3.reportSid);

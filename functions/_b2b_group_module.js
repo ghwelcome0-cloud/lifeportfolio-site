@@ -1171,7 +1171,8 @@ async function refreshB2BCareer(uid, linked, patch) {
 // the public assets (checked by scripts/test-b2b-axis-refresh-sources.cjs).
 let _axisDeps = null;
 function axisDeps() {
-  if (!_axisDeps) _axisDeps = { R: require("./shared/response-evidence.js"), questions: require("./shared/questions.json") };
+  if (!_axisDeps) _axisDeps = { R: require("./shared/response-evidence.js"), questions: require("./shared/questions.json"),
+    AM: require("./shared/asset-map.js"), AP: require("./shared/asset-path.js") };
   return _axisDeps;
 }
 // RTDB sorts keys and omits null/empty containers: compare stored meaning, not JSON order.
@@ -1196,11 +1197,14 @@ async function refreshB2BAxes(uid, linked) {
     value.report._participation?.source === "b2b" && value.report._participation?.orderId === linked.orderId;
   const before = (await ref.get()).val();
   if (!valid(before) || manual(before)) throw new HttpsError("failed-precondition", "기존 결과 또는 수동 검수본을 보존했습니다.");
-  const { R, questions } = axisDeps();
-  let projection;
+  const { R, questions, AM, AP } = axisDeps();
+  let projection, assetPath = null;
   try {
     // attachAxes reads only report sections/lang + answers; it returns a deep copy.
-    projection = R.attachAxes(before.report, questions, session.answers)._axisProjection;
+    const next = R.attachAxes(before.report, questions, session.answers);
+    projection = next._axisProjection;
+    // X1 (2026-10-09): the same 자산화 길 찾기 page as personal regeneration. Thin answers => none (kept as is).
+    try { assetPath = AP.compose(AM, next, session.answers); } catch (_e) { assetPath = null; }
   } catch (e) {
     throw new HttpsError("failed-precondition", "네 축 근거를 계산하지 못했습니다. 기존 결과를 보존했습니다.");
   }
@@ -1212,15 +1216,17 @@ async function refreshB2BAxes(uid, linked) {
     // Cold-cache null must reach the server comparison; null never creates data.
     if (current === null) return null;
     if (!valid(current) || manual(current)) return;
-    if (sameStored(current.report._axisProjection, projection)) { changed = false; return current; }
+    const wantAsset = assetPath || current.report._assetPath || null;
+    if (sameStored(current.report._axisProjection, projection) && sameStored(current.report._assetPath, wantAsset)) { changed = false; return current; }
     const edits = current.editCount === undefined ? 0 : current.editCount;
     if (!Number.isInteger(edits) || edits < 0 || edits >= 999) return;
     changed = true;
     return { ...current, editCount: edits + 1, lastEditedAt: admin.database.ServerValue.TIMESTAMP,
-      report: { ...current.report, _axisProjection: projection } };
+      report: { ...current.report, _axisProjection: projection, ...(assetPath ? { _assetPath: assetPath } : {}) } };
   }, undefined, false); // applyLocally=false: a cold-cache null attempt must not be visible to concurrent reads.
   const stored = saved.snapshot.val();
-  if (!saved.committed || !valid(stored) || manual(stored) || !sameStored(stored.report._axisProjection, projection)) {
+  if (!saved.committed || !valid(stored) || manual(stored) || !sameStored(stored.report._axisProjection, projection) ||
+      (assetPath && !sameStored(stored.report._assetPath, assetPath))) {
     throw new HttpsError("failed-precondition", "결과가 변경되었습니다. 기존 결과를 다시 열어주세요.");
   }
   return { ok: true, reportSid: sid, changed, decisions: (projection.decisions || []).length, stored };
