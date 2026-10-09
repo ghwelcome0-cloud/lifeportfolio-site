@@ -76,6 +76,8 @@
 | D7 | **C안 확정, v1에 포함** (다음 판으로 미루지 않음). 선택 질문은 근거가 얇은 변화만 최대 2개, 답은 점수에 넣지 않고 "내가 말한 변화"(`selfReported`)로 따로 표시 | 엔진 시제품 반영 완료(`/home/user/ax-work/assetmap/asset-map-engine.js` `probesToAsk`·`selfReported`, 검증 `d7c_check.cjs`: 1만 명 중 결과 바뀜 0). 질문 화면은 X2 제작 때 |
 | **배포 순서** | 다이어리 검증 규칙이 바뀌었으므로 **Functions 먼저 → Hosting 나중**. 옛 Functions 서버는 "밝힘" 등 새 값을 거부함 | `firebase-functions-deploy.yml`(수동·승인 ID) → `firebase-hosting-live.yml` |
 | D1 | 루트 이름 = 일곱 가지 변화 이름 (아래 2-5 D1 제안은 대체됨) | 결정 |
+| D5 진행 | 규칙표·샘플 검토본 v1 작성(`/home/user/ax-work/plans/자산화길찾기_규칙표샘플_검토본_v1_2026-10-09.*`). 엔진 `asset-map-v1-draft2`: `minChoice=1` 추가(고른 답 근거 1개 이상), 고객 문구 `asset-map-copy.v1.json`, 화면 문장 `render.cjs`, 가상 인물 시뮬레이션 `persona_sim.cjs`·`persona_mix.cjs` | **대표 승인 대기** — 승인 전 저장소 코드 반영 금지 |
+| 점검 기록 | 영문 홈(`index-en.html`)에는 여섯 방향 단락이 없음(변경 불필요). 운영 계정 실저장 시험은 규칙상 하지 않음(운영 계정을 시험용으로 쓰지 않음) → 배포 커밋 3b48eef 기준 에뮬레이터 39 PASS로 대체. `anonymizeMyPaymentOnWithdraw`는 운영에 살아 있음(401 응답). 10-09 00:34 배포 실패 원인은 배포 계정에 함수 공개(invoker) 권한 설정 권한이 없는 것(`roles/functions.admin` 필요) | 기록 |
 
 ### 2-1. 근거 자료 (이 목록 밖으로 범위를 넓히지 않음)
 
