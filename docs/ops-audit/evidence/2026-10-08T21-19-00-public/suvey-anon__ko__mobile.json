@@ -1,0 +1,131 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko",
+   "en"
+  ],
+  "id": "suvey-anon",
+  "url": "/suvey",
+  "route": "suvey",
+  "feature": "비로그인 진단 진입 차단",
+  "settle_ms": 3000,
+  "steps": [
+   {
+    "type": "eval",
+    "label": "no_questions_without_auth",
+    "js": "document.querySelectorAll('.q-id').length===0||location.pathname.includes('login')",
+    "expect": "true"
+   }
+  ],
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/login",
+   "(redirect 관찰)",
+   true,
+   "redirect"
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "small_cta_targets",
+   "",
+   "0 (<32px)",
+   true
+  ],
+  [
+   "obs_small_touch_targets",
+   "KO(37x28)|EN(36x28)|처음이신가요? 여정 시작하기 →(300x23)|약관(23x25)|개인정보(46x25)|문의(23x25)|언어(23x25)",
+   "P3 관찰(<32px)",
+   true,
+   "info"
+  ],
+  [
+   "eval",
+   "no_questions_without_auth",
+   "true",
+   true,
+   "true"
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "www.googletagmanager.com",
+  "www.gstatic.com",
+  "apis.google.com",
+  "unpkg.com",
+  "lifeporfolio.firebaseapp.com",
+  "www.googleapis.com",
+  "www.google-analytics.com"
+ ]
+}

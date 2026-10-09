@@ -1,0 +1,100 @@
+{
+ "case": {
+  "viewports": [
+   "pc"
+  ],
+  "langs": [
+   "ko"
+  ],
+  "id": "nonpub-review-admin",
+  "url": "/review-admin",
+  "route": "review-admin",
+  "feature": "비게시 파일 공개 차단",
+  "expect_status": 404,
+  "severity": "P0 if 200",
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   404,
+   404,
+   true
+  ],
+  [
+   "final_url",
+   "/review-admin",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [
+  "Failed to load resource: the server responded with a status of 404 ()"
+ ],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "fonts.googleapis.com",
+  "",
+  "fonts.gstatic.com"
+ ]
+}

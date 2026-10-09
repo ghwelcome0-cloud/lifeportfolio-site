@@ -1,0 +1,103 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko"
+  ],
+  "id": "fix-obs002-report-guide-ko",
+  "url": "/report-guide",
+  "route": "report-guide",
+  "feature": "OBS-002 KO 는 배너 없음(회귀)",
+  "must_hidden": [
+   "#lpEnNotice"
+  ],
+  "_file": "fixverify-2026-10-08.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/report-guide",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "hidden",
+   "#lpEnNotice",
+   "hidden|missing",
+   true
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "127.0.0.1"
+ ]
+}
