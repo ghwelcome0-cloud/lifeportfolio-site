@@ -4044,7 +4044,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           nextSteps: Array.isArray(p.nextSteps) ? p.nextSteps : [],
           risks:   Array.isArray(p.risks) ? p.risks : [],
           closing: Array.isArray(p.closing) ? p.closing : [],
-          footer:  footer
+          footer:  footer,
+          // asset-fan-v1: 리포트 XI 「자산화 길 찾기」와 이어지는 자산화 부채꼴(새로 만들거나 재생성한 프로그램만).
+          assetFan: (p._assetFan && p._assetFan.version === "asset-fan-v1" && Array.isArray(p._assetFan.rings)) ? p._assetFan : null
         };
       }
 
@@ -4115,6 +4117,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.glance-oneline__q{font-family:var(--bp-serif);font-size:13.5pt;font-weight:700;line-height:1.75;color:var(--bp-ink);margin:0;letter-spacing:.005em;}',
         '.glance-oneline__q::before{content:"\\201C";color:var(--bp-gold);font-size:15pt;margin-right:0.5mm;}',
         '.glance-oneline__q::after{content:"\\201D";color:var(--bp-gold);font-size:15pt;margin-left:0.5mm;}',
+        '.afan{margin:0 0 6mm;padding:4.6mm 6mm;border:0.6px solid var(--bp-teal-soft);border-left:1.8mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;background:linear-gradient(90deg,var(--bp-teal-bg),#fff 75%);}',
+        '.afan__k{display:block;font-family:var(--bp-sans);font-size:8.6pt;font-weight:800;letter-spacing:.04em;color:var(--bp-teal-2);margin-bottom:1.4mm;}',
+        '.afan__t{margin:0 0 3mm;font-family:var(--bp-sans);font-size:11pt;font-weight:700;color:var(--bp-ink);word-break:keep-all;}',
+        '.afan__row{display:grid;grid-template-columns:repeat(3,1fr);gap:3mm;}',
+        '.afan__c{position:relative;padding:2.6mm 3mm 2.6mm 3.4mm;border-radius:2mm;background:#fff;border:0.5px solid var(--bp-line);font-size:8.8pt;line-height:1.5;color:var(--bp-ink);word-break:keep-all;}',
+        '.afan__c b{display:block;font-family:var(--bp-sans);font-size:8.4pt;color:var(--bp-teal-2);margin-bottom:.6mm;}',
+        '.afan__c i{display:block;font-style:normal;font-size:7.8pt;color:var(--bp-ink-soft);margin-top:.8mm;}',
+        '.afan__w{margin:2.6mm 0 0;font-size:8.4pt;color:var(--bp-ink-soft);word-break:keep-all;}',
+        '.afan svg{float:right;width:22mm;height:16mm;margin:-1mm 0 0 3mm;}',
+        '@media screen and (max-width:768px){.afan__row{grid-template-columns:1fr;}.afan svg{display:none;}}',
+        '.book.lb-mobile .afan__c,.book.lb-mobile .afan__w,.book.lb-mobile .afan__t{font-size:16px!important;line-height:1.7!important;}.book.lb-mobile .afan__k,.book.lb-mobile .afan__c b,.book.lb-mobile .afan__c i{font-size:13px!important;}.book.lb-mobile .afan__row{grid-template-columns:1fr!important;}',
         '.glance-oneline__mk{display:block;font-family:var(--bp-sans);font-size:8.5pt;color:var(--bp-gold-deep);margin-top:3mm;letter-spacing:.02em;}',
         /* [P28] 한눈에 보는 나 — 웹 대시보드 §1 정합(3층 위계) */
         '.glance-anchor{background:var(--bp-teal-bg);border:0.6px solid var(--bp-teal-soft);border-radius:2.5mm;padding:5.5mm 6mm;margin-bottom:6mm;}',
@@ -4491,6 +4504,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(gBadge)h+=\'<span class="glance-oneline__diag">\'+esc(gBadge)+\'</span>\';',
 'if(gLine)h+=\'<p class="glance-oneline__q">\'+esc(gLine)+\'</p>\';',
 'h+=\'<span class="glance-oneline__mk">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span></div>\';}',
+// asset-fan-v1 — 리포트 XI와 같은 방향을 한 장으로: 30일(나·가까운 사람) → 3개월(이웃·모임) → 1년(일터·지역).
+"var af=DATA.assetFan;if(af&&af.rings&&af.rings.length===3){",
+"  var arc=function(r){var a=af.theta*Math.PI/360,x=40+r*Math.sin(a),y=44-r*Math.cos(a);return 'M40 44 L'+(40-r*Math.sin(a)).toFixed(1)+' '+(44-r*Math.cos(a)).toFixed(1)+' A'+r+' '+r+' 0 0 1 '+x.toFixed(1)+' '+y.toFixed(1)+' Z';};",
+"  h+='<div class=\"afan\" id=\"afan\"><svg viewBox=\"0 0 80 48\" aria-hidden=\"true\"><path d=\"'+arc(40)+'\" fill=\"#E8F0EE\"/><path d=\"'+arc(27)+'\" fill=\"#B9D6D1\"/><path d=\"'+arc(14)+'\" fill=\"#468D84\"/></svg>';",
+"  h+='<span class=\"afan__k\">💎 나의 자산화 부채꼴 · 리포트 「자산화 길 찾기」에서 이어져요</span>';",
+"  h+='<p class=\"afan__t\">'+esc(af.type)+(af.focus?' · '+esc(af.focus):'')+' — 작게 남기고, 더 멀리 닿게</p><div class=\"afan__row\">';",
+"  af.rings.forEach(function(g){var t=String(g.line||'').replace(/^[^—]+—\\s*/,'').replace(/\\s*\\([^)]*\\)\\s*$/,'');h+='<div class=\"afan__c\"><b>'+esc(g.when)+' · '+esc(g.who)+'</b>'+esc(t)+'<i>남김 단계: '+esc(g.stage)+'</i></div>';});",
+"  h+='</div>'+(af.widen&&af.widen.length?'<p class=\"afan__w\">더 넓힐 수 있는 변화: '+esc(af.widen.join('  ·  '))+'</p>':'')+'</div>';}",
 // ① 정체성 앵커
 'if(mission||flow){h+=\'<div class="glance-anchor">\';',
 'if(mission)h+=\'<div class="glance-mv"><span class="glance-k">사명</span><p class="glance-line">\'+esc(mission)+\'</p></div>\';',

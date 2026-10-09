@@ -25,6 +25,13 @@ console.log('PASS asset-path: '+n+' real-engine reports, '+S.size+' distinct sen
  const b=(x,o)=>{const p=PE.build({report:x,rules:pr,name:'합성',lang:'ko',publishedAt:new Date(0),...o});delete p.meta.generatedAt;return JSON.parse(JSON.stringify(p));};
  const base=b(r,{axisProgram:true}),linked=b(r2,{axisProgram:true}),optout=b(r2,{});
  assert.equal(linked.nextSteps.length,base.nextSteps.length+1);assert.ok(linked.nextSteps.at(-1).task.startsWith(r2._assetPath.firstStep));assert.ok(linked.nextSteps.at(-1).task.includes('다이어리'));
- const x=structuredClone(linked);x.nextSteps.pop();delete x._assetLink;assert.deepEqual(x,base,'addition only');
+ const x=structuredClone(linked),f=x._assetFan;assert.ok(f&&f.version==='asset-fan-v1'&&f.rings.length===3,'asset-fan attached');
+ // asset-fan-v1 additions are exactly: week effects (1 line each, weeks 1-3), month3 effects (asset kinds), one year1 milestone.
+ x.nextSteps.pop();delete x._assetLink;delete x._assetFan;delete x.meta.assetFanVersion;
+ f.weekly.forEach((l,i)=>{assert.equal(x.program.weeks[i].effects.at(-1),l);x.program.weeks[i].effects.pop();});
+ f.accrue.forEach(()=>x.program.month3.effects.pop());assert.equal(x.program.year1.milestones.pop(),f.rings[2].line);
+ for(const k of ['weeks']){x.program[k].forEach((w,i)=>{if(base.program[k][i]&&base.program[k][i].effects===undefined&&Array.isArray(w.effects)&&!w.effects.length)delete w.effects;});}
+ if(base.program.month3&&base.program.month3.effects===undefined&&Array.isArray(x.program.month3.effects)&&!x.program.month3.effects.length)delete x.program.month3.effects;
+ assert.deepEqual(x,base,'addition only');
  assert.equal(optout._assetLink,undefined,'not opted in => unchanged');
- console.log('PASS asset-link: program gets one next step from XI (first thing to leave -> diary), nothing else changes');}
+ console.log('PASS asset-link: program gets one next step from XI (first thing to leave -> diary) + asset-fan-v1 week/3-month/1-year lines; nothing else changes');}
