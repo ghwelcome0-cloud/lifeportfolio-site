@@ -1674,7 +1674,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             dec = ext.pathname.split("/").pop() + (ext.search || "") + (ext.hash || "");
           }
           // Explicit same-site destinations only; checkout performs its own server ownership check.
-          if (/^(suvey|mypage|b2b-checkout)(\.html)?(\?|#|$)/.test(dec)) {
+          if (/^(suvey|mypage|b2b-checkout|diary)(\.html)?(\?|#|$)/.test(dec)) {
             return dec;
           }
         }

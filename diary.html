@@ -118,11 +118,13 @@
  const params = new URLSearchParams(location.search), sidRaw = params.get("sid");
  const sid = sidRaw && /^s_[A-Za-z0-9_]{1,78}$/.test(sidRaw) ? sidRaw : null;
  let booted = false;
+ const openPath = params.get("open") === "path";
+ { const gl = document.getElementById("gate-login"); if (gl) gl.href = "/login?returnTo=" + encodeURIComponent("diary" + location.search); }
  onAuthStateChanged(auth, user => {
   if (!user) { document.getElementById("dy-app").hidden = true; document.getElementById("dy-gate").hidden = false; return; }
   if (booted) return; booted = true;
   document.getElementById("dy-gate").hidden = true;
-  window.DiaryApp.boot({ call, sid }).catch(() => {
+  window.DiaryApp.boot({ call, sid, openPath }).catch(() => {
    booted = false; document.getElementById("dy-loading").hidden = true;
    const g = document.getElementById("dy-gate"); g.hidden = false;
    g.querySelector(".cv-note").textContent = "다이어리를 열지 못했어요. 잠시 뒤 다시 시도해 주세요.";

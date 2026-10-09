@@ -95,6 +95,10 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
   const sv=await call(uid,{action:'savePage',opId:'op_path0001',pageKey:'career',patch:{dirs:pf.view.items.slice(0,2).map(x=>x.name)}});
   result('pathfind-names-save-into-diary-dirs',sv.ok&&sv.page.fields.dirs.length===Math.min(2,pf.view.items.length),sv);
   result('asset-map-copy-byte-identical',fs.readFileSync(path.join(root,'functions/_asset_map.js'),'utf8')===fs.readFileSync(path.join(root,'assets/js/asset-map.js'),'utf8'));}
+ {const u3=(await signUp()).localId;await db('reports/'+u3+'/s_1700000000000_old').set({sid:'s_1700000000000_old',report});await db('reports/'+u3+'/s_1791440430847_new').set({sid:'s_1791440430847_new',report});
+  const o3=await call(u3,{action:'open',latest:true});result('open-latest-picks-own-newest-report',o3.ok&&o3.reportFound&&o3.reportSid==='s_1791440430847_new',o3.reportSid);
+  result('open-without-latest-stays-empty',(await call(u3,{action:'open'})).reportFound===false);
+  result('open-latest-other-user-has-none',(await call((await signUp()).localId,{action:'open',latest:true})).reportFound===false);}
  result('report-and-program-never-modified',JSON.stringify((await db('reports/'+uid+'/'+sid).get()).val())+JSON.stringify((await db('programs/'+uid+'/'+sid).get()).val())===before);
 
  result('delete-log-needs-confirm',(await call(uid,{action:'deleteLog',logId:'log_000002'})).error==='failed-precondition');

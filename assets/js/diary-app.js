@@ -849,7 +849,7 @@
     if (!r.found) { body.innerHTML = '<p class="notice">리포트를 찾지 못했어요. 마이페이지의 리포트 카드에서 다시 들어와 주세요.</p>'; return; }
     if (r.noAnswers) { body.innerHTML = '<p class="notice">이 리포트에는 원래 응답이 남아 있지 않아 찾을 수 없어요. 다이어리에서 직접 골라 주세요.</p>'; return; }
     path.view = r.view; path.probes = Object.assign({}, r.probes || {}); path.env = r.env || "";
-    var v = r.view, h = "";
+    var v = r.view, h = '<p class="pf-intro">내 리포트 응답에서 근거가 많이 보인 변화부터 보여 드려요. 위 결과는 참고예요. 고르는 건 내가 정해요. 응답에 잘 드러나지 않은 삶은 아래 질문으로 더할 수 있어요.</p>';
     if (v.insufficient) h += '<p class="notice">' + esc(v.insufficient) + "</p>";
     v.items.forEach(function (it) {
       h += '<section class="pf-item' + (it.first ? " pf-first" : "") + '"><p class="pf-k">' + (it.first ? "가장 먼저 보인 변화" : "함께 보인 변화") + '</p><h3 class="pf-n">' + esc(it.name) + ' <small>' + esc(it.line) + "</small></h3>" +
@@ -929,11 +929,14 @@
       book = $("#dy-book"); stage = $("#dy-stage"); live = $("#dy-live");
       try { if (localStorage.getItem("lp_diary_motion") === "0") document.body.classList.add("no-motion"); } catch (_) {}
       $("#dy-loading").hidden = false;
-      return st.call({ action: "open", reportSid: st.sid }).then(function (r) {
+      return st.call({ action: "open", reportSid: st.sid, latest: !!(opts.openPath && !st.sid) }).then(function (r) {
         st.seed = r.seed; st.meta = r.meta; st.pages = r.pages || {}; st.logs = r.logs || []; st.reportFound = !!r.reportFound;
+        if (!st.sid && r.reportSid) st.sid = r.reportSid;
         if (!st.sid && st.meta) st.sid = st.meta.reportSid;
         $("#dy-loading").hidden = true; $("#dy-app").hidden = false;
-        layout(); bind(); render(true); setSave(""); return r;
+        layout(); bind(); render(true); setSave("");
+        if (opts.openPath) { goKey("career"); if (st.reportFound && st.sid) setTimeout(openPath, 450); else toast("리포트와 연결되면 「내 변화 찾기」를 쓸 수 있어요. 마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어와 주세요."); }
+        return r;
       });
     },
     _state: st, _view: view, go: goKey

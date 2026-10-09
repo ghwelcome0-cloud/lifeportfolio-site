@@ -64,7 +64,13 @@ function seedFrom(stored, programNode) {
 async function open(uid, data) {
   const snap = (await base(uid).get()).val() || {};
   const meta = parse(snap.meta);
-  const sid = (data.reportSid && SID.test(data.reportSid)) ? data.reportSid : (meta && meta.reportSid) || null;
+  let sid = (data.reportSid && SID.test(data.reportSid)) ? data.reportSid : (meta && meta.reportSid) || null;
+  // Homepage "내 변화 찾기 바로 가기": no sid in the URL and no diary yet → the owner's own most recent report.
+  if (!sid && data.latest === true) {
+    const keys = await admin.database().ref(`reports/${uid}`).orderByKey().limitToLast(5).get();
+    const ks = Object.keys(keys.val() || {}).filter(k => SID.test(k)).sort();
+    sid = ks.length ? ks[ks.length - 1] : null;
+  }
   let seed = null;
   if (sid) {
     const [rep, prog] = await Promise.all([admin.database().ref(`reports/${uid}/${sid}`).get(), admin.database().ref(`programs/${uid}/${sid}`).get()]);
@@ -73,7 +79,7 @@ async function open(uid, data) {
   const pages = {};
   Object.keys(snap.pages || {}).forEach(k => { const d = parse(snap.pages[k]); if (d && S.BY_KEY[k]) pages[k] = { fields: d, rev: snap.pages[k].rev || 0 }; });
   return { ok: true, schema: S.VERSION, meta: meta ? { startDate: meta.startDate || null, reportSid: meta.reportSid || null } : null,
-    reportFound: !!seed, seed, pages, logs: listLogs(snap.logs) };
+    reportFound: !!seed, reportSid: seed ? sid : null, seed, pages, logs: listLogs(snap.logs) };
 }
 function listLogs(node) {
   return Object.keys(node || {}).map(id => { const d = parse(node[id]); return d && { id, date: d.date, text: d.text, kept: d.kept || null, stage: node[id].stage || 0, createdAt: node[id].createdAt || 0 }; })
