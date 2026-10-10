@@ -12,7 +12,7 @@ function blocksProgram(src){
   return {src,pin:{css:h(css),js:h(js)}};}
 function blocksEngine(src){
   let fn,call;[src,fn]=cut(src,'  /* asset-fan-v1 (2026-10-09','  /* PROG-01 — four-axis decision','fn');
-  [src,call]=cut(src,'        var fan = assetFan(ap);','      }\n    }\n    return output;','call');
+  [src,call]=cut(src,'      var fan = assetFan(ap);','    }\n    return output;','call');
   return {src,pin:{fn:h(fn),call:h(call)}};}
 function stripProgram(src){const r=blocksProgram(src);assert.deepEqual(r.pin,PIN.program,'asset-fan program.html bytes are the reviewed ones');return r.src;}
 function stripEngine(src){const r=blocksEngine(src);assert.deepEqual(r.pin,PIN.engine,'asset-fan engine bytes are the reviewed ones');return r.src;}
