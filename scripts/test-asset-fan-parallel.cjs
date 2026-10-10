@@ -14,8 +14,8 @@ function run({from,to}){
  const out={n:0,lines:[[],[],[]],weekly:[],types:{},checks:0};
  for(let seed=from;seed<to;seed++){const r0=rnd(seed+7),a={Q1:'S'};
   questions.sections.flatMap(s=>s.questions).forEach(q=>{if(q.type==='likert')a[q.id]=1+Math.floor(r0()*5);else if(q.options?.length){if(q.type==='multi_choice'){const o=[];for(let i=0;i<1+Math.floor(r0()*3);i++){const v=q.options[Math.floor(r0()*q.options.length)];if(!o.includes(v)&&!/기타/.test(v))o.push(v);}a[q.id]=o;}else{const v=q.options[Math.floor(r0()*q.options.length)];a[q.id]=/기타/.test(v)?q.options[0]:v;}}});
-  const input={questions,mapping,rules,careerRules,answers:a,inputContractVersion:'input-v2',profile:{name:'S',submittedAt:10},lang:'ko'};
-  const r=V.upgrade(E.build(input),input);assert.equal(r._responseEvidence?.version,'evidence-reader-v1');const ap=P.compose(A,r,a);assert.ok(ap,'path '+seed);
+  const input={questions,mapping,rules,careerRules,answers:a,inputContractVersion:seed%2?undefined:'input-v2',profile:{name:'S',submittedAt:10},lang:'ko'};
+  const r=V.upgrade(E.build(input),input);if(!(seed%2))assert.equal(r._responseEvidence?.version,'evidence-reader-v1');else{assert.equal(r._responseEvidence,undefined);out.legacy=(out.legacy||0)+1;}const ap=P.compose(A,r,a);assert.ok(ap,'path '+seed);
   const rp={...r,_assetPath:ap},prog=B(rp,{axisProgram:true}),f=prog._assetFan,c=n=>{out.checks+=n;};
   assert.ok(f&&f.version==='asset-fan-v1','fan present '+seed);c(1);
   assert.deepEqual(JSON.parse(JSON.stringify(B(rp,{axisProgram:true}))),JSON.parse(JSON.stringify(prog)),'deterministic');c(1);
@@ -36,7 +36,7 @@ function run({from,to}){
   assert.ok(!/을\(를\)|\(으\)로|이\(가\)|\(와\)|undefined|null|NaN|\[object|으로으로|를를|을을/.test(txt),txt);
   assert.ok(!/점수|순위|등급|형입니다|score|rank/i.test(txt),txt);assert.ok(!/[A-Za-z]{3,}/.test(txt.replace(/\\u[0-9a-f]{4}/gi,'')),'KO only: '+txt);c(3);
   // opt-in only
-  const ie={...input,lang:'en'},re=V.upgrade(E.build(ie),ie),en=B({...re,_assetPath:ap},{axisProgram:true,lang:'en'}),off=B(rp,{}),none=B(r,{axisProgram:true});
+  const ie={...input,lang:'en',inputContractVersion:'input-v2'},re=V.upgrade(E.build(ie),ie),en=B({...re,_assetPath:ap},{axisProgram:true,lang:'en'}),off=B(rp,{}),none=B(r,{axisProgram:true});
   assert.equal(en._assetFan,undefined);assert.equal(off._assetFan,undefined);assert.equal(none._assetFan,undefined);c(3);
   out.lines.forEach((L,i)=>L.push(f.rings[i].line));out.weekly.push(f.weekly.join('|'));out.types[f.type]=(out.types[f.type]||0)+1;out.n++;
  }
@@ -44,7 +44,7 @@ function run({from,to}){
 if(!isMainThread){parentPort.postMessage(run(workerData));}
 else{const t0=Date.now(),step=Math.ceil(N/W);
  Promise.all(Array.from({length:W},(_,i)=>new Promise((res,rej)=>{const w=new Worker(__filename,{workerData:{from:i*step,to:Math.min(N,(i+1)*step)}});w.on('message',res);w.on('error',rej);w.on('exit',c=>c&&rej(new Error('worker exit '+c)));}))).then(parts=>{
-  const n=parts.reduce((s,p)=>s+p.n,0),checks=parts.reduce((s,p)=>s+p.checks,0),types={};parts.forEach(p=>Object.entries(p.types).forEach(([k,v])=>types[k]=(types[k]||0)+v));
+  const legacy=parts.reduce((s,p)=>s+(p.legacy||0),0);assert.ok(legacy>=N*0.45,'older reports '+legacy);const n=parts.reduce((s,p)=>s+p.n,0),checks=parts.reduce((s,p)=>s+p.checks,0),types={};parts.forEach(p=>Object.entries(p.types).forEach(([k,v])=>types[k]=(types[k]||0)+v));
   const d=[0,1,2].map(i=>new Set(parts.flatMap(p=>p.lines[i])).size),dw=new Set(parts.flatMap(p=>p.weekly)).size;
   assert.equal(n,N);
   // personal: the 30-day line follows the person's first step; the 1-year line combines type and asset kind.
@@ -52,5 +52,5 @@ else{const t0=Date.now(),step=Math.ceil(N/W);
   const fan=new Set(parts.flatMap(p=>p.lines[0].map((l,i)=>l+'|'+p.lines[1][i]+'|'+p.lines[2][i]))).size;
   assert.ok(d[0]>=20&&d[1]>=d[0]&&d[2]>=d[1],'widening distinctness '+d);assert.ok(fan>=N*0.25,'whole-fan distinct '+fan);
   assert.ok(dw>=20,'week lines '+dw);assert.ok(Object.keys(types).length>=5,'types '+JSON.stringify(types));
-  console.log('PASS asset-fan parallel: '+n+' users × '+W+' workers, '+checks+' checks, distinct lines 30일 '+d[0]+' / 3개월 '+d[1]+' / 1년 '+d[2]+', whole fan '+fan+', weeks '+dw+', types '+JSON.stringify(types)+', '+(Date.now()-t0)+'ms');
+  console.log('PASS asset-fan parallel: '+n+' users ('+legacy+' older reports without evidence reader) × '+W+' workers, '+checks+' checks, distinct lines 30일 '+d[0]+' / 3개월 '+d[1]+' / 1년 '+d[2]+', whole fan '+fan+', weeks '+dw+', types '+JSON.stringify(types)+', '+(Date.now()-t0)+'ms');
  }).catch(e=>{console.error(e);process.exit(1);});}
