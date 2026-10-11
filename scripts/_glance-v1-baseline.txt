@@ -1,0 +1,12 @@
+// ② 나는 이런 사람입니다 (고정 라벨: 나의 결·성향 / 나를 받쳐 주는 힘)
+// ★ [CEO 피드백 항목14] 4번째 원소 = 맞춤 헤드라인(.glance-chd). 고정 라벨은 눈썹으로 남긴다.
+//   결함 (AN): 엔진이 만든 *Head 5개를 웹·PDF 어느 쪽도 쓰지 않아 80억 명이 같은 제목을 읽었다.
+'var idc=[["🌿","나의 결·성향",s.traits,s.traitsHead],["💎","나를 받쳐 주는 힘",s.strengths,s.strengthsHead]].filter(function(c){return !!c[2];});',
+'if(idc.length){h+=\'<div class="glance-layer">나는 이런 사람입니다</div><div class="glance-grid">\';',
+'idc.forEach(function(c){h+=\'<div class="glance-card"><div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div>\'+(c[3]?\'<div class="glance-chd">\'+sc(c[3])+\'</div>\':"")+\'<div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
+'h+=\'</div>\';}',
+// ③ 그래서 이렇게 나아갑니다 (더할 연습[CTA]·잘 맞는 자리·이 사명이 여는 길)
+'var actc=[["🌱","더할 연습",s.gaps,true,s.gapsHead],["🏡","잘 맞는 자리",s.env,false,s.envHead],["🚪","이 사명이 여는 길",s.newPaths,false,s.newPathsHead]].filter(function(c){return !!c[2];});',
+'if(actc.length){h+=\'<div class="glance-layer">그래서 이렇게 나아갑니다</div><div class="glance-grid glance-grid--3">\';',
+'actc.forEach(function(c){h+=\'<div class="glance-card\'+(c[3]?" glance-card--cta":"")+\'">\'+(c[3]?\'<span class="glance-step">지금 시작 · 첫걸음</span>\':"")+\'<div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div>\'+(c[4]?\'<div class="glance-chd">\'+sc(c[4])+\'</div>\':"")+\'<div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
+'h+=\'</div>\';}',

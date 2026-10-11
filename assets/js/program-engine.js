@@ -1288,22 +1288,27 @@
     var changes = [ap.type.name].concat(others.map(function (o) { return o.name; }));
     var theta = changes.length * 40;
     var area = function (r, s) { return 0.5 * (theta * Math.PI / 180) * r * r * (1 + s); };
-    var rings = [
-      { r: 1, s: 1, when: "30일", who: RING[1], stage: STAGE[1], line: "30일 · " + RING[1] + " — " + ap.firstStep + " (" + STAGE[1] + ")" },
-      { r: 2, s: 2, when: "3개월", who: RING[2], stage: STAGE[2], line: "3개월 · " + RING[2] + " — " + (scene ? scene + " 만난 사람들에게 " : "") + eul(art) + " 보여 주고 의견을 들어 고쳐 쓰기 (" + STAGE[2] + ")" },
-      { r: 3, s: 5, when: "1년", who: RING[3], stage: STAGE[5], line: "1년 · " + RING[3] + " — " + (strength ? "내 " + ro(strength) + " 쌓은 " : "") + ga(a0 ? a0.k : art) + " 다른 사람에게 다시 쓰이게 하기" + " (" + STAGE[5] + ")" }
-    ];
+    // Compressed, intuitive wording (owner 2026-10-11): each ring = one short action (head) + the person's own words (sub).
+    // No dash punctuation; the full line keeps "when · who: sub head (stage)".
+    var heads = [ap.firstStep, eul(art) + " 보여 주고 고쳐 쓰기", ga(a0 ? a0.k : art) + " 다시 쓰이게 하기"];
+    var subs = ["", scene ? scene + " 만난 사람들과" : "", strength ? "내 " + ro(strength) : ""];
+    var rings = [[1, 1, "30일", 1], [2, 2, "3개월", 2], [3, 5, "1년", 5]].map(function (q, i) {
+      var g = { r: q[0], s: q[1], when: q[2], who: RING[q[0]], stage: STAGE[q[3]], head: heads[i], sub: subs[i] };
+      g.line = g.when + " · " + g.who + ": " + (g.sub ? g.sub + " " : "") + g.head + " (" + g.stage + ")";
+      return g;
+    });
     rings.forEach(function (g) { g.area = Math.round(area(g.r, g.s) * 100) / 100; });
     return {
       version: "asset-fan-v1", type: ap.type.name, focus: ap.type.focus || "", changes: changes, theta: theta,
       rings: rings,
       weekly: [
-        "💎 " + STAGE[0] + " — " + ap.firstStep,
-        "💎 " + STAGE[1] + " — " + art,
-        "💎 한 사람에게 보여 주기 — 들은 말 한 줄을 다이어리에 남겨요"
+        "💎 해 보기: " + ap.firstStep,
+        "💎 남기기: " + art,
+        "💎 보여 주기: 들은 말 한 줄을 다이어리에 남겨요"
       ],
-      accrue: (ap.assets || []).slice(0, 2).map(function (x) { return "자산화: " + x.k + " — " + x.v; }),
+      accrue: (ap.assets || []).slice(0, 2).map(function (x) { return "자산화: " + x.v + " → " + x.k; }),
       widen: others.map(function (o) { return o.name + (o.focus ? " · " + o.focus : ""); }),
+      widenItems: others.map(function (o) { return { name: o.name, focus: o.focus || "" }; }),
       rule: "A = ½·θ·r²·(1+s)"
     };
   }
