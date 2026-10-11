@@ -1309,7 +1309,7 @@
     });
     rings.forEach(function (g) { g.area = Math.round(area(g.r, g.s) * 100) / 100; });
     return {
-      version: "asset-fan-v1", type: ap.type.name, focus: ap.type.focus || "", changes: changes, theta: theta,
+      version: "asset-fan-v1", type: ap.type.name, focus: ap.type.focus || "", changes: changes, theta: theta, art: art,
       rings: rings,
       weekly: [
         "💎 해 보기: " + ap.firstStep,
@@ -1320,6 +1320,62 @@
       widen: others.map(function (o) { return o.name + (o.focus ? " · " + o.focus : ""); }),
       widenItems: others.map(function (o) { return { name: o.name, focus: o.focus || "" }; }),
       rule: "A = ½·θ·r²·(1+s)"
+    };
+  }
+
+  /* asset-quest-v1 (owner 2026-10-11) — III장 = 「고유성을 실제 자산으로 바꾸는 12주 실행 훈련」.
+   * The 12 weeks unfold the three fan rings week by week (same A = ½·θ·r²·(1+s), #381):
+   *   1~4주 r1 나·가까운 사람 · 5~8주 r2 이웃·모임 · 9~12주 r3 일터·지역; diary stage rises 0 → 5.
+   * Each week = one quest (what to do) + what stays in hand (the asset trace) + its diary stage.
+   * 대원칙-F F-4: every week carries at least one of the person's own sources (first step, artifact,
+   * strength, address, other change, job, asset kind); shared tables shape words, never cap them.
+   * Korean only, opt-in builds only (same gate as the fan). Missing sources => null (III unchanged). */
+  function assetQuest(ap, fan) {
+    if (!fan || !ap || !ap.firstStep) return null;
+    var STAGE = ["해 봤어요", "결과물을 남겼어요", "동료 피드백", "멘토와 확인", "실제 반응", "다시 쓰였어요"];
+    var jb = function (w) { var c = String(w).replace(/[\s)」’]+$/, "").slice(-1).charCodeAt(0); return c >= 0xac00 && c <= 0xd7a3 ? (c - 0xac00) % 28 : -1; };
+    var eul = function (w) { var b = jb(w); return w + (b === 0 ? "를" : b > 0 ? "을" : "을(를)"); };
+    var ga = function (w) { var b = jb(w); return w + (b === 0 ? "가" : b > 0 ? "이" : "이(가)"); };
+    var ro = function (w) { var b = jb(w); return w + (b === 0 || b === 8 ? "로" : b > 0 ? "으로" : "(으)로"); };
+    var art = fan.art || "";
+    if (!art) return null;
+    var place = (fan.rings[1] && fan.rings[1].sub) || "";
+    var strength = String((ap.basis || {}).strength || "").trim();
+    var a0 = (ap.assets || []).filter(function (x) { return x && x.k && !/금융/.test(x.k); })[0] || null;
+    var kind = a0 ? a0.k : art;
+    var o1 = (ap.others || [])[0] || null;
+    var job = String((ap.jobs || [])[0] || "").split(/\s*·\s*/)[0].trim();
+    // 압축 직관(owner 2026-10-11): each week = one verb chip (what kind of move) + one short quest in the person's own
+    // words + what stays in hand. Long own phrases are cut to their head noun (e.g. "…잇는 계획력" -> "계획력").
+    // ref = internal source code (docs/자산화퀘스트_근거표_2026-10-11.md: 성경 → 해석·적용 → 설계 → 검증). Never shown.
+    var head = function (t) { var w = String(t || "").trim().split(/\s+/); return w[w.length - 1] || ""; };
+    var sp = head(strength);
+    var W = function (w, verb, quest, keep, st) { return { week: w, verb: verb, quest: quest, keep: keep, stage: STAGE[st], s: st, ref: "AQ" + (w < 10 ? "0" : "") + w }; };
+    var weeks = [
+      W(1, "해 보기", ap.firstStep, "첫 기록 한 줄", 0),
+      W(2, "다듬기", "1주에 한 것을 " + ro(art) + " 다듬기", art + " 1판", 1),
+      W(3, "까닭 달기", sp ? "내 " + ga(sp) + " 보인 장면 한 줄 달기" : "왜 했는지 한 줄 달기", "까닭이 붙은 1판", 1),
+      W(4, "보여 주기", eul(art) + " 가까운 한 사람에게 보여 주기", "들은 말 한 줄", 2),
+      W(5, "소개하기", (place || "모임 한 곳에서") + " " + eul(art) + " 소개하기", "소개한 자리와 반응", 2),
+      W(6, "고쳐 쓰기", "들은 말을 반영해 2판 만들기", art + " 2판", 2),
+      W(7, "넓히기", o1 && o1.first ? o1.first : "다른 방식으로 한 번 더 만들기", (o1 && o1.name ? ro(o1.name) : "새 방식으로") + " 넓힌 기록", 1),
+      W(8, "돌아보기", "믿는 한 사람과 7주를 돌아보기", "되풀이된 점 셋", 3),
+      W(9, "써 보게 하기", "다른 사람이 " + eul(art) + " 직접 써 보게 하기", "써 본 사람의 말", 4),
+      W(10, "묶기", "남긴 것을 " + ro(kind) + " 묶기", kind + " 한 묶음", 3),
+      W(11, "건네기", job ? "‘" + job + "’ 일을 하는 사람에게 건네고 쓰임 묻기" : "일터나 지역의 한 사람에게 건네기", "쓰임에 대한 답", 4),
+      W(12, "카드 쓰기", "열두 주를 자산 카드 한 장에 담기", kind + " 카드", 5)
+    ];
+    return {
+      version: "asset-quest-v1", title: "12주 자산화 퀘스트", type: fan.type, kind: kind, art: art,
+      phases: [
+        { when: "1~4주", who: fan.rings[0].who, aim: "해 보고 남기기", end: "내 손에 1판", weeks: weeks.slice(0, 4) },
+        { when: "5~8주", who: fan.rings[1].who, aim: "보여 주고 고쳐 쓰기", end: "남의 눈을 거친 2판", weeks: weeks.slice(4, 8) },
+        { when: "9~12주", who: fan.rings[2].who, aim: "묶어서 다시 쓰이게 하기", end: "남이 다시 쓰는 카드", weeks: weeks.slice(8, 12) }
+      ],
+      card: { name: fan.type + " · " + art, kind: kind, fields: ["무엇이 남았나", "누가 다시 썼나", "다음에 넓힐 곳"] },
+      checks: ["내가 남긴 것이 다시 쓰였나요?", "누군가에게 실제로 도움이 됐나요?", "다른 사람도 쓸 수 있게 남았나요?"],
+      howto: "매주 한 가지만 하고, 남는 것 한 줄을 다이어리 「오늘 해 봤어요」에 적어요.",
+      rule: "12주 = 부채꼴 세 고리를 주 단위로 펼친 것"
     };
   }
 
@@ -3169,6 +3225,9 @@
         var m3 = output.program.month3, y1 = output.program.year1;
         if (m3) m3.effects = (m3.effects || []).concat(fan.accrue);
         if (y1 && Array.isArray(y1.milestones)) y1.milestones = y1.milestones.concat([fan.rings[2].line]);
+        // asset-quest-v1: III장 becomes the 12-week asset quest (the 1~3주 cards stay as its detail).
+        var quest = assetQuest(ap, fan);
+        if (quest) { output._assetQuest = quest; output.meta.assetQuestVersion = quest.version; }
       }
     }
     return output;
