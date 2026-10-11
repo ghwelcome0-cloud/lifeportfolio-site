@@ -122,6 +122,60 @@ const sess = (answers, status) => ({ answers, status, startedAt: 1, updatedAt: 1
     const u = await freshUser(); const a = { ...base }; if (value === undefined) delete a[qid]; else a[qid] = value;
     const w = await put(`responses/${u.localId}/s_r1_${qid}`, sess(a, 'submitted'), u.idToken); ok(`C6a-round1-shape-${qid}-${kind}-rejected`, !w.ok, w.status);
   }
+  // ---------- C10a ③ (re-freeze checklist): direct PUT to reports/programs must need a submitted/completed response ----------
+  //   The report/program nodes are the generation OUTPUT. Writing them directly (bypassing suvey.html + report-loading) with
+  //   no valid submitted response must be rejected by the rules themselves, not only by the client pre-check.
+  const reportDoc = sid => ({ sid, generatedAt: 1, engineVersion: 'v1.3', rulesVersion: 'v3', toneKey: 't', pdfFilename: 'x.pdf', manualReportStatus: 'auto', editCount: 0, lastEditedAt: 1, lang: 'ko', report: { a: 1 } });
+  const programDoc = sid => ({ sid, sourceSid: sid, generatedAt: 1, engineVersion: 'v1.0', rulesVersion: 'v1.0', toneKey: 't', name: 'n', lang: 'ko', manualProgramStatus: 'auto', editCount: 0, lastEditedAt: 1, program: { a: 1 } });
+  { // case 1: no response node at all
+    const u = await freshUser(); const sid = 's_c10a_none';
+    const wr = await put(`reports/${u.localId}/${sid}`, reportDoc(sid), u.idToken); ok('C10a-1-report-direct-put-no-response-rejected', !wr.ok, wr.status);
+    const wp = await put(`programs/${u.localId}/${sid}`, programDoc(sid), u.idToken); ok('C10a-1-program-direct-put-no-response-rejected', !wp.ok, wp.status);
+    ok('C10a-1-nodes-absent', (await get(`reports/${u.localId}/${sid}`)) === null && (await get(`programs/${u.localId}/${sid}`)) === null);
+  }
+  { // case 2: response exists but is only in_progress (incomplete answers)
+    const u = await freshUser(); const sid = 's_c10a_inprog';
+    const w0 = await put(`responses/${u.localId}/${sid}`, sess({ Q1: '회원', Q2: '마이페이지에서 확인', Q3: 4 }, 'in_progress'), u.idToken); ok('C10a-2-in-progress-response-accepted', w0.ok, await w0.text());
+    const wr = await put(`reports/${u.localId}/${sid}`, reportDoc(sid), u.idToken); ok('C10a-2-report-direct-put-in-progress-rejected', !wr.ok, wr.status);
+    const wp = await put(`programs/${u.localId}/${sid}`, programDoc(sid), u.idToken); ok('C10a-2-program-direct-put-in-progress-rejected', !wp.ok, wp.status);
+    const wi = await put(`users/${u.localId}/reports/${sid}`, { sid, generatedAt: 1, toneKey: 't', name: 'n', submittedAt: 1, lang: 'ko' }, u.idToken); ok('C10a-2-report-index-direct-put-in-progress-rejected', !wi.ok, wi.status);
+    const wpi = await put(`users/${u.localId}/programs/${sid}`, { sid, sourceSid: sid, generatedAt: 1, toneKey: 't', name: 'n', lang: 'ko' }, u.idToken); ok('C10a-2-program-index-direct-put-in-progress-rejected', !wpi.ok, wpi.status);
+  }
+  { // case 3: response sid mismatch — submitted session A, write report under sid B
+    const u = await freshUser(); const a = goodAnswers(31);
+    const w0 = await put(`responses/${u.localId}/s_c10a_A`, sess(a, 'submitted'), u.idToken); ok('C10a-3-submitted-A-accepted', w0.ok, await w0.text());
+    const wr = await put(`reports/${u.localId}/s_c10a_B`, reportDoc('s_c10a_B'), u.idToken); ok('C10a-3-report-under-other-sid-rejected', !wr.ok, wr.status);
+    const wp = await put(`programs/${u.localId}/s_c10a_B`, programDoc('s_c10a_B'), u.idToken); ok('C10a-3-program-under-other-sid-rejected', !wp.ok, wp.status);
+  }
+  { // positive regression: submitted response -> report + index + program accepted; re-read; update (regenerate) ; delete (mypage) ; withdraw wipe
+    const u = await freshUser(); const sid = 's_c10a_ok'; const a = goodAnswers(32);
+    const w0 = await put(`responses/${u.localId}/${sid}`, sess(a, 'submitted'), u.idToken); ok('C10a-P-submitted-accepted', w0.ok, await w0.text());
+    const wr = await put(`reports/${u.localId}/${sid}`, reportDoc(sid), u.idToken); ok('C10a-P-report-write-accepted', wr.ok, await wr.text());
+    const wi = await put(`users/${u.localId}/reports/${sid}`, { sid, generatedAt: 1, toneKey: 't', name: 'n', submittedAt: 1, lang: 'ko' }, u.idToken); ok('C10a-P-report-index-accepted', wi.ok, await wi.text());
+    const wp = await put(`programs/${u.localId}/${sid}`, programDoc(sid), u.idToken); ok('C10a-P-program-write-accepted', wp.ok, await wp.text());
+    const wpi = await put(`users/${u.localId}/programs/${sid}`, { sid, sourceSid: sid, generatedAt: 1, toneKey: 't', name: 'n', lang: 'ko' }, u.idToken); ok('C10a-P-program-index-accepted', wpi.ok, await wpi.text());
+    const rr = await get(`reports/${u.localId}/${sid}`); ok('C10a-P-report-reread', rr && rr.sid === sid && rr.report && rr.report.a === 1);
+    const wu = await patch(`reports/${u.localId}/${sid}`, { toneKey: 't2', editCount: 1, lastEditedAt: 2, report: { a: 2 } }, u.idToken); ok('C10a-P-report-regenerate-update-accepted', wu.ok, await wu.text());
+    const wpu = await patch(`programs/${u.localId}/${sid}`, { toneKey: 't2', editCount: 1, lastEditedAt: 2, program: { a: 2 } }, u.idToken); ok('C10a-P-program-regenerate-update-accepted', wpu.ok, await wpu.text());
+    // mypage single-report delete: one multi-path update nulling report + index + program
+    const wd = await patch(``, { [`reports/${u.localId}/${sid}`]: null, [`users/${u.localId}/reports/${sid}`]: null, [`programs/${u.localId}/${sid}`]: null }, u.idToken); ok('C10a-P-mypage-delete-3-nodes-accepted', wd.ok, await wd.text());
+    ok('C10a-P-deleted', (await get(`reports/${u.localId}/${sid}`)) === null && (await get(`programs/${u.localId}/${sid}`)) === null);
+    // completed status also unlocks
+    const u2 = await freshUser(); const sid2 = 's_c10a_done'; await put(`responses/${u2.localId}/${sid2}`, sess(goodAnswers(33), 'submitted'), u2.idToken);
+    const wc = await patch(`responses/${u2.localId}/${sid2}`, { status: 'completed' }, u2.idToken); ok('C10a-P-status-completed-accepted', wc.ok, await wc.text());
+    const wr2 = await put(`reports/${u2.localId}/${sid2}`, reportDoc(sid2), u2.idToken); ok('C10a-P-report-write-after-completed-accepted', wr2.ok, await wr2.text());
+    const wp2 = await put(`programs/${u2.localId}/${sid2}`, programDoc(sid2), u2.idToken); ok('C10a-P-program-write-after-completed-accepted', wp2.ok, await wp2.text());
+    // withdraw wipe: whole-subtree nulls (mypage.html withdrawal path)
+    const ww = await patch(``, { [`reports/${u2.localId}`]: null, [`users/${u2.localId}`]: null, [`programs/${u2.localId}`]: null, [`responses/${u2.localId}`]: null }, u2.idToken); ok('C10a-P-withdraw-wipe-accepted', ww.ok, await ww.text());
+  }
+  { // b2b path (Method 5814911): group response in progress -> personal report write must stay rejected (b2b branch), and the
+    // server-owned group report write is not a client path (rules say nothing new about it; client write under b2b surveySid rejected as before)
+    const u = await freshUser(); const sid = 's_c10a_b2b';
+    await put(`b2b_access/${u.localId}`, { surveySid: sid, orderId: 'o1' });
+    await put(`responses/${u.localId}/${sid}`, { ...sess({ Q1: '회원', Q2: '마이페이지에서 확인' }, 'in_progress'), meta: { step: 1, answered: 2, source: 'b2b', b2bOrderId: 'o1' } });
+    const wr = await put(`reports/${u.localId}/${sid}`, reportDoc(sid), u.idToken); ok('C10a-B2B-personal-report-write-under-group-sid-rejected', !wr.ok, wr.status);
+    const sub = await patch(`responses/${u.localId}/${sid}`, { meta: { step: 1, answered: 2, source: 'b2b', b2bOrderId: 'o1' }, status: 'in_progress', answers: { Q1: '회원', Q2: '마이페이지에서 확인' } }, u.idToken); ok('C10a-B2B-group-session-progress-still-allowed', sub.ok, await sub.text());
+  }
   const failed = results.filter(r => !r.ok);
   console.log(JSON.stringify({ passed: results.length - failed.length, failed: failed.length, scope: 'local emulators, real RTDB rules, synthetic accounts' }));
   fs.mkdirSync(path.join(root, 'dist/b2b-audit'), { recursive: true });
