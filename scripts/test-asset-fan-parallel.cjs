@@ -38,6 +38,14 @@ function run({from,to}){
   // opt-in only
   const ie={...input,lang:'en',inputContractVersion:'input-v2'},re=V.upgrade(E.build(ie),ie),en=B({...re,_assetPath:ap},{axisProgram:true,lang:'en'}),off=B(rp,{}),none=B(r,{axisProgram:true});
   assert.equal(en._assetFan,undefined);assert.equal(off._assetFan,undefined);assert.equal(none._assetFan,undefined);c(3);
+  // asset-quest-v1 (12주): 12 weeks, stages never fall within a phase end at 5, every week has an own source, hygiene.
+  const q=prog._assetQuest;assert.ok(q&&q.version==='asset-quest-v1'&&q.phases.length===3,'quest '+seed);const wks=q.phases.flatMap(p=>p.weeks);
+  assert.deepEqual(wks.map(w=>w.week),[1,2,3,4,5,6,7,8,9,10,11,12]);assert.equal(wks[11].s,5);assert.equal(wks[0].quest,ap.firstStep);
+  const own=[ap.firstStep,f.art,ap.basis.strength,f.rings[1].sub,(ap.others[0]||{}).first,(ap.others[0]||{}).name,q.kind,String(ap.jobs[0]||'').split(/\s*·\s*/)[0]].filter(Boolean);
+  const ownN=wks.filter(w=>own.some(o=>(w.quest+' '+w.keep).includes(o))).length;assert.ok(ownN>=10,'F-4 own source weeks '+ownN);
+  const qt=JSON.stringify(q);assert.ok(!/—|을\(를\)|\(으\)로|이\(가\)|undefined|null|NaN|을을|를를/.test(qt),qt);
+  assert.equal(off._assetQuest,undefined);assert.equal(en._assetQuest,undefined);c(8);
+  out.quests=(out.quests||[]);out.quests.push(wks.map(w=>w.quest+'|'+w.keep).join('/'));
   out.lines.forEach((L,i)=>L.push(f.rings[i].line));out.weekly.push(f.weekly.join('|'));out.types[f.type]=(out.types[f.type]||0)+1;out.n++;
  }
  return out;}
@@ -53,6 +61,7 @@ else{{const src=require('node:fs').readFileSync(root+'/assets/js/report-engine-v
   // 30일 = the report's own first step (same words as XI, by design); 3개월 adds the person's scene; 1년 adds strength #1.
   const fan=new Set(parts.flatMap(p=>p.lines[0].map((l,i)=>l+'|'+p.lines[1][i]+'|'+p.lines[2][i]))).size;
   assert.ok(d[0]>=20&&d[1]>=d[0]&&d[2]>=d[1],'widening distinctness '+d);assert.ok(fan>=N*0.25,'whole-fan distinct '+fan);
-  assert.ok(dw>=20,'week lines '+dw);assert.ok(Object.keys(types).length>=5,'types '+JSON.stringify(types));
-  console.log('PASS asset-fan parallel: '+n+' users ('+legacy+' older reports without evidence reader) × '+W+' workers, '+checks+' checks, distinct lines 30일 '+d[0]+' / 3개월 '+d[1]+' / 1년 '+d[2]+', whole fan '+fan+', weeks '+dw+', types '+JSON.stringify(types)+', '+(Date.now()-t0)+'ms');
+  assert.ok(dw>=20,'week lines '+dw);
+  const dq=new Set(parts.flatMap(p=>p.quests)).size;assert.ok(dq>=N*0.9,'F-4 12주 distinct '+dq);assert.ok(Object.keys(types).length>=5,'types '+JSON.stringify(types));
+  console.log('PASS asset-fan parallel: '+n+' users ('+legacy+' older reports without evidence reader) × '+W+' workers, '+checks+' checks, distinct lines 30일 '+d[0]+' / 3개월 '+d[1]+' / 1년 '+d[2]+', whole fan '+fan+', 12주 '+dq+', weeks '+dw+', types '+JSON.stringify(types)+', '+(Date.now()-t0)+'ms');
  }).catch(e=>{console.error(e);process.exit(1);});}

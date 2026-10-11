@@ -27,7 +27,7 @@ console.log('PASS asset-path: '+n+' real-engine reports, '+S.size+' distinct sen
  assert.equal(linked.nextSteps.length,base.nextSteps.length+1);assert.ok(linked.nextSteps.at(-1).task.startsWith(r2._assetPath.firstStep));assert.ok(linked.nextSteps.at(-1).task.includes('다이어리'));
  const x=structuredClone(linked),f=x._assetFan;assert.ok(f&&f.version==='asset-fan-v1'&&f.rings.length===3,'asset-fan attached');
  // asset-fan-v1 additions are exactly: week effects (1 line each, weeks 1-3), month3 effects (asset kinds), one year1 milestone.
- x.nextSteps.pop();delete x._assetLink;delete x._assetFan;delete x.meta.assetFanVersion;
+ x.nextSteps.pop();delete x._assetLink;delete x._assetFan;delete x.meta.assetFanVersion;delete x._assetQuest;delete x.meta.assetQuestVersion;
  f.weekly.forEach((l,i)=>{assert.equal(x.program.weeks[i].effects.at(-1),l);x.program.weeks[i].effects.pop();});
  f.accrue.forEach(()=>x.program.month3.effects.pop());assert.equal(x.program.year1.milestones.pop(),f.rings[2].line);
  for(const k of ['weeks']){x.program[k].forEach((w,i)=>{if(base.program[k][i]&&base.program[k][i].effects===undefined&&Array.isArray(w.effects)&&!w.effects.length)delete w.effects;});}
