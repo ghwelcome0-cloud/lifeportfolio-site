@@ -86,7 +86,9 @@ const sess = (answers, status) => ({ answers, status, startedAt: 1, updatedAt: 1
   ok('C8-rules-byte-identical-to-source', JSON.stringify(JSON.parse(rulesLive)) === JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'database.rules.json'), 'utf8'))));
 
   // C7: positive regression — good inputs saved in_progress, item-by-item autosave, then submitted
-  for (const [i, opts] of [[1, {}], [2, { other: true }], [3, {}], [4, { other: true }]].entries()) {
+  // Defect fixed (TL 6027489/6027595): `[i, opts]` destructured `.entries()` pairs as [index, [n, opts]] so `opts.other` was always
+  // undefined and the other-option positive path never ran (seeds were 100..103). Now: n = 1..4 as the seed offset, opts honored.
+  for (const [n, opts] of [[1, {}], [2, { other: true }], [3, {}], [4, { other: true }]]) { const i = n;
     const u = await freshUser(); const sid = 's_17000000000' + i + '_gate'; const a = goodAnswers(100 + i, opts);
     const w1 = await put(`responses/${u.localId}/${sid}`, sess({ Q1: a.Q1, Q2: a.Q2 }, 'in_progress'), u.idToken); ok(`C7-${i}-create-in-progress`, w1.ok, await w1.text());
     let allItemsOk = true; for (const k of Object.keys(a)) { const w = await put(`responses/${u.localId}/${sid}/answers/${k}`, a[k], u.idToken); if (!w.ok) { allItemsOk = false; ok(`C7-${i}-item-${k}`, false, await w.text()); } }
