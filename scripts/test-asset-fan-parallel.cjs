@@ -23,7 +23,7 @@ function run({from,to}){
   const art=ap.days.map(d=>/^(.+) 남기기$/.exec(d.v)).find(Boolean)[1];
   assert.equal(f.type,ap.type.name);assert.ok(f.rings[0].line.includes(ap.firstStep));assert.ok(f.rings[1].line.includes(art));
   const a0=ap.assets.find(x=>!/금융/.test(x.k));assert.ok(a0&&f.rings[2].line.includes(a0.k)&&!/금융/.test(f.rings[2].line));assert.ok(f.rings[1].line.includes(ap.basis.scene));if(ap.basis.strength)assert.ok(f.rings[2].line.includes(ap.basis.strength));c(2);assert.deepEqual(f.changes,[ap.type.name,...ap.others.slice(0,2).map(o=>o.name)]);
-  f.accrue.forEach((l,i)=>assert.equal(l,'자산화: '+ap.assets[i].k+' — '+ap.assets[i].v));c(6);
+  f.accrue.forEach((l,i)=>assert.equal(l,'자산화: '+ap.assets[i].v+' → '+ap.assets[i].k));c(6);
   // math
   assert.equal(f.theta,40*f.changes.length);assert.ok(f.changes.length>=1&&f.changes.length<=3);
   const th=f.theta*Math.PI/180;f.rings.forEach(g=>assert.ok(Math.abs(g.area-0.5*th*g.r*g.r*(1+g.s))<0.006,'area exact'));
@@ -33,7 +33,7 @@ function run({from,to}){
   f.accrue.forEach(l=>assert.ok(prog.program.month3.effects.includes(l)));c(3);
   // text hygiene: KO only, josa resolved, no artifacts, no score/label wording
   const txt=JSON.stringify([f.rings.map(g=>g.line),f.weekly,f.accrue,f.widen]);
-  assert.ok(!/을\(를\)|\(으\)로|이\(가\)|\(와\)|undefined|null|NaN|\[object|으로으로|를를|을을/.test(txt),txt);
+  assert.ok(!/—|을\(를\)|\(으\)로|이\(가\)|\(와\)|undefined|null|NaN|\[object|으로으로|를를|을을/.test(txt),txt);
   assert.ok(!/점수|순위|등급|형입니다|score|rank/i.test(txt),txt);assert.ok(!/[A-Za-z]{3,}/.test(txt.replace(/\\u[0-9a-f]{4}/gi,'')),'KO only: '+txt);c(3);
   // opt-in only
   const ie={...input,lang:'en',inputContractVersion:'input-v2'},re=V.upgrade(E.build(ie),ie),en=B({...re,_assetPath:ap},{axisProgram:true,lang:'en'}),off=B(rp,{}),none=B(r,{axisProgram:true});

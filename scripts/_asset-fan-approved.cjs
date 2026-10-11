@@ -8,8 +8,12 @@ function cut(src,a,b,label){const i=src.indexOf(a),j=src.indexOf(b,i+1);assert.o
 const PASS_NEW='          footer:  footer,\n          // asset-fan-v1: 리포트 XI 「자산화 길 찾기」와 이어지는 자산화 부채꼴(새로 만들거나 재생성한 프로그램만).\n          assetFan: (p._assetFan && p._assetFan.version === "asset-fan-v1" && Array.isArray(p._assetFan.rings)) ? p._assetFan : null\n';
 function blocksProgram(src){
   assert.equal(src.split(PASS_NEW).length,2,'asset-fan passthrough once');src=src.replace(PASS_NEW,'          footer:  footer\n');
-  let css,js;[src,css]=cut(src,"        '.afan{","        '.glance-oneline__mk{",'css');[src,js]=cut(src,'// asset-fan-v1 — 리포트 XI','// ① 정체성 앵커','card');
-  return {src,pin:{css:h(css),js:h(js)}};}
+  let css,js,gx;[src,css]=cut(src,"        '.afan{","        '.glance-oneline__mk{",'css');[src,js]=cut(src,'// asset-fan-v1 — 리포트 XI','// ① 정체성 앵커','card');
+  // 2026-10-11 (owner): compressed ②③ glance replaces the v1 card grid; restore the reviewed v1 bytes for baseline comparison.
+  [src,gx]=cut(src,'// ②③ 압축형',"'page(h,{anchor:\"ch0\",runhead:RH});})();'",'glance');
+  const at=src.indexOf("'page(h,{anchor:\"ch0\",runhead:RH});})();'",src.indexOf('// ① 정체성 앵커'));
+  src=src.slice(0,at)+require('node:fs').readFileSync(__dirname+'/_glance-v1-baseline.txt','utf8')+src.slice(at);
+  return {src,pin:{css:h(css),js:h(js),glance:h(gx)}};}
 function blocksEngine(src){
   let fn,call;[src,fn]=cut(src,'  /* asset-fan-v1 (2026-10-09','  /* PROG-01 — four-axis decision','fn');
   [src,call]=cut(src,'      var fan = assetFan(ap);','    }\n    return output;','call');
