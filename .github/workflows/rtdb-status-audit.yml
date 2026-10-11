@@ -1,0 +1,26 @@
+name: RTDB status audit (read-only counts)
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    environment: production-live
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: { node-version: "22" }
+      - name: Prepare identity
+        env: { FIREBASE_PRODUCTION_SERVICE_ACCOUNT: "${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}" }
+        run: |
+          set -euo pipefail; test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"; umask 077
+          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+          node -e 'const c=require(process.argv[1]);if(c.type!=="service_account"||c.project_id!=="lifeporfolio")throw Error("bad identity")' "$RUNNER_TEMP/sa.json"
+      - name: Count only (no values printed, no writes)
+        env: { GOOGLE_APPLICATION_CREDENTIALS: "${{ runner.temp }}/sa.json" }
+        run: npm ci --prefix functions --omit=dev && NODE_PATH=functions/node_modules node scripts/ops/rtdb-status-audit.cjs
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
