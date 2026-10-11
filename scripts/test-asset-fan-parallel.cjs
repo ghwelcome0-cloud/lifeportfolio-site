@@ -40,7 +40,7 @@ function run({from,to}){
   assert.equal(en._assetFan,undefined);assert.equal(off._assetFan,undefined);assert.equal(none._assetFan,undefined);c(3);
   // asset-quest-v1 (12주): 12 weeks, stages never fall within a phase end at 5, every week has an own source, hygiene.
   const q=prog._assetQuest;assert.ok(q&&q.version==='asset-quest-v1'&&q.phases.length===3,'quest '+seed);const wks=q.phases.flatMap(p=>p.weeks);
-  assert.deepEqual(wks.map(w=>w.week),[1,2,3,4,5,6,7,8,9,10,11,12]);assert.equal(wks[11].s,5);assert.equal(wks[0].quest,ap.firstStep);
+  assert.deepEqual(wks.map(w=>w.week),[1,2,3,4,5,6,7,8,9,10,11,12]);wks.forEach(w=>{assert.ok(w.verb&&w.verb.length<=7,'제42조 verb '+w.verb);assert.ok(/^AQ\d\d$/.test(w.ref),'제41조 ref');assert.ok(w.quest.length<=48,'제42조 one line '+w.quest);});q.phases.forEach(ph=>assert.ok(ph.end,'제42조 end'));assert.equal(wks[11].s,5);assert.equal(wks[0].quest,ap.firstStep);
   const own=[ap.firstStep,f.art,ap.basis.strength,f.rings[1].sub,(ap.others[0]||{}).first,(ap.others[0]||{}).name,q.kind,String(ap.jobs[0]||'').split(/\s*·\s*/)[0]].filter(Boolean);
   const ownN=wks.filter(w=>own.some(o=>(w.quest+' '+w.keep).includes(o))).length;assert.ok(ownN>=10,'F-4 own source weeks '+ownN);
   const qt=JSON.stringify(q);assert.ok(!/—|을\(를\)|\(으\)로|이\(가\)|undefined|null|NaN|을을|를를/.test(qt),qt);
@@ -50,7 +50,8 @@ function run({from,to}){
  }
  return out;}
 if(!isMainThread){parentPort.postMessage(run(workerData));}
-else{{const src=require('node:fs').readFileSync(root+'/assets/js/report-engine-v4.js','utf8'),m=/var TOPIC_SCENE_KO = \{([\s\S]*?)\};/.exec(src),eng=require('node:fs').readFileSync(root+'/assets/js/program-engine.js','utf8');
+else{{const srcT=require('node:fs').readFileSync(root+'/docs/자산화퀘스트_근거표_2026-10-11.md','utf8');for(let k=1;k<=12;k++)assert.ok(srcT.includes('| AQ'+String(k).padStart(2,'0')+' |'),'제41조 근거표 row AQ'+k);}
+ {const src=require('node:fs').readFileSync(root+'/assets/js/report-engine-v4.js','utf8'),m=/var TOPIC_SCENE_KO = \{([\s\S]*?)\};/.exec(src),eng=require('node:fs').readFileSync(root+'/assets/js/program-engine.js','utf8');
   const scenes=[...m[1].matchAll(/:\s*"특히 ([^"]+)"/g)].map(x=>x[1]);assert.equal(scenes.length,10);scenes.forEach(sc=>assert.ok(eng.includes('"'+sc+'": "'),'주소 원칙: no place for '+sc));}
  const t0=Date.now(),step=Math.ceil(N/W);
  Promise.all(Array.from({length:W},(_,i)=>new Promise((res,rej)=>{const w=new Worker(__filename,{workerData:{from:i*step,to:Math.min(N,(i+1)*step)}});w.on('message',res);w.on('error',rej);w.on('exit',c=>c&&rej(new Error('worker exit '+c)));}))).then(parts=>{
