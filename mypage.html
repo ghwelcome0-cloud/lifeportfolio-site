@@ -200,6 +200,13 @@
     .report-meta .tag{padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
     .report-actions{display:flex;gap:6px;flex-shrink:0}
     .report-actions .btn{padding:8px 12px;font-size:13px}
+    /* 2026-10-09: 5 buttons — keep title/tag on word boundaries; actions drop below as one row when space is short (PC·tablet·mobile). */
+    .report-card{flex-wrap:wrap}
+    .report-info{flex:1 1 260px}
+    .report-title,.report-meta .tag{word-break:keep-all;overflow-wrap:break-word;line-height:1.45}
+    .report-actions{flex-wrap:wrap;justify-content:flex-end;margin-left:auto}
+    .report-actions .btn{white-space:nowrap;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+    .report-title .tag{display:inline-block;margin-left:8px;vertical-align:2px;padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
     .recovery-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
     .recovery-heading .section-title{margin:0}
     .recovery-description{font-size:13px;color:var(--muted);line-height:1.65;margin:0 0 14px}
@@ -246,6 +253,8 @@
       .report-meta{font-size:12px;gap:8px}
       .report-actions{gap:6px}
       .report-actions .btn{padding:10px 12px;font-size:12.5px;min-width:0;flex:1 1 calc(50% - 3px)}
+      .report-actions .btn-accent{flex:1 1 calc(70% - 3px)}
+      .report-actions .report-delete-btn{flex:1 1 calc(30% - 3px)}
       .empty{padding:36px 18px}
       .empty .icon{font-size:40px}
       .section-title{font-size:16px;margin:20px 0 10px}
@@ -2433,7 +2442,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                    KO 리포트→KO 페이지, EN 리포트→EN 페이지 (마이페이지 표면 언어와 무관) -->
               <a href="${_withLangParam((it._bodyUnconfirmed ? 'report-loading.html?sid=' : 'report.html?sid=')+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-accent">${it._bodyUnconfirmed ? '리포트 저장 확인' : escapeHtml(L.btn_view)}</a>
               ${it._bodyUnconfirmed ? '' : `<a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(L.btn_program_title)}">${L.btn_program}</a>`}
-              ${(it._bodyUnconfirmed || window.LP_DIARY_ENABLED !== true) ? '' : `<a href="${_withLangParam('diary.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary lp-diary-link" title="${escapeHtml(L.btn_diary_title)}">${escapeHtml(L.btn_diary)}</a>`}
+              ${(it._bodyUnconfirmed || window.LP_DIARY_ENABLED !== true) ? '' : `<a href="${_withLangParam('diary.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary lp-diary-link" title="${escapeHtml(L.btn_diary_title)}">${escapeHtml(L.btn_diary)}</a>`}${(it._bodyUnconfirmed || window.LP_DIARY_ENABLED !== true || cardLang === 'en') ? '' : `<a href="${'diary.html?sid='+encodeURIComponent(it.sid)+'&open=path'}" data-lang-fix-skip="1" class="btn btn-secondary lp-path-link" title="내 리포트 응답으로 나의 자산화 길(일곱 가지 변화)을 찾아요. 결과는 참고, 고르는 건 내가 정해요.">💎 내 변화 찾기</a>`}
               <button type="button" class="btn report-delete-btn" data-sid="${sid}"
                 style="background:transparent;color:#b91c1c;border:1px solid #fecaca;padding:6px 10px;font-size:12px;border-radius:8px;cursor:pointer"
                 title="${escapeHtml(L.delete_btn_title)}">${L.delete_btn}</button>

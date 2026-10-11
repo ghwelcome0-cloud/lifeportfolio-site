@@ -3,7 +3,7 @@
 // to the public assets, so existing-group refresh and new reports use the same rules.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..'),h=f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
-for(const [pub,server] of [['assets/js/response-evidence.js','functions/shared/response-evidence.js'],['data/questions.json','functions/shared/questions.json']]){
+for(const [pub,server] of [['assets/js/response-evidence.js','functions/shared/response-evidence.js'],['data/questions.json','functions/shared/questions.json'],['assets/js/asset-map.js','functions/shared/asset-map.js'],['assets/js/asset-path.js','functions/shared/asset-path.js']]){
   assert.equal(h(server),h(pub),server+' must equal '+pub+' (copy it again after any reader/question change)');
 }
 // The server module must load without browser globals.

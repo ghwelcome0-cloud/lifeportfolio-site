@@ -285,6 +285,8 @@
     if (log.kept != null && (typeof log.kept !== "string" || log.kept.length > 300)) return { ok: false, error: "bad-kept" };
     var out = { date: log.date, text: log.text.replace(/\s+/g, " ").trim() };
     if (log.kept && log.kept.trim()) out.kept = log.kept.replace(/\s+/g, " ").trim();
+    // X5 (2026-10-09): optional — which of my seven changes this record shows. Shown as my own trace, never scored.
+    if (log.change != null) { if (ASSET_DIRECTIONS.indexOf(log.change) < 0) return { ok: false, error: "bad-change" }; out.change = log.change; }
     return { ok: true, clean: out };
   }
   // Calendar helpers for the undated diary: dates follow the owner's chosen start date.

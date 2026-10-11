@@ -6,6 +6,7 @@ const S=require('../assets/js/diary-schema.js');
 const files=['assets/js/diary-schema.js','assets/js/diary-app.js','diary.html','assets/css/diary.css','assets/js/diary-help.js','diary-guide.html'].map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]);
 const all=files.map(x=>x[1]).join('\n');
 let n=0;const t=(name,fn)=>{fn();n++;console.log('PASS '+name);};
+t('browser-scripts-parse',()=>{for(const f of ['assets/js/diary-app.js','assets/js/diary-help.js','assets/js/diary-schema.js','assets/js/asset-map.js'])new Function(fs.readFileSync(path.join(root,f),'utf8'));});
 t('print-map-256-pages',()=>{assert.equal(S.PAGES.length,257);const real=S.PAGES.filter(Boolean);assert.equal(real.length,250);
   for(const no of [1,2,4,6,7,19,257])assert.equal(S.PAGES[no]||null,null,'blank print side '+no);
   real.forEach(p=>assert.ok(S.TEMPLATES[p.tpl],p.key));});
@@ -36,6 +37,7 @@ t('page-published-with-security-headers',()=>{const allow=fs.readFileSync(path.j
   const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide|'));
   const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');assert.equal((idx.match(/_diary_module/g)||[]).length,2);assert.match(idx,/^exports\.diaryPurgeOnUserDelete = /m);assert.match(idx,/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m);
   assert.match(files[2][1],/<meta name="robots" content="noindex,nofollow">/);});
+t('mypage-pathfind-shortcut',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.equal((m.match(/lp-path-link/g)||[]).length,1);assert.match(m,/'&open=path'/);assert.ok(m.includes("cardLang === 'en') ? '' :"));});
 t('mypage-button-on',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = true;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});
 t('help-covers-every-template-and-spot',()=>{const H=require('../assets/js/diary-help.js');Object.keys(S.TEMPLATES).forEach(k=>{assert.ok(H.PAGE[k]&&H.PAGE[k].why&&H.PAGE[k].how,k);assert.ok((H.PAGE[k].why+H.PAGE[k].how).length<=260,'tip too long '+k);});
   const app=files[1][1];['pct','copy','stages','ifthen','score','quick','oneq','service'].forEach(k=>{assert.ok(H.SPOT[k],k);assert.ok(app.includes('tip("spot", "'+k+'")'),'spot used '+k);});
