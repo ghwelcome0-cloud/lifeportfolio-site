@@ -1280,6 +1280,16 @@
     var a0 = (ap.assets || []).filter(function (x) { return x && x.k && !/금융/.test(x.k); })[0] || null;
     // 고유성: the person's own words from the report (Q41 scene, strength #1), never a shared label.
     var bs = ap.basis || {}, scene = /에서$/.test(bs.scene || "") ? bs.scene : "", strength = String(bs.strength || "").trim();
+    // 주소 원칙 (owner 2026-10-11): the report's scene is a direction (metaphor allowed); a program step needs an
+    // address — a place you can go this month and the people you meet there. Same Q41 choice, concrete words.
+    var PLACE = {
+      "사회의 어려운 일에서": "이웃을 돕는 모임에서", "기술과 변화의 흐름 위에서": "새 기술을 함께 써 보는 모임에서",
+      "누군가 배우는 길목에서": "함께 배우는 모임에서", "자연과 생명의 흐름 곁에서": "텃밭 · 환경 모임에서",
+      "사람의 마음을 다루는 일에서": "마음을 나누는 모임에서", "만들고 표현하는 일에서": "함께 만드는 창작 모임에서",
+      "돈과 자원이 흐르는 길목에서": "돈 · 살림을 함께 고민하는 모임에서", "몸과 건강을 돌보는 일에서": "함께 운동하는 모임에서",
+      "사람들이 모이는 한복판에서": "동아리 · 공동체 모임에서", "삶의 의미를 묻는 시간 안에서": "삶을 나누는 모임에서"
+    };
+    var place = PLACE[scene] || "";
     var jb = function (w) { var c = String(w).replace(/[\s)」]+$/, "").slice(-1).charCodeAt(0); return c >= 0xac00 && c <= 0xd7a3 ? (c - 0xac00) % 28 : -1; };
     var eul = function (w) { var b = jb(w); return w + (b === 0 ? "를" : b > 0 ? "을" : "을(를)"); };
     var ga = function (w) { var b = jb(w); return w + (b === 0 ? "가" : b > 0 ? "이" : "이(가)"); };
@@ -1291,7 +1301,7 @@
     // Compressed, intuitive wording (owner 2026-10-11): each ring = one short action (head) + the person's own words (sub).
     // No dash punctuation; the full line keeps "when · who: sub head (stage)".
     var heads = [ap.firstStep, eul(art) + " 보여 주고 고쳐 쓰기", ga(a0 ? a0.k : art) + " 다시 쓰이게 하기"];
-    var subs = ["", scene ? scene + " 만난 사람들과" : "", strength ? "내 " + ro(strength) : ""];
+    var subs = ["", place, strength ? "내 " + ro(strength) : ""];
     var rings = [[1, 1, "30일", 1], [2, 2, "3개월", 2], [3, 5, "1년", 5]].map(function (q, i) {
       var g = { r: q[0], s: q[1], when: q[2], who: RING[q[0]], stage: STAGE[q[3]], head: heads[i], sub: subs[i] };
       g.line = g.when + " · " + g.who + ": " + (g.sub ? g.sub + " " : "") + g.head + " (" + g.stage + ")";
