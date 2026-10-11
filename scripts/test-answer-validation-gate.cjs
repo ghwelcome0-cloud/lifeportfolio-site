@@ -51,15 +51,24 @@ BAD.push({ qid: 'Q999', parent: null, kind: 'unknown_key', value: 3 });
 BAD.push({ qid: '_log', parent: null, kind: 'unknown_internal_key', value: { a: 1 } });
 // hold-out >= 5: distinct shapes from round-1 cases (10: Q3 missing, 11: Q41 multi_not_array, 12: Q4 likert_out_of_range)
 const HOLDOUT = [
-  { qid: 'Q6', kind: 'multi_over_max', value: byId.Q6.options.slice(0, 4) },
+  // C5 fix (checklist v12, Method 6026347 / Peer 6026353 / TL 6026385): the two previous hold-outs (Q6 options[0..3], Q33 [])
+  // were byte-identical to BAD rows. Replaced by shapes the BAD generator never produces (over max by 2 with the LAST
+  // options; array containing null). Hold-out is machine-checked against BAD below.
+  { qid: 'Q6', kind: 'multi_over_max_by2_tail', value: byId.Q6.options.slice(-5) },
   { qid: 'Q7', kind: 'single_not_in_options', value: '없는 선택지' },
   { qid: 'Q13', kind: 'multi_wrong_elem_type', value: [1, 2] },
   { qid: 'Q78', kind: 'other_text_too_long', value: 'y'.repeat(SPEC.otherMax + 50) },
-  { qid: 'Q33', kind: 'multi_empty', value: [] },
+  // NOTE (found while fixing C5): a hold-out `[option, null]` is NOT a usable negative case — RTDB drops null array
+  // elements at write time, so the stored value becomes the valid `[option]` (client validator still rejects it before
+  // submit). Recorded in the C5 doc; replaced by a mixed valid+invalid element array, which BAD never generates.
+  { qid: 'Q33', kind: 'multi_mixed_valid_invalid', value: [byId.Q33.options[0], '없는 선택지 2'] },
   { qid: 'Q77', kind: 'likert_wrong_type_on_multi_slot', value: 5 },
 ];
 const R1_NEG_SHAPES = new Set(['Q3|missing_required', 'Q41|multi_not_array', 'Q4|likert_out_of_range']);
 ok('holdout-disjoint-from-round1-shapes', HOLDOUT.every(h => !R1_NEG_SHAPES.has(h.qid + '|' + h.kind)) && HOLDOUT.length >= 5, HOLDOUT);
+// C5: hold-out must also be disjoint from the development (BAD) set as INPUTS, not just by label
+{ const badKeys = new Set(BAD.map(b => b.qid + '|' + JSON.stringify(b.value === undefined ? null : b.value)));
+  ok('holdout-disjoint-from-bad-set-inputs', HOLDOUT.every(h => !badKeys.has(h.qid + '|' + JSON.stringify(h.value))) && HOLDOUT.length >= 5, HOLDOUT.filter(h => badKeys.has(h.qid + '|' + JSON.stringify(h.value)))); }
 const setSha = sha({ bad: BAD.map(b => [b.qid, b.kind, b.value === undefined ? null : b.value]), holdout: HOLDOUT });
 
 // ---------- emulator helpers ----------
@@ -77,7 +86,9 @@ const sess = (answers, status) => ({ answers, status, startedAt: 1, updatedAt: 1
   ok('C8-rules-byte-identical-to-source', JSON.stringify(JSON.parse(rulesLive)) === JSON.stringify(JSON.parse(fs.readFileSync(path.join(root, 'database.rules.json'), 'utf8'))));
 
   // C7: positive regression — good inputs saved in_progress, item-by-item autosave, then submitted
-  for (const [i, opts] of [[1, {}], [2, { other: true }], [3, {}], [4, { other: true }]].entries()) {
+  // Defect fixed (TL 6027489/6027595): `[i, opts]` destructured `.entries()` pairs as [index, [n, opts]] so `opts.other` was always
+  // undefined and the other-option positive path never ran (seeds were 100..103). Now: n = 1..4 as the seed offset, opts honored.
+  for (const [n, opts] of [[1, {}], [2, { other: true }], [3, {}], [4, { other: true }]]) { const i = n;
     const u = await freshUser(); const sid = 's_17000000000' + i + '_gate'; const a = goodAnswers(100 + i, opts);
     const w1 = await put(`responses/${u.localId}/${sid}`, sess({ Q1: a.Q1, Q2: a.Q2 }, 'in_progress'), u.idToken); ok(`C7-${i}-create-in-progress`, w1.ok, await w1.text());
     let allItemsOk = true; for (const k of Object.keys(a)) { const w = await put(`responses/${u.localId}/${sid}/answers/${k}`, a[k], u.idToken); if (!w.ok) { allItemsOk = false; ok(`C7-${i}-item-${k}`, false, await w.text()); } }
