@@ -22,7 +22,7 @@ function run({from,to}){
   // own path
   const art=ap.days.map(d=>/^(.+) 남기기$/.exec(d.v)).find(Boolean)[1];
   assert.equal(f.type,ap.type.name);assert.ok(f.rings[0].line.includes(ap.firstStep));assert.ok(f.rings[1].line.includes(art));
-  const a0=ap.assets.find(x=>!/금융/.test(x.k));assert.ok(a0&&f.rings[2].line.includes(a0.k)&&!/금융/.test(f.rings[2].line));assert.ok(f.rings[1].line.includes(ap.basis.scene));if(ap.basis.strength)assert.ok(f.rings[2].line.includes(ap.basis.strength));c(2);assert.deepEqual(f.changes,[ap.type.name,...ap.others.slice(0,2).map(o=>o.name)]);
+  const a0=ap.assets.find(x=>!/금융/.test(x.k));assert.ok(a0&&f.rings[2].line.includes(a0.k)&&!/금융/.test(f.rings[2].line));assert.ok(!ap.basis.scene||(f.rings[1].sub&&/모임에서$/.test(f.rings[1].sub)&&!f.rings[1].line.includes(ap.basis.scene)),'주소 원칙: '+f.rings[1].line);if(ap.basis.strength)assert.ok(f.rings[2].line.includes(ap.basis.strength));c(2);assert.deepEqual(f.changes,[ap.type.name,...ap.others.slice(0,2).map(o=>o.name)]);
   f.accrue.forEach((l,i)=>assert.equal(l,'자산화: '+ap.assets[i].v+' → '+ap.assets[i].k));c(6);
   // math
   assert.equal(f.theta,40*f.changes.length);assert.ok(f.changes.length>=1&&f.changes.length<=3);
@@ -42,7 +42,9 @@ function run({from,to}){
  }
  return out;}
 if(!isMainThread){parentPort.postMessage(run(workerData));}
-else{const t0=Date.now(),step=Math.ceil(N/W);
+else{{const src=require('node:fs').readFileSync(root+'/assets/js/report-engine-v4.js','utf8'),m=/var TOPIC_SCENE_KO = \{([\s\S]*?)\};/.exec(src),eng=require('node:fs').readFileSync(root+'/assets/js/program-engine.js','utf8');
+  const scenes=[...m[1].matchAll(/:\s*"특히 ([^"]+)"/g)].map(x=>x[1]);assert.equal(scenes.length,10);scenes.forEach(sc=>assert.ok(eng.includes('"'+sc+'": "'),'주소 원칙: no place for '+sc));}
+ const t0=Date.now(),step=Math.ceil(N/W);
  Promise.all(Array.from({length:W},(_,i)=>new Promise((res,rej)=>{const w=new Worker(__filename,{workerData:{from:i*step,to:Math.min(N,(i+1)*step)}});w.on('message',res);w.on('error',rej);w.on('exit',c=>c&&rej(new Error('worker exit '+c)));}))).then(parts=>{
   const legacy=parts.reduce((s,p)=>s+(p.legacy||0),0);assert.ok(legacy>=N*0.45,'older reports '+legacy);const n=parts.reduce((s,p)=>s+p.n,0),checks=parts.reduce((s,p)=>s+p.checks,0),types={};parts.forEach(p=>Object.entries(p.types).forEach(([k,v])=>types[k]=(types[k]||0)+v));
   const d=[0,1,2].map(i=>new Set(parts.flatMap(p=>p.lines[i])).size),dw=new Set(parts.flatMap(p=>p.weekly)).size;
