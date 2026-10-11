@@ -769,9 +769,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // INPUT-VALIDATION (Q90 round-2 §7 (나)): never generate from stored answers that fail the questions.json rules
       //   (missing required item / wrong shape / out of range / outside option set). Same generated module as the
       //   survey and the RTDB rules. Correction notice points back to the exact item instead of generating a report.
+      // C10a ② (Q90 2회차 재동결 체크리스트): fail-closed — 검증 모듈이 없거나 검증 중 예외가 나면 리포트를 만들지 않는다.
+      var __av = null;
       try {
-        var __av = window.LPAnswerValidation && window.LPAnswerValidation.validateAll(session.answers || {});
-        if (__av && !__av.ok) {
+        if (!window.LPAnswerValidation || typeof window.LPAnswerValidation.validateAll !== "function") throw new Error("answer-validation module missing");
+        __av = window.LPAnswerValidation.validateAll(session.answers || {});
+        if (!__av || typeof __av.ok !== "boolean") throw new Error("answer-validation returned no verdict");
+      } catch (_avErr) {
+        console.error("[report-loading] answer validation unavailable — generation blocked:", _avErr && _avErr.message);
+        showError(_t('report_loading.err_validation_unavailable', "응답 검증 모듈을 불러오지 못해 리포트를 만들 수 없습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요."));
+        return;
+      }
+      {
+        if (!__av.ok) {
           var __q = __av.problems[0];
           var __avEn = (new URL(location.href).searchParams.get("lang") || "").toLowerCase() === "en" || (document.documentElement.lang || "").toLowerCase().indexOf("en") === 0;
           var __fixUrl = "suvey.html?sid=" + encodeURIComponent(sid) + (__avEn ? "&lang=en" : "");
@@ -779,7 +789,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           showError(String(__avMsg).replace("{id}", __q.qid).replace("{n}", String(__av.problems.length)).replace(/\{url\}/g, __fixUrl).replace("<a data-fix-link>", "<a href=\"" + __fixUrl + "\">"));
           return;
         }
-      } catch (_avErr) { console.warn("[report-loading] answer validation skipped:", _avErr && _avErr.message); }
+      }
       if (session.meta?.source === "b2b" && !groupResult) {
         throw new Error("이 단체 진단은 코드의 지정 진단과 다릅니다. 마이페이지에서 단체 연결을 확인해주세요.");
       }

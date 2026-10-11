@@ -88,9 +88,21 @@ function storeContext(flags={}){
  },window:flags.realEngine?{LPResponseEvidence:require('../assets/js/response-evidence.js'),CareerEngine:require('../assets/js/career-engine.js'),ReportEngine:require('../assets/js/report-engine.js'),ReportEngineV4:require('../assets/js/report-engine-v4.js')}:{LPResponseEvidence:{attachAxes:r=>r},CareerEngine:{build(){}},ReportEngine:{build:()=>structuredClone(generated)},ReportEngineV4:{upgrade:r=>r}},loadEngine:async()=>{},
  location:{href:'https://synthetic.invalid/report-loading?sid='+sid},document:{documentElement:{lang:'ko'}},
  setStage:()=>{},setProgress:p=>progress.push(p),showError:e=>{throw Error(e);},_t:(_k,v)=>v,_gotoReportOrHook:()=>nav.push(sid)});
+ // C10a ②: report-loading is fail-closed on the answer-validation module. This harness exercises the report FLOW with a
+ // minimal synthetic session ({Q1}), so it stubs a passing verdict; the dedicated 'validation-fail-closed-*' tests
+ // remove / break the stub and require the pipeline to stop before any write.
+ if(!('LPAnswerValidation' in flags))c.window.LPAnswerValidation={validateAll:()=>({ok:true,problems:[]})};
+ else c.window.LPAnswerValidation=flags.LPAnswerValidation;
  vm.runInContext(helpers+pipeline+';globalThis.run=runPipeline;globalThis.create=_createReportOnce;globalThis.index=_ensureReportIndex;',c);
  return {c,requests,progress,nav,report:()=>report,index:()=>index};
 }
+for(const group of [false,true])for(const mode of ['missing','throws','no-verdict','invalid'])await test('validation-fail-closed-'+group+'-'+mode,async()=>{
+ const stub=mode==='missing'?null:mode==='throws'?{validateAll(){throw Error('validator crashed');}}:mode==='no-verdict'?{validateAll:()=>undefined}:{validateAll:()=>({ok:false,problems:[{qid:'Q3',code:'missing_required'}]})};
+ const t=storeContext({group,LPAnswerValidation:stub});
+ await assert.rejects(t.c.run({uid},sid),mode==='invalid'?/Q3/:/검증 모듈/);
+ assert.equal(t.report(),null);assert.equal(t.nav.length,0);assert.ok(!t.progress.includes(25),'must stop before stage 1 done');
+ assert.equal(t.requests.filter(r=>r.kind==='PUT'||r.kind==='index'||r.action==='finalize'||r.action==='create').length,0);
+});
 for(const group of [false,true])for(const mode of ['success','missing','throws'])await test('axis-projection-first-save-'+group+'-'+mode,async()=>{
  const t=storeContext({realEngine:true,inputV2:true,group});
  if(mode==='missing')t.c.window.LPResponseEvidence=null;
