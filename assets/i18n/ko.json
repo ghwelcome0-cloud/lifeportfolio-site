@@ -935,7 +935,8 @@
     "stage4_desc": "표준 v3 규칙서에 따라 리포트를 마무리합니다.",
     "stage4_title": "리포트 12 섹션 조립",
     "sih_saved": "조용히 담아두었어요.",
-    "err_invalid_answers": "{id} 문항의 답이 비어 있거나 저장할 수 없는 형식이라 리포트를 만들 수 없습니다. <a data-fix-link>검사 페이지</a>에서 그 문항을 다시 답해 주세요. (문제 {n}건)"
+    "err_invalid_answers": "{id} 문항의 답이 비어 있거나 저장할 수 없는 형식이라 리포트를 만들 수 없습니다. <a data-fix-link>검사 페이지</a>에서 그 문항을 다시 답해 주세요. (문제 {n}건)",
+    "err_validation_unavailable": "응답 검증 모듈을 불러오지 못해 리포트를 만들 수 없습니다. 페이지를 새로고침한 뒤 다시 시도해 주세요."
   },
   "program_loading": {
     "meta_title": "실행 프로그램 생성 중 | 인생포트폴리오",

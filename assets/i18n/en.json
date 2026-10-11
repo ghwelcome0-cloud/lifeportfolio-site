@@ -935,7 +935,8 @@
     "stage4_desc": "Finalizing the report per the standard v3 rule book.",
     "stage4_title": "Assemble 12 report sections",
     "sih_saved": "Quietly kept.",
-    "err_invalid_answers": "The answer for item {id} is missing or in a format that can't be saved, so the report can't be created. Please answer that item again on the <a data-fix-link>diagnostic page</a>. ({n} issue(s))"
+    "err_invalid_answers": "The answer for item {id} is missing or in a format that can't be saved, so the report can't be created. Please answer that item again on the <a data-fix-link>diagnostic page</a>. ({n} issue(s))",
+    "err_validation_unavailable": "The answer-validation module could not be loaded, so the report cannot be generated. Please refresh the page and try again."
   },
   "program_loading": {
     "meta_title": "Generating Action Program | Life Portfolio",
