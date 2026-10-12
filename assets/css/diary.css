@@ -427,3 +427,40 @@ body.no-motion .pf-bubble{transition:none}
 .aq-cardbox .copy-btn,.aq-seed .copy-btn{min-height:44px}
 /* typeset-v1 (2026-10-12): 짧은 덩어리는 줄 길이를 고르게, 긴 문단은 마지막 줄에 한 어절만 남지 않게. */
 .ts-short,.ts-long{overflow-wrap:break-word}.ts-short{text-wrap:balance}.ts-long{text-wrap:pretty}
+/* 비전카드 (vision-card-v1, 2026-10-12) — 12주 칸과 자산 카드가 다음 서비스·도우미로 이어지는 길. 화면 전용. */
+.aq-jump{margin:0 0 8px;text-align:right}
+.aq-jump a{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-size:14px;font-weight:700;color:var(--brg);text-decoration:underline;text-underline-offset:3px}
+.vc{position:relative;margin:18px 0 6px;padding:18px 16px 14px;border:1.5px solid var(--gold);border-radius:16px;background:linear-gradient(180deg,#fffdf7,#f8f1e1);box-shadow:inset 0 0 0 4px #fffdf7,inset 0 0 0 5px rgba(176,140,83,.28)}
+.vc-eye{margin:0;text-align:center;font-size:11px;font-weight:700;letter-spacing:.32em;text-indent:.32em;color:var(--gold-2)}
+.vc-h{margin:4px 0 10px;text-align:center;font-family:var(--serif);font-size:20px;color:var(--brg);outline:none}
+.vc-k{display:block;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--gold-2);margin:0 0 2px}
+.vc-vis{margin:0 0 12px;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--rule);text-align:center;font-family:var(--serif);font-size:16px;line-height:1.6;font-weight:700;color:var(--ink)}
+.vc-faq{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:6px}
+.vc-faq li{font-size:14px;line-height:1.6;background:#fff;border-radius:10px;padding:8px 10px;border:1px dashed var(--rule)}
+.vc-faq b{color:var(--brg);margin-right:4px}
+.vc-steps{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--rule);display:grid;gap:10px}
+.vc-step{position:relative;background:#fff;border:1px solid var(--rule);border-radius:12px;padding:10px 12px}
+.vc-step::before{content:"";position:absolute;left:-22px;top:16px;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--rule)}
+.vc-step--past::before{background:var(--brg);border-color:var(--brg)}
+.vc-step--now{border-color:var(--gold);box-shadow:0 0 0 2px rgba(224,164,88,.25)}
+.vc-step--now::before{background:var(--gold);border-color:var(--gold)}
+.vc-step--next{opacity:.92}
+.vc-when{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 2px}
+.vc-when b{font-size:15px;color:var(--brg)}
+.vc-here,.vc-past{font-size:12px;font-weight:700;border-radius:999px;padding:1px 8px}
+.vc-here{background:var(--gold);color:#fff}.vc-past{background:#eef4f2;color:var(--brg)}
+.vc-aim{margin:0 0 6px;font-family:var(--serif);font-size:15.5px;font-weight:700;line-height:1.5}
+.vc-row{margin:6px 0 0;font-size:14px;line-height:1.55}
+.vc-row small{color:var(--ink-2)}
+.vc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.vc-svc,.vc-help,.vc-soon{display:inline-flex;align-items:center;gap:5px;font-size:13px;line-height:1.35;border-radius:999px;padding:5px 10px;border:1px solid var(--rule);background:#fbf8f1;color:var(--ink)}
+button.vc-svc{min-height:44px;cursor:pointer;font:inherit;font-size:13px;font-weight:700;border-color:var(--brg);color:var(--brg);background:#fff}
+.vc-help{background:#f1f6f4;border-color:#d3e3de}
+.vc-soon{border-style:dashed;color:var(--ink-2);background:transparent;font-size:12px}
+.vc-carry{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#fff;border:1px solid var(--rule)}
+.vc-carry ul{margin:2px 0 0;padding-left:18px;font-size:14px;line-height:1.65}
+.vc-promise{margin:10px 0 0;padding-left:18px;font-size:13px;line-height:1.65;color:var(--ink-2)}
+@media (min-width:768px){.vc{padding:22px 22px 16px}.vc-step{padding:12px 14px}}
+.vc .badge{white-space:nowrap;flex:0 0 auto;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:#ece6d8;color:#4a3d1f;border:0}
+.vc .badge.on{background:var(--brg);color:#fff}
+.vc-svc{text-align:left}
