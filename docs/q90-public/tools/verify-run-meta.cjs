@@ -18,7 +18,8 @@ else {
   if (/\b\d{1,3}(\.\d{1,3}){3}\b/.test(txt)) fails.push('IP 주소 패턴 발견 — 공개 폴더 금지');
   if (/[A-Za-z0-9-]+\.(local|lan|home|corp)\b/i.test(txt) || /\b(DESKTOP|LAPTOP|MacBook|iMac)-?[A-Za-z0-9]*/i.test(txt)) fails.push('기계 이름 패턴 발견 — 공개 폴더 금지');
   if (/\/Users\/[^/"]+|C:\\\\Users\\\\[^\\"]+|\/home\/(?!user\b)[^/"]+/.test(txt)) fails.push('사용자 경로 패턴 발견 — 공개 폴더 금지');
-  for (const k of ['bound_commit', 'browser', 'profile', 'started_utc', 'ended_utc', 'machine_kind']) if (!meta[k]) fails.push(`run-meta.${k} 비어 있음`);
+  for (const k of ['bound_commit', 'browser', 'profile', 'started_utc', 'ended_utc', 'machine_kind', ...(meta.run === 'r3' ? [] : ['os_kind', 'os_timezone', 'browser_lang_flag', 'accept_language_sent', 'tool_sha_before_run'])]) if (!meta[k]) fails.push(`run-meta.${k} 비어 있음`);
+  if (meta.tool_sha_before_run && meta.tool_sha_before_run !== TOOL_SHA) fails.push(`실행자 보고 도구 sha(실행 직전) 불일치: ${meta.tool_sha_before_run}`);
   if (meta.bound_commit && meta.bound_commit !== '9557e46') notes.push(`bound_commit=${meta.bound_commit} (§24 는 9557e46)`);
 }
 // 결과·로그 파일에도 IP 유입 검사(측정기는 IP를 적지 않음 — 혹시 모를 유입 방지)

@@ -45,6 +45,11 @@ node tools/score-e1.cjs $RUN | tee $RUN/score.log
   "bridge_rows": ["K02", "K05", "K13", "K18"],
   "started_utc": "2026-10-13T00:00:00Z",
   "ended_utc": "2026-10-13T00:05:00Z",
+  "browser_lang_flag": "en-US",
+  "os_kind": "Windows 11",
+  "os_timezone": "Asia/Seoul",
+  "accept_language_sent": "ko-KR,ko;q=0.9,en-US;q=0.8",
+  "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
   "roster_subset_sha256": "c90a9c4fc20afed61727849b0aa41850c608bd17fb30fd170709e65ee917316f"
 }
 ```
@@ -52,6 +57,13 @@ node tools/score-e1.cjs $RUN | tee $RUN/score.log
 - `egress_country`는 **국가 코드 두 글자만**. IP 주소·기계 이름·사용자명·회사 내부 주소는 **절대 넣지 않습니다**(Peer 결박). 그런 값은 대표 PC 메모에만.
 - `browser`는 실제 버전으로. 148.0.7778.97과 다르면 다른 대로 적습니다(숨기지 않음).
 - `network_kind`는 종류만(`home-wifi` / `office-wired` / `mobile-tether`).
+- `os_kind`는 OS 종류·버전(기본 글꼴이 달라 글자 크기·가로 넘침 지표가 달라질 수 있어 비교 해석에 필요 — Peer). `os_timezone`은 OS 시간대 이름.
+- `accept_language_sent`: 측정 **직전** 같은 headless 브라우저로 헤더 확인 페이지를 1회 열어 실제 보낸 `Accept-Language` 값을 적습니다(TL). 명령:
+  ```bash
+  PPTR_CORE=puppeteer node -e "const p=require('puppeteer');(async()=>{const b=await p.launch({headless:'shell',args:['--lang=en-US']});const pg=await b.newPage();await pg.goto('https://httpbin.org/headers');console.log(await pg.evaluate(()=>document.body.innerText));await b.close()})()"
+  ```
+  (도구는 브라우저를 `--lang=en-US`로 띄웁니다 — 국내 PC에서도 "영어 사용자"로 접속합니다. 이것은 r3·r4 공통 한계로 공개합니다. 한국어 설정 측정은 도구가 바뀌므로 r5.)
+- `tool_sha_before_run`: 실행 **직전** `sha256sum tools/measure-e1.cjs` 출력을 그대로 붙입니다(도구가 스스로 적는 sha와 별개 — 실행자 증명, Peer).
 
 ## 보내는 것
 
@@ -62,7 +74,7 @@ node tools/score-e1.cjs $RUN | tee $RUN/score.log
 
 - `tools/measure-e1.cjs`를 **수정하지 않기**(글자 하나라도). 타임아웃을 늘리고 싶어도 안 됩니다 — r3와 같은 조건이어야 비교가 성립합니다.
 - 로그인한 브라우저 프로필 쓰지 않기. VPN·프록시 쓰지 않기(국내 출구가 아니게 됨).
-- 실패한 행을 다시 돌려 "성공한 것만" 보내지 않기. 한 번 돌린 결과 그대로 보냅니다. 재시도가 필요하면 `-r4b`로 **별도 run** 을 만듭니다.
+- **r4는 1회 실행만 채택**합니다(Peer). 실패한 행을 다시 돌리거나 "성공한 것만" 보내지 않기. 한 번 돌린 결과 그대로 보냅니다. 다시 재야 하면 `r4b`가 아니라 **r5**(새 결박)로 넘깁니다.
 - 결과 파일을 손으로 고치지 않기(run-meta.json만 손으로 작성).
 
 ## 총괄이 받은 뒤 하는 일(순서 고정)

@@ -12,5 +12,9 @@
  "ended_utc": "2026-10-12T10:12:04.927Z",
  "roster_subset_sha256": null,
  "roster_sha256_note": "roster/roster-v2.json 전체",
- "retro_note": "egress_country 는 ipinfo.io 조회(US, 2026-10-12T19:05Z) — r3 당시 조회는 없었음, 같은 샌드박스라 같다고 가정(가정임을 적음)"
+ "retro_note": "egress_country 는 ipinfo.io 조회(US, 2026-10-12T19:05Z) — r3 당시 조회는 없었음, 같은 샌드박스라 같다고 가정(가정임을 적음)",
+ "os_kind": "Linux (sandbox)",
+ "os_timezone": "UTC",
+ "browser_lang_flag": "en-US",
+ "accept_language_sent": "미기록(§24-b 전 run)"
 }

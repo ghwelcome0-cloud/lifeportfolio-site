@@ -19,10 +19,11 @@ const toolShas = [...new Set(runs.map(r => r.tool_sha256))];
 if (toolShas.length !== 1) { console.error('도구 sha 불일치 — 조립 중단(§24):', toolShas); process.exit(4); }
 const okRow = r => r && !r.skip && ((r.mobile && r.mobile.ok && r.mobile.status < 400) || (r.headers && r.headers.ok));
 const byRow = {};
+// §24-b(Peer 6105340·TL 6105372): 표 = 앞선 run에서 성공한 행은 그 값 유지, 앞선 run에서 실패한 행만 뒤 run 값. 뒤 run의 나머지 값은 §25 비교용(compare_only).
 for (const run of runs) for (const r of run.results) {
   const prev = byRow[r.row];
   if (r.skip) { if (!prev) byRow[r.row] = { res: r, run, reason: 'own' }; continue; }
-  if (run.bridge.has(r.row) && prev && prev.ok) { prev.bridge_diff_with = run.tag; continue; } // 겹침 행: 앞선 값 유지
+  if (prev && prev.ok) { prev.compare_only_runs = [...(prev.compare_only_runs || []), run.tag]; continue; } // 이미 성공한 행: 값 유지(겹침 포함, 40행 측정도 동일)
   if (okRow(r)) byRow[r.row] = { res: r, run, ok: true, previously_failed_in: prev && !prev.ok ? prev.run.tag : (prev && prev.previously_failed_in) };
   else if (!prev || !prev.ok) byRow[r.row] = { res: r, run, ok: false, failures: [...((prev && prev.failures) || []), { run: run.tag, egress: run.egress, error: (r.mobile && r.mobile.error) || (r.headers && r.headers.error) || 'unknown' }] };
 }
@@ -35,13 +36,13 @@ for (const [row, x] of Object.entries(byRow)) {
   results.push({ ...x.res, assembled_from: tagStr });
   const note = x.previously_failed_in ? `해외 접속 시 시간 초과(${x.previously_failed_in})` : null;
   scored.push({ ...sc, run_tag: tagStr, prior_failure_note: note, failure_class: x.ok ? null : classify(x.failures && x.failures[x.failures.length - 1].error), failures: x.failures || undefined });
-  provenance.push({ row, from: tagStr, ok: !!x.ok, prior_failure_note: note, bridge_diff_with: x.bridge_diff_with || null, failures: x.failures || null });
+  provenance.push({ row, from: tagStr, ok: !!x.ok, prior_failure_note: note, compare_only_runs: x.compare_only_runs || null, failures: x.failures || null });
 }
 const order = runs[runs.length - 1].results.map(r => r.row); // 명부 순서는 마지막 run 기준이 아니라 전체 합집합 — 첫 run(전체 40행) 순서 사용
 const first = runs[0].results.map(r => r.row);
 const idx = r => { const i = first.indexOf(r); return i < 0 ? 1000 + order.indexOf(r) : i; };
 results.sort((a, b) => idx(a.row) - idx(b.row)); scored.sort((a, b) => idx(a.row) - idx(b.row)); provenance.sort((a, b) => idx(a.row) - idx(b.row));
-const header = { assembled: true, rule: 'G21 §24 — 행마다 성공적으로 측정한 가장 최근 run; 겹침 행은 앞선 값 유지', bound_commit: '9557e46', inputs: runs.map(r => ({ run: r.tag, dir: path.basename(r.dir), egress_country: r.egress, tool_sha256: r.tool_sha256, startedAt: r.startedAt, rows: r.results.length, bridge_rows: [...r.bridge] })), tool_sha256: toolShas[0], generatedAt: new Date().toISOString() };
+const header = { assembled: true, rule: 'G21 §24-b — 앞선 run 성공 행은 그 값 유지, 앞선 run 실패 행만 뒤 run 값; 뒤 run의 그 밖 값은 §25 비교용', bound_commit: '9557e46 + §24-b', inputs: runs.map(r => ({ run: r.tag, dir: path.basename(r.dir), egress_country: r.egress, tool_sha256: r.tool_sha256, startedAt: r.startedAt, rows: r.results.length, bridge_rows: [...r.bridge] })), tool_sha256: toolShas[0], generatedAt: new Date().toISOString() };
 fs.writeFileSync(path.join(OUT, 'e1-results.json'), JSON.stringify({ tool: 'assemble-latest.cjs', ...header, roster_version: runs[0].results.length && JSON.parse(fs.readFileSync(path.join(runs[0].dir, 'e1-results.json'), 'utf8')).roster_version, evidence: 'E1', startedAt: runs[0].startedAt, results }, null, 1));
 fs.writeFileSync(path.join(OUT, 'e1-scored.json'), JSON.stringify(scored, null, 1));
 fs.writeFileSync(path.join(OUT, 'assembly.json'), JSON.stringify({ ...header, measured: provenance.filter(p => p.ok).length, total_non_own: provenance.filter(p => p.from && !/own/.test(p.from) && byRow[p.row].reason !== 'own').length, provenance }, null, 1));

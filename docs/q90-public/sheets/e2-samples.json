@@ -5725,6 +5725,13 @@
     "assembly": "tools/assemble-latest.cjs → runs/latest (행마다 최신 성공 run, 셀 태그 rN·CC)",
     "instructions": "runs/r4-INSTRUCTIONS.md",
     "status": "측정 대기 — 국내 egress 실행자(파이스 컴퓨터/대표) 필요",
-    "amendment_24a": "2026-10-12T19:30Z 측정 전 보완: 사전 재현 run(r3b-us-repro)에서 K13이 r3와 같이 404(명부 URL 결함, A6 비교 불가) → 겹침에 K18 추가(13행). 9행 시간 초과 재현, K02 바이트 hash r3와 동일, K05·K13 hash 변화(원시값 변화 0 — 동적 콘텐츠 가능성, 단정 안 함)."
+    "amendment_24a": "2026-10-12T19:30Z 측정 전 보완: 사전 재현 run(r3b-us-repro)에서 K13이 r3와 같이 404(명부 URL 결함, A6 비교 불가) → 겹침에 K18 추가(13행). 9행 시간 초과 재현, K02 바이트 hash r3와 동일, K05·K13 hash 변화(원시값 변화 0 — 동적 콘텐츠 가능성, 단정 안 함).",
+    "amendment_24b": "2026-10-12T19:45Z 측정 전 보완(Peer 6105340 4건·TL 6105372): ① 조립 규칙 하나로: 표 = 앞선 run 성공 행은 그 값, 앞선 run 실패 행만 뒤 run 값, 뒤 run 나머지는 §25 비교용(40행 측정도 동일; assemble-latest 코드 반영) ② r4 1회 실행만 채택, 재실행은 r5+새 결박 ③ 실행자 증명 4건(실행 직전 도구 sha·결과 tar sha·스크린샷 원본·OS) 시트 기록 ④ 공개 한계: r4 실행 기계=이해관계자(대표) PC, 새 프로필·sha 고정으로 보완 ⑤ run-meta에 browser_lang_flag(en-US 도구 고정)·OS 시간대·OS·실제 Accept-Language 추가; 공개 한계 \"r3·r4 모두 브라우저 언어 en-US 고정 — 한국어 사용자 첫 화면과 다를 수 있음\"(r3에도 해당); 한국어 설정 측정은 r5",
+    "executor_proofs": {
+      "tool_sha_before_run": null,
+      "result_tar_sha256": null,
+      "screenshots_received": null,
+      "os_kind": null
+    }
   }
 }
