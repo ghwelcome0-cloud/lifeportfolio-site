@@ -842,7 +842,8 @@
     "class": "해당 없음",
     "evidence_url": "https://ipip.ori.org/",
     "evidence_line": "\"This is the official website for the International Personality Item Pool (IPIP)… includes over 3,000 items and over 250 scales\" — 문항·척도 저장소. 운영 주체가 개인에게 리포트를 발급하는 제품이 아님(검사 운영 사이트는 전부 제3자).",
-    "checked_at": "2026-10-12T08:35Z"
+    "checked_at": "2026-10-12T08:35Z",
+    "verification": "TL 6082221 가 · Peer 6082129 가 → 확정"
    }
   },
   {
@@ -2480,7 +2481,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "not_applicable",
+   "status": "no_sample",
    "judge1": {
     "A1": {
      "level": null,
@@ -2548,10 +2549,10 @@
    "A5": null,
    "packet_sha256": null,
    "denominator_class": {
-    "class": "해당 없음",
+    "class": "미확인",
     "evidence_url": "https://fullfocusplanner.com/pages/about",
-    "evidence_line": "\"Award-Winning Planners · Life Planning Tools · daily planners and leadership books\" — 종이 플래너(자기 기록 도구). 검사·채점·개인 결과 리포트 없음.",
-    "checked_at": "2026-10-12T08:35Z"
+    "evidence_line": "\"Award-Winning Planners · Life Planning Tools · daily planners and leadership books\" — 종이 플래너(자기 기록 도구). 검사·채점·개인 결과 리포트 없음. | 대조 결과(Peer 6082129 가 · TL 6082165 불가→6082221 가로 정정 · Method 6082272 \"불일치→기본값\") → §21 \"애매하면 분모에 남김\" 적용, 미확인으로 분모 잔류. 같은 회사의 별도 진단(LifeScore)은 개인 결과를 주지만 명부 행 제품 범위 밖 → 다음 명부 개정 때 새 ID 후보.",
+    "checked_at": "2026-10-12T09:05Z"
    }
   },
   {
@@ -2569,7 +2570,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "not_applicable",
+   "status": "no_sample",
    "judge1": {
     "A1": {
      "level": null,
@@ -2637,10 +2638,10 @@
    "A5": null,
    "packet_sha256": null,
    "denominator_class": {
-    "class": "해당 없음",
+    "class": "미확인",
     "evidence_url": "https://bestself.co/products/self-journal",
-    "evidence_line": "\"13-Week Goal Planner… Fill in the pages… undated daily pages\" — 종이 저널. 검사·채점·개인 결과 리포트 없음.",
-    "checked_at": "2026-10-12T08:35Z"
+    "evidence_line": "\"13-Week Goal Planner… Fill in the pages… undated daily pages\" — 종이 저널. 검사·채점·개인 결과 리포트 없음. | 대조 결과(Peer 6082129 가 · TL 6082165 불가→6082221 가로 정정 · Method 6082272 \"불일치→기본값\") → §21 \"애매하면 분모에 남김\" 적용, 미확인으로 분모 잔류. 같은 회사의 별도 진단(Benchmark)은 개인 결과를 주지만 명부 행 제품 범위 밖 → 다음 명부 개정 때 새 ID 후보.",
+    "checked_at": "2026-10-12T09:05Z"
    }
   },
   {
@@ -5481,7 +5482,9 @@
    "picked_judge1_count": 3,
    "cause_candidate_next_round": "제3자 이유 3건이 동일: 표지(1쪽) 전면 가림 → 처음 내용이 보이는 쪽은 2쪽, 사람 정보는 3쪽에 처음 등장. 차이≥2는 잡음이 아니라(추정) 가림 패킷에서 A1 \"첫 페이지\"를 어느 쪽으로 볼지 RUBRIC이 정하지 않아 생긴 해석 차이. 이번 판정은 바꾸지 않음. 다음 회차 RUBRIC 사전 고정: \"A1 = 가림 표지 다음의 첫 내용 쪽\".",
    "picked_values_fact": "제3자가 고른 3칸 값은 모두 낮은 쪽(L2) — \"judge1 답 3/3\" = \"낮은 값 3/3\"(사실만)",
-   "prepare_idempotency_fix": "2026-10-12 결함 ⑮(근접): prepare 재실행이 답 있는 패킷의 X/Y 배정을 다시 섞음 → 커밋된 picked_judge_facts로 복원, prepare는 답/발송된 blind_id를 건너뛰도록 수정"
+   "prepare_idempotency_fix": "2026-10-12 결함 ⑮(근접): prepare 재실행이 답 있는 패킷의 X/Y 배정을 다시 섞음 → 커밋된 picked_judge_facts로 복원, prepare는 답/발송된 blind_id를 건너뛰도록 수정",
+   "assignment_sha256": "d9e033e390fa481d5e20a4e18b3db734468ead81d4d35c84ca2cecf063cf6f52",
+   "assignment_pinned_at": "2026-10-12T09:13:20Z"
   },
   "memory_check": {
    "bound_at": "2026-10-12T05:52:55Z",
@@ -5569,14 +5572,21 @@
   ],
   "third_stage_plan": "제3자는 차이≥2 축이 생길 때만 필요. 기존 42명 중 결박 기준(자사 작업 0·검사 서비스 메모 0)을 만족하는 후보 없음. 새 judge1 답안이 모두 오면 차이≥2 축 수를 레벨 비공개 파일로만 계산 → 0이면 제3자 불필요(규칙상 낮은 값), ≥1이면 대표 승인 받아 새 에이전트 생성 후 4단계+memory_check+rc2.",
   "aggregation": {
-   "file_sha256": "9ce565e442990b9e4ccc96bc4fedfa0e5cbf92ad8788b57015142865428b30ea",
+   "file_sha256": "8dcdb28edbd202bf94af97d738e77e405c64d5061e623f1f1210021ac9fd42a5",
    "aggregated_at": "2026-10-12T08:40:01Z",
    "n_samples": 10,
    "n_third_used": 3,
    "n_unresolved": 0,
    "levels_first_read_by_coordinator_at": "2026-10-12T08:01:02Z",
    "note": "레벨 값은 제3자 3축 완료 후 처음 열람·전사(결박 순서 준수)",
-   "round2_note": "10번째(G15b) 2026-10-12 2회차: judge 2인 차이≥2 축 0 → 제3자 불필요"
+   "round2_note": "10번째(G15b) 2026-10-12 2회차: judge 2인 차이≥2 축 0 → 제3자 불필요",
+   "lower_rule_effect_summary": {
+    "n": 10,
+    "mean_points_per_sample": 1.35,
+    "max": 2.0,
+    "min": 0.0,
+    "note": "평균 원값 합계 − 공개 합계(점). 공개 표 값은 불변. 크기 기록용(Method 6082272)."
+   }
   },
   "publication_fact": {
    "note": "E2 레벨(45축)이 G19 검토 전에 공개 저장소 브랜치 q90-public/e3-e2-batch2에 push됨 — \"G19 전 미게시\"는 사실이 아님. 정정: \"G19 전 확정본 아님(초안 상태로 공개 브랜치에 있음)\". 되돌리지 않음(기록 보존).",
@@ -5602,16 +5612,23 @@
   ],
   "default": "애매하면 분모에 남김",
   "counts": {
-   "미확보(비공개 포함)": 27,
-   "해당 없음": 3,
-   "미채택": 1
+   "해당 없음": 1,
+   "미확보(비공개 포함)": 26,
+   "미채택": 1,
+   "미확인": 2,
+   "확보(2회차)": 1
   },
   "n_roster": 40,
-  "n_not_applicable": 3,
-  "n_target": 37,
+  "n_not_applicable": 1,
+  "n_target": 39,
   "n_measured": 10,
-  "public_line": "E2 측정 10 / 대상 37(해당 없음 3 제외) / 명부 40",
-  "verification": "해당 없음 행 TL·Peer 각 1회 대조 대기"
+  "public_line": "E2 측정 10 / 대상 39(해당 없음 1 제외) / 명부 40",
+  "verification": "G02a: TL·Peer 가(확정). E06·E07: 대조 불일치 → 기본값(분모 잔류, 미확인). Method 6082272 경로.",
+  "next_roster_revision_bindings": [
+   "행 단위 = 명부 URL의 제품",
+   "해당 없음 대조가 불일치하면 분모에 남김",
+   "LifeScore(Full Focus)·Benchmark(BestSelf)는 별도 행 후보"
+  ]
  },
  "packet_order_round1": [
   "S-04d5ce",

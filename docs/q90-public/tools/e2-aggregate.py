@@ -31,6 +31,10 @@ for r in d['rows']:
         else:
             out['axes'][ax] = {'level': None, 'rule': 'diff>=2, third absent → 미확정'}; out['unresolved_axes'].append(ax); n_unresolved += 1
     if not out['unresolved_axes']: out['total'] = sum(v['level'] for v in out['axes'].values())
+    # Method 6082272: '낮은 값' 규칙의 방향 효과 크기를 재기 위해 원값(두 judge 평균·judge별 합계)을 함께 남긴다. 공개 표 값은 바뀌지 않는다.
+    out['raw_reference'] = {'judge1_total': sum(int(a1[ax]['level']) for ax in AX), 'judge2_total': sum(int(a2[ax]['level']) for ax in AX),
+                            'mean_total': round(sum((int(a1[ax]['level']) + int(a2[ax]['level'])) / 2 for ax in AX), 1),
+                            'lower_rule_effect': (round(sum((int(a1[ax]['level']) + int(a2[ax]['level'])) / 2 for ax in AX) - out['total'], 1) if out['total'] is not None else None)}
     out['guess'] = {'judge1': (a1.get('guess') or {}).get('thinks_knows'), 'judge2': (a2.get('guess') or {}).get('thinks_knows')}
     rows.append(out)
 res = {'_header': 'INTERNAL DRAFT — DO NOT PUBLISH (TL 6069927 · Method 6069939 결박)' if DRAFT else 'E2 aggregated', 'aggregated_at': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),

@@ -5,7 +5,7 @@
 ## ① 확인된 것
 **GitHub 쪽 사실**
 - Environments에 "설명란"은 **없다**(⑫). 쓸 수 있는 보호 장치: Required reviewers(최대 6), Wait timer, Deployment branches, `can_admins_bypass`, `prevent_self_review`.
-- 현재 설정: Required reviewers = 대표 계정, admin bypass 불가, self-review 방지 없음(대표가 직접 승인 가능).
+- 현재 설정: Required reviewers = 대표 계정, admin bypass 불가, self-review 방지 없음. **승인은 대표 계정 토큰을 쓰는 승인기(데몬)가 수행 — 사람 확인 아님**(Peer #406 권고 문장).
 - 대기 중 배포 승인 API: `POST repos/{o}/{r}/actions/runs/{id}/pending_deployments` with `--input -` JSON `{"environment_ids":[...],"state":"approved","comment":"..."}`. `-f environment_ids[]=` 형식은 실패한다.
 - `gh api .../pending_deployments`의 `current_user_can_approve`로 자기 권한 확인.
 
@@ -38,6 +38,7 @@
 ```bash
 gh run list -R ghwelcome0-cloud/lifeportfolio-site --status waiting          # 대기 배포 확인
 tail -n 20 /home/user/work/deploy-approver.log                              # 승인기 결정 로그
-echo "ALLOW <sha7> TL <대표 허용 메시지 id>" >> /home/user/work/deploy-allow.txt  # functions 별도 허용 등록
+# functions 별도 허용 등록 — 절차: ① 허용 메시지 id를 gsk genteam read로 열어 보낸 사람이 대표(사람 계정)인지 확인 ② 확인한 뒤에만 아래 줄 추가(기계 확인 도구가 생기면 그 이름으로 교체)
+echo "ALLOW <sha7> TL <대표 허용 메시지 id>" >> /home/user/work/deploy-allow.txt
 touch /home/user/work/deploy-STOP                                            # 전부 정지
 ```
