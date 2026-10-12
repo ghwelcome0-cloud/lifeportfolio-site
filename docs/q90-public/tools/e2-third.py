@@ -59,7 +59,14 @@ if CMD == 'prepare':
                 items.append({'axis': ax, 'A': {'level': pair[0][1]['level'], 'reason': pair[0][1]['reason']}, 'B': {'level': pair[1][1]['level'], 'reason': pair[1][1]['reason']}, '_map': {'A': pair[0][0], 'B': pair[1][0]}})
         (TD / f'{bid}.third-packet.json').write_text(json.dumps({'blind_id': bid, 'items': items}, ensure_ascii=False, indent=1))
         summary.append((bid, len(items)))
-    json.dump({'prepared_at': now(), 'need_third': {b: n for b, n in summary}}, open(TD / '_summary.json', 'w'), ensure_ascii=False, indent=1)
+    # 배정표 sha 고정(Peer 6082129): 처음 만들 때 시트에 기록, 재실행 시 다르면 중단
+    import glob
+    maps = {pathlib.Path(f).stem.split('.')[0]: json.loads(open(f).read())['items'] for f in sorted(glob.glob(str(TD / '*.third-packet.json')))}
+    msha = hashlib.sha256(json.dumps({k: [(i['axis'], i['_map']) for i in v] for k, v in maps.items() if v}, sort_keys=True).encode()).hexdigest()
+    ts = js.setdefault('third_stage', {}); pinned = ts.get('assignment_sha256')
+    if pinned and pinned != msha: sys.exit(f'배정표 sha 불일치: 고정 {pinned[:12]} ≠ 현재 {msha[:12]} — 중단(결박)')
+    if not pinned: ts['assignment_sha256'] = msha; ts['assignment_pinned_at'] = now(); save()
+    json.dump({'prepared_at': now(), 'need_third': {b: n for b, n in summary}, 'assignment_sha256': msha}, open(TD / '_summary.json', 'w'), ensure_ascii=False, indent=1)
     print('차이≥2 축 수(blind_id별):', {b: n for b, n in summary}, '| 레벨 값은 파일에만 기록')
 
 elif CMD == 'send':
