@@ -14,6 +14,7 @@ t('rulebook-entry',()=>{assert.equal(AR.code,'AP-1');assert.equal(AR.version,'as
 t('render-wired-every-page',()=>{assert.ok(/assetProgram: \(p\._assetProgram && p\._assetProgram\.version === \\?"asset-program-v1\\?"/.test(html)||html.includes('assetProgram: (p._assetProgram && p._assetProgram.version === "asset-program-v1"'));
  ['II. 분기 테마 · 12주 한 바퀴','3개월 목표 · 12주 퀘스트의 세 매듭','1년 목표 · 같은 카드를 네 번 넓히기','VI. 성과 추적 보드 · 12칸','이 실행이 남기는 자산','오늘 시작하는 한 줄','ap-modph'].forEach(k=>assert.ok(html.includes(k),k));
  assert.ok(/function assetProgram\(ap, fan, quest, report\)/.test(eng));});
+t('no-evidence-panel-on-customer-pages',()=>{assert.ok(html.includes('if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(null); // AP1'));});
 t('marked-and-pinned',()=>{const A=require('./_asset-program-approved.cjs');for(const f of ['assets/js/program-engine.js','program.html'])A.strip(f,fs.readFileSync(path.join(root,f),'utf8'));});
 t('touch-and-mobile-css',()=>{assert.ok(html.includes('.book.lb-mobile .ap-h{font-size:18px!important;}'));assert.ok(html.includes('max-width:768px){.ap-flow,.ap-yr,.ap-bd__c{grid-template-columns:1fr 1fr;}'));});
 {const E=require(root+'/assets/js/report-engine.js'),V=require(root+'/assets/js/report-engine-v4.js'),A=require(root+'/assets/js/asset-map.js'),P=require(root+'/assets/js/asset-path.js'),PE=require(root+'/assets/js/program-engine.js'),R=require(root+'/assets/js/response-evidence.js');

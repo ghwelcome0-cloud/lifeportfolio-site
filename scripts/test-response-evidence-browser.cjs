@@ -54,12 +54,16 @@ const H=new Function('require','__dirname',harness+';return {openReader,render,r
     await page.evaluate(v=>window.__renderLivingBook(v),value);
     assert.equal(await page.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'report evidence UI must stay absent');
    }else{
+   // 2026-10-12 (owner 「응답 근거는 실제 리포트에 반영되면 안 돼요」): the program page shows no evidence panel either.
+   assert.equal(await page.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'program evidence UI must be absent');
+   // The module itself stays safe if anything mounts it (staff tools): seed it, then check escaping and close.
+   await page.evaluate(v=>window.LPResponseEvidence.mountEvidence(v._responseEvidence),value);
    await page.click('#lpEvidenceButton');assert.equal(await page.$eval('#lpEvidenceDialog',e=>e.open),true);
    const dialog=await page.$eval('#lpEvidenceDialog',e=>e.textContent);for(const q of T.others)assert.ok(dialog.includes(a[q.otherId]));
    await page.keyboard.press('Escape');assert.equal(await page.$eval('#lpEvidenceDialog',e=>e.open),false);
    const hostile=JSON.parse(JSON.stringify(value));const q=T.others[0];hostile._responseEvidence.fields[q.id].other.rawText='<img src=x onerror="window.__evidenceXss=1">';
    await page.evaluate(v=>window.LPResponseEvidence.mountEvidence(v._responseEvidence),hostile);await page.click('#lpEvidenceButton');
-   assert.equal(await page.$$eval('#lpEvidenceDialog img',es=>es.length),0);assert.equal(await page.evaluate(()=>window.__evidenceXss),undefined);await page.keyboard.press('Escape');
+   assert.equal(await page.$$eval('#lpEvidenceDialog img',es=>es.length),0);assert.equal(await page.evaluate(()=>window.__evidenceXss),undefined);await page.keyboard.press('Escape');   await page.evaluate(v=>window.__renderLivingBook(v),value);assert.equal(await page.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'program rerender removes the panel');
    }
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2);assert.equal(overflow,false,'outer viewport overflow');
    for(const theme of ['screen','keepsake']){
@@ -80,6 +84,6 @@ const H=new Function('require','__dirname',harness+';return {openReader,render,r
   }
  }
  assert.equal(H.result.errors.length,0,H.result.errors.join('\n'));
- console.log('PASS '+ui+' native input state cases, 3 synthetic save/submit routes, '+readers+' report/program mobile/desktop readers, 14-page themes, report evidence UI absence/cleanup, preserved program evidence dialog/XSS and zero writes');
+ console.log('PASS '+ui+' native input state cases, 3 synthetic save/submit routes, '+readers+' report/program mobile/desktop readers, 14-page themes, report + program evidence UI absence/cleanup, module dialog escaping/XSS and zero writes');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

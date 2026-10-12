@@ -5482,6 +5482,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
           // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
           if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(program._responseEvidence);
+          /* owner 2026-10-12 「응답 근거는 실제 리포트에 반영되면 안 돼요」: no evidence panel on customer pages (AP-1 never: 근거 출처) */ if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(null); // AP1
           var data = buildProgramBookData(program);
           var html = buildBookHTML(data, { theme:"screen", embed:true });
           frame.addEventListener("load", function _once(){
