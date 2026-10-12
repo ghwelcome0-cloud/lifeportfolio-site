@@ -12,7 +12,9 @@ const own = OWN && fs.existsSync(OWN) ? JSON.parse(fs.readFileSync(OWN, 'utf8'))
 const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 const NM = '미측정';
 // E3 시트 값은 {value, source_url, ...} 묶음. source_url 없는 value는 표에 올리지 않는다(시트 규칙).
-const v3 = x => x == null ? null : (typeof x === 'object' && 'value' in x) ? (x.value != null && x.source_url ? x.value : null) : x;
+const NA = '해당 없음';
+// E3 셀: {value,source_url,note}. value null + note '해당 없음' + 근거 URL → '해당 없음'(미측정과 구분, E3 rule 3차-b)
+const v3 = x => x == null ? null : (typeof x === 'object' && 'value' in x) ? (x.value != null && x.source_url ? x.value : (x.source_url && /^해당 없음/.test(x.note || '') ? NA : null)) : x;
 const cell = (v, grade, mark = '') => v == null ? NM : grade === 'E1' ? `**${v}**` : grade === 'E2' ? `${v}${mark} (샘플)` : grade === 'E3' ? `${v} (문서)` : String(v);
 // ‡ = judge 간 차이≥2 → 제3자 선택 축(시트 final.third_used). 각주는 표 아래.
 const third = (s, ax) => (s.final && Array.isArray(s.final.third_used) && s.final.third_used.includes(ax)) ? '‡' : '';
@@ -37,13 +39,13 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
   };
   for (const ax of ['A1','A2','A3','A4','A5']) if (third(s, ax)) thirdCells.push(`${r.id} ${ax}=L${s[ax]}`);
   if (x.prior_failure_note) priorFail.push(`${r.id}: ${x.prior_failure_note}`);
-  return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: d.appeal || r.appeal || '', limits: d.limits || r.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: d.time_min != null ? d.time_min : (r.time_min || null), ...ax, e4: d.E4 || null };
+  return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: d.appeal || r.appeal || '', limits: d.limits || r.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: d.time_min != null ? d.time_min : (r.time_min || null), docs_url: d.docs_url || null, ...ax, e4: d.E4 || null };
 });
 const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A3 ★', 'A4 ★', 'A5', 'A6', 'A7(등급)', 'A8', '비용 구간', '소요(분)', '한계(공개 문서 기준)'];
 const e1n = Object.values(e1).filter(v => !v.own && (v.a61 || v.a71)).length, nonOwn = roster.rows.filter(r => !r.retired && !r.own).length;
 let md = `# 공개 비교표 v2 — ${path.basename(RUN)}\n\n자: rubric ${rubric.version} (sha256 ${sha(RUBRIC).slice(0, 16)}…) · 명부 ${roster.version} (sha256 ${sha(ROSTER).slice(0, 16)}…) · 생성 ${new Date().toISOString()}\n\n`;
 md += `E1 실측 분모: ${e1n}/${nonOwn}행 (나머지 행은 E1 미측정). **자사(OWN) 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.**\n\n`;
-md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
+md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · "해당 없음"=제품 유형상 그 칸이 성립하지 않음(근거 URL 있음) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
 const asm = fs.existsSync(path.join(RUN, 'assembly.json')) ? JSON.parse(fs.readFileSync(path.join(RUN, 'assembly.json'), 'utf8')) : null;
 if (asm) md += `E1 조립(G21 §24): 행마다 성공적으로 측정한 가장 최근 run 값 — 입력 ${asm.inputs.map(i => `${i.run}·${i.egress_country}(${i.rows}행)`).join(', ')} · 도구 sha ${String(asm.tool_sha256).slice(0, 12)}… · E1 칸의 \`rN·CC\` = 측정 run 번호·출구 국가 · 미측정(시간 초과/접근 차단/기타 오류)=실패 분류, 0점 아님.\n\n`;
 md += '| ' + h.join(' | ') + ' |\n|' + h.map(() => '---').join('|') + '|\n';
