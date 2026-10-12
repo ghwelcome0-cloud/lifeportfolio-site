@@ -14,8 +14,11 @@ let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0;
 for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k])).length; e3cells += n; if (n > 0) e3rowsTouched++; if (n === E3_KEYS.length) e3rowsComplete++; }
 // E2: 샘플 확보(ready 이상) / 채점 완료(final)
 const st = s => e2.rows.filter(r => r.status === s).length;
-const e2ready = e2.rows.filter(r => ['ready', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
-const e2final = st('final'), e2inel = st('ineligible');
+// 결함 수정(2026-10-12): 'redacted_pending_visual'(자동 가림 완료, 사람 눈 확인 대기)이 빠져 9건이 0으로 집계됐었다 → 포함
+const e2ready = e2.rows.filter(r => ['ready', 'redacted_pending_visual', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
+// 분모 정정(G21 §21 결박): '해당 없음'(제품 구조상 개인 리포트 없음, 공식 근거)만 분모에서 뺀다. 두 분모를 함께 공개하고 정정 효과를 따로 적는다.
+const e2na = e2.rows.filter(r => r.status === 'not_applicable').length, e2target = nonOwn.length - e2na;
+const e2final = st('final') + st('judged') + st('resolved'), e2inel = st('ineligible'), e2pend = st('redacted_pending_visual'), e2red = st('redacted');
 // E1: 최신 run에서 a61 또는 a71이 있는 비자사 행
 const runs = fs.readdirSync(path.join(B, 'runs')).filter(d => /^\d{4}-\d{2}-\d{2}-r\d+$/.test(d)).sort();
 const latest = runs[runs.length - 1];
@@ -29,12 +32,17 @@ const out = {
   steps: [
     { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: latest ? `${latest} — 구 도구 이관분. r3(새 측정기)부터 공개용` : '' },
     { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length, pct: pct(e3cells, rows.length * E3_KEYS.length), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결 ${e3rowsComplete}` },
-    { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: nonOwn.length, pct: pct(e2ready, nonOwn.length), note: `부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
-    { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: 'judge 2인 + 제3자, Q90 judge와 다른 actor' },
+    { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: e2target, pct: pct(e2ready, e2target), note: `측정 ${e2ready} / 대상 ${e2target}(해당 없음 ${e2na} 제외) / 명부 ${nonOwn.length} · 옛 분모 기준 ${pct(e2ready, nonOwn.length)}% → 분모 정정 효과 +${pct(e2ready, e2target) - pct(e2ready, nonOwn.length)}%p · ` + `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
+    { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: `judged(원본 저장·미집계) ${st('judged')}, final ${st('final')} — judge 2인 + 제3자` },
     { step: '자사 행(Q90 2회차 전사)', done: own ? 1 : 0, total: 1, pct: own ? 100 : 0, note: 'TL D 도구 → 0-c → 실행 → judge → scorer 뒤' }
   ]
 };
+// 전체 진행률(두괄식 보고용): 단계별 % 를 가중 평균. 가중치는 표에서 차지하는 비중(결박): E1 25 · E3 25 · E2 확보 15 · E2 채점 25 · 자사 10
+const W = [25, 25, 15, 25, 10];
+out.overall_pct = Math.round(out.steps.reduce((a, s, i) => a + s.pct * W[i], 0) / W.reduce((a, b) => a + b, 0));
+out.overall_weights = W;
 if (process.argv.includes('--md')) {
+  console.log(`**전체 진행률 ${out.overall_pct}%** (가중: E1 25 · E3 25 · E2확보 15 · E2채점 25 · 자사 10)\n`);
   console.log(`| 단계 | 완료/전체 | % | 비고 |\n|---|---|---|---|`);
   for (const s of out.steps) console.log(`| ${s.step} | ${s.done}/${s.total} | ${s.pct}% | ${s.note} |`);
   console.log(`\n(${out.at} · 명부 ${out.roster_rows}행 · 최신 run ${out.latest_run})`);

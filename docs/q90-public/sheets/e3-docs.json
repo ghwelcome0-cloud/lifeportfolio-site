@@ -297,7 +297,7 @@
     "value": null,
     "source_url": "https://www.mbtionline.com/",
     "collected_at": "2026-10-12",
-    "note": "미확인"
+    "note": "미확인 | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
    },
    "price_transparency": {
     "value": "문의",
@@ -860,16 +860,16 @@
    "url": "https://birkman.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "Birkman International",
+    "source_url": "https://birkman.com/the-birkman-method/",
+    "collected_at": "2026-10-12",
+    "note": "사이트 운영 주체. 법인명 \"Birkman International, Inc.\"는 푸터 표기 기준(추정 표시)"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기관·인증 컨설턴트 경유(조직 대상). 개인 직접 구매 안내 없음",
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "홈 페이지 전체가 조직(organizations) 대상 문구"
    },
    "time_min": {
     "value": null,
@@ -885,15 +885,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "가격 미공개 → 구간 미측정"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "문의",
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "공개가 없음"
    },
    "reuse_price_krw": {
     "value": null,
@@ -938,22 +938,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "1951년 \"사회 이해 검사\"에서 시작한 성격 검사로, 관심사·일하는 방식·숨은 욕구·스트레스 행동 4가지를 함께 보고 \"왜 그렇게 행동하는지\"까지 알고 싶은 조직·팀에게.",
+    "source_url": "https://birkman.com/the-birkman-method/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕(Interests·Workstyles·Needs·Stress Behaviors)"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "개인 직접 구매 경로 없음(조직·컨설턴트 경유), 가격 비공개. 공식 페이지에 소요시간·언어 목록 미기재. 공개 샘플 리포트는 이메일 게이트.",
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준. assessments/·faq/ 페이지는 크롤 실패(2026-10-12)"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음(근거 없음)",
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 사이트 영어만, 한국어 안내 미발견 → \"없음(근거 없음)\"으로 기재"
    },
    "E4": {
     "value": null,
@@ -963,7 +963,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty",
+   "status": "partial",
    "e2_eligible": {
     "value": null,
     "source_url": "https://birkman.com/",
@@ -978,22 +978,22 @@
    "url": "https://www.predictiveindex.com/learn/support/our-assessments/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "The Predictive Index",
+    "source_url": "https://www.predictiveindex.com/pricing/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "웹(브라우저 기반, 설치 불필요). 기업 연간 구독만 — 개인·건별 구매 불가",
+    "source_url": "https://www.predictiveindex.com/pricing/",
+    "collected_at": "2026-10-12",
+    "note": "\"PI is browser-based\" · \"Can I buy per assessment? No, PI is sold by annual subscription\""
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 6,
+    "source_url": "https://www.predictiveindex.com/assessments/behavioral-assessment/",
+    "collected_at": "2026-10-12",
+    "note": "\"6 minutes\""
    },
    "price_krw": {
     "value": null,
@@ -1002,16 +1002,16 @@
     "note": ""
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "15만+",
+    "source_url": "https://www.predictiveindex.com/pricing/",
+    "collected_at": "2026-10-12",
+    "note": "\"Plans start at $10,000 per year\"(기업 연간, 인당 아님). 개인 1회 가격 개념 없음 → 최상 구간으로만 표기"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개(시작가)·상세 문의",
+    "source_url": "https://www.predictiveindex.com/pricing/",
+    "collected_at": "2026-10-12",
+    "note": "시작가 공개, 견적은 영업 문의"
    },
    "reuse_price_krw": {
     "value": null,
@@ -1056,22 +1056,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "6분이면 끝나는 행동 성향 검사로, 채용·배치·팀 구성에서 \"이 역할에 맞는 사람인가\"를 데이터로 보고 싶은 HR 리더에게. 25M+ 명 응시.",
+    "source_url": "https://www.predictiveindex.com/assessments/behavioral-assessment/",
+    "collected_at": "2026-10-12",
+    "note": "\"It only takes candidates 6 minutes\" · \"assessed more than 25 million people\""
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 연간 구독 전용(개인·건별 구매 불가, $10,000/년부터). 채용 판단의 여러 데이터 중 하나로 쓰라고 공식 명시. 결제 USD.",
+    "source_url": "https://www.predictiveindex.com/pricing/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "근거 없음",
+    "source_url": "https://www.predictiveindex.com/pricing/",
+    "collected_at": "2026-10-12",
+    "note": "공식 페이지에 언어 목록 미기재"
    },
    "E4": {
     "value": null,
@@ -1081,7 +1081,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "partial",
+   "status": "complete",
    "e2_eligible": {
     "value": true,
     "source_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
@@ -1096,39 +1096,39 @@
    "url": "https://www.insights.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "Insights Learning & Development Ltd",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "기업 L&D 프로그램·공인 실무자(Licensed Practitioner) 경유 — 개인 직접 구매 창구 없음(\"Fill out the form… consultation\")",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "미기재"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "가격 비공개(상담)"
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "문의",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -1138,16 +1138,16 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.insights.com/media/2728/insights-discovery-validating-the-system-factsheet.pdf",
+    "source_url": "https://www.insights.com/what-we-do/validity/",
+    "collected_at": "2026-10-12",
+    "note": "\"Validating the System\" 팩트시트 공개(신뢰도·타당도 검증 과정). 계수 전사는 2차 패스"
    },
    "reliability_coef": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "팩트시트 기재",
+    "source_url": "https://www.insights.com/what-we-do/validity/",
+    "collected_at": "2026-10-12",
+    "note": "20년+ 측정, 계수 값은 PDF 확인"
    },
    "norm_sample_n": {
     "value": null,
@@ -1157,9 +1157,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 링크 미발견 → E2 미측정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1174,22 +1174,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "4가지 색 에너지라는 기억하기 쉬운 공통 언어로 팀 소통·관리 스타일을 보고, Microsoft Teams 안에서 동료와 비교하며 쓰고 싶을 때. 검증 팩트시트 공개.",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "개인 구매 불가(기업·실무자 경유), 가격 비공개. 공식 사이트에 개인 샘플 프로파일 공개 없음. 팀·조직 맥락 중심.",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "한국어판 프로파일 존재(국내 라이선스) — 재확인"
    },
    "E4": {
     "value": null,
@@ -1199,7 +1199,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 없음"
+   }
   },
   {
    "id": "G11",
@@ -1320,40 +1326,40 @@
    "url": "https://www.strengthsprofile.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "Cappfinity (Strengths Profile → \"Skills Discovery\"로 브랜드 전환 중)",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "2026-10 페이지 제목 \"Skills Discovery\""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(개인 구매) + 공인 코치(Accreditation)",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "미기재"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "가격이 동적 로드로 본문에 없음 — 2차 패스(브라우저 렌더) 필요. 교육 이메일 30% 할인 명시"
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": " | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "유료 프로파일(60/80 skill 버전) 공개 판매 — 금액은 미전사"
    },
    "reuse_price_krw": {
     "value": null,
@@ -1362,10 +1368,10 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.strengthsprofile.com/en-GB/Products",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "신뢰도·규준 문서 링크 미발견(2차 패스)"
    },
    "reliability_coef": {
     "value": null,
@@ -1381,9 +1387,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "미발견 → E2 미측정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1398,22 +1404,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "\"잘하는 것\"만이 아니라 잘하지만 힘 빠지는 것(learned behaviours)·약점·숨은 강점 4분면으로 60~80개 스킬을 보고 싶을 때. 코치 공인 과정 있음.",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "영어만. 가격·소요시간이 공개 본문에 없음. 브랜드 전환(Strengths Profile→Skills Discovery) 중이라 명칭 혼선. 공식 샘플 리포트 링크 미발견.",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "영어"
    },
    "E4": {
     "value": null,
@@ -1423,7 +1429,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 미발견"
+   }
   },
   {
    "id": "G13",
@@ -1432,52 +1444,52 @@
    "url": "https://www.workinggenius.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "The Table Group (Patrick Lencioni)",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(개인 구매, 계정)",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 10,
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 \"10-minute assessment\""
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 25,
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "USD 25 per person — USD 원값"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "~5만원",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "환불 규정 미확인"
    },
    "reuse_price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "미확인"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.workinggenius.com/about/assessment",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "신뢰도·규준 문서 미발견(공식 사이트는 모델 설명·간증 중심)"
    },
    "reliability_coef": {
     "value": null,
@@ -1493,9 +1505,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 링크 없음. 제3자(squarespace/watneyinsights) 사본은 채택 안 함"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1510,22 +1522,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "10분 만에 \"일에서 내가 힘 나는 활동 2가지·힘 빠지는 2가지\"를 알고, 팀 지도(Team Map)로 바로 회의·역할에 적용하고 싶을 때. USD 25.",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "성격 검사라기보다 업무 활동 선호 도구. 신뢰도·타당도 공개 문서 없음. 영어만. 공식 사이트에 샘플 리포트 링크 없음(제3자 호스팅 PDF만 존재 → 출처 규칙상 E2 미채택).",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "영어"
    },
    "E4": {
     "value": null,
@@ -1535,7 +1547,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 없음"
+   }
   },
   {
    "id": "G14",
@@ -1780,22 +1798,22 @@
    "url": "https://self-directed-search.com/what-is-it/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "PAR, Inc.",
+    "source_url": "https://self-directed-search.com/faq/",
+    "collected_at": "2026-10-12",
+    "note": "사이트 운영사(FAQ 고객지원 번호 PAR). 저작자 John Holland"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "웹(온라인 직접 응시, 신용카드 결제) + 종이판. 자격 등급 A — 구매·응시 제한 없음",
+    "source_url": "https://self-directed-search.com/faq/",
+    "collected_at": "2026-10-12",
+    "note": "\"no restrictions on who can purchase, take, and use the test\" · 종이판 있음"
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 20,
+    "source_url": "https://self-directed-search.com/what-is-it/",
+    "collected_at": "2026-10-12",
+    "note": "\"about 20 minutes\""
    },
    "price_krw": {
     "value": null,
@@ -1805,15 +1823,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://self-directed-search.com/",
+    "collected_at": "2026-10-12",
+    "note": "가격이 결제 단계(JS)에만 표시 → 본문 미기재, 구간 미측정(2차 패스 필요) | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개(결제 단계)",
+    "source_url": "https://self-directed-search.com/faq/",
+    "collected_at": "2026-10-12",
+    "note": "신용카드 결제 후 리포트 생성 절차 명시, 금액은 본문 미기재"
    },
    "reuse_price_krw": {
     "value": null,
@@ -1840,16 +1858,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+    "source_url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+    "collected_at": "2026-10-12",
+    "note": "공식 사이트 what-is-it 페이지 링크 StandardSDS report(8p) — 2026-10-12 수집 | 4465297 bytes, 8p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "cc9230c4e184b0a7c509828e98d647931aade4441cd8a3d621755a368014ffa4",
+    "source_url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -1858,22 +1876,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "홀랜드 RIASEC 이론 원작자의 검사. 약 20분에 요약 코드와 맞는 직업·전공 목록, 급여 정보까지 받아 진로를 스스로 탐색하고 싶을 때. 1970년부터.",
+    "source_url": "https://self-directed-search.com/what-is-it/",
+    "collected_at": "2026-10-12",
+    "note": "\"takes only about 20 minutes\" · \"leader in career assessment since 1970\""
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "영어 중심(다른 언어는 FAQ 항목만 있고 본문 미확인). 리포트 요약은 무기한 접근, 가격은 결제 단계에서만 확인.",
+    "source_url": "https://self-directed-search.com/faq/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "근거 없음",
+    "source_url": "https://self-directed-search.com/faq/",
+    "collected_at": "2026-10-12",
+    "note": "\"Is the SDS available in other languages?\" 항목 존재, 답 본문 미수집"
    },
    "E4": {
     "value": null,
@@ -1883,7 +1901,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "E01",
@@ -1892,16 +1910,16 @@
    "url": "https://www.betterup.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "BetterUp, Inc.",
+    "source_url": "https://www.betterup.com/about-us",
+    "collected_at": "2026-10-12",
+    "note": "회사 소개 페이지 기준(법인 접미사는 추정 표시)"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 계약(B2B) 플랫폼 + 앱. 개인 직접 구매 안내 없음",
+    "source_url": "https://www.betterup.com/about-us",
+    "collected_at": "2026-10-12",
+    "note": "\"750+ enterprise customers\" · 전 페이지 조직 대상"
    },
    "time_min": {
     "value": null,
@@ -1917,14 +1935,14 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.betterup.com/",
+    "collected_at": "2026-10-12",
+    "note": "가격 미공개(pricing 페이지 본문 없음) → 구간 미측정"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "문의",
+    "source_url": "https://www.betterup.com/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -1970,22 +1988,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "사람 코치 + AI 코칭을 한 플랫폼에서 받아 조직 전 계층의 역량을 키우고 성과 지표로 증명하고 싶은 기업에게. 4,000+ 코치, 70+ 국가.",
+    "source_url": "https://www.betterup.com/about-us",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 계약 전용, 가격 비공개. 자기진단 \"검사\"가 아니라 코칭 플랫폼이라 축 비교 시 성격이 다름. 한국어 지원 근거 미발견.",
+    "source_url": "https://www.betterup.com/about-us",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "근거 없음",
+    "source_url": "https://www.betterup.com/about-us",
+    "collected_at": "2026-10-12",
+    "note": "\"70+ countries\" 외 언어 목록 없음"
    },
    "E4": {
     "value": null,
@@ -1995,7 +2013,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "E02",
@@ -2004,16 +2022,16 @@
    "url": "https://www.coachhub.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "CoachHub GmbH",
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
+    "note": "사이트 운영사 CoachHub(독일 법인, 접미사는 추정 표시)"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 계약(B2B) 디지털 코칭, 24/7 하이브리드. 개인 직접 구매 안내 없음",
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
+    "note": "\"corporate coaching\" · \"1,000+ organizations\""
    },
    "time_min": {
     "value": null,
@@ -2029,14 +2047,14 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
+    "note": "가격 미공개 → 구간 미측정"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "문의",
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -2082,22 +2100,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "90+ 국가·80+ 언어로 모든 직원에게 코칭을 주고 싶은 기업에게. \"직원이 성장하면 회사도 성장한다\"가 공식 문구.",
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
+    "note": "\"90+ countries and 80+ languages\""
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 계약 전용, 가격 비공개. 코칭 서비스라 자기진단 검사 축과 성격이 다름.",
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "부분(추정)",
+    "source_url": "https://www.coachhub.com/",
+    "collected_at": "2026-10-12",
+    "note": "\"80+ languages\" 명시, 한국어 포함 여부는 목록 미확인 → 추정"
    },
    "E4": {
     "value": null,
@@ -2107,7 +2125,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "E06",
@@ -2116,16 +2134,16 @@
    "url": "https://fullfocusstore.com/products/full-focus-planner-linen",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "Full Focus (구 Michael Hyatt & Company)",
+    "source_url": "https://fullfocusplanner.com/pages/about",
+    "collected_at": "2026-10-12",
+    "note": "\"Full Focus (formerly known as Michael Hyatt & Company)\""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "종이 플래너 온라인 구매(개인 직접 구매)",
+    "source_url": "https://fullfocusstore.com/products/full-focus-planner-linen",
+    "collected_at": "2026-10-12",
+    "note": "스토어 상품 페이지"
    },
    "time_min": {
     "value": null,
@@ -2141,15 +2159,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://fullfocusstore.com/products/full-focus-planner-linen",
+    "collected_at": "2026-10-12",
+    "note": "가격이 JS 렌더로 본문 미기재 → 구간 미측정(2차 패스 필요) | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://fullfocusstore.com/products/full-focus-planner-linen",
+    "collected_at": "2026-10-12",
+    "note": "상품 페이지에 가격 표시(본문 미수집)"
    },
    "reuse_price_krw": {
     "value": null,
@@ -2194,22 +2212,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "\"일에서도 이기고 삶에서도 성공한다(Double Win)\"는 시스템을 종이 플래너로 매일 실천하고 싶을 때. 2011년부터 100만+ 명.",
+    "source_url": "https://fullfocusplanner.com/pages/about",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "검사·진단이 아닌 플래너(자기 기록 도구). 영어판 중심, 미국 외 배송 조건 별도.",
+    "source_url": "https://fullfocusplanner.com/pages/about",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음(근거 없음)",
+    "source_url": "https://fullfocusplanner.com/pages/about",
+    "collected_at": "2026-10-12",
+    "note": "한국어 안내 미발견"
    },
    "E4": {
     "value": null,
@@ -2219,7 +2237,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "E07",
@@ -2228,16 +2246,16 @@
    "url": "https://bestself.co/products/self-journal",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "BestSelf Co.",
+    "source_url": "https://bestself.co/pages/about-us",
+    "collected_at": "2026-10-12",
+    "note": "\"Founded in 2015 by Cathryn Lavery\""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "종이 저널 온라인 구매(개인 직접 구매)",
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
+    "note": "상품 페이지"
    },
    "time_min": {
     "value": null,
@@ -2253,15 +2271,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
+    "note": "가격이 JS 렌더로 본문 미기재(\"Free US shipping over $75\"만 확인) → 구간 미측정 | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
+    "note": "상품 페이지 가격 표시(본문 미수집)"
    },
    "reuse_price_krw": {
     "value": null,
@@ -2306,21 +2324,21 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "13주 단위로 목표를 쪼개 매일 3가지 할 일과 습관을 기록하는 저널. 1.2M권 판매, 14일 반품.",
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
+    "note": "\"13-Week Goal Planner\" · \"1.2m sold\""
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "검사·진단이 아닌 저널. 영어판, 무료 배송은 미국 한정.",
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "없음(근거 없음)",
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "E4": {
@@ -2331,7 +2349,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "E11",
@@ -2340,16 +2358,16 @@
    "url": "https://www.15five.com/pricing",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "15Five",
+    "source_url": "https://www.15five.com/about/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 SaaS(웹 + 모바일 앱), 플랜 3종(Engage·Perform·Total Platform). 개인 구매 안내 없음",
+    "source_url": "https://www.15five.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "가격표 페이지"
    },
    "time_min": {
     "value": null,
@@ -2365,15 +2383,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.15five.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "인당 월 요금이 JS 렌더로 본문 미기재 → 구간 미측정(2차 패스) | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개(플랜표)",
+    "source_url": "https://www.15five.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "플랜 비교표 존재, 숫자 본문 미수집"
    },
    "reuse_price_krw": {
     "value": null,
@@ -2418,21 +2436,21 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "360° 성과 리뷰·몰입 설문·목표 추적·1on1을 한 플랫폼에서 돌리며 \"사람 중심 리더십\"을 가속하려는 HR 팀에게.",
+    "source_url": "https://www.15five.com/about/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업용 성과관리 SaaS — 개인 자기진단 검사가 아님. 결제·문서 영어.",
+    "source_url": "https://www.15five.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "근거 없음",
+    "source_url": "https://www.15five.com/pricing",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "E4": {
@@ -2443,7 +2461,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "E12",
@@ -2452,16 +2470,16 @@
    "url": "https://lattice.com/pricing",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "Lattice",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업 SaaS(웹), 연간 계약. 개인 구매 안내 없음",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "\"Lattice bills all contracts annually\""
    },
    "time_min": {
     "value": null,
@@ -2476,16 +2494,16 @@
     "note": ""
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "15만+",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "\"$10 seat/month\" 등 인당 월 요금 + \"minimum annual agreement is $4,000\" → 최소 계약 기준 최상 구간"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "인당 월 요금과 최소 연 계약액 공개"
    },
    "reuse_price_krw": {
     "value": null,
@@ -2530,21 +2548,21 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "성과 관리·몰입·보상을 모듈로 골라 붙이는 HR 플랫폼. \"필요한 것만 지금, 나중에 추가\" 방식.",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "\"Choose the products your organization needs today, with the flexibility to add on later\""
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업용 SaaS(최소 연 $4,000, USD 결제만). 개인 자기진단 검사가 아님.",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "\"Lattice bills in United States Dollars (USD) only\""
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "근거 없음",
+    "source_url": "https://lattice.com/pricing",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "E4": {
@@ -2555,7 +2573,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "complete"
   },
   {
    "id": "K01",
@@ -2849,15 +2867,15 @@
    },
    "sample_report_url": {
     "value": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
-    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
     "collected_at": "2026-10-12",
-    "note": "공식 \"샘플보기\" 전문해석 프로파일(고등·일반). 기본 프로파일 샘플도 있음(Strong_JI2_Profile.pdf). **E2 후보 확보.** 샌드박스에서 다운로드 타임아웃(2026-10-12) — sha256은 확보 시점에 기록"
+    "note": "어세스타 공식 \"샘플보기\" — STRONG 직업흥미검사II 전문해석 프로파일(고등·일반). 기본 프로파일 4p 보조: eeadcc0790d5cade4e524a4cedff29a47277e758c96da414b6f3510c3d4d42cd | 12168875 bytes, 18p | 샌드박스 TCP 차단 → Genspark 에이전트 2개 독립 수집, sha256 일치(교차 검증) | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "87709d9354ef440fa53f6d8c48e73023f4c039cba25802851a2b2f7fd7024f87",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+    "collected_at": "2026-10-12",
+    "note": "agent 13fd0dca… · agent b4fae40f… · 로컬 재계산 3중 일치"
    },
    "privacy_policy_url": {
     "value": null,
@@ -2891,7 +2909,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "partial"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식 공식 샘플(한국어)"
+   }
   },
   {
    "id": "K05",
@@ -3914,16 +3938,16 @@
    "url": "https://www.ncs.go.kr/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "한국산업인력공단",
+    "source_url": "https://www.ncs.go.kr/unity/th03/ncsSearchMain.do",
+    "collected_at": "2026-10-12",
+    "note": "NCS 포털 운영 주체"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "웹(공공 포털), 무료. 일부 기능 실명인증",
+    "source_url": "https://www.ncs.go.kr/unity/th03/ncsSearchMain.do",
+    "collected_at": "2026-10-12",
+    "note": "공공 포털"
    },
    "time_min": {
     "value": null,
@@ -3938,15 +3962,15 @@
     "note": "명부 v2 이관 — 재확인 필요"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "무료",
+    "source_url": "https://www.ncs.go.kr/",
+    "collected_at": "2026-10-12",
+    "note": "세금으로 운영되는 공공 서비스"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "공개(무료)",
+    "source_url": "https://www.ncs.go.kr/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -3992,22 +4016,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "국가직무능력표준(NCS)에 맞춰 직업기초능력 10개 영역을 스스로 점검하고 공공 채용 준비에 쓰고 싶을 때. 무료.",
+    "source_url": "https://www.ncs.go.kr/unity/th03/ncsSearchMain.do",
+    "collected_at": "2026-10-12",
+    "note": "공공 포털 기준(자가진단 세부 페이지는 크롤 실패)"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "자가진단 전용 페이지·소요시간·규준 공개 문서를 이번 수집에서 확인 못 함(포털 서브 페이지 크롤 실패). 공공아이핀 실명인증이 필요한 기능 있음.",
+    "source_url": "https://www.ncs.go.kr/unity/th03/ncsSearchMain.do",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준, 2차 패스 필요"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.ncs.go.kr/",
+    "collected_at": "2026-10-12",
+    "note": "국내 공공 서비스"
    },
    "E4": {
     "value": null,
@@ -4017,7 +4041,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "complete"
   },
   {
    "id": "K16",
@@ -4026,16 +4050,16 @@
    "url": "https://www.guidance.co.kr/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "한국가이던스",
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기관·전문가 회원 경유(학교·기관이 주문, 피검자는 인증코드로 응시). 개인 직접 구매는 회원 자격에 따라 제한",
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "FAQ: \"회원 자격에 따라 구매 가능한 검사 및 가격이 상이\" · 기관/전문가 회원 승인 1일"
    },
    "time_min": {
     "value": 40,
@@ -4051,15 +4075,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "숨김(로그인 후)",
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "\"상품명과 가격이 안보여요 → 로그인 후 확인\""
    },
    "reuse_price_krw": {
     "value": null,
@@ -4104,22 +4128,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "학교·기관이 홀랜드 진로탐색검사를 단체로 돌리고 온라인(인증코드)으로 빠르게 결과를 받고 싶을 때. 종이+OMR, 온라인 SET, 온라인 카운트 3방식.",
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "FAQ 공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기관·전문가 회원 중심(개인 직접 구매 제한), 가격 비공개(로그인 후). 결과 열람은 실시 기관이 허용한 경우만. 소요시간·신뢰도 문서 미확인(상품 페이지 크롤 실패).",
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.guidance.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "국내 서비스"
    },
    "E4": {
     "value": null,
@@ -4129,7 +4153,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "K17",
@@ -4199,15 +4223,15 @@
    },
    "sample_report_url": {
     "value": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
-    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
     "collected_at": "2026-10-12",
-    "note": "공식 \"온라인보고서 샘플 보기\" — Form M 기본 프로파일(한국, ISTJ 예시). Form Q 전문해석 샘플(INFP)도 있음. 다운로드는 career4u 서버 타임아웃으로 미확보 — 재시도 예정"
+    "note": "어세스타 공식 \"온라인보고서 샘플 보기\" — MBTI Form M 기본 프로파일(ISTJ). 2쪽으로 짧음(전문해석 Form Q 샘플 12p는 보조: f0f2f9836c254dfe5fa15ba5b3d1befad0912998ec08f3362d8c8434baeba843) | 1948513 bytes, 2p | 샌드박스 TCP 차단 → Genspark 에이전트 2개 독립 수집, sha256 일치(교차 검증) | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "e85d5dd4b0097829e4a2bfc944c3e76f7c82a33c9e39bb4cb7af56a0e929e67b",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
+    "collected_at": "2026-10-12",
+    "note": "agent 13fd0dca… · agent b4fae40f… · 로컬 재계산 3중 일치"
    },
    "privacy_policy_url": {
     "value": null,
@@ -4243,10 +4267,10 @@
    "A8": null,
    "status": "partial",
    "e2_eligible": {
-    "value": null,
-    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "value": true,
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
     "collected_at": "2026-10-12",
-    "note": "공식 샘플 존재 — 파일 확보 뒤 적합 판정"
+    "note": "개인 결과 형식 공식 샘플(한국어)"
    }
   },
   {
@@ -4256,16 +4280,16 @@
    "url": "https://inpsyt.co.kr/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "인싸이트(학지사 심리검사연구소)",
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "\"인싸이트는 '학지사 심리검사연구소'의 새 이름\""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전문가·기관 구매 중심(임상·상담 현장용), 단체검사 제공. 개인 직접 응시 경로 미확인",
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "\"임상현장에 필요한 심리검사\" · \"단체 심리검사\""
    },
    "time_min": {
     "value": 30,
@@ -4281,15 +4305,15 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "TCI 상품 페이지 크롤 실패 → 구간 미측정(2차 패스)"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "미확인",
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "상품 페이지 접근 실패"
    },
    "reuse_price_krw": {
     "value": null,
@@ -4334,22 +4358,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기질과 성격을 나눠 보는 TCI를 전문가 해석과 함께 임상·상담 장면에서 쓰고 싶을 때. 전 생애 대상 표준화 검사 라인업.",
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전문가·기관 중심(개인 직접 구매 경로 미확인), 가격·소요시간 미확인(상품 페이지 크롤 실패).",
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준, 2차 패스 필요"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://inpsyt.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "국내 서비스"
    },
    "E4": {
     "value": null,
@@ -4359,7 +4383,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "K19",
@@ -4368,16 +4392,16 @@
    "url": "https://www.jobkorea.co.kr/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "잡코리아",
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "웹(취업 포털 회원 서비스). 검사 전용 페이지는 로그인 필요",
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "Starter/Spec/Test 페이지 크롤 실패(로그인 벽 추정)"
    },
    "time_min": {
     "value": 15,
@@ -4393,14 +4417,14 @@
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "가격 정보 미확인(검사 페이지 접근 불가) → 구간 미측정"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "미확인",
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -4447,21 +4471,21 @@
    },
    "appeal": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "검사 소개 페이지 접근 실패 → 공식 문구 미수집(채우지 않음)"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "검사 소개·소요시간·가격이 로그인 뒤에만 보임(비회원 접근 불가). 공개 문서 기준 확인 가능한 사실이 거의 없음.",
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.jobkorea.co.kr/",
+    "collected_at": "2026-10-12",
+    "note": "국내 서비스"
    },
    "E4": {
     "value": null,
@@ -4471,7 +4495,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "K20",
