@@ -149,7 +149,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -224,10 +224,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "341a4c24dcc5ce8ec414332dfb7152130d247439c3136d7fdf01d93411dfa356",
     "judge2_answer_sha256": "11d8f64f880d5f6ad66a60280326e223135cb11989bd6d17dfecb033860feaa5",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "341a4c24dcc5ce8ec414332dfb7152130d247439c3136d7fdf01d93411dfa356",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -329,7 +331,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -404,10 +406,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "03e8959a13db7827fdb9a70379d4b666780b4a911fd2a5c1747ebe4da7e29c59",
     "judge2_answer_sha256": "8563c6dee8ba3c33a571fd230a30caa07564ce1041a870f3bd51db66367d6b0b",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "03e8959a13db7827fdb9a70379d4b666780b4a911fd2a5c1747ebe4da7e29c59",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -498,7 +502,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -573,10 +577,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "03e19c0baf42ee167bd2a0ca4bf7ce9cf20af07fb592c6d3f16d3d3fbdaa93ec",
     "judge2_answer_sha256": "ea4cd873614cd07cc7a4e552819bb1cf724a6ab7b703942a48d3eb8716a14317",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "03e19c0baf42ee167bd2a0ca4bf7ce9cf20af07fb592c6d3f16d3d3fbdaa93ec",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -900,7 +906,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -975,10 +981,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "93e2ce438d291112ad169dd801853de8714b0c8cf386b701a0fde8aa17174835",
     "judge2_answer_sha256": "56fce553a7dfb7208964139245599e975dceaf8cbd6a7d9745afc11c800b8dc2",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "93e2ce438d291112ad169dd801853de8714b0c8cf386b701a0fde8aa17174835",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -1129,7 +1137,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -1204,10 +1212,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "0124b32ec939b6f4fd8d38f97affa398c3354747f0e8872a6b086370d93b9940",
     "judge2_answer_sha256": "9c531dd058729b8dfc3116da3c4bef66c2bc67583993a6766478785c76a720c4",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "0124b32ec939b6f4fd8d38f97affa398c3354747f0e8872a6b086370d93b9940",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -1655,7 +1665,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -1730,10 +1740,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "a107277db7838a3045eb1f3ff596808dad8a3a62d125b42fd50a45ece138df4d",
     "judge2_answer_sha256": "33fdc61401b1dc7b9380af9b0d8954af1324b095807b7a1dfe57852395bcaa80",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "a107277db7838a3045eb1f3ff596808dad8a3a62d125b42fd50a45ece138df4d",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -2622,7 +2634,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -2697,10 +2709,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "bbea59ea35136bbbf7ac123cb83390be935798b6a153498d223188e151ad859a",
     "judge2_answer_sha256": "3e467c76aaaec8011ea1869d9e31d9719d100de8e7fb3e0e731b9a77d3be4908",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "bbea59ea35136bbbf7ac123cb83390be935798b6a153498d223188e151ad859a",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -2775,7 +2789,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -2850,10 +2864,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "02c388915cb39d2f6e01c784933d453e24384a7de0224eecad9e259b285d0432",
     "judge2_answer_sha256": "302af6f7f4863eeb96bba9d665ab7c4e9c25d21bbfac4b60acc0b015b1c96887",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "02c388915cb39d2f6e01c784933d453e24384a7de0224eecad9e259b285d0432",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -3742,7 +3758,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -3817,10 +3833,12 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "judging": {
-    "judge1_answer_sha256": "bfd73c935923368de37d128bfe23ee86fe76ae6a5003e50d51290193fbcd31b2",
     "judge2_answer_sha256": "c84316b064b9c64d5d6b4615db6d63585185fa216b36250c35e83314373ad34a",
     "third_needed_axes": [],
-    "aggregated": false
+    "aggregated": false,
+    "judge1_invalidated": true,
+    "judge1_answer_sha256_invalid": "bfd73c935923368de37d128bfe23ee86fe76ae6a5003e50d51290193fbcd31b2",
+    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
    }
   },
   {
@@ -4221,7 +4239,16 @@
      "rc1": "invalid(설계 결함 ⑪)",
      "rc2": "pass 9/9"
     },
-    "packets": {
+    "dm_history_note": "기존 DM 3건(2026-09-11 LP-GROWTH 브랜드 검토 — Q90 아님, 자사 홍보 문구 봄)",
+    "self_declaration_fields": [
+     "declaration(관여 0)",
+     "competitor_research_done_before(세 명 공통, Method 6063269)"
+    ],
+    "model_display": "Claude Sonnet 5.5 (자기신고 6066092)",
+    "status": "invalidated",
+    "invalidated_at": "2026-10-12T06:09:14Z",
+    "invalidated_reason": "memory_check Q1 \"예(자사 관련)\" — 결박 규칙 글자 그대로 적용. 9건 답안은 answers/에 보관(집계 불사용), 다음 회차 미사용.",
+    "packets_invalidated": {
      "S-04d5ce": {
       "sent_msg_id": "6063561",
       "sent_at": "2026-10-12T05:29:11Z",
@@ -4330,13 +4357,7 @@
       "answered_at": "2026-10-12T05:46:55Z",
       "first_line_declaration_ok": true
      }
-    },
-    "dm_history_note": "기존 DM 3건(2026-09-11 LP-GROWTH 브랜드 검토 — Q90 아님, 자사 홍보 문구 봄)",
-    "self_declaration_fields": [
-     "declaration(관여 0)",
-     "competitor_research_done_before(세 명 공통, Method 6063269)"
-    ],
-    "model_display": "Claude Sonnet 5.5 (자기신고 6066092)"
+    }
    },
    {
     "role": "judge2",
@@ -4480,6 +4501,42 @@
      "competitor_research_done_before(세 명 공통, Method 6063269)"
     ],
     "model_display": "Claude Sonnet 5.5 (자기신고 6066087)"
+   },
+   {
+    "role": "judge1",
+    "actor_id": "agent_eqfq2vg1m72e",
+    "display": "데스크톱 컴퓨터 관리자",
+    "dm_channel_id": "ch_dm_5a346861bd600f17b575",
+    "status": "candidate_pending_team_ok",
+    "isolation": {
+     "docs_grep": 0,
+     "lp_quality_gate_member": false,
+     "q90_channels_member": false,
+     "ai_homepage_member": false,
+     "faise_marketing_member": false,
+     "faise_content_member": false,
+     "msg_search_exact_id": 0,
+     "dm_history": "11건(2026-09-08 데스크톱 연결·GenCode 안내) — 자사 서비스·Q90 언급 0"
+    },
+    "pre_check": {
+     "msg": 6067007,
+     "Q1": "예 — 검사 서비스 0, 자사 0; 젠스파크(GenTeam 데스크톱 연결)·CLI 도구 이름만",
+     "Q1_assessment_services": 0,
+     "Q1_own_company": 0,
+     "Q2_lp_work": "아니오",
+     "model_display": "Claude Opus 5.5(자기신고)",
+     "topics": [
+      "역할(미정)",
+      "사용자 선호(젠스파크만·중학생 눈높이·Gemini CLI)",
+      "작업 기록(데스크톱 연결·GenCode 보류·GEMINI.md)",
+      "대화방 정보(빈)"
+     ]
+    },
+    "read_check": {
+     "rc2": "pass 9/9, 18쪽 전부 열람(빈 하단 40%까지 확인)",
+     "msg": 6067007
+    },
+    "packets": {}
    }
   ],
   "packet_record_schema": {
@@ -4511,7 +4568,7 @@
    "bound_before_answers": true,
    "rule": {
     "Q1_no_and_Q2_no": "유효. G21 한계: \"judge 런타임이 세션 시작 시 자기 메모를 자동 로드함(내용은 E2 대상과 무관하다는 자기선언에 의존, 검증 수단 없음)\"",
-    "Q1_yes": "그 judge 9건 전부 무효 → 같은 4단계 격리로 새 judge 선발, 그 judge 몫만 재채점(Method 6065585·Peer 6065584 쪽 채택; TL 별표안 불채택 — 영향 범위를 정할 근거가 없음)",
+    "Q1_yes": "그 judge 9건 전부 무효 → 같은 4단계 격리로 새 judge 선발, 그 judge 몫만 재채점 (출처 정정: Method 6065585안. Peer 6065599안은 \"겹치는 샘플만 무효\"였음. TL 별표안 불채택)",
     "Q2_yes": "그 시점 이후 답안 무효 + 메모 삭제 확인 받고 공개, 다음 회차 같은 judge 미사용"
    },
    "questions_sent": {
@@ -4548,7 +4605,19 @@
     },
     "pending_team_ruling": "judge1 Q1이 \"예(자사만)\"로 결박 규칙의 예/아니오 경계에 걸림(자사 행은 E2 샘플 아님). judge1 Q2 \"예\"는 마지막 패킷 뒤라 \"이후 답안\" 0건. 총괄 단독 해석 금지 → op:150에서 팀 결박 요청."
    },
-   "note": "TL 근거 ③(결과 기반)은 판정 기록에서 제외(Peer 6065599)"
+   "note": "TL 근거 ③(결과 기반)은 판정 기록에서 제외(Peer 6065599)",
+   "ruling": {
+    "at": "2026-10-12T06:09:14Z",
+    "a": "무효 (Method 6066253·TL 6066255 무효, Peer 6066262 유효→6066287 철회·무효 수용) — 결박 \"한 명이라도 무효면 무효\"",
+    "b": "무효 0건, 메모 원문 보관 후 삭제 확인(6066582/6066665), judge1 다음 회차 미사용",
+    "judge1_memo_originals": {
+     "work_log_entry": "## 2026-10-12 — 읽기 확인 2회 + 블라인드 채점 패킷 9건 (DM) / 읽기 확인 1차 3쪽만·2차 18쪽 전부 / 패킷 1~9 blind_id 9개 회신 완료, 첫 줄 자기선언, 쪽 수 전부 열람, competitor false, 가림 감점 안 함, guess 칸만 / Source: DM 6060676..6065061",
+     "memory_active_context": "2026-10-12: 읽기 확인·채점 패킷 9건 회신 완료 (notes/work-log.md). [9/11 LP-GROWTH 회신 완료, Shorts mapping — 기존 문구]",
+     "contains_scores_or_reasons": false,
+     "deleted_confirmed_msg": 6066665,
+     "checkpoint_history_note": "작업 폴더 자동 체크포인트에 삭제 전 버전이 남아 있을 수 있음(judge1 고지). 이력은 손대지 않음."
+    }
+   }
   },
   "model_note": "judge1·제3자 = Claude Sonnet 5.5(자기신고). judge2 모델 미확인 → 같은 모델 여부 판단 불가. 표에는 \"두 judge 일치율은 기술 통계일 뿐 평가자 간 신뢰도 아님(모델 동일성 미확인)\"으로 적는다. Genny 4005983 로스터 표시(09-11)는 전원 claude-fable-5-1 → 동일 모델일 가능성 높음(추정)."
  }
