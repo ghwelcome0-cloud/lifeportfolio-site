@@ -65,6 +65,13 @@ cd /home/user/webapp
 python3 scripts/generate_trademark_logos.py
 ```
 
+### 3) 지면용 금박 마크 (파생 · 출원 견본 아님)
+
+| 파일 | 사이즈 | 용도 |
+|---|---|---|
+| `lifeportfolio-mark-gold-foil-320.png` | 320×320 투명 | 리포트 II장 상장형 지면의 둥근 금빛 인장 안에 쓰는 마크. 원본 `assets/logo-trademark.png`의 L·궤도·점만 그대로 오려 낸 것(모양·비율 변경 없음), 색만 브랜드 금색 #C8A24A→#9A7736 한 가지로. |
+
 ## 📅 버전
 
 - v1.0 (2026-05-05) — PR #21 / 최초 제작
+- v1.1 (2026-10-12) — 지면용 금박 마크 파생본 추가 (사명·비전 상장형 지면)
