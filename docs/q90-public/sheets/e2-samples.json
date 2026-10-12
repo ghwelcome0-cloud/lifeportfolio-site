@@ -1,7 +1,7 @@
 {
  "sheet": "E2 공개 샘플 리포트 블라인드 채점",
  "roster_version": "v2.0",
- "generatedAt": "2026-10-12T00:52:24.194Z",
+ "generatedAt": "2026-10-12T01:07:37.567Z",
  "salt_sha256": "5516a97eae8a7825cc28f18f8b77c347b346cab929dc0e71c23264b33185a500",
  "salt_revealed": null,
  "blind_id_rule": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수, 총괄 보관, 채점 뒤 공개",
@@ -10,7 +10,8 @@
   "도메인·URL(명부 url·docs_url)",
   "로고·로고 대체텍스트",
   "고유 상품명·등록상표",
-  "고객센터 연락처"
+  "고객센터 연락처",
+  "샘플 속 인물명(예시 고객·상담사 이름 — 회사 고유 예시 인물로 출처 식별 가능, Peer 6037804)"
  ],
  "redaction_leak_check": "처리본에서 명부 41행의 name/provider/도메인 문자열 검색 → 0건이어야 redacted 상태로 넘어간다",
  "aggregation": {
@@ -26,12 +27,18 @@
  "procedure": [
   "① 샘플 파일 내려받아 sha256 고정",
   "② redaction_items 가림 → 누출 검사 0건 → redacted_sha256",
+  "②-b judge에게는 blind_id + 가린 샘플 파일 + 루브릭만 담은 별도 패킷을 줌. 이 시트·명부·저장소 경로는 주지 않음(시트 자체가 id↔blind_id 열쇠표). 패킷 sha256을 행의 packet_sha256에 기록(Peer 6037804)",
   "③ judge1·judge2 독립 채점(rubric-v2 e2_judge_rubric_public, L1~L5, 이유 1문장, guess 칸)",
   "④ 축별 차이≥2 → judge3 선택",
   "⑤ final = 집계 규칙 적용 · 표에는 (샘플) 꼬리표",
   "⑥ 채점 종료 후 salt 공개(salt_revealed)"
  ],
  "judges": {
+  "judge1": null,
+  "judge2": null,
+  "judge3": null
+ },
+ "judge_repo_access": {
   "judge1": null,
   "judge2": null,
   "judge3": null
@@ -117,7 +124,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "M02",
@@ -199,7 +207,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "M03",
@@ -281,7 +290,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G01",
@@ -363,7 +373,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G02a",
@@ -445,7 +456,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G03",
@@ -527,7 +539,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G04",
@@ -609,7 +622,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G06",
@@ -691,7 +705,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G07",
@@ -773,7 +788,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G08",
@@ -855,7 +871,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G11",
@@ -937,7 +954,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G12",
@@ -1019,7 +1037,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G13",
@@ -1101,7 +1120,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G14",
@@ -1183,7 +1203,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G15a",
@@ -1265,7 +1286,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "G15b",
@@ -1347,7 +1369,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "E01",
@@ -1429,7 +1452,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "E02",
@@ -1511,7 +1535,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "E06",
@@ -1593,7 +1618,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "E07",
@@ -1675,7 +1701,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "E11",
@@ -1757,7 +1784,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "E12",
@@ -1839,7 +1867,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K01",
@@ -1921,7 +1950,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K02",
@@ -2003,7 +2033,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K03",
@@ -2085,7 +2116,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K05",
@@ -2167,7 +2199,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K01a",
@@ -2249,7 +2282,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K08",
@@ -2331,7 +2365,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K09",
@@ -2413,7 +2448,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K10",
@@ -2495,7 +2531,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K11",
@@ -2577,7 +2614,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K12",
@@ -2659,7 +2697,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K13",
@@ -2741,7 +2780,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K14",
@@ -2823,7 +2863,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K15",
@@ -2905,7 +2946,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K16",
@@ -2987,7 +3029,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K17",
@@ -3069,7 +3112,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K18",
@@ -3151,7 +3195,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K19",
@@ -3233,7 +3278,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   },
   {
    "id": "K20",
@@ -3315,7 +3361,8 @@
    "A2": null,
    "A3": null,
    "A4": null,
-   "A5": null
+   "A5": null,
+   "packet_sha256": null
   }
  ]
 }
