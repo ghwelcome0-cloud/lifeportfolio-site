@@ -383,3 +383,45 @@ body.no-motion .pf-bubble{transition:none}
 .pf-trace,.pf-consent{margin:14px 0;padding:12px 14px;border:1px solid #d9e2dc;border-radius:12px;background:#fbfcfa}
 .pf-tr{margin:6px 0;padding-left:18px;line-height:1.7}
 .pf-consent .pill{white-space:normal;word-break:keep-all;text-align:left}
+/* 12주 자산화 퀘스트 · 내 자산 카드 (asset-quest-v1, 2026-10-12) — 칸 수만 보여 주고 점수·순위는 없다. */
+.aq-seed{border-left:4px solid var(--gold)}
+.aq-verb{display:inline-block;font-size:12.5px;font-weight:700;color:#fff;background:var(--brg);border-radius:999px;padding:1px 9px;margin-left:4px;vertical-align:1px;white-space:nowrap}
+.aq-lead{font-family:var(--serif);font-size:17px;color:var(--brg);font-weight:700;margin:0 0 4px;line-height:1.5}
+.aq-fill{background:#f7f0df;border-radius:12px;padding:10px 12px;margin:8px 0 12px}
+.aq-fill p{margin:0 0 6px;font-size:14.5px}
+.aq-fill .sh-hint{margin:6px 0 0}
+.aq-dots{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.aq-dots i{display:block;height:12px;border-radius:4px;background:#fff;border:1px solid var(--rule)}
+.aq-dots i.on{background:var(--brg);border-color:var(--brg)}
+.aq-dots i.now{outline:2px solid var(--gold);outline-offset:1px}
+.aq-ph{border:1px solid var(--rule);border-left:4px solid var(--brg);border-radius:12px;background:#fff;padding:10px 12px;margin:0 0 10px}
+.aq-ph--2{border-left-color:var(--gold)}.aq-ph--3{border-left-color:var(--gold-2)}
+.aq-ph-hd{margin:0;font-size:15px;line-height:1.5}
+.aq-ph-hd b{color:var(--brg);margin-right:4px}
+.aq-end{color:var(--gold-2);font-weight:700;white-space:nowrap}
+.aq-who{margin:2px 0 6px;font-size:13px;color:var(--ink-2)}
+.aq-list{list-style:none;margin:0;padding:0}
+.aq-row{display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-top:1px dashed var(--rule-2)}
+.aq-row:first-child{border-top:0}
+.aq-row.on .aq-n{background:var(--brg);color:#fff}
+.aq-row.now{background:#fffaf0}
+.aq-n{display:inline-flex;align-items:center;justify-content:center;min-height:30px;border-radius:8px;background:#f1ece0;color:var(--brg);font-weight:700;font-size:13px}
+.aq-body{min-width:0}
+.aq-q{margin:0;font-size:14.5px;line-height:1.55}
+.aq-q .aq-verb{margin:0 4px 0 0}
+.aq-k{margin:2px 0 0;font-size:13px;color:var(--ink-2)}
+.aq-log{margin:3px 0 0;font-size:13px;color:var(--brg);font-weight:600;overflow-wrap:anywhere}
+.aq-row .mini-btn{min-height:44px;white-space:nowrap}
+.aq-cardbox{border:2px solid var(--gold);border-radius:14px;background:#fffaf0;padding:12px 14px;margin:14px 0 10px}
+.aq-cardbox.done{border-color:var(--brg)}
+.aq-done{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--brg);border-radius:999px;padding:1px 8px;margin-left:4px}
+.aq-ev{font-size:13px;color:var(--ink-2);margin:6px 0}
+.aq-acts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.aq-acts .btn{flex:1 1 140px}
+.aq-chk{border:1px solid var(--rule);border-radius:12px;padding:10px 12px;margin:0 0 10px;background:#fff}
+.aq-chk ul{margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.7}
+.aq-pick .pill span{min-width:44px;text-align:center}
+.aq-saved{text-align:center;font-weight:700;color:var(--brg);font-size:14.5px;margin:8px 0}
+.log-q{display:inline-block;margin-left:6px;font-size:12px;font-weight:700;color:var(--gold-2)}
+@media (max-width:420px){.aq-row{grid-template-columns:34px 1fr}.aq-row .mini-btn{grid-column:2;justify-self:start}}
+.aq-cardbox .copy-btn,.aq-seed .copy-btn{min-height:44px}

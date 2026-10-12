@@ -1,7 +1,7 @@
 "use strict";
 // 인생포트폴리오 디지털 다이어리 — owner-only storage callable `diary`.
 // STATUS: exported from functions/index.js as `diary` (asia-northeast3).
-// Storage: RTDB diary/{uid}/{meta|pages/<pageKey>|logs/<logId>}. Clients cannot read or write it
+// Storage: RTDB diary/{uid}/{meta|pages/<pageKey>|logs/<logId>|pathfind/<sid>|cards/<sid>}. Clients cannot read or write it
 // (root `$other` rule denies all); only this module does, with uid taken from Auth only.
 // Each node stores its content as one JSON string so RTDB never drops empty values or reorders.
 // Report/program data are read (owner's own path), never written. Internal provenance
@@ -54,11 +54,19 @@ function seedFrom(stored, programNode) {
     seed.program = { theme: safe(str(p.quarter && p.quarter.heading)), weeks,
       focus: ax ? { action: safe(str(ax.action)), doneWhen: safe(str(ax.doneWhen)), artifact: safe(str(ax.artifact)), reuse: safe(str(ax.reuse)) } : null,
       month3: (p.program && p.program.month3 && Array.isArray(p.program.month3.goals) ? p.program.month3.goals : []).slice(0, 5).map(g => safe(str(g.title))).filter(Boolean),
-      year1: safe(str(p.program && p.program.year1 && p.program.year1.vision && p.program.year1.vision[0])) };
+      year1: safe(str(p.program && p.program.year1 && p.program.year1.vision && p.program.year1.vision[0])), quest: questFrom(p._assetQuest) };
   }
   if (INTERNAL.test(JSON.stringify(seed))) fail("internal", "리포트 내용을 다이어리로 옮기지 못했습니다.");
   return seed;
 }
+
+// 12주 자산화 퀘스트 (asset-quest-v1, owner-approved 2026-10-12 「지도는 프로그램, 카드는 다이어리에서 자란다」).
+// Customer words only. The internal source code (ref) and the design rule never leave the server.
+function questFrom(q) {
+  const v = S.questView(q);
+  return v && !INTERNAL.test(JSON.stringify(v)) ? v : null;
+}
+const cardView = node => { const d = parse(node); return d ? { fields: d.fields || {}, done: !!d.done, doneAt: d.doneAt || null, weeks: d.weeks || [], rev: node.rev || 0 } : null; };
 
 // ---- actions ---------------------------------------------------------------------------
 async function open(uid, data) {
@@ -79,10 +87,11 @@ async function open(uid, data) {
   const pages = {};
   Object.keys(snap.pages || {}).forEach(k => { const d = parse(snap.pages[k]); if (d && S.BY_KEY[k]) pages[k] = { fields: d, rev: snap.pages[k].rev || 0 }; });
   return { ok: true, schema: S.VERSION, meta: meta ? { startDate: meta.startDate || null, reportSid: meta.reportSid || null } : null,
-    reportFound: !!seed, reportSid: seed ? sid : null, seed, pages, logs: listLogs(snap.logs) };
+    reportFound: !!seed, reportSid: seed ? sid : null, seed, pages, logs: listLogs(snap.logs),
+    card: seed && snap.cards && snap.cards[sid] ? cardView(snap.cards[sid]) : null };
 }
 function listLogs(node) {
-  return Object.keys(node || {}).map(id => { const d = parse(node[id]); return d && { id, date: d.date, text: d.text, kept: d.kept || null, change: d.change || null, stage: node[id].stage || 0, createdAt: node[id].createdAt || 0 }; })
+  return Object.keys(node || {}).map(id => { const d = parse(node[id]); return d && { id, date: d.date, text: d.text, kept: d.kept || null, change: d.change || null, week: d.week || null, stage: node[id].stage || 0, createdAt: node[id].createdAt || 0 }; })
     .filter(Boolean).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (b.createdAt - a.createdAt) || a.id.localeCompare(b.id)));
 }
 async function start(uid, data) {
@@ -155,6 +164,35 @@ async function reset(uid, data) {
   return { ok: true, reset: true };
 }
 
+// ---- 내 자산 카드 (diary/{uid}/cards/{sid}) ----------------------------------------------
+// The card grows from the owner's own records (logs with week 1–12). The last line is written by the owner:
+// saveCard with done=true needs a name, 무엇이 남았나 and 누가 다시 썼나. Never scored; filled weeks are counted only.
+async function saveCard(uid, data) {
+  const sid = data.reportSid;
+  if (!sid || !SID.test(sid)) fail("invalid-argument", "리포트 정보가 올바르지 않습니다.");
+  if (!ID.test(data.opId || "")) fail("invalid-argument", "저장 요청이 올바르지 않습니다.");
+  if (data.done != null && typeof data.done !== "boolean") fail("invalid-argument", "남기기 여부를 확인해 주세요.");
+  const v = S.validateCard(data.card, data.done === true);
+  if (!v.ok) fail("invalid-argument", v.error === "too-long" ? "글이 너무 길어요. 조금 줄여 주세요." : v.error === "incomplete" ? "카드 이름, 무엇이 남았나, 누가 다시 썼나를 적어 주세요." : "카드 내용을 확인해 주세요.");
+  const prog = (await admin.database().ref(`programs/${uid}/${sid}`).get()).val();
+  if (!prog || !prog.program || !questFrom(prog.program._assetQuest)) fail("failed-precondition", "이 리포트에는 12주 자산화 퀘스트가 없어요.");
+  const logs = listLogs((await base(uid).child("logs").get()).val());
+  const weeks = Array.from(new Set(logs.filter(l => l.week).map(l => l.week))).sort((a, b) => a - b);
+  let applied = false;
+  const saved = await base(uid).child("cards").child(sid).transaction(cur => {
+    applied = false;
+    const ops = (cur && Array.isArray(cur.ops)) ? cur.ops : [];
+    if (ops.indexOf(data.opId) >= 0) return;
+    const d = (cur && parse(cur)) || {};
+    const next = { fields: v.clean, done: data.done === true ? true : !!d.done, doneAt: data.done === true ? (d.doneAt || Date.now()) : (d.doneAt || null), weeks };
+    applied = true;
+    return { doc: JSON.stringify(next), rev: ((cur && cur.rev) || 0) + 1, ops: ops.concat(data.opId).slice(-OPS_KEPT), updatedAt: now() };
+  }, undefined, false);
+  const node = saved.snapshot.val();
+  if (!node) fail("internal", "저장을 확인하지 못했습니다.");
+  return { ok: true, applied: saved.committed && applied, card: cardView(node) };
+}
+
 // ---- 고유성 기반 자산화 길찾기 (asset-map v1) -------------------------------------------
 // Computed on demand from the owner's own stored answers + report axis ranking (read-only).
 // Nothing is written to reports/responses. Only the optional-question answers (D7 option C)
@@ -212,6 +250,7 @@ async function handle(request) {
     case "deleteLog": return deleteLog(uid, data);
     case "reset": return reset(uid, data);
     case "pathfind": return pathfind(uid, data);
+    case "saveCard": return saveCard(uid, data);
     default: fail("invalid-argument", "지원하지 않는 요청입니다.");
   }
 }
@@ -226,4 +265,4 @@ async function purgeOnUserDelete(user) {
 }
 const diaryPurgeOnUserDelete = functionsV1.region("asia-northeast3").auth.user().onDelete(purgeOnUserDelete);
 const diary = onCall({ region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30 }, handle);
-module.exports = { diary, diaryPurgeOnUserDelete, purgeOnUserDelete, handle, seedFrom, MAX_LOGS };
+module.exports = { diary, diaryPurgeOnUserDelete, purgeOnUserDelete, handle, seedFrom, questFrom, MAX_LOGS };
