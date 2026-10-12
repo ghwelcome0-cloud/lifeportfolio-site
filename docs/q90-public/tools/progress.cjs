@@ -1,0 +1,41 @@
+'use strict';
+// Usage: node progress.cjs [--md]  — 공개 비교표 v2 트랙 진행률을 같은 기준으로 계산한다(대표 보고용).
+// 기준(결박): 각 단계는 "표에 올릴 수 있는 상태"가 된 행/칸만 센다. 추정치 없음.
+const fs = require('fs'), path = require('path');
+const B = path.resolve(__dirname, '..');
+const J = f => JSON.parse(fs.readFileSync(path.join(B, f), 'utf8'));
+const roster = J('roster/roster-v2.json'), e3 = J('sheets/e3-docs.json'), e2 = J('sheets/e2-samples.json');
+const rows = roster.rows.filter(r => !r.retired), nonOwn = rows.filter(r => !r.own);
+// E3: 표에 올리는 핵심 7칸(가격구간·가격투명성·소요·문서URL·매력·한계·한국어) 중 source_url 있는 값의 수
+const E3_KEYS = ['price_band', 'price_transparency', 'time_min', 'docs_url', 'appeal', 'limits', 'korean_support'];
+// 명부에서 이관된 값(note '재확인 필요')은 아직 확인 안 된 값이므로 세지 않는다
+const filled = v => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && !/재확인 필요/.test(v.note || '');
+let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0;
+for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k])).length; e3cells += n; if (n > 0) e3rowsTouched++; if (n === E3_KEYS.length) e3rowsComplete++; }
+// E2: 샘플 확보(ready 이상) / 채점 완료(final)
+const st = s => e2.rows.filter(r => r.status === s).length;
+const e2ready = e2.rows.filter(r => ['ready', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
+const e2final = st('final'), e2inel = st('ineligible');
+// E1: 최신 run에서 a61 또는 a71이 있는 비자사 행
+const runs = fs.readdirSync(path.join(B, 'runs')).filter(d => /^\d{4}-\d{2}-\d{2}-r\d+$/.test(d)).sort();
+const latest = runs[runs.length - 1];
+const scored = latest && fs.existsSync(path.join(B, 'runs', latest, 'e1-scored.json')) ? J(`runs/${latest}/e1-scored.json`) : [];
+const e1n = scored.filter(v => !v.own && (v.a61 || v.a71)).length;
+// 자사 행: own.json 존재 여부
+const own = fs.existsSync(path.join(B, 'table', 'own.json'));
+const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
+const out = {
+  at: new Date().toISOString().slice(0, 16) + 'Z', roster_rows: rows.length, compare_rows: nonOwn.length, latest_run: latest || null,
+  steps: [
+    { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: latest ? `${latest} — 구 도구 이관분. r3(새 측정기)부터 공개용` : '' },
+    { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length, pct: pct(e3cells, rows.length * E3_KEYS.length), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결 ${e3rowsComplete}` },
+    { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: nonOwn.length, pct: pct(e2ready, nonOwn.length), note: `부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
+    { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: 'judge 2인 + 제3자, Q90 judge와 다른 actor' },
+    { step: '자사 행(Q90 2회차 전사)', done: own ? 1 : 0, total: 1, pct: own ? 100 : 0, note: 'TL D 도구 → 0-c → 실행 → judge → scorer 뒤' }
+  ]
+};
+if (process.argv.includes('--md')) {
+  console.log(`| 단계 | 완료/전체 | % | 비고 |\n|---|---|---|---|`);
+  for (const s of out.steps) console.log(`| ${s.step} | ${s.done}/${s.total} | ${s.pct}% | ${s.note} |`);
+  console.log(`\n(${out.at} · 명부 ${out.roster_rows}행 · 최신 run ${out.latest_run})`);
+} else console.log(JSON.stringify(out, null, 1));

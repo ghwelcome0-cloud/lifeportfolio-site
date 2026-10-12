@@ -1,0 +1,3368 @@
+{
+ "sheet": "E2 공개 샘플 리포트 블라인드 채점",
+ "roster_version": "v2.0",
+ "generatedAt": "2026-10-12T01:26:26.397Z",
+ "salt_sha256": "5516a97eae8a7825cc28f18f8b77c347b346cab929dc0e71c23264b33185a500",
+ "salt_revealed": null,
+ "blind_id_rule": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수, 총괄 보관, 채점 뒤 공개",
+ "redaction_items": [
+  "서비스명·회사명(명부 name·provider)",
+  "도메인·URL(명부 url·docs_url)",
+  "로고·로고 대체텍스트",
+  "고유 상품명·등록상표",
+  "고객센터 연락처",
+  "샘플 속 인물명(예시 고객·상담사 이름 — 회사 고유 예시 인물로 출처 식별 가능, Peer 6037804)"
+ ],
+ "redaction_leak_check": "처리본에서 명부 41행의 name/provider/도메인 문자열 검색 → 0건이어야 redacted 상태로 넘어간다",
+ "aggregation": {
+  "scale": "L1~L5 정수",
+  "diff_le_1": "낮은 값",
+  "diff_ge_2": "제3자가 judge1/judge2 값 중 하나를 근거와 함께 선택",
+  "forbidden": [
+   "평균",
+   "새 값"
+  ]
+ },
+ "actor_isolation": "judge1·judge2·judge3는 Q90 2회차 judge·adjudicator·X1~X4와 다른 actor. 겹치면 G16 (16) 격리 기록 필요",
+ "procedure": [
+  "① 샘플 파일 내려받아 sha256 고정",
+  "② redaction_items 가림 → 누출 검사 0건 → redacted_sha256",
+  "②-b judge에게는 blind_id + 가린 샘플 파일 + 루브릭만 담은 별도 패킷을 줌. 이 시트·명부·저장소 경로는 주지 않음(시트 자체가 id↔blind_id 열쇠표). 패킷 sha256을 행의 packet_sha256에 기록(Peer 6037804)",
+  "③ judge1·judge2 독립 채점(rubric-v2 e2_judge_rubric_public, L1~L5, 이유 1문장, guess 칸)",
+  "④ 축별 차이≥2 → judge3 선택",
+  "⑤ final = 집계 규칙 적용 · 표에는 (샘플) 꼬리표",
+  "⑥ 채점 종료 후 salt 공개(salt_revealed)"
+ ],
+ "judges": {
+  "judge1": null,
+  "judge2": null,
+  "judge3": null
+ },
+ "judge_repo_access": {
+  "judge1": null,
+  "judge2": null,
+  "judge3": null
+ },
+ "rows": [
+  {
+   "id": "M01",
+   "name": "CliftonStrengths 34 (Gallup)",
+   "blind_id": "S-4e6f48",
+   "sample_url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+   "sample_sha256": "787fa3b55f47988cd710a6d7ebb7e2adbcad90b6f7f5fdd3c2189c844a11b57c",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "M02",
+   "name": "Everything DiSC Workplace (Wiley)",
+   "blind_id": "S-da397f",
+   "sample_url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+   "sample_sha256": "3960cd201c2a090ad76bbacc8a24058d85a145d4af78aa25b8d492e152cb7331",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "M03",
+   "name": "MBTI Complete (Myers-Briggs Co.)",
+   "blind_id": "S-5e149f",
+   "sample_url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+   "sample_sha256": "72f8773e4c08ed644548f72603b9fbe8d37d4bbce796930f7030ea866e99304d",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G01",
+   "name": "VIA Survey (VIA Institute)",
+   "blind_id": "S-7b229a",
+   "sample_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ineligible",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G02a",
+   "name": "IPIP Big-Five 50 (ORI)",
+   "blind_id": "S-64bedd",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ineligible",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G03",
+   "name": "HEXACO-PI-R 60",
+   "blind_id": "S-fa5d22",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ineligible",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G04",
+   "name": "Hogan Insight",
+   "blind_id": "S-9d99bb",
+   "sample_url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+   "sample_sha256": "de5927e92ce87cb196f735a8494b87b05d782a9f611c51aaa5f0158e5a3ece85",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G06",
+   "name": "Birkman Signature",
+   "blind_id": "S-fbc32a",
+   "sample_url": "https://birkman.com/resources/ebooks/sample-signature-report-download",
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G07",
+   "name": "PI Behavioral Assessment",
+   "blind_id": "S-e9e660",
+   "sample_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+   "sample_sha256": "ddf9cb9d59ea1efdb1c7031d46ba36aa1984913160fab0acfb953ac364f63b4d",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G08",
+   "name": "Insights Discovery",
+   "blind_id": "S-635567",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G11",
+   "name": "16Personalities Premium Career Suite",
+   "blind_id": "S-c98c6d",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G12",
+   "name": "Strengths Profile (Cappfinity)",
+   "blind_id": "S-cb936c",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G13",
+   "name": "Working Genius",
+   "blind_id": "S-1c41bf",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G14",
+   "name": "Strong Interest Inventory",
+   "blind_id": "S-f7229a",
+   "sample_url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+   "sample_sha256": "63b66d5c1ea80fe962a7b139df06f50aba5ef1aeed8b8a89685cdee47a1a79d9",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G15a",
+   "name": "O*NET Interest Profiler",
+   "blind_id": "S-c2bcdd",
+   "sample_url": "https://www.onetcenter.org/dl_tools/ipsf/IP_Score_Report.pdf",
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ineligible",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "G15b",
+   "name": "Self-Directed Search (PAR)",
+   "blind_id": "S-7da6e0",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "E01",
+   "name": "BetterUp",
+   "blind_id": "S-3ec090",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "E02",
+   "name": "CoachHub",
+   "blind_id": "S-d5cb03",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "E06",
+   "name": "Full Focus Planner",
+   "blind_id": "S-7ed247",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "E07",
+   "name": "BestSelf Self Journal",
+   "blind_id": "S-f76068",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "E11",
+   "name": "15Five Perform",
+   "blind_id": "S-aaaff7",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "E12",
+   "name": "Lattice Performance",
+   "blind_id": "S-fb4dd6",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K01",
+   "name": "고용24 직업선호도검사",
+   "blind_id": "S-e55409",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K02",
+   "name": "커리어넷 직업흥미검사 H형",
+   "blind_id": "S-e88b89",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K03",
+   "name": "어세스타 STRONG II",
+   "blind_id": "S-10bfa2",
+   "sample_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K05",
+   "name": "태니지먼트 강점 리포트",
+   "blind_id": "S-04d5ce",
+   "sample_url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+   "sample_sha256": "4df5a39ad5f86e0cf4a6203937bd51121cb37b8a281f8d0edca1bd8c15345ca0",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "ready",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K01a",
+   "name": "고용24 직업선호도검사 L형",
+   "blind_id": "S-4c83af",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K08",
+   "name": "고용24 성인용 직업적성검사",
+   "blind_id": "S-8f43ee",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K09",
+   "name": "고용24 직업가치관검사",
+   "blind_id": "S-2cad9a",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K10",
+   "name": "고용24 구직준비도검사",
+   "blind_id": "S-408733",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K11",
+   "name": "고용24 창업적성검사",
+   "blind_id": "S-be186f",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K12",
+   "name": "고용24 대학생 진로준비도검사",
+   "blind_id": "S-2e49ef",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K13",
+   "name": "커리어넷 직업가치관검사(성인)",
+   "blind_id": "S-aaeb13",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K14",
+   "name": "커리어넷 진로개발준비도검사",
+   "blind_id": "S-0366bb",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K15",
+   "name": "NCS 직업기초능력 자가진단",
+   "blind_id": "S-08a3ae",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K16",
+   "name": "한국가이던스 홀랜드 진로탐색검사",
+   "blind_id": "S-8729f4",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K17",
+   "name": "어세스타 MBTI Form M(한국판)",
+   "blind_id": "S-927ba4",
+   "sample_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K18",
+   "name": "TCI 기질및성격검사(인싸이트)",
+   "blind_id": "S-3febe0",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K19",
+   "name": "잡코리아 성향·역량 검사",
+   "blind_id": "S-a4562f",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  },
+  {
+   "id": "K20",
+   "name": "16Personalities 한국어판(무료 MBTI류)",
+   "blind_id": "S-b69100",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "packet_sha256": null
+  }
+ ]
+}
