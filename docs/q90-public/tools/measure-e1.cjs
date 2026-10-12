@@ -35,6 +35,8 @@ async function headers(url) {
     r.permissions = !!h['permissions-policy'];
     r.csp = !!csp; r.cspReporting = /report-(to|uri)/i.test(csp + ' ' + cspro) || !!h['report-to'] || !!h['reporting-endpoints'];
     r.server = h['server'] || null;
+    // Peer 6032265 ②: 받은 HTML 바이트 sha256 — '사이트가 바뀜'과 '측정이 흔들림'을 가르는 근거
+    const body = Buffer.from(await res.arrayBuffer()); r.bodyBytes = body.length; r.bodySha256 = crypto.createHash('sha256').update(body).digest('hex');
   } catch (e) { r.error = String(e && e.message || e).slice(0, 120); }
   return r;
 }
@@ -69,6 +71,7 @@ async function mobile(browser, url, slug) {
     await sleep(2500);
     r.status = resp && resp.status();
     r.title = (await pg.title()).slice(0, 80);
+    r.domSha256 = crypto.createHash('sha256').update(await pg.content()).digest('hex'); // 렌더 후 DOM 직렬화 hash
     const m = await pg.evaluate(() => {
       const vp = document.querySelector('meta[name=viewport]');
       const content = vp ? vp.getAttribute('content') || '' : '';
