@@ -34,76 +34,76 @@
    "url": "https://www.gallup.com/cliftonstrengths/en/403127/cliftonstrengths-34-report.aspx",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "Gallup, Inc.",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(Gallup Access 플랫폼) + 모바일 앱",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
+    "note": "제품 페이지에 소요시간 미기재(FAQ 별도 확인 필요)"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 59.99,
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
+    "note": "USD 59.99 (CliftonStrengths 34). 환산 전 USD 원값 — 환율 적용은 표 생성 시 collected_at 기준"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "~15만원",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
+    "note": "USD 59.99 ≈ 8만원대(1,350원/USD 가정 — 표에는 구간만)"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
+    "note": "공개가. 환불 규정은 store 약관 확인 필요"
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253790/science-of-cliftonstrengths.aspx",
+    "collected_at": "2026-10-12",
+    "note": "결과는 Gallup Access에서 영구 재열람(무료). 재검사는 공식적으로 권하지 않음(\"Should I retake? Generally, no\"). Top5→34 업그레이드 USD 49.99"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.gallup.com/file/cliftonstrengths/en/398105/Stability_of_CliftonStrengths_Results_Over_Time.pdf",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253790/science-of-cliftonstrengths.aspx",
+    "collected_at": "2026-10-12",
+    "note": "Technical Report(신뢰도·타당도 요약)와 Stability 연구(57,000명+ 재검사 안정성) 공개"
    },
    "reliability_coef": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253790/science-of-cliftonstrengths.aspx",
+    "collected_at": "2026-10-12",
+    "note": "\"excellent test-retest\" 문구만 — 계수 값은 Technical Report PDF 본문 확인 필요"
    },
    "norm_sample_n": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 57000,
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253790/science-of-cliftonstrengths.aspx",
+    "collected_at": "2026-10-12",
+    "note": "재검사 안정성 연구 표본 57,000명+(규준 표본과는 다름 — Technical Report에서 재확인)"
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+    "source_url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "Gallup 공식 'View Sample Report of the CliftonStrengths 34' | 209648 bytes, 25p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "787fa3b55f47988cd710a6d7ebb7e2adbcad90b6f7f5fdd3c2189c844a11b57c",
+    "source_url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -112,22 +112,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "34가지 재능 순위를 모두 알고 \"내가 잘하는 것\"에 투자하는 방식(Talent × Investment)을 택하고 싶을 때. 결과가 수년간 안정적이라는 대규모 연구 공개.",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253790/science-of-cliftonstrengths.aspx",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "유료(USD 59.99). 리포트는 1~10위 상세, 11~34위는 요약. 약점 교정보다 강점 투자 철학이라 \"고쳐야 할 것\"을 찾는 목적에는 맞지 않음(공식 입장). 한국어 사이트 안내 없음.",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
+    "collected_at": "2026-10-12",
+    "note": "검사·리포트 한국어 제공(명부 1판 확인). 사이트 안내는 영어"
    },
    "E4": {
     "value": null,
@@ -137,7 +137,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "M02",
@@ -146,58 +146,58 @@
    "url": "https://www.everythingdisc.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "John Wiley & Sons (Everything DiSC)",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공인 파트너(Authorized Partner) 경유 — 개인 직접 구매 창구는 공식 사이트에 없음",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "\"Find a Partner\" 흐름"
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 20,
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 FAQ 15~20분 — 상한값(사이트 재확인 필요)"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 사이트에 가격 없음(파트너별 책정). → A8.1 \"문의\""
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "가격 비공개 → 구간 미측정"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "문의",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "공개가 없음"
    },
    "reuse_price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "미확인"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.everythingdisc.com/EverythingDiSC/media/SiteFiles/Assets/LeadGenAssets/Everything-DiSC-Research-Report-AT-Revised-20201117.pdf",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "Everything DiSC Research Report(타당도·신뢰도, 2020 개정) 공개"
    },
    "reliability_coef": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "test-retest 중앙값 .87 (8개 척도 .85~.88, N=599)",
+    "source_url": "https://www.everythingdisc.com/EverythingDiSC/media/SiteFiles/Assets/LeadGenAssets/Everything-DiSC-Research-Report-AT-Revised-20201117.pdf",
+    "collected_at": "2026-10-12",
+    "note": "Research Report 본문: \"above .70, with a median of .87\" — pdftotext로 전사"
    },
    "norm_sample_n": {
     "value": null,
@@ -206,16 +206,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+    "source_url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+    "collected_at": "2026-10-12",
+    "note": "Wiley 공식 Everything DiSC Workplace Profile 샘플(2016판; 2024 갱신본은 kit-resources에서 확인) | 883563 bytes, 20p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "3960cd201c2a090ad76bbacc8a24058d85a145d4af78aa25b8d492e152cb7331",
+    "source_url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -224,22 +224,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "직장 동료와의 관계·소통 방식을 DiSC 4유형 지도로 보고 \"저 사람과 어떻게 일할까\"를 바로 알고 싶을 때. 타당도 연구 보고서 공개.",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "개인 직접 구매 불가(파트너 경유), 가격 비공개. 직장 내 관계에 초점이라 진로 탐색·직업 추천 목적에는 맞지 않음.",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.everythingdisc.com/",
+    "collected_at": "2026-10-12",
+    "note": "한국어판 프로파일 존재(국내 파트너 유통) — 공식 언어 목록으로 재확인"
    },
    "E4": {
     "value": null,
@@ -249,7 +249,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "M03",
@@ -370,52 +370,52 @@
    "url": "https://www.viacharacter.org/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "VIA Institute on Character",
+    "source_url": "https://www.viacharacter.org/reports",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(계정 등록 후 무료 설문, 리포트는 PDF 다운로드)",
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 15,
+    "source_url": "https://www.viacharacter.org/reports",
+    "collected_at": "2026-10-12",
+    "note": "공식 10~15분, 96문항 — 상한값"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "설문·24순위 결과 무료. 상세 리포트 Total 24 USD 49 / Top 5 별도. 표의 1회 비용은 \"무료(순위) / 유료 리포트 USD 49\""
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "무료",
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "기본 결과 무료. 상세 리포트는 ~15만원 구간(USD 49) — 각주로"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "공개가 + 수량 할인표 + 환불 규정(Terms of Service #refund) 공개 → A8.1 최고 앵커 충족"
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "결과 계정에 보관, 재열람 무료"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.viacharacter.org/research",
+    "source_url": "https://www.viacharacter.org/reports",
+    "collected_at": "2026-10-12",
+    "note": "연구 페이지. \"35 million\" 응답, 동료심사 연구 기반 문구. 신뢰도 계수는 논문 확인 필요"
    },
    "reliability_coef": {
     "value": null,
@@ -430,16 +430,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
+    "source_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
+    "collected_at": "2026-10-12",
+    "note": "VIA 'LOOK INSIDE GUIDE' — 해석 가이드 미리보기(개인 리포트 샘플 아님: E2 적합성 검토 필요) | 1729653 bytes, 4p | 원본은 저장소 밖 보관 | **E2 부적합**: 4쪽 미리보기, 개인 결과 리포트 아님. 개인 샘플 리포트 공개 링크 미발견 → E2 미측정"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "31bc696693a72bb098e9639d144b656d2357e2632d648b2370e71e9c6fe08989",
+    "source_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -448,22 +448,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "\"성격 유형\"이 아니라 키울 수 있는 24가지 성품 강점을 보고 싶을 때. 설문 무료·10~15분, 35백만 명 응답, 환불 규정까지 공개.",
+    "source_url": "https://www.viacharacter.org/reports",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "상세 리포트는 유료(USD 49)이고 한국어판 없음. 공개 개인 샘플 리포트가 없어 리포트 품질을 외부에서 확인하기 어려움. 직업 추천이 아닌 성품·웰빙 중심.",
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음",
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "리포트 13개 언어 중 한국어 없음(설문 자체의 한국어 지원은 별도 확인 필요)"
    },
    "E4": {
     "value": null,
@@ -473,7 +473,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.viacharacter.org/reports/total-24",
+    "collected_at": "2026-10-12",
+    "note": "공개 샘플이 해석 가이드 미리보기뿐"
+   }
   },
   {
    "id": "G02a",
@@ -2722,70 +2728,70 @@
    "url": "https://www.assesta.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "(주)어세스타",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "Strong Interest Inventory 한국판 출판사"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "온라인(career4u.net) / 오프라인 검사지 — 구매·실시는 자격교육 수료 전문가 또는 기관 경유가 기본",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "개인 직접 구매 가능 여부는 가격표 PDF 재확인 필요"
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 40,
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공식 35~40분, 291문항 — 상한값"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 19000,
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "2025 가격표: 전문해석 프로파일 19,000원(1~9부). 기본 프로파일 9,300원대(카탈로그 2026). 개인 소비자가는 기관가와 다를 수 있음 — 재확인 필요"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "~5만원",
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "1회 1~2만원대"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "가격표 PDF 공개, 수량 할인 단계 명시. 환불 규정은 미확인"
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 19000,
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "재검사 = 매번 전액(할인 조항 미발견)"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "소개 페이지에 규준 표본(일반 1,620명·고등 1,811명) 기재. 매뉴얼은 30,000원 유료(STRONG 중급 자격자만 구매)"
    },
    "reliability_coef": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "소개 페이지에 신뢰도 계수 미기재 — 매뉴얼(유료·자격 제한) 안에 있을 것으로 보이나 미확인"
    },
    "norm_sample_n": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 1620,
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "일반 성인 규준 표본 1,620명(고등 1,811명)"
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공식 \"샘플보기\" 전문해석 프로파일(고등·일반). 기본 프로파일 샘플도 있음(Strong_JI2_Profile.pdf). **E2 후보 확보.** 샌드박스에서 다운로드 타임아웃(2026-10-12) — sha256은 확보 시점에 기록"
    },
    "sample_report_sha256": {
     "value": null,
@@ -2800,22 +2806,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "세계적으로 가장 오래 쓰인 흥미검사(1927~)로, 흥미를 6유형·30세부·5개인특성까지 잘게 나눠 보고 싶을 때. 한국 규준 있음. 35~40분.",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공식 소개 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "흥미 1영역 검사(능력·가치는 별도). 매뉴얼과 구매 자격이 전문가(자격교육 수료자)에 묶여 있어 개인은 기관·상담사 경유가 일반적. 전문해석 프로파일은 1~2만원대 유료, 재검사 전액.",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "한국판 2001~2017 출간 이력"
    },
    "E4": {
     "value": null,
@@ -2825,7 +2831,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "K05",
