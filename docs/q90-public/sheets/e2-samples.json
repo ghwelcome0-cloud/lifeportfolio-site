@@ -1,0 +1,2620 @@
+{
+ "sheet": "E2 공개 샘플 리포트 블라인드 채점",
+ "roster_version": "v2.0",
+ "generatedAt": "2026-10-12T00:40:34.487Z",
+ "procedure": [
+  "① 샘플 파일 내려받아 sha256 고정",
+  "② 회사명·로고 가린 사본을 blind_id로 저장(샘플 자체의 유형명은 남김)",
+  "③ judge1·judge2 독립 채점(rubric-v2 e2_judge_rubric_public, L1~L5, 이유 1문장)",
+  "④ 축별 차이≥2 → judge3",
+  "⑤ final = 평균(소수 1자리) · 표에는 (샘플) 꼬리표",
+  "⑥ judge는 Q90 2회차 judge 세션과 분리"
+ ],
+ "judges": {
+  "judge1": null,
+  "judge2": null,
+  "judge3": null
+ },
+ "rows": [
+  {
+   "id": "M01",
+   "name": "CliftonStrengths 34 (Gallup)",
+   "blind_id": "S-18926a",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "M02",
+   "name": "Everything DiSC Workplace (Wiley)",
+   "blind_id": "S-e442a3",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "M03",
+   "name": "MBTI Complete (Myers-Briggs Co.)",
+   "blind_id": "S-5ce0da",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G01",
+   "name": "VIA Survey (VIA Institute)",
+   "blind_id": "S-cef047",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G02a",
+   "name": "IPIP Big-Five 50 (ORI)",
+   "blind_id": "S-4a8b03",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G03",
+   "name": "HEXACO-PI-R 60",
+   "blind_id": "S-46dcad",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G04",
+   "name": "Hogan Insight",
+   "blind_id": "S-d2ff6a",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G06",
+   "name": "Birkman Signature",
+   "blind_id": "S-f9db86",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G07",
+   "name": "PI Behavioral Assessment",
+   "blind_id": "S-e6df16",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G08",
+   "name": "Insights Discovery",
+   "blind_id": "S-24a640",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G11",
+   "name": "16Personalities Premium Career Suite",
+   "blind_id": "S-75476c",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G12",
+   "name": "Strengths Profile (Cappfinity)",
+   "blind_id": "S-f0e28a",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G13",
+   "name": "Working Genius",
+   "blind_id": "S-10b754",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G14",
+   "name": "Strong Interest Inventory",
+   "blind_id": "S-8bf298",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G15a",
+   "name": "O*NET Interest Profiler",
+   "blind_id": "S-e4721d",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "G15b",
+   "name": "Self-Directed Search (PAR)",
+   "blind_id": "S-354789",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "E01",
+   "name": "BetterUp",
+   "blind_id": "S-ae6710",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "E02",
+   "name": "CoachHub",
+   "blind_id": "S-5fea66",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "E06",
+   "name": "Full Focus Planner",
+   "blind_id": "S-d15b73",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "E07",
+   "name": "BestSelf Self Journal",
+   "blind_id": "S-d236b3",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "E11",
+   "name": "15Five Perform",
+   "blind_id": "S-8d102f",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "E12",
+   "name": "Lattice Performance",
+   "blind_id": "S-62abd8",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K01",
+   "name": "고용24 직업선호도검사",
+   "blind_id": "S-2046fb",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K02",
+   "name": "커리어넷 직업흥미검사 H형",
+   "blind_id": "S-134d13",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K03",
+   "name": "어세스타 STRONG II",
+   "blind_id": "S-2a7769",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K05",
+   "name": "태니지먼트 강점 리포트",
+   "blind_id": "S-f4a082",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K01a",
+   "name": "고용24 직업선호도검사 L형",
+   "blind_id": "S-8dfacb",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K08",
+   "name": "고용24 성인용 직업적성검사",
+   "blind_id": "S-2091dd",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K09",
+   "name": "고용24 직업가치관검사",
+   "blind_id": "S-d8d5ab",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K10",
+   "name": "고용24 구직준비도검사",
+   "blind_id": "S-6e4ddf",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K11",
+   "name": "고용24 창업적성검사",
+   "blind_id": "S-03f98a",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K12",
+   "name": "고용24 대학생 진로준비도검사",
+   "blind_id": "S-b6552c",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K13",
+   "name": "커리어넷 직업가치관검사(성인)",
+   "blind_id": "S-e8acce",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K14",
+   "name": "커리어넷 진로개발준비도검사",
+   "blind_id": "S-b7beb6",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K15",
+   "name": "NCS 직업기초능력 자가진단",
+   "blind_id": "S-11d78b",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K16",
+   "name": "한국가이던스 홀랜드 진로탐색검사",
+   "blind_id": "S-054480",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K17",
+   "name": "어세스타 MBTI Form M(한국판)",
+   "blind_id": "S-c56692",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K18",
+   "name": "TCI 기질및성격검사(인싸이트)",
+   "blind_id": "S-8c2a79",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K19",
+   "name": "잡코리아 성향·역량 검사",
+   "blind_id": "S-0ce196",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  },
+  {
+   "id": "K20",
+   "name": "16Personalities 한국어판(무료 MBTI류)",
+   "blind_id": "S-95dbf9",
+   "sample_url": null,
+   "sample_sha256": null,
+   "status": "no_sample",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null
+  }
+ ]
+}
