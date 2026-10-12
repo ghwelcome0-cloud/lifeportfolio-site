@@ -2284,7 +2284,7 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge2_actor": "agent_kxmtj2g9mmyk",
     "third_needed_axes_n": 0,
-    "post_q2": "발송(6081824·6081826), 회신 대기"
+    "post_q2": "judge1 아니오(6081891) · judge2 아니오(6081867) → 2회차 유효"
    }
   },
   {
@@ -5080,7 +5080,14 @@
      "competitor_research_done_before(세 명 공통, Method 6063269)"
     ],
     "model_display": "모름 — 런타임이 제품 표시명 미제공, 내부 식별자 비공개 규칙(자기신고 6066088)",
-    "status": "active"
+    "status": "active",
+    "post_memory_check_round2": {
+     "S-7da6e0": {
+      "reply_msg_id": "6081867",
+      "q2_wrote_notes": "아니오",
+      "ruling": "valid"
+     }
+    }
    },
    {
     "role": "third",
@@ -5272,6 +5279,13 @@
      "msg": 6069691,
      "Q2": "아니오 — 메모·노트 미수정, 오늘 바뀐 메모 파일 0, 패킷 ID·채점 내용 파일 0",
      "result": "유효"
+    },
+    "post_memory_check_round2": {
+     "S-7da6e0": {
+      "reply_msg_id": "6081891",
+      "q2_wrote_notes": "아니오",
+      "ruling": "valid"
+     }
     }
    },
    {
