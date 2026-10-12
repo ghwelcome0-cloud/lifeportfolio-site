@@ -1,0 +1,26 @@
+{
+ "bound_commit": "9557e46 (§24) — 이 run은 r4 **아님**: r4 부분집합을 같은 샌드박스(US)에서 돌린 재현 run",
+ "run": "r3b-us-repro",
+ "egress_country": "US",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh (puppeteer new page, no cookies/cache, not logged in)",
+ "rows_requested": 12,
+ "bridge_rows": [
+  "K02",
+  "K05",
+  "K13"
+ ],
+ "started_utc": "2026-10-12T19:10:18.504Z",
+ "ended_utc": "2026-10-12T19:27:01.164Z",
+ "roster_subset_sha256": "ca0d23d5e9f3a0b0bf06a9376fb6c14f0e2e2514288df380bf37a5cc40f3657a",
+ "purpose": "r4 파이프라인(부분집합→측정→채점→조립→수령 검사) 사전 검증 + 해외 egress 시간 초과 재현. 결과: 9행 모두 다시 시간 초과(재현), K02·K05 bodySha256 r3와 동일, K13은 r3와 같은 404(명부 URL 결함, A6 측정 불가). PNG는 저장소 밖(sha256 목록만).",
+ "not_for_table": true,
+ "os_kind": "Linux (sandbox)",
+ "os_timezone": "UTC",
+ "browser_lang_flag": "en-US",
+ "accept_language_sent": "미기록(§24-b 전 run)",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_subset_note": "§24-a 전 12행 부분집합(sha ca0d23d5…) — 현재 13행 부분집합과 다름, 표에 쓰지 않는 run"
+}
