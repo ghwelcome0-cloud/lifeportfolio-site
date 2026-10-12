@@ -28,6 +28,8 @@ console.log('PASS asset-path: '+n+' real-engine reports, '+S.size+' distinct sen
  const x=structuredClone(linked),f=x._assetFan;assert.ok(f&&f.version==='asset-fan-v1'&&f.rings.length===3,'asset-fan attached');
  // asset-fan-v1 additions are exactly: week effects (1 line each, weeks 1-3), month3 effects (asset kinds), one year1 milestone.
  x.nextSteps.pop();delete x._assetLink;delete x._assetFan;delete x.meta.assetFanVersion;delete x._assetQuest;delete x.meta.assetQuestVersion;
+ // asset-program-v1 (AP-1): one more record plus the rulebook name in meta.spec; nothing else.
+ assert.ok(x._assetProgram&&x._assetProgram.version==='asset-program-v1');delete x._assetProgram;delete x.meta.assetProgramVersion;assert.ok(/AP-1/.test(x.meta.spec));x.meta.spec=base.meta.spec;
  f.weekly.forEach((l,i)=>{assert.equal(x.program.weeks[i].effects.at(-1),l);x.program.weeks[i].effects.pop();});
  f.accrue.forEach(()=>x.program.month3.effects.pop());assert.equal(x.program.year1.milestones.pop(),f.rings[2].line);
  for(const k of ['weeks']){x.program[k].forEach((w,i)=>{if(base.program[k][i]&&base.program[k][i].effects===undefined&&Array.isArray(w.effects)&&!w.effects.length)delete w.effects;});}

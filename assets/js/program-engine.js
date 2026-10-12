@@ -1379,6 +1379,58 @@
     };
   }
 
+  /* asset-program-v1 (owner 2026-10-12 「전 페이지가 … 자산화 맞춤 실행 프로그램으로 격상」) — 제작규칙 AP-1. // AP1
+   * Only source: the report (_assetPath + mission/vision) through the fan and the 12-week quest. Every page reads the // AP1
+   * same three phases: II = the 12 weeks as this quarter, IV 3개월 = the quest's three knots, 1년 = four quarters // AP1
+   * growing the same card outward, V modules = tools per phase, VI = 12 diary cells, VIII/IX = the next step. // AP1
+   * Missing quest => null (pages keep their earlier body). Never stored outside the program; no score, no date. */ // AP1
+  function assetProgram(ap, fan, quest, report) { // AP1
+    if (!ap || !fan || !quest || !Array.isArray(quest.phases) || quest.phases.length !== 3) return null; // AP1
+    var jb = function (w) { var c = String(w).replace(/[\s)」’]+$/, "").slice(-1).charCodeAt(0); return c >= 0xac00 && c <= 0xd7a3 ? (c - 0xac00) % 28 : -1; }; // AP1
+    var eul = function (w) { var b = jb(w); return w + (b === 0 ? "를" : b > 0 ? "을" : "을(를)"); }; // AP1
+    var mv = ((report && report.sections) || []).filter(function (s) { return s && s.id === "mission_vision"; })[0], mc = (mv && mv.content) || {}; // AP1
+    var own = function (t) { return String(t || "").replace(/(^|[\s「(·])(?:내|나의) (?=[가-힣])/g, "$1"); }; /* no 「내 …」 on customer pages */ // AP1
+    var vis = String(mc.vision || mc.visionHeadline || "").trim(), P = quest.phases, art = own(quest.art), kind = own(quest.kind), type = fan.type; // AP1
+    var o = (ap.others || []).filter(function (x) { return x && x.name; }), place = (fan.rings[1] && fan.rings[1].sub) || ""; // AP1
+    var job = String((ap.jobs || [])[0] || "").split(/\s*·\s*/)[0].trim(); // AP1
+    var last = function (ph) { return ph.weeks[ph.weeks.length - 1] || {}; }; // AP1
+    var SV = [["자산화 실행 훈련"], ["함께 배우는 소그룹", "멘토와의 동행"], ["결과물 검토와 피드백", "협업과 나눔의 마켓"]]; // AP1
+    var knots = [eul(art + " 1판") + " 손에 쥐기", "남의 눈을 거친 " + art + " 2판 만들기", eul(kind + " 카드") + " 다른 사람이 다시 쓰게 하기"]; // AP1
+    return { // AP1
+      version: "asset-program-v1", rule: "AP-1", type: type, art: art, kind: kind, // AP1
+      purpose: "리포트에서 찾은 「" + type + "」 변화를, 12주 동안 " + eul(art) + " 남기고 다듬어 " + kind + " 카드 한 장으로 만드는 실행서예요.", // AP1
+      flow: [["리포트", "방향을 찾아요"], ["자산화 실행", "12주 지도를 받아요"], ["다이어리", "매주 한 줄로 칸을 채워요"], ["다음 걸음", "카드를 들고 이어 가요"]], // AP1
+      quarter: { head: type + " · " + art + " → " + kind, line: "이번 3개월은 12주 자산화 퀘스트 한 바퀴예요. 세 구간을 차례로 지나면 카드 한 장이 남아요.", // AP1
+        phases: P.map(function (ph, i) { return { when: ph.when, who: ph.who, aim: ph.aim, knot: knots[i] }; }) }, // AP1
+      month3: { lead: "3개월 목표는 12주 퀘스트의 세 매듭이에요. 매듭마다 다이어리 칸 네 개가 채워지면 다음 구간으로 넘어가요.", // AP1
+        goals: P.map(function (ph, i) { return { when: ph.when.replace(/^\d+~/, "") + "까지", who: ph.who, title: knots[i], sub: i === 1 ? place : "", // AP1
+          criterion: "다이어리 " + ph.when + " 칸 4개 · 「" + last(ph).stage + "」까지" }; }), // AP1
+        card: { name: own(quest.card.name), kind: kind, fields: quest.card.fields.slice() } }, // AP1
+      year1: { vision: vis, lead: "1년 목표는 같은 카드를 네 번 넓히는 길이에요. 3개월마다 카드 한 장, 1년이면 네 장이 쌓여요.", // AP1
+        quarters: [ // AP1
+          { when: "1~3개월", what: kind + " 카드 첫 장", how: "지금의 12주 퀘스트" }, // AP1
+          { when: "4~6개월", what: o[0] ? "「" + o[0].name + "」 변화로 넓히기" : "같은 카드를 새 자리에서 다시 쓰기", how: o[0] ? own(o[0].first || o[0].focus || "") : "다른 모임 한 곳에서" }, // AP1
+          { when: "7~9개월", what: job ? "‘" + job + "’ 일을 하는 사람과 쓰임 넓히기" : (o[1] ? "「" + o[1].name + "」 변화로 넓히기" : "쓰는 사람을 한 명 더 찾기"), how: job ? "카드를 건네고 어디에 쓰였는지 묻기" : (o[1] ? own(o[1].first || o[1].focus || "") : "") }, // AP1
+          { when: "10~12개월", what: "카드 네 장을 한 묶음으로", how: fan.rings[2].who + "에서 다시 쓰이게 하기" } // AP1
+        ], // AP1
+        reach: fan.rings.map(function (g) { return { when: g.when, who: g.who, stage: g.stage }; }), // AP1
+        services: P.map(function (ph, i) { return { when: ph.when, names: SV[i] }; }) }, // AP1
+      modules: P.map(function (ph) { return { when: ph.when, aim: ph.aim, keep: last(ph).keep }; }), // AP1
+      board: { line: "한 주에 한 줄이면 12칸 중 한 칸이 채워져요. 「오늘 해 봤어요」에 적고 몇 주 칸인지 고르면 돼요.", // AP1
+        phases: P.map(function (ph) { return { when: ph.when, aim: ph.aim, weeks: ph.weeks.map(function (w) { return { week: w.week, verb: w.verb }; }) }; }), checks: quest.checks.slice() }, // AP1
+      effects: { assets: (ap.assets || []).filter(function (x) { return x && x.k && !/금융/.test(x.k); }).slice(0, 3).map(function (x) { return { k: own(x.k), v: own(x.v) }; }), // AP1
+        jobs: (ap.jobs || []).slice(0, 3) }, // AP1
+      next: [ // AP1
+        { when: "12주를 닫은 다음", task: o[0] ? "더 넓힐 변화 「" + o[0].name + "」 · " + own(o[0].first || o[0].focus || "") : "같은 카드를 새 자리에서 다시 써 봐요." }, // AP1
+        { when: "카드를 들고", task: "서비스가 열리면 자산 카드와 12칸 기록을 그대로 가져가요. 다시 적지 않아도 돼요." } // AP1
+      ], // AP1
+      risks: [ // AP1
+        { risk: "한 주를 놓쳤을 때", mitigation: "그 주 칸은 비워 두고 다음 주 한 가지만 해요. 빠진 주가 있어도 이어서 하면 돼요." }, // AP1
+        { risk: "보여 줄 사람이 떠오르지 않을 때", mitigation: (place ? place + " 먼저 소개만 해 봐요." : "가까운 한 사람에게 먼저 보여 줘요.") + " 들은 말 한 줄이면 충분해요." } // AP1
+      ], // AP1
+      today: own(ap.firstStep) // AP1
+    }; // AP1
+  } // AP1
   /* PROG-01 — four-axis decision → execution link (pure, deterministic). */
   function axisProgramLinks(projection, evidence, lang) {
     if (!projection || projection.version !== "axis-projection-v1" || projection.scope !== "VII-only" ||
@@ -3228,6 +3280,8 @@
         // asset-quest-v1: III장 becomes the 12-week asset quest (the 1~3주 cards stay as its detail).
         var quest = assetQuest(ap, fan);
         if (quest) { output._assetQuest = quest; output.meta.assetQuestVersion = quest.version; }
+        var apg = assetProgram(ap, fan, quest, report); // AP1
+        if (apg) { output._assetProgram = apg; output.meta.assetProgramVersion = apg.version; output.meta.spec = "자산화 맞춤 실행 프로그램 제작 규칙 " + ((rules.assetProgramRule && rules.assetProgramRule.code) || "AP-1"); } // AP1
       }
     }
     return output;
