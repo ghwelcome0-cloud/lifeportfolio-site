@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>12주, 카드 한 장 — 자산화 맞춤 실행 프로그램 · 인생포트폴리오 Insights</title>
+  <meta name="google-site-verification" content="uoSIxdhBhBDILkJkhTCuIf_IDymqoYZKkWfO8bmnbK4">
+  <meta name="naver-site-verification" content="d8784cb0e7d5de6f464cefa3a89b886d3a733733">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="description" content="맞춤형 실행 프로그램을 ‘자산화 맞춤 실행 프로그램’으로 다시 지었습니다. 1주에 한 칸, 12칸이면 카드 한 장. 12주 자산화 퀘스트와 싹·이삭·열매 세 가지 때, 그리고 다이어리의 12주 퀘스트와 비전카드까지.">
+  <meta name="keywords" content="자산화 맞춤 실행 프로그램, 12주 자산화 퀘스트, 실행 프로그램, 비전카드, 인생포트폴리오">
+  <meta name="author" content="인생포트폴리오 / Life Portfolio">
+  <meta property="article:published_time" content="2026-10-12T19:20:00+09:00">
+  <meta property="article:section" content="Notes">
+  <meta property="article:tag" content="자산화">
+  <meta property="article:tag" content="실행 프로그램">
+  <meta property="article:tag" content="12주 퀘스트">
+  <meta property="article:tag" content="개발자 노트">
+  <meta property="og:title" content="12주, 카드 한 장 — 자산화 맞춤 실행 프로그램">
+  <meta property="og:description" content="1주 = 1칸, 12칸 = 카드 한 장, 1년 = 카드 네 장. 리포트에서 찾은 변화를 12주 동안 자산으로 남기는 실행서.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html">
+  <meta property="og:site_name" content="인생포트폴리오 / Life Portfolio">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:image" content="https://lifeportfolio.co.kr/assets/blog/asset/program-og.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="675">
+  <meta property="og:image:alt" content="자산화 맞춤 실행 프로그램 — 12주 자산화 퀘스트와 싹·이삭·열매 세 가지 때">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="12주, 카드 한 장 — 자산화 맞춤 실행 프로그램">
+  <meta name="twitter:description" content="1주 = 1칸, 12칸 = 카드 한 장, 1년 = 카드 네 장. 리포트에서 찾은 변화를 12주 동안 자산으로 남기는 실행서.">
+  <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/blog/asset/program-og.jpg">
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html">
+  <link rel="alternate" type="application/rss+xml" title="인생포트폴리오 Insights — RSS" href="/blog/rss.xml">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../post.css">
+  <style>
+    /* [자산화 노트 2026-10-12] 이 글 전용 스타일 — 다른 글에 영향 없음 */
+    /* 한국어 줄바꿈 — 어절 단위(keep-all) + 의미 단위(.mu 묶음은 한 줄) + 제목 균형 */
+    article.post{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+    article.post h1,article.post h2,article.post h3,.page-cap,.mid-cta__lead{text-wrap:balance}
+    article.post p,article.post li,article.post dd,article.post td{text-wrap:pretty}
+    .mu{white-space:nowrap}
+    article.post .refs{word-break:normal}
+    .note-hero{margin:22px 0 30px;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(23,33,43,.10)}
+    .note-hero img{display:block;width:100%;height:auto}
+    .page-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:28px 0 8px}
+    .page-pair.one{grid-template-columns:minmax(0,340px);justify-content:center}
+    .page-pair img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #E8E1CF;box-shadow:0 6px 20px rgba(23,33,43,.08);background:#FFFDF8}
+    .page-cap{margin:8px 4px 28px;font-size:13px;line-height:1.6;color:#7A6B47;text-align:center}
+    .page-cap b{color:#468D84}
+    .mask-note{margin:-18px 4px 26px;font-size:11.5px;color:#9A8A6A;text-align:center}
+    .mid-cta{margin:28px 0;padding:20px 22px;border:1px solid #E5D9B8;background:linear-gradient(180deg,#FBF6E7 0%,#F4ECD8 100%);border-radius:14px;text-align:center}
+    .mid-cta__lead{margin:0 0 10px;font-size:15px;color:#5B4A1F;font-weight:600}
+    .mid-cta__btn{display:inline-block;padding:12px 22px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 2px 6px rgba(200,162,74,0.35)}
+    .mid-cta__btn:hover{background:#B58E36;color:#fff}
+    .mid-cta__sub{margin:10px 0 0;font-size:12px;color:#7A6A3F}
+    article.post .summary-card{margin:32px 0;padding:22px 24px 6px;background:linear-gradient(180deg,#FFFDF6 0%,#FBF6E7 100%);border:1px solid #E5D9B8;border-radius:14px;box-shadow:0 2px 12px rgba(74,105,132,.06)}
+    article.post .summary-card>p:first-child{margin:0 0 12px;font-size:12px;letter-spacing:1.5px;color:#C49E45;font-weight:800;text-transform:uppercase}
+    article.post .summary-card ul{margin:0 0 14px;padding:0;list-style:none}
+    article.post .summary-card li{position:relative;margin:0 0 12px;padding:0 0 0 30px;font-size:16px;color:#37414D;line-height:1.6}
+    article.post .summary-card li:before{content:"\2713";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:999px;background:#468D84;color:#fff;font-size:12px;font-weight:800;line-height:20px;text-align:center}
+    article.post .closing-note{margin:26px 0 0;padding:18px 20px;border-left:3px solid #C49E45;background:#FFFDF6;border-radius:0 8px 8px 0;font-size:15.5px;color:#3A4A5C;line-height:1.7}
+    article.post .closing-note p{margin:0}
+    article.post .refs{margin:26px 0 0;padding:16px 20px;border-top:1px dashed #E4DCC8;font-size:12.5px;color:#6A6A6A;line-height:1.75}
+    article.post .refs b{color:#5B4A1F}
+    article.post .refs ol{margin:8px 0 0;padding-left:20px}
+    article.post .refs li{margin:0 0 6px}
+    blockquote.self-ask{margin:24px 0;padding:16px 22px;border-left:3px solid #468D84;background:#F3F8F6;border-radius:0 10px 10px 0;font-size:16px;line-height:1.75;color:#2F4A45;font-style:normal}
+    article.post .evi-table{width:100%;border-collapse:collapse;margin:22px 0 8px;font-size:14.5px}
+    article.post .evi-table th,article.post .evi-table td{border:1px solid #E5D9B8;padding:10px 12px;text-align:left;vertical-align:top;line-height:1.6}
+    article.post .evi-table th{background:#FBF6E7;color:#5B4A1F;font-weight:700}
+    article.post .evi-table td:first-child{font-weight:700;color:#37414D;white-space:nowrap}
+    .evi-wrap{overflow-x:auto}
+    .evi-wrap table{min-width:560px}
+    .evi-note{margin:6px 2px 24px;font-size:12px;color:#9A8A6A;line-height:1.6}
+    article.post .honest{margin:26px 0;padding:18px 20px;border:1px dashed #C49E45;background:#FFFDF6;border-radius:12px;font-size:15px;color:#5B4A1F;line-height:1.7}
+    article.post .honest b{color:#3A2E10}
+    ol.steps{margin:20px 0;padding:0;list-style:none;counter-reset:st}
+    ol.steps>li{counter-increment:st;position:relative;margin:0 0 16px;padding:14px 18px 14px 56px;border:1px solid #CFE0DC;background:#F7FBFA;border-radius:12px;line-height:1.7;font-size:15.5px;color:#37414D}
+    ol.steps>li:before{content:counter(st);position:absolute;left:16px;top:14px;width:28px;height:28px;border-radius:999px;background:#0A3D2A;color:#F3E6C4;font-weight:800;font-size:14px;line-height:28px;text-align:center}
+    ol.steps>li b{color:#2F4A45}
+    .faq dt{margin:18px 0 6px;font-weight:800;color:#2F4A45;font-size:16px}
+    .faq dd{margin:0 0 6px;color:#37414D;line-height:1.75;font-size:15.5px}
+    @media(max-width:560px){.page-pair{grid-template-columns:1fr 1fr;gap:10px}}
+    .series{margin:-6px 0 22px;padding:12px 16px;border:1px solid #E5D9B8;border-radius:12px;background:#FFFDF6;font-size:13.5px;line-height:1.7;color:#5B4A1F}
+    .series a{color:#468D84;font-weight:700;text-decoration:none}.series b{color:#3A2E10}
+    .one{display:grid;grid-template-columns:minmax(0,420px);justify-content:center;margin:28px 0 8px}
+    .one img,.wide img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #E8E1CF;box-shadow:0 6px 20px rgba(23,33,43,.08);background:#FFFDF8}
+    .wide{margin:28px 0 8px}
+    .seven{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:20px 0 10px;padding:0;list-style:none}
+    .seven li{border:1px solid #E5D9B8;border-radius:12px;background:#FFFDF6;padding:12px 14px;font-size:14px;line-height:1.55;color:#37414D}
+    .seven li b{display:block;font-size:17px;color:#0A3D2A;margin-bottom:2px}
+    .ba{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:28px 0 8px}
+    .ba figure{margin:0}.ba img{display:block;width:100%;height:auto;border-radius:12px;border:1px solid #E8E1CF;box-shadow:0 6px 20px rgba(23,33,43,.08)}
+    .ba figcaption{margin:8px 2px 0;font-size:12.5px;color:#7A6B47;text-align:center;font-weight:700}
+    .ba figure:last-child figcaption{color:#468D84}
+  </style>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": "https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html#article",
+  "mainEntityOfPage": "https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html",
+  "headline": "12주, 카드 한 장 — 자산화 맞춤 실행 프로그램",
+  "description": "맞춤형 실행 프로그램을 ‘자산화 맞춤 실행 프로그램’으로 다시 지었습니다. 1주에 한 칸, 12칸이면 카드 한 장. 12주 자산화 퀘스트와 싹·이삭·열매 세 가지 때, 그리고 다이어리의 12주 퀘스트와 비전카드까지.",
+  "image": "https://lifeportfolio.co.kr/assets/blog/asset/program-hero.jpg",
+  "datePublished": "2026-10-12T19:20:00+09:00",
+  "dateModified": "2026-10-12T19:20:00+09:00",
+  "inLanguage": "ko-KR",
+  "author": {
+    "@type": "Organization",
+    "@id": "https://lifeportfolio.co.kr/#organization",
+    "name": "인생포트폴리오"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "@id": "https://lifeportfolio.co.kr/#organization",
+    "name": "인생포트폴리오",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://lifeportfolio.co.kr/assets/icon-512.png"
+    }
+  },
+  "keywords": "자산화 맞춤 실행 프로그램, 12주 자산화 퀘스트, 실행 프로그램, 비전카드, 인생포트폴리오"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "홈",
+      "item": "https://lifeportfolio.co.kr/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "블로그",
+      "item": "https://lifeportfolio.co.kr/blog/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "12주, 카드 한 장 — 자산화 맞춤 실행 프로그램",
+      "item": "https://lifeportfolio.co.kr/blog/posts/2026-10-12-asset-execution-program.html"
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "한 주를 놓치면 어떻게 하나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "그 주 칸은 비워 두고 다음 주 한 가지만 하시면 됩니다. 빠진 주가 있어도 이어서 하면 돼요. 칸 수만 보여 드리고 점수나 순위는 매기지 않습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "12주 퀘스트는 사람마다 다른가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "네. 리포트에서 찾은 변화와 강점, 장면에 따라 주마다 하는 일과 손에 남는 것이 달라집니다. 같은 리포트라면 같은 지도가 나와요."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "비전카드의 서비스는 지금 쓸 수 있나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "지금 이용할 수 있는 건 고유성 기반 자산화 길찾기입니다. 소그룹·멘토·결과물 검토 같은 서비스와 AI 도우미는 출시 준비중이에요. 지금 채운 칸과 자산 카드는 서비스가 열려도 그대로 이어집니다."
+      }
+    }
+  ]
+}
+  </script>
+  <script src="../../assets/js/web-vitals.js" defer></script>
+</head>
+<body>
+<a class="lp-a11y-skip" href="#main">본문으로 바로가기</a>
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="brand">인생포트폴리오 <b>·</b> Life Portfolio</a>
+    <nav class="nav">
+      <a href="/">홈</a>
+      <a href="/product.html">상품</a>
+      <a href="/blog/" aria-current="page">블로그</a>
+      <a href="/login.html">로그인</a>
+    </nav>
+  </div>
+</header>
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">홈</a><span class="sep">/</span>
+  <a href="/blog/">블로그</a><span class="sep">/</span>
+  <span>12주, 카드 한 장 — 자산화 맞춤 실행 프로그램</span>
+</nav>
+
+<main id="main">
+<article class="post">
+  <header class="post-head">
+    <div class="eyebrow">Notes · 자산화 노트 ③</div>
+    <h1>12주, 카드 한 장 — 자산화 맞춤 실행 프로그램</h1>
+    <p class="lead">길을 찾는 것과 그 길을 걷는 것은 다른 일입니다. 그래서 실행 프로그램을 처음부터 다시 지었어요. 이름은 <strong>「자산화 맞춤 실행 프로그램」</strong>. 표지부터 마지막 장까지, 리포트에서 찾은 변화를 <strong>12주 동안 무엇으로 남길까</strong>라는 한 가지 질문을 따라갑니다.</p>
+    <p class="meta"><time datetime="2026-10-12T19:20:00+09:00">2026-10-12</time> · 7분 읽기 · Notes</p>
+  </header>
+
+  <div class="note-hero">
+    <img src="/assets/blog/asset/program-hero.jpg" width="1600" height="900" alt="자산화 맞춤 실행 프로그램 — 12주 자산화 퀘스트와 싹·이삭·열매 세 가지 때" loading="eager">
+  </div>
+  <p class="series"><b>오늘의 자산화 노트</b> · <a href="/blog/posts/2026-10-12-seven-asset-changes.html">① 일곱 가지 변화</a> · <a href="/blog/posts/2026-10-12-asset-pathfinding-launch.html">② 길찾기 출시</a> · <b>③ 자산화 실행 프로그램</b> · <a href="/blog/posts/2026-10-12-regenerate-latest-engine.html">④ 재생성</a></p>
+
+  <h2>길을 찾았다면, 이제 걸어야 하니까</h2>
+  <p>앞의 두 글에서 일곱 가지 변화와 길찾기 이야기를 드렸습니다. 그런데 길을 찾는 것과 그 길을 걷는 것은 다른 일이잖아요. 리포트에서 “당신은 흩어진 것에 순서를 세우는 사람이에요”라는 말을 들어도, 다음 날 아침에 무엇부터 해야 할지는 여전히 막막할 수 있습니다.</p>
+  <p>그래서 실행 프로그램을 처음부터 다시 지었습니다. 이름도 바꿨어요. 이제는 <strong>「자산화 맞춤 실행 프로그램」</strong>입니다. 이름만 바꾼 게 아니라, 표지부터 마지막 장까지 모든 페이지가 <strong>“리포트에서 찾은 변화를, 12주 동안 무엇으로 남길까”</strong>라는 한 가지 질문을 따라가도록 했습니다.</p>
+
+  <div class="page-pair">
+    <img src="/assets/blog/asset/program-cover.webp" width="720" height="1018" alt="자산화 맞춤 실행 프로그램 표지 — 인생포트폴리오 자산화 맞춤 실행 프로그램, 맞춤 실행 전략" loading="lazy" decoding="async">
+    <img src="/assets/blog/asset/program-glance.webp" width="720" height="1018" alt="실행 프로그램 I장 한눈에 보는 나 — 자산화 부채꼴, 30일·3개월·1년으로 넓어지는 닿는 사람" loading="lazy" decoding="async">
+  </div>
+  <p class="page-cap">왼쪽: 새 이름을 단 <b>표지</b>. 오른쪽: <b>I. 한눈에 보는 나</b>. 자산화 유형과 함께, 남긴 것이 30일 → 3개월 → 1년 동안 누구에게까지 닿는지 부채꼴로 펼쳐 보여 드립니다.</p>
+  <p class="mask-note">※ 이 글의 모든 화면은 예시용 가상 계정으로 만든 것이며, 이름은 <span class="mu">○○○로</span> 가렸습니다.</p>
+
+  <h2>한 줄로 말하면 — 12주, 카드 한 장</h2>
+  <p>예전 프로그램도 정성껏 만들었습니다. 다만 솔직히 돌아보면, 페이지마다 할 일이 조금씩 따로 놀았어요. 주차별 루틴은 루틴대로, 3개월 목표는 목표대로, 1년 그림은 또 그것대로. 다 좋은 말인데, 읽고 나면 “그래서 이 셋이 어떻게 이어지지?”가 남았습니다.</p>
+  <p>이번에는 뼈대를 하나로 세웠습니다.</p>
+  <ul>
+    <li><strong>1주에 한 칸.</strong> 매주 한 가지를 해 보고, 다이어리에 한 줄 남기면 한 칸이 채워집니다.</li>
+    <li><strong>12칸이면 카드 한 장.</strong> 12주를 다 걸으면, 남이 다시 쓸 수 있는 <strong>자산 카드</strong> 한 장이 손에 남아요.</li>
+    <li><strong>3개월마다 한 장, 1년이면 네 장.</strong> 같은 카드를 네 번 넓혀 가는 것이 1년의 그림입니다.</li>
+  </ul>
+  <p>숫자가 단순해야 오래 갑니다. 저희가 이번에 가장 많이 덜어 낸 건 말이었어요.</p>
+
+  <h2>III장 — 12주 자산화 퀘스트</h2>
+  <p>프로그램의 한가운데에 <strong>12주 자산화 퀘스트</strong>가 있습니다. 12주를 세 구간으로 나눴어요.</p>
+  <ol class="steps">
+    <li><b>1~4주 · 해 보고 남기기</b> — 나와 가까운 사람 곁에서. 손에 1판을 쥐는 구간이에요.</li>
+    <li><b>5~8주 · 보여 주고 고쳐 쓰기</b> — 이웃과 모임에서. 남의 눈을 거친 2판을 만듭니다.</li>
+    <li><b>9~12주 · 묶어서 다시 쓰이게 하기</b> — 일터와 지역에서. 남이 다시 쓰는 카드가 됩니다.</li>
+  </ol>
+  <p>주마다 동사 하나가 붙어 있습니다. 해 보기, 다듬기, 소개하기, 고쳐 쓰기, 써 보게 하기… 그리고 그 주에 <strong>손에 남는 것</strong>이 무엇인지 함께 적어 두었어요. “열심히 해 보세요” 대신 “이번 주엔 이걸 남기면 돼요”라고 말하고 싶었습니다.</p>
+
+  <div class="one">
+    <img src="/assets/blog/asset/program-quest.webp" width="720" height="1018" alt="실행 프로그램 III장 12주 자산화 퀘스트 — 세 구간과 주차별 동사, 손에 남는 것, 12주 뒤 남는 카드" loading="lazy" decoding="async">
+  </div>
+  <p class="page-cap"><b>III. 12주 자산화 퀘스트</b>. 위의 예시는 ‘세움’ 변화가 보인 분의 지도예요. 같은 세움이어도 리포트의 강점과 장면에 따라 주마다 하는 일이 달라집니다.</p>
+
+  <h2>IV장 — 한 길의 세 가지 때</h2>
+  <p>이번 작업에서 저희가 가장 오래 붙들고 있던 장입니다. 12주, 3개월, 1년. 기간이 세 개인데 이걸 어떻게 하나로 보여 드릴까 고민하다가, 씨앗이 자라는 모습을 빌려 왔어요.</p>
+  <ul class="seven">
+    <li><b>🌱 싹 · 12주</b>실행 — 매주 해 보고 한 줄 남겨요. 해 본 것이 몸에 붙어요.</li>
+    <li><b>🌾 이삭 · 3개월</b>성과 — 해 본 것이 남이 확인한 결과물로 남아요.</li>
+    <li><b>🍎 열매 · 1년</b>자산 — 성과가 다른 사람에게 다시 쓰이고, 더 큰 일을 맡게 돼요.</li>
+  </ul>
+  <p>그러니까 3개월 목표는 따로 세운 목표가 아니라 <strong>12주 퀘스트의 세 매듭</strong>이고, 1년 목표는 <strong>같은 카드를 네 번 넓히는 길</strong>입니다. 아래는 같은 사람의 IV장을 예전 엔진과 지금 엔진으로 각각 만든 모습이에요.</p>
+
+  <div class="ba">
+    <figure>
+      <img src="/assets/blog/asset/program-iv-old.webp" width="720" height="1019" alt="이전 엔진의 IV장 3개월 목표 — 서로 따로 놓인 다섯 개의 목표와 도착 증거" loading="lazy" decoding="async">
+      <figcaption>이전 · 다섯 개의 목표가 따로따로</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/blog/asset/program-iv-new.webp" width="720" height="1019" alt="지금 엔진의 IV장 — 실행·성과·자산 세 가지 때와 12주 퀘스트의 세 매듭" loading="lazy" decoding="async">
+      <figcaption>지금 · 세 가지 때, 세 매듭</figcaption>
+    </figure>
+  </div>
+  <div class="ba">
+    <figure>
+      <img src="/assets/blog/asset/program-iv-year-old.webp" width="720" height="1018" alt="이전 엔진의 1년 뒤 나의 모습 — 비전 문장과 달성 증거 목록" loading="lazy" decoding="async">
+      <figcaption>이전 · 1년 뒤 모습과 증거 목록</figcaption>
+    </figure>
+    <figure>
+      <img src="/assets/blog/asset/program-iv-year.webp" width="720" height="1018" alt="지금 엔진의 1년 목표 — 같은 카드를 네 번 넓히기, 분기별 넓힘, 닿는 사람, 구간마다 함께할 서비스" loading="lazy" decoding="async">
+      <figcaption>지금 · 같은 카드를 네 번 넓히기</figcaption>
+    </figure>
+  </div>
+  <p class="page-cap">예전 IV장도 내용은 성실했지만, 12주 루틴과 어떻게 이어지는지는 읽는 분이 알아서 이어 붙여야 했습니다. 지금은 매듭마다 <b>“다이어리 칸 4개 · 어느 단계까지”</b>라는 기준이 붙어 있어서, 언제 다음 구간으로 넘어가도 되는지 스스로 알 수 있어요.</p>
+
+  <h2>나머지 페이지도 같은 길 위에</h2>
+  <p>III장과 IV장만 바꾸면 또 따로 노는 페이지가 생기니까, 처음부터 끝까지 한 번씩 다 손봤습니다.</p>
+  <ul>
+    <li><strong>II. 분기 테마</strong> — 이 프로그램이 무엇을 하는 실행서인지 한 문장으로, 그리고 리포트 → 실행 → 다이어리 → 다음 걸음의 흐름.</li>
+    <li><strong>V. 실행 모듈</strong> — 구간마다 할 일과, 그 구간 끝에 남는 것.</li>
+    <li><strong>VI. 성과 추적 보드</strong> — 12칸 보드. 한 주에 한 줄이면 한 칸이 채워집니다.</li>
+    <li><strong>VII. 기대 효과</strong> — 이 12주가 남기는 자산과 가까운 직업 예시.</li>
+    <li><strong>VIII. 다음 단계 · 리스크</strong> — 12주를 닫은 다음 넓힐 변화, 그리고 흐름이 끊겼을 때 다시 붙는 법.</li>
+    <li><strong>IX. 마무리</strong> — 오늘 시작하는 한 줄. 해 본 뒤 다이어리 「오늘 해 봤어요」에 한 줄 남기고 1주 칸을 고르면 됩니다.</li>
+  </ul>
+  <div class="one">
+    <img src="/assets/blog/asset/program-board.webp" width="720" height="1019" alt="실행 프로그램 VI장 성과 추적 보드 12칸 — 세 구간별 네 칸과 주차별 동사, 한 구간을 닫을 때 물어볼 것" loading="lazy" decoding="async">
+  </div>
+  <p class="page-cap"><b>VI. 성과 추적 보드 · 12칸</b>. 종이로 뽑아 쓰셔도 되고, 다이어리에서 같은 칸을 채우셔도 됩니다.</p>
+
+  <div class="mid-cta">
+    <p class="mid-cta__lead">리포트에서 찾은 변화를, 12주 동안 무엇으로 남기게 될까요?</p>
+    <a class="mid-cta__btn" href="/product.html?utm_source=blog&utm_medium=mid_cta&utm_campaign=blog_2026-10-12-program">15분 진단으로 나의 리포트 받기 →</a>
+    <p class="mid-cta__sub">₩19,900 · 결제 즉시 자동 생성 · 다이어리는 지금 무료</p>
+  </div>
+
+  <h2>지도는 프로그램에, 칸은 다이어리에</h2>
+  <p>프로그램은 지도입니다. 지도를 아무리 잘 그려도 걷는 건 하루하루의 일이에요. 그래서 이 12주를 다이어리로 그대로 옮겼습니다. 저희끼리는 이렇게 불렀어요. <strong>“지도는 프로그램, 카드는 다이어리에서 자란다.”</strong></p>
+  <ul>
+    <li>다이어리에서 <strong>「💎 12주 자산화 퀘스트」</strong>를 누르면, 프로그램과 같은 12주가 열립니다. 채운 칸 수만 보여 드려요. 점수나 순위는 없고, 빠진 주가 있어도 이어서 하면 됩니다.</li>
+    <li>「오늘 해 봤어요」에 한 줄을 남길 때 <strong>몇 주 칸인지</strong> 고르면, 그 칸이 채워집니다.</li>
+    <li>12칸 아래에는 <strong>자산 카드</strong>가 있어서, 카드 이름과 칸을 직접 채워 가실 수 있어요.</li>
+  </ul>
+
+  <div class="page-pair">
+    <img src="/assets/blog/asset/diary-quest.webp" width="720" height="2143" alt="다이어리 12주 자산화 퀘스트 창 — 12칸 중 채운 칸, 세 구간과 주차별 할 일, 한 줄 더·기록하기 버튼" loading="lazy" decoding="async">
+    <img src="/assets/blog/asset/diary-vision-top.webp" width="720" height="2441" alt="다이어리 비전카드 — 리포트의 비전, 무엇인가요·왜 좋은가요·지금은 무엇을 하나요, 시작 전부터 12주까지 구간별 누가 확인하나요와 함께할 서비스" loading="lazy" decoding="async">
+  </div>
+  <p class="page-cap">왼쪽: 다이어리의 <b>12주 자산화 퀘스트</b>. 오른쪽: 퀘스트 창 맨 위 「🧭 비전카드 · 12주 다음 걸음 보기」를 누르면 열리는 <b>비전카드</b>.</p>
+
+  <h2>비전카드 — 12주 다음은 어디로 이어지나요</h2>
+  <p>12주를 걷다 보면 “이걸 다 하면 그다음엔?”이 궁금해지실 거예요. 비전카드는 그 질문에 한 장으로 답하는 자리입니다. 맨 위에는 리포트에 적힌 당신의 비전이 있고, 그 아래로 <strong>시작 전 → 1~4주 → 5~8주 → 9~12주</strong>가 이어집니다. 구간마다 누가 확인해 주는지, 이 구간에 몇 칸을 채웠는지, 그리고 함께할 서비스가 무엇인지 보여 드려요.</p>
+  <p>지금 이용할 수 있는 건 맨 앞의 <strong>고유성 기반 자산화 길찾기</strong>뿐이고, 나머지 서비스와 AI 도우미는 <strong>출시 준비중</strong>이라고 그대로 적어 두었습니다. 없는 걸 있는 것처럼 보이게 하고 싶지 않았어요. 대신 지금 채운 칸과 자산 카드는 그대로 이어지니까, 서비스가 열려도 처음부터 다시 적지 않으셔도 됩니다.</p>
+  <div class="one">
+    <img src="/assets/blog/asset/guide-vision.webp" width="720" height="1502" alt="다이어리 해설서 비전카드 자세히 보기 — 왜 쓰나요, 네 구간에서 하는 일, 이렇게 써요, 약속" loading="lazy" decoding="async">
+  </div>
+  <p class="page-cap">다이어리 해설서의 <b>「비전카드 자세히 보기」</b>. 왜 쓰는지, 네 구간에서 무엇을 하는지, 어떻게 쓰는지를 차례로 적었습니다.</p>
+
+  <h2>이미 프로그램을 받으셨다면</h2>
+  <p>이 모든 변화는 <strong>새로 만든 프로그램과, 「🔄 프로그램 재생성」을 누른 프로그램</strong>에 적용됩니다. 순서는 이렇게 권해 드려요. <strong>리포트 재생성 → 프로그램 재생성 → 다이어리 열기.</strong> 리포트에 자산화 길 찾기(XI장)가 먼저 생겨야, 프로그램이 그 길을 따라 12주 지도를 그릴 수 있거든요. 자세한 이야기는 <a href="/blog/posts/2026-10-12-regenerate-latest-engine.html">재생성 글</a>에 따로 적었습니다.</p>
+
+  <h2>자주 묻는 질문</h2>
+  <dl class="faq">
+    <dt>한 주를 놓치면 어떻게 하나요?</dt>
+    <dd>그 주 칸은 비워 두고 다음 주 한 가지만 하시면 됩니다. 빠진 주가 있어도 이어서 하면 돼요. 칸 수만 보여 드리고 점수나 순위는 매기지 않습니다.</dd>
+    <dt>12주 퀘스트는 사람마다 다른가요?</dt>
+    <dd>네. 리포트에서 찾은 변화와 강점, 장면에 따라 주마다 하는 일과 손에 남는 것이 달라집니다. 같은 리포트라면 같은 지도가 나와요.</dd>
+    <dt>비전카드의 서비스는 지금 쓸 수 있나요?</dt>
+    <dd>지금 이용할 수 있는 건 고유성 기반 자산화 길찾기입니다. 소그룹·멘토·결과물 검토 같은 서비스와 AI 도우미는 출시 준비중이에요. 지금 채운 칸과 자산 카드는 서비스가 열려도 그대로 이어집니다.</dd>
+  </dl>
+
+  <h2>분명히 해 둘 선</h2>
+  <div class="honest">
+    <p>12주 퀘스트와 세 가지 때는 리포트에서 찾은 변화와 리포트의 비전을 <b>정해진 규칙으로</b> 엮어 만든 실행서입니다. 같은 리포트면 같은 12주 지도가 나와요. 날짜를 정해 몰아붙이지 않고, 칸 수만 보여 드리며 점수를 매기지 않습니다. 비전카드에 적힌 소그룹·멘토·결과물 검토 같은 서비스와 AI 도우미는 아직 <b>출시 준비중</b>이고, 열리는 시점은 정해지면 따로 안내드리겠습니다. 그리고 이 12주를 걸은 분들이 실제로 어떤 결과를 얻는지는 아직 잰 적이 없습니다. 기록이 쌓이는 대로 성실히 살피겠습니다.</p>
+  </div>
+
+  <div class="summary-card">
+    <p>이 글의 핵심</p>
+    <ul>
+      <li>실행 프로그램의 이름이 <b>「자산화 맞춤 실행 프로그램」</b>이 되었고, 모든 페이지가 같은 길을 따라갑니다.</li>
+      <li>뼈대는 단순합니다. <b>1주 = 1칸, 12칸 = 카드 한 장, 1년 = 카드 네 장.</b></li>
+      <li>IV장은 <b>싹(12주·실행) → 이삭(3개월·성과) → 열매(1년·자산)</b>, 한 길의 세 가지 때로 다시 그렸습니다.</li>
+      <li>같은 12주가 다이어리의 <b>12주 자산화 퀘스트</b>와 <b>비전카드</b>로 이어집니다.</li>
+      <li>이미 받으셨다면 <b>리포트 재생성 → 프로그램 재생성 → 다이어리</b> 순서로 열어 보세요.</li>
+    </ul>
+  </div>
+
+  <h2>처음에는 싹이요, 다음에는 이삭이요</h2>
+  <p>마가복음 4장 28절에 이런 말씀이 있습니다. “땅이 스스로 열매를 맺되 처음에는 싹이요 다음에는 이삭이요 그 다음에는 이삭에 충실한 곡식이라.” IV장의 세 가지 때는 사실 이 구절에서 시작했어요. 싹이 났다고 바로 열매를 기대하지 않고, 이삭이 패지 않았다고 실패라고 부르지 않는 것. 신앙이 없으셔도 괜찮습니다. 이번 주에 남긴 한 줄이 작은 싹이라는 것만 기억해 주세요. 자라는 데에는 때가 있습니다.</p>
+
+  <div class="cta-box">
+    <h3>당신의 12주 지도는 리포트에서 시작됩니다</h3>
+    <p>76문항 15분 진단 · 결제 즉시 자동 생성 · ₩19,900 · 맞춤형 디지털 다이어리 무료</p>
+    <a class="btn" href="/product.html?utm_source=blog&utm_medium=cta&utm_campaign=blog_2026-10-12-program">나의 리포트 한 권 받기 →</a>
+  </div>
+
+  <div class="related">
+    <h4>이어 읽기</h4>
+    <ul>
+      <li><a href="/blog/posts/2026-10-12-asset-pathfinding-launch.html">고유성 기반 자산화 길찾기, 이제 이용하실 수 있어요</a></li>
+      <li><a href="/blog/posts/2026-10-12-regenerate-latest-engine.html">예전에 받은 리포트도, 버튼 하나로 최신 엔진을</a></li>
+      <li><a href="/blog/posts/2026-05-20-if-then-implementation-intention.html">‘If-Then’ 한 줄의 힘 — 실행 설계의 진짜 구조</a></li>
+    </ul>
+  </div>
+</article>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© 2026 인생포트폴리오 / Life Portfolio · lifeportfolio.co.kr</div>
+    <div>
+      <a href="/privacy.html">개인정보처리방침</a> ·
+      <a href="/terms.html">이용약관</a> ·
+      <a href="/blog/rss.xml">RSS</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
