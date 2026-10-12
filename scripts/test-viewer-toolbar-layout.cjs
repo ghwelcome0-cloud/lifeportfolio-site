@@ -10,6 +10,8 @@ try{for(const file of ['report.html','program.html']){
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
   // Approved 2026-10-12 typeset-v1 (어절 · 의미 단위 · 시각 안정): exact additions, removed before every pin below.
+  // Approved 2026-10-12 asset-program-v1 (AP-1): every line marked // AP1, sha-pinned.
+  value=require('./_asset-program-approved.cjs').strip(file,value);
   value=require('./_name-approved.cjs').strip(file,value);
   value=require('./_typeset-approved.cjs').strip(file,value);
   value=require('./_mv-headline-approved.cjs').strip(file,value);
