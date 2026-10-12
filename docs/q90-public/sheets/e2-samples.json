@@ -748,7 +748,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.viacharacter.org/",
+    "evidence_line": "개인 리포트(PDF) 존재. 수집본은 해석 가이드 미리보기 → 샘플 부적합. 분모에 남김.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G02a",
@@ -765,7 +771,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "ineligible",
+   "status": "not_applicable",
    "judge1": {
     "A1": {
      "level": null,
@@ -831,7 +837,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "해당 없음",
+    "evidence_url": "https://ipip.ori.org/",
+    "evidence_line": "\"This is the official website for the International Personality Item Pool (IPIP)… includes over 3,000 items and over 250 scales\" — 문항·척도 저장소. 운영 주체가 개인에게 리포트를 발급하는 제품이 아님(검사 운영 사이트는 전부 제3자).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G03",
@@ -914,7 +926,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://hexaco.org/",
+    "evidence_line": "온라인 설문 결과 화면 존재(개인별). 공개 샘플 없음.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G04",
@@ -1179,7 +1197,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://birkman.com/resources/ebooks/sample-signature-report",
+    "evidence_line": "공식 샘플 있음, 이메일 게이트(리드 수집) — 자동 수집 불가. 제3자(GCSU) 사본은 출처 규칙상 미채택.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G07",
@@ -1434,7 +1458,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.insights.com/",
+    "evidence_line": "공인 실무자 경유 제품, 개인 프로파일 리포트 존재(공식 소개). 공개 샘플 링크 미발견.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G11",
@@ -1517,7 +1547,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.16personalities.com/",
+    "evidence_line": "유료 Premium 리포트 존재(공식). 공개 샘플 PDF 없음; 유형 아티클은 개인 리포트 아님.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G12",
@@ -1600,7 +1636,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "evidence_line": "개인 구매 프로파일 리포트 존재. 공개 샘플 미발견.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G13",
@@ -1683,7 +1725,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미채택",
+    "evidence_url": "https://www.workinggenius.com/",
+    "evidence_line": "제3자 호스팅 샘플만 존재 → 출처 규칙상 미채택(G13 유형 원형).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G14",
@@ -1989,7 +2037,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.onetcenter.org/",
+    "evidence_line": "Score Report 양식은 있으나 수집본이 빈 양식 → 부적합. 분모에 남김.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "G15b",
@@ -2072,7 +2126,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://self-directed-search.com/what-is-it/",
+    "evidence_line": "공식 샘플 PDF 3종 링크 존재(Standard/Student/Veteran) — 이번 회차 수집 전(확보 대상, 다음 배치).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "E01",
@@ -2155,7 +2215,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.betterup.com/",
+    "evidence_line": "코칭 플랫폼. \"리포트가 없다\"는 공식 문장 없음 → 결박 규칙상 미확보.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "E02",
@@ -2238,7 +2304,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.coachhub.com/",
+    "evidence_line": "코칭 플랫폼. 동일.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "E06",
@@ -2255,7 +2327,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "not_applicable",
    "judge1": {
     "A1": {
      "level": null,
@@ -2321,7 +2393,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "해당 없음",
+    "evidence_url": "https://fullfocusplanner.com/pages/about",
+    "evidence_line": "\"Award-Winning Planners · Life Planning Tools · daily planners and leadership books\" — 종이 플래너(자기 기록 도구). 검사·채점·개인 결과 리포트 없음.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "E07",
@@ -2338,7 +2416,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "not_applicable",
    "judge1": {
     "A1": {
      "level": null,
@@ -2404,7 +2482,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "해당 없음",
+    "evidence_url": "https://bestself.co/products/self-journal",
+    "evidence_line": "\"13-Week Goal Planner… Fill in the pages… undated daily pages\" — 종이 저널. 검사·채점·개인 결과 리포트 없음.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "E11",
@@ -2487,7 +2571,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.15five.com/pricing",
+    "evidence_line": "성과 리뷰 결과(개인별)는 존재하나 B2B 화면, 공개 샘플 리포트 없음.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "E12",
@@ -2570,7 +2660,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://lattice.com/pricing",
+    "evidence_line": "성과 리뷰 결과(개인별) 존재, B2B, 공개 샘플 없음.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K01",
@@ -2653,7 +2749,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "로그인 뒤 결과표 제공(공식). 공개 샘플 미발견.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K02",
@@ -2736,7 +2838,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.career.go.kr/",
+    "evidence_line": "로그인 뒤 결과표 제공. KRIVET 해석 가이드는 중·고등학생용 → 성인 샘플 아님.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K03",
@@ -3161,7 +3269,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "동일(고용24). 유튜브 해석 강의는 샘플 아님.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K08",
@@ -3244,7 +3358,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "동일.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K09",
@@ -3327,7 +3447,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "동일.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K10",
@@ -3410,7 +3536,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "동일.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K11",
@@ -3493,7 +3625,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "동일.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K12",
@@ -3576,7 +3714,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.work24.go.kr/",
+    "evidence_line": "동일.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K13",
@@ -3659,7 +3803,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.career.go.kr/",
+    "evidence_line": "동일(커리어넷).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K14",
@@ -3742,7 +3892,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.career.go.kr/",
+    "evidence_line": "동일(커리어넷).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K15",
@@ -3825,7 +3981,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.ncs.go.kr/",
+    "evidence_line": "자가진단 결과 화면 존재 추정이나 서브 페이지 크롤 실패 → 리포트 유무 미확정이므로 분모에 남김(기본값).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K16",
@@ -3908,7 +4070,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.guidance.co.kr/",
+    "evidence_line": "\"결과확인 > 인증코드 입력 > 결과조회\" — 개인 결과 있음, 기관 허용 시 열람. 공개 샘플 미발견.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K17",
@@ -4154,7 +4322,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://inpsyt.co.kr/",
+    "evidence_line": "TCI 결과 보고서 존재(전문가 해석). 상품 페이지 크롤 실패, 공개 샘플 미발견.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K19",
@@ -4237,7 +4411,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.jobkorea.co.kr/",
+    "evidence_line": "검사 페이지 로그인 벽. 리포트 유무 미확정 → 분모에 남김.",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   },
   {
    "id": "K20",
@@ -4320,7 +4500,13 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": null,
+   "denominator_class": {
+    "class": "미확보(비공개 포함)",
+    "evidence_url": "https://www.16personalities.com/ko",
+    "evidence_line": "동일(한국어판).",
+    "checked_at": "2026-10-12T08:35Z"
+   }
   }
  ],
  "packet_order": [
@@ -5204,5 +5390,33 @@
    "commit": "fdc0de1",
    "defect": "⑭"
   }
+ },
+ "e2_denominator_rule": {
+  "bound_commit": "ab24af6 (lifeportfolio-site q90/docs-chain-2, G21 §21)",
+  "bound_at": "2026-10-12T08:30Z",
+  "refs": [
+   "Method 6080092",
+   "TL 6080099",
+   "Peer 6080134",
+   "Peer 6080199"
+  ],
+  "classes": [
+   "해당 없음",
+   "미확보(비공개 포함)",
+   "미채택",
+   "미확인"
+  ],
+  "default": "애매하면 분모에 남김",
+  "counts": {
+   "미확보(비공개 포함)": 27,
+   "해당 없음": 3,
+   "미채택": 1
+  },
+  "n_roster": 40,
+  "n_not_applicable": 3,
+  "n_target": 37,
+  "n_measured": 9,
+  "public_line": "E2 측정 9 / 대상 37(해당 없음 3 제외) / 명부 40",
+  "verification": "해당 없음 행 TL·Peer 각 1회 대조 대기"
  }
 }
