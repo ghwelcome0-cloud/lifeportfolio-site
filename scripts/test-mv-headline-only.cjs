@@ -6,7 +6,14 @@ let n=0;const ok=(c,m)=>{assert.ok(c,m);n++;};
 ok(!/cls:"mv-subline"/.test(src),'screen view must not append mv-subline');
 ok(!/<p class="mv-subline">/.test(src),'book page II must not render mv-subline');
 ok(!/DATA\.missionVision\.(mission|vision)Subline\)/.test(src.replace(/missionSubline: mv\.missionSubline[^\n]*|visionSubline: mv\.visionSubline[^\n]*/g,'')),'book must not read subline values');
-ok(/DATA\.missionVision\.missionHeadline/.test(src)&&/DATA\.missionVision\.visionHeadline/.test(src),'book keeps mission and vision headlines');
+ok(/blk\("사명","mission",mv\.missionHeadline\)/.test(src)&&/blk\("비전","vision",mv\.visionHeadline\)/.test(src),'certificate page carries the mission and vision headlines');
+// mv-certificate: 상장형 지면 — 새 설명 문장 없이 이름·사명·비전·발행처(·유효한 날짜)만.
+const cert=(src.match(/'function mvCert\(\)[\s\S]*?\';\}',/)||[''])[0];
+ok(cert.length>0,'mvCert defined');
+const words=cert.replace(/<[^>]+>/g,' ').match(/[가-힣]+/g)||[];
+ok(words.every(w=>['사명','비전','님의','사명과','인생포트폴리오'].includes(w)),'certificate adds no explanation words: '+words.join(','));
+ok(/y>=2020/.test(src)&&/getFullYear\(\)>=2020/.test(src),'placeholder dates (1970 …) are never printed');
+ok(/\.book\.lb-mobile \.mvc\{/.test(src)&&/\.mvc__seg\{display:block;text-wrap:balance;\}/.test(src),'certificate has mobile rules and balanced lines');
 ok(/cls:"mv-headline", text: _mvWrap2\(mHead\)/.test(src)&&/cls:"mv-headline", text: _mvWrap2\(c\.visionHeadline\)/.test(src),'screen keeps both headlines');
 const M=require('./_mv-headline-approved.cjs');const before='<p class="mv-headline">A</p><div class="mv-sep"></div><p class="mv-subline">B</p>';
 ok(M.baseline(before)==='<p class="mv-headline">A</p>','baseline drops only the subline');

@@ -13,9 +13,15 @@ const EDITS=[
  ["<p class=\"mv-headline\">\\'+esc(mvw(scrub(DATA.missionVision.missionHeadline)))+\\'</p></div>","<p class=\"mv-headline\">\\'+esc(mvw(scrub(DATA.missionVision.missionHeadline)))+\\'</p><div class=\"mv-sep\"></div><p class=\"mv-subline\">\\'+esc(mvw(scrub(DATA.missionVision.missionSubline)))+\\'</p></div>"],
  ["<p class=\"mv-headline\">\\'+esc(mvw(scrub(DATA.missionVision.visionHeadline)))+\\'</p></div>","<p class=\"mv-headline\">\\'+esc(mvw(scrub(DATA.missionVision.visionHeadline)))+\\'</p><div class=\"mv-sep\"></div><p class=\"mv-subline\">\\'+esc(mvw(scrub(DATA.missionVision.visionSubline)))+\\'</p></div>"]
 ];
+// mv-certificate (owner-approved 2026-10-12 「상장 수준으로 디자인을 업그레이드 … 리포트의 결을 유지하면서」): exact
+// before/after pairs in _mv-certificate-edits.json, removed first (newest edit first).
+const CERT=require('./_mv-certificate-edits.json');
 function strip(file,src){
  if(file!=='report.html')return src;
+ for(const [now,old] of CERT){assert.equal(src.split(now).length,2,'mv-certificate edit once: '+now.slice(0,60));src=src.replace(now,old);}
  for(const [now,old] of EDITS){assert.equal(src.split(now).length,2,'mv-headline-only edit once: '+now.slice(0,60));src=src.replace(now,old);}
  return src;}
+// Page II after the certificate redesign: compare only the customer words (mission + vision headlines) with the old cards.
+function words(html){const t=[];html.replace(/<p class="(?:mv-headline|mvc__line)[^"]*">([\s\S]*?)<\/p>/g,(m,x)=>{t.push(x.replace(/<[^>]+>/g,'').replace(/\s+/g,''));});return t.join('|');}
 function baseline(html){return html.replace(/<div class="mv-sep"><\/div><p class="mv-subline[^"]*">[\s\S]*?<\/p>/g,'');}
-module.exports={strip,baseline,EDITS};
+module.exports={strip,baseline,words,EDITS,CERT};
