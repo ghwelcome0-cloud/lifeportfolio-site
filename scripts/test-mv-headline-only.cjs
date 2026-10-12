@@ -17,4 +17,7 @@ ok(/\.book\.lb-mobile \.mvc\{/.test(src)&&/\.mvc__seg\{display:block;text-wrap:b
 ok(/cls:"mv-headline", text: _mvWrap2\(mHead\)/.test(src)&&/cls:"mv-headline", text: _mvWrap2\(c\.visionHeadline\)/.test(src),'screen keeps both headlines');
 const M=require('./_mv-headline-approved.cjs');const before='<p class="mv-headline">A</p><div class="mv-sep"></div><p class="mv-subline">B</p>';
 ok(M.baseline(before)==='<p class="mv-headline">A</p>','baseline drops only the subline');
+// 인장(2026-10-12 대표 「로고가 … 따로 노는 것 같아요 … 융화되도록」): 사각 원본 대신 같은 L·궤도·점 금박 마크를 둥근 금빛 인장 안에.
+ok(/<span class="mvc__emb" aria-hidden="true"><img src="\/assets\/trademark\/lifeportfolio-mark-gold-foil-320\.png"/.test(src)&&!/class="mvc__emb" src=/.test(src),'certificate uses the round gold seal, not the square logo');
+ok(fs.existsSync(path.join(__dirname,'..','assets/trademark/lifeportfolio-mark-gold-foil-320.png')),'gold foil mark file exists in a public tree');
 console.log('test-mv-headline-only: '+n+' checks passed');
