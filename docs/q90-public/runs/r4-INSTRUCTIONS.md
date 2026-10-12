@@ -5,8 +5,8 @@
 ## 누가, 무엇을
 
 - 실행자: 대표 PC의 로컬 에이전트 "파이스 컴퓨터"(또는 대표 본인). 국내 인터넷(한국 출구 IP)이면 됩니다.
-- 재는 행: 12행 — r3에서 해외 접속 시간 초과였던 9행(K01·K01a·K03·K08·K09·K10·K11·K12·K17) + 겹침(다리) 3행(K02·K05·K13). 명부 부분집합 파일 `roster/roster-v2.r4-subset.json`에 들어 있습니다. (시간이 되면 `roster/roster-v2.json` 전체 40행도 가능 — 그 경우 `run-meta.json`의 `rows_requested`를 40으로 적습니다.)
-- 소요: 12행 약 3~5분(행당 최대 45초).
+- 재는 행: 13행 — r3에서 해외 접속 시간 초과였던 9행(K01·K01a·K03·K08·K09·K10·K11·K12·K17) + 겹침(다리) 4행(K02·K05·K13·K18; K13은 r3에서 404라 A7만 비교 가능 → K18 추가, §24-a). 명부 부분집합 파일 `roster/roster-v2.r4-subset.json`에 들어 있습니다. (시간이 되면 `roster/roster-v2.json` 전체 40행도 가능 — 그 경우 `run-meta.json`의 `rows_requested`를 40으로 적습니다.)
+- 소요: 13행 약 3~5분(행당 최대 45초).
 
 ## 준비물
 
@@ -16,7 +16,7 @@
 4. **도구 sha 확인(필수):**
    ```bash
    sha256sum tools/measure-e1.cjs   # c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b 이어야 함
-   sha256sum roster/roster-v2.r4-subset.json   # ca0d23d5e9f3a0b0bf06a9376fb6c14f0e2e2514288df380bf37a5cc40f3657a
+   sha256sum roster/roster-v2.r4-subset.json   # c90a9c4fc20afed61727849b0aa41850c608bd17fb30fd170709e65ee917316f
    ```
    다르면 **실행하지 말고** 알려 주세요.
 
@@ -41,11 +41,11 @@ node tools/score-e1.cjs $RUN | tee $RUN/score.log
   "network_kind": "office-wired",
   "browser": "chrome-headless-shell 148.0.7778.97",
   "profile": "fresh (no cookies/cache, not logged in)",
-  "rows_requested": 12,
-  "bridge_rows": ["K02", "K05", "K13"],
+  "rows_requested": 13,
+  "bridge_rows": ["K02", "K05", "K13", "K18"],
   "started_utc": "2026-10-13T00:00:00Z",
   "ended_utc": "2026-10-13T00:05:00Z",
-  "roster_subset_sha256": "ca0d23d5e9f3a0b0bf06a9376fb6c14f0e2e2514288df380bf37a5cc40f3657a"
+  "roster_subset_sha256": "c90a9c4fc20afed61727849b0aa41850c608bd17fb30fd170709e65ee917316f"
 }
 ```
 

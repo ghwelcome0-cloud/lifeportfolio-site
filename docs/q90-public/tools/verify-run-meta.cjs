@@ -2,7 +2,7 @@
 // Usage: node verify-run-meta.cjs <runDir> [expectedToolSha] [expectedRosterSha]   (G21 §24 수령 검사 1~3단계)
 // 1 도구 sha 2 명부 부분집합 sha 3 run-meta 비공개 항목 유입(IP·호스트명·사용자 경로) 4 국가 코드 형식. 하나라도 실패 → exit 1.
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
-const [RUN, TOOL_SHA = 'c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b', ROSTER_SHA = 'ca0d23d5e9f3a0b0bf06a9376fb6c14f0e2e2514288df380bf37a5cc40f3657a'] = process.argv.slice(2);
+const [RUN, TOOL_SHA = 'c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b', ROSTER_SHA = 'c90a9c4fc20afed61727849b0aa41850c608bd17fb30fd170709e65ee917316f'] = process.argv.slice(2);
 if (!RUN) { console.error('usage: node verify-run-meta.cjs <runDir> [toolSha] [rosterSha]'); process.exit(2); }
 const sha = f => crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex');
 const fails = [], notes = [];

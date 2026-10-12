@@ -5703,7 +5703,7 @@
     ],
     "tool_sha256_required": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
     "roster_subset": "roster/roster-v2.r4-subset.json",
-    "roster_subset_sha256": "ca0d23d5e9f3a0b0bf06a9376fb6c14f0e2e2514288df380bf37a5cc40f3657a",
+    "roster_subset_sha256": "c90a9c4fc20afed61727849b0aa41850c608bd17fb30fd170709e65ee917316f",
     "rows": [
       "K01",
       "K01a",
@@ -5718,11 +5718,13 @@
     "bridge_rows": [
       "K02",
       "K05",
-      "K13"
+      "K13",
+      "K18"
     ],
     "public_fields": "국가 코드·기계 종류·브라우저·UA·viewport·UTC·프로필만 (IP·기계 이름·사용자명 저장소 밖)",
     "assembly": "tools/assemble-latest.cjs → runs/latest (행마다 최신 성공 run, 셀 태그 rN·CC)",
     "instructions": "runs/r4-INSTRUCTIONS.md",
-    "status": "측정 대기 — 국내 egress 실행자(파이스 컴퓨터/대표) 필요"
+    "status": "측정 대기 — 국내 egress 실행자(파이스 컴퓨터/대표) 필요",
+    "amendment_24a": "2026-10-12T19:30Z 측정 전 보완: 사전 재현 run(r3b-us-repro)에서 K13이 r3와 같이 404(명부 URL 결함, A6 비교 불가) → 겹침에 K18 추가(13행). 9행 시간 초과 재현, K02 바이트 hash r3와 동일, K05·K13 hash 변화(원시값 변화 0 — 동적 콘텐츠 가능성, 단정 안 함)."
   }
 }

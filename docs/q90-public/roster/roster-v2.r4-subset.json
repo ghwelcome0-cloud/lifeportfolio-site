@@ -4,7 +4,7 @@
  "id_rule": "행 ID는 불변. 대상 교체·추가는 새 ID. 삭제 대신 retired:true.",
  "subset_of": "roster/roster-v2.json",
  "subset_sha256_of_full": "7c4a4bcc3eca4e54d8bbcdf2b4df1cbd61bb55a88cf48f2a42b70839dc83f5b8",
- "subset_purpose": "E1 r4 국내 egress 재측정 — 미측정 9행 + 겹침 3행(K02·K05·K13). G21 §24 결박 9557e46",
+ "subset_purpose": "E1 r4 국내 egress 재측정 — 미측정 9행 + 겹침 4행(K02·K05 전체 성공, K13 A7만 성공(404), K18 전체 성공 — §24-a 보완). G21 §24 결박 9557e46 + §24-a",
  "rows": [
   {
    "id": "K01",
@@ -188,6 +188,22 @@
    "group": "국내",
    "url": "https://www.career4u.net/",
    "provider": "어세스타",
+   "country": "KR",
+   "access": "유료",
+   "time_min": 30,
+   "price_krw_band": null,
+   "sample_report_url": null,
+   "docs_url": null,
+   "appeal": "",
+   "limits": "",
+   "since": "2026-10-12 G21 §4"
+  },
+  {
+   "id": "K18",
+   "name": "TCI 기질및성격검사(인싸이트)",
+   "group": "국내",
+   "url": "https://inpsyt.co.kr/",
+   "provider": "마음사랑/인싸이트",
    "country": "KR",
    "access": "유료",
    "time_min": 30,

@@ -1,0 +1,750 @@
+{
+ "tool": "measure-e1.cjs",
+ "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_version": "v2.0",
+ "evidence": "E1",
+ "startedAt": "2026-10-12T19:10:18.504Z",
+ "results": [
+  {
+   "row": "K01",
+   "name": "고용24 직업선호도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:12:17.400Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K02",
+   "name": "커리어넷 직업흥미검사 H형",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/guide/counsel",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-12T19:12:29.569Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.career.go.kr/cloud/w/guide/counsel",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 40527,
+    "bodySha256": "20ce8fea22123a9ee080790fa34efd8f86369c2c0f0a1a03c83f8276496e74e6"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "커리어넷 이용안내 > 진로상담 이용안내(FAQ) | 진로정보망 커리어넷",
+    "domSha256": "fa534da817863d0870833059880780c99ac21f495e206eb3909712333bf47be3",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 1380,
+    "innerW": 1380,
+    "overflow": false,
+    "text": {
+     "blocks": 9,
+     "ge16": 8,
+     "lt12": 0,
+     "chars": 271,
+     "chars16": 231
+    },
+    "touch": {
+     "total": 40,
+     "ok44": 17,
+     "ok24": 32
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K03",
+   "name": "어세스타 STRONG II",
+   "group": "국내",
+   "url": "https://www.assesta.com/",
+   "skip": false,
+   "origin": "https://www.assesta.com",
+   "measuredAt": "2026-10-12T19:14:28.242Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K05",
+   "name": "태니지먼트 강점 리포트",
+   "group": "국내",
+   "url": "https://www.tanagement.co.kr/",
+   "skip": false,
+   "origin": "https://www.tanagement.co.kr",
+   "measuredAt": "2026-10-12T19:14:41.508Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.tanagement.co.kr/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 33153,
+    "bodySha256": "34dde65aca69cb95e10499d7b45260538df6fdca1748228decaa7fca6c469f04"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "태니지먼트 - Spark Energy. Sync People, Scale Synergy.",
+    "domSha256": "796880f49ec9c6035b910e9f55ac9831ab68bf282a9c951c3c00dbe48bfd6cb0",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 1,
+     "ge16": 1,
+     "lt12": 0,
+     "chars": 23,
+     "chars16": 23
+    },
+    "touch": {
+     "total": 11,
+     "ok44": 9,
+     "ok24": 10
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K01a",
+   "name": "고용24 직업선호도검사 L형",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:16:40.169Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K08",
+   "name": "고용24 성인용 직업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:18:05.374Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K09",
+   "name": "고용24 직업가치관검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:20:04.018Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K10",
+   "name": "고용24 구직준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:21:30.195Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K11",
+   "name": "고용24 창업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:23:26.903Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K12",
+   "name": "고용24 대학생 진로준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T19:24:54.970Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K13",
+   "name": "커리어넷 직업가치관검사(성인)",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-12T19:25:02.523Z",
+   "headers": {
+    "ok": true,
+    "status": 404,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/intro",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 78,
+    "bodySha256": "0245032ba7f495ea471d7a011bed3854b00a47be3a3c8f196e19826ba5174edb"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 404,
+    "title": "ERROR",
+    "domSha256": "c58eedd5531ef2517f4e204d07411a7e96119c58278cad2e11371a6e9f774195",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 3,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 106,
+     "chars16": 106
+    },
+    "touch": {
+     "total": 1,
+     "ok44": 1,
+     "ok24": 1
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K17",
+   "name": "어세스타 MBTI Form M(한국판)",
+   "group": "국내",
+   "url": "https://www.career4u.net/",
+   "skip": false,
+   "origin": "https://www.career4u.net",
+   "measuredAt": "2026-10-12T19:27:01.164Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  }
+ ]
+}
