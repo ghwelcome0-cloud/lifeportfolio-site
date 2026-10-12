@@ -4335,7 +4335,8 @@
     "self_declaration_fields": [
      "declaration(관여 0)",
      "competitor_research_done_before(세 명 공통, Method 6063269)"
-    ]
+    ],
+    "model_display": "Claude Sonnet 5.5 (자기신고 6066092)"
    },
    {
     "role": "judge2",
@@ -4460,7 +4461,8 @@
     "self_declaration_fields": [
      "declaration(관여 0)",
      "competitor_research_done_before(세 명 공통, Method 6063269)"
-    ]
+    ],
+    "model_display": "모름 — 런타임이 제품 표시명 미제공, 내부 식별자 비공개 규칙(자기신고 6066088)"
    },
    {
     "role": "third",
@@ -4476,7 +4478,8 @@
     "self_declaration_fields": [
      "declaration(관여 0)",
      "competitor_research_done_before(세 명 공통, Method 6063269)"
-    ]
+    ],
+    "model_display": "Claude Sonnet 5.5 (자기신고 6066087)"
    }
   ],
   "packet_record_schema": {
@@ -4502,6 +4505,51 @@
    "prepared_at": "2026-10-12T05:49:30Z",
    "axes_needing_third": 0,
    "note": "두 judge 전 축 차이≤1 → 제3자 개입 0. 규칙(diff≤1 → 낮은 값)으로 표 생성 단계에서 집계. 제3자(SEO Specialist)는 read_check만 수행, 채점 미참여."
-  }
+  },
+  "memory_check": {
+   "bound_at": "2026-10-12T05:52:55Z",
+   "bound_before_answers": true,
+   "rule": {
+    "Q1_no_and_Q2_no": "유효. G21 한계: \"judge 런타임이 세션 시작 시 자기 메모를 자동 로드함(내용은 E2 대상과 무관하다는 자기선언에 의존, 검증 수단 없음)\"",
+    "Q1_yes": "그 judge 9건 전부 무효 → 같은 4단계 격리로 새 judge 선발, 그 judge 몫만 재채점(Method 6065585·Peer 6065584 쪽 채택; TL 별표안 불채택 — 영향 범위를 정할 근거가 없음)",
+    "Q2_yes": "그 시점 이후 답안 무효 + 메모 삭제 확인 받고 공개, 다음 회차 같은 judge 미사용"
+   },
+   "questions_sent": {
+    "judge1": 6065733,
+    "judge2": 6065738
+   },
+   "answers": {
+    "judge1": {
+     "msg": 6065845,
+     "Q1": "예 — 단 자사(인생포트폴리오) 관련뿐, 타사 검사 서비스·회사 이름 0개. 자동 로드된 MEMORY.md에는 해당 내용 없음; 자사 내용은 09-11 브랜드 검토 때 직접 연 notes 파일에 있었음",
+     "Q1_count_other": 0,
+     "Q1_count_own": 1,
+     "Q2": "예 — 9번 패킷 회신 **뒤** notes/work-log.md 1항목 추가 + MEMORY.md Active Context 1줄 수정. 내용: 패킷 ID 9개·회신 완료·지킨 절차 규칙. 점수·이유·샘플 설명은 없음(자기선언)",
+     "Q2_timing": "after_last_packet",
+     "topics": [
+      "MEMORY.md: 역할 정의 / 지식 포인터 / 진행 중 컨텍스트(숏츠 브랜드 승인 매핑)",
+      "notes: 사용자 선호(빈), 채널 맥락(마케팅), 작업 기록(자사 포지셔닝·랜딩·유튜브)"
+     ]
+    },
+    "judge2": {
+     "msg": 6065889,
+     "Q1": "아니오 — MEMORY.md에 검사 서비스·회사 내용 0, notes/ 미열람",
+     "Q1_count_other": 0,
+     "Q1_count_own": 0,
+     "Q2": "아니오 — MEMORY.md·notes/ 미수정(mtime 2026-10-11, git 변경 0). 답안·그림 변환본은 /tmp에만",
+     "Q2_timing": null,
+     "topics": [
+      "역할",
+      "보고 원칙",
+      "지식 안내 목차",
+      "진행 중: #ai-homepage-project 합류(10-11)"
+     ],
+     "correction": "패킷1 답안 \"메모를 열지 않았다\"는 부정확 — 자동 로드됐고 패킷2 채점 중 MEMORY.md 목차를 1회 직접 열어봄(패킷2에서 밝힘, 채점 미사용)"
+    },
+    "pending_team_ruling": "judge1 Q1이 \"예(자사만)\"로 결박 규칙의 예/아니오 경계에 걸림(자사 행은 E2 샘플 아님). judge1 Q2 \"예\"는 마지막 패킷 뒤라 \"이후 답안\" 0건. 총괄 단독 해석 금지 → op:150에서 팀 결박 요청."
+   },
+   "note": "TL 근거 ③(결과 기반)은 판정 기록에서 제외(Peer 6065599)"
+  },
+  "model_note": "judge1·제3자 = Claude Sonnet 5.5(자기신고). judge2 모델 미확인 → 같은 모델 여부 판단 불가. 표에는 \"두 judge 일치율은 기술 통계일 뿐 평가자 간 신뢰도 아님(모델 동일성 미확인)\"으로 적는다. Genny 4005983 로스터 표시(09-11)는 전원 claude-fable-5-1 → 동일 모델일 가능성 높음(추정)."
  }
 }
