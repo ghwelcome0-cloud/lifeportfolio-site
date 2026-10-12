@@ -5021,9 +5021,10 @@
     "bio_post_check": {
      "listing_api_truncated_at": 300,
      "prefix_300_matches_file": true,
-     "full_sha_source": "Genny 회신 대기(6077935)",
+     "full_sha_source": "Genny 미회신(6077935, 25분 경과) → 전문 sha 미대조. 확인된 사실: 목록 API 앞 300자 = 파일 원문 앞 300자 일치, Genny 생성 메시지(6077347) \"승인하신 전문과 한 글자도 다르지 않게\" 자기신고. 전문 바이트 동일성은 미검증(한계로 공개).",
      "file_sha_with_newline": "a85bacc3a96cd20b071234c37052e923cc0e8be69ed30ea2e4a9b55cda940c27",
-     "file_sha_no_newline": "018ca9e539844148…"
+     "file_sha_no_newline": "018ca9e539844148…",
+     "status": "prefix_verified_only"
     }
    }
   ],
