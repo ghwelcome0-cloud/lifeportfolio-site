@@ -2849,15 +2849,15 @@
    },
    "sample_report_url": {
     "value": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
-    "source_url": "https://www.career4u.net/Tester/STRONG_Intro.asp",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
     "collected_at": "2026-10-12",
-    "note": "공식 \"샘플보기\" 전문해석 프로파일(고등·일반). 기본 프로파일 샘플도 있음(Strong_JI2_Profile.pdf). **E2 후보 확보.** 샌드박스에서 다운로드 타임아웃(2026-10-12) — sha256은 확보 시점에 기록"
+    "note": "어세스타 공식 \"샘플보기\" — STRONG 직업흥미검사II 전문해석 프로파일(고등·일반). 기본 프로파일 4p 보조: eeadcc0790d5cade4e524a4cedff29a47277e758c96da414b6f3510c3d4d42cd | 12168875 bytes, 18p | 샌드박스 TCP 차단 → Genspark 에이전트 2개 독립 수집, sha256 일치(교차 검증) | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "87709d9354ef440fa53f6d8c48e73023f4c039cba25802851a2b2f7fd7024f87",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+    "collected_at": "2026-10-12",
+    "note": "agent 13fd0dca… · agent b4fae40f… · 로컬 재계산 3중 일치"
    },
    "privacy_policy_url": {
     "value": null,
@@ -2891,7 +2891,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "partial"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식 공식 샘플(한국어)"
+   }
   },
   {
    "id": "K05",
@@ -4199,15 +4205,15 @@
    },
    "sample_report_url": {
     "value": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
-    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
     "collected_at": "2026-10-12",
-    "note": "공식 \"온라인보고서 샘플 보기\" — Form M 기본 프로파일(한국, ISTJ 예시). Form Q 전문해석 샘플(INFP)도 있음. 다운로드는 career4u 서버 타임아웃으로 미확보 — 재시도 예정"
+    "note": "어세스타 공식 \"온라인보고서 샘플 보기\" — MBTI Form M 기본 프로파일(ISTJ). 2쪽으로 짧음(전문해석 Form Q 샘플 12p는 보조: f0f2f9836c254dfe5fa15ba5b3d1befad0912998ec08f3362d8c8434baeba843) | 1948513 bytes, 2p | 샌드박스 TCP 차단 → Genspark 에이전트 2개 독립 수집, sha256 일치(교차 검증) | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "e85d5dd4b0097829e4a2bfc944c3e76f7c82a33c9e39bb4cb7af56a0e929e67b",
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
+    "collected_at": "2026-10-12",
+    "note": "agent 13fd0dca… · agent b4fae40f… · 로컬 재계산 3중 일치"
    },
    "privacy_policy_url": {
     "value": null,
@@ -4243,10 +4249,10 @@
    "A8": null,
    "status": "partial",
    "e2_eligible": {
-    "value": null,
-    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "value": true,
+    "source_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
     "collected_at": "2026-10-12",
-    "note": "공식 샘플 존재 — 파일 확보 뒤 적합 판정"
+    "note": "개인 결과 형식 공식 샘플(한국어)"
    }
   },
   {
