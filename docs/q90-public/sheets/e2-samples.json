@@ -3240,18 +3240,62 @@
    "id": "K02",
    "name": "커리어넷 직업흥미검사 H형",
    "blind_id": "S-e88b89",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.krivet.re.kr/repository/bitstream/202405/10609/2/C234902_fulltext.pdf",
+   "sample_sha256": "e569908728fa0b968ad485d14ca8c6da0278965485127b9ff72655e5c425ceed",
    "redaction": {
     "items_found": [],
-    "tool_sha256": null,
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 134,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T23:55:05Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "5ee21c570466caeda8327013bc4383f3552afb91945c6acd2a6146b78aed8279",
+    "final_file": "S-e88b89.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "4c35b11528631fd33bbd3795be85deedca1c39ff8ac1e655871b33a6a8e1a987",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-e88b89.img.contact.png",
+     "passed": true,
+     "checked_at": "2026-10-12T23:55:26Z",
+     "checked_by": "assistant(50dpi 4쪽 전체 + 1쪽 확대)",
+     "rounds": [
+      {
+       "n": 1,
+       "finding": "기본 규칙(이미지 전부 제거)이 문서도판 샘플을 통째로 지움 → --keep-images 옵션 신설"
+      },
+      {
+       "n": 2,
+       "finding": "표지 안내문 한글이 \"?? ??\"로 찍힘(T9) → 한글 글꼴로 수정"
+      },
+      {
+       "n": 3,
+       "finding": "정상. 1쪽(판독 불가 썸네일·회사명 헤더) 통째 가림, 4쪽 \"비회원님은…\" 문장 상자 가림. 남은 글자 중 회사 식별 문자열 없음(OCR 0)"
+      }
+     ],
+     "note": "(문서도판·부분 3/4) — 채점 가능 쪽 3"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -3317,7 +3361,7 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
     "evidence_url": "https://www.career.go.kr/",
@@ -3325,13 +3369,22 @@
     "checked_at": "2026-10-12T08:35Z"
    },
    "e2_alt": {
-    "path_candidate": "E2-s",
-    "tos_url": "https://www.career.go.kr/",
-    "tos_quote": "약관 URL 404(경로 변경) — 미확인",
-    "tos_verdict": "미확인→국내 확인 필요",
-    "checked_at": "2026-10-12T20:35Z",
-    "note": "커리어넷 성인 로그인 필요"
-   }
+    "path": "E2-d (문서도판)",
+    "source": "https://www.krivet.re.kr/repository/bitstream/202405/10609/2/C234902_fulltext.pdf",
+    "source_sha256": "3562c2994dc8bdddb59ed9508e656ac0eb1374d02915ef9d49d2918c3fe1bf7e",
+    "source_desc": "한국직업능력연구원(KRIVET) 「커리어넷 직업흥미검사 H형 활용안내서」(2023, 122쪽) 35쪽 \"결과표\" — 임베디드 이미지 4장(결과표 요약면 240×307 썸네일·Part1 523×673·Part2 704×740·종합 700×701)을 원본 해상도로 추출해 4쪽 PDF로 묶음(재배열·편집 없음)",
+    "legibility": "4구획 중 3구획 판독 가능(Part1·Part2·종합). 요약면 1구획은 썸네일이라 판독 불가 → 꼬리표 \"(문서도판·부분 3/4)\"",
+    "fetch_note": "사설 US 접속에서 첫 시도 403 → 브라우저 헤더(UA·Referer)로 200. 재현 명령은 KB-01에 기록",
+    "collected_at": "2026-10-12T23:52Z",
+    "caveat": "회사가 고른 예시(비회원 샘플 응답, 2024.04.01). 쪽수 적음(4). E2 (샘플)과 직접 비교 금지(G21 §26 꼬리표 규칙)"
+   },
+   "packet_files": {
+    "sample.pdf": "5ee21c570466caeda8327013bc4383f3552afb91945c6acd2a6146b78aed8279",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "0ecf54517a66028272db95da049bd4fba478be97c844f207f9c82b65511faf4d",
+    "ANSWER.json": "c799f0aa33e2870b244006bf0b1e347fe12884c6533ea90a2c5c6f783220b558"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K03",
@@ -5110,6 +5163,7 @@
   "S-927ba4",
   "S-9d99bb",
   "S-da397f",
+  "S-e88b89",
   "S-e9e660",
   "S-f7229a"
  ],
@@ -5523,6 +5577,16 @@
       "answer_sha256": "c72c5e67e5fe92ef5e263c0ec3ba8a036720ba36bb13dc6ef9163bbe01daf72d",
       "answered_at": "2026-10-12T23:40:45Z",
       "first_line_declaration_ok": true
+     },
+     "S-e88b89": {
+      "sent_msg_id": "6120623",
+      "sent_at": "2026-10-12T23:55:43Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/oWywW8Ho",
+      "attachment_sha256_sent": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
+      "attachment_sha256_received_redownload": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
+      "bytes_match": true,
+      "reply_msg_id": null,
+      "answer_sha256": null
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5731,6 +5795,16 @@
       "answer_sha256": "5ba387e079aa9958fe178baa00d683cfb6708637bfa551e0f81b463cb662d60a",
       "answered_at": "2026-10-12T23:40:43Z",
       "first_line_declaration_ok": true
+     },
+     "S-e88b89": {
+      "sent_msg_id": "6120614",
+      "sent_at": "2026-10-12T23:55:35Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/A4KpMUGl",
+      "attachment_sha256_sent": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
+      "attachment_sha256_received_redownload": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
+      "bytes_match": true,
+      "reply_msg_id": null,
+      "answer_sha256": null
      }
     },
     "team_ok": {
@@ -6474,6 +6548,18 @@
     "K16·K18 (결과 없음)"
    ],
    "note": "G08 발견으로 탐색 절차에 site: 검색을 추가(KB-01)"
+  },
+  "owner_decisions_2026-10-12T23:50Z": {
+   "q90_d_tools_priority": "승인 — Q90 D 도구 우선, 비교표 대조는 차단급만(TL 6118528 제안, Peer 6118532 동의, 대표 승인 원문: \"Q90 D 도구 우선 전환 승인합니다\")",
+   "kr_rows_tos_identity_check": "(b) 문서도판으로만 처리 — 대표 원문: \"국내 11행 약관·본인인증 확인은 (b) 문서도판으로만 처리하고 넘어가는 것으로 우선합시다\". 국내 행 E2-s(AI응시) 종료, E2-p 미실행 유지, E2-d 탐색만 수행",
+   "defect_policy": "결함 발생 뒤 대처·자산화·재발 방지(대표 원문 요지) — KB 체크리스트 반영 의무"
+  },
+  "e2d_search_log_2026-10-12T23:52Z": {
+   "K02": "발견(위)",
+   "K16": "인싸이트 Holland 적성검사 해석지침서(32쪽) 발견 — 그러나 K16(한국가이던스 SDS)과 다른 출판사·다른 제품, 도판도 발췌(그림 1~6) → 불가. guidance.co.kr 자료실은 응답지만",
+   "K01·K01a·K08~K12": "work24.go.kr site: PDF 0건, KEIS 사이트 US 접속 시간 초과(연구보고서 2008·2007만 검색 노출, 결과표 전체 도판 아님)",
+   "K13·K14": "커리어넷 성인 검사 — 같은 KRIVET 저장소에서 성인용 안내서 미발견(이번 턴)",
+   "owner_decision": "(b) 문서도판만 — 국내 행 응시·구매 닫힘"
   }
  },
  "packet_round3": {
@@ -6482,5 +6568,12 @@
   ],
   "built_at": "2026-10-12T23:36Z",
   "note": "3회차 패킷 1건(G08, 공식 공개 샘플 PDF 39쪽 · site: 검색으로 발견). 1·2회차 10건 sha 불변. 같은 judge1·judge2에게 같은 절차."
+ },
+ "packet_round4": {
+  "blind_ids": [
+   "S-e88b89"
+  ],
+  "built_at": "2026-10-12T23:55Z",
+  "note": "4회차 패킷 1건(K02, E2-d 문서도판 — 공식 활용안내서 35쪽 결과표 도판 4구획, 판독 3/4). judge에게 경로는 비공개(blind). 1~3회차 11건 sha 불변."
  }
 }
