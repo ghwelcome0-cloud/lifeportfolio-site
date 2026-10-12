@@ -33,7 +33,8 @@
  nav.toc a{color:var(--brg);font-weight:600;text-decoration:none;display:inline-block;min-height:32px;line-height:32px}
  nav.toc a:hover{text-decoration:underline}
  section{margin:40px 0 0;scroll-margin-top:72px} #rights{scroll-margin-top:72px}
- h2.sec{font-family:"Noto Serif KR",serif;font-size:22px;color:var(--brg);margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
+ h2.vh{font-family:"Noto Serif KR",serif;font-size:17px;color:var(--brg);margin:18px 0 8px}.vp{margin:0;padding-left:20px;font-size:15px;line-height:1.7}.card p{margin:4px 0 0}
+.sec{font-family:"Noto Serif KR",serif;font-size:22px;color:var(--brg);margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
  h2.sec b{font-family:"Cormorant Garamond",serif;color:var(--gold-2);font-size:20px}
  .lead{color:var(--ink-2);margin:0 0 14px;font-size:15.5px}
  .steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
@@ -87,7 +88,7 @@
   <li><a href="#start">3분이면 시작해요</a></li><li><a href="#screen">화면 쓰는 법</a></li>
   <li><a href="#help">? 도움말 쓰는 법</a></li><li><a href="#rhythm">1년 동안 쓰는 리듬</a></li>
   <li><a href="#pages">쪽마다 쓰는 법</a></li><li><a href="#stages">근거 단계</a></li>
-  <li><a href="#faq">자주 묻는 질문</a></li><li><a href="#privacy">기록과 개인정보</a></li><li><a href="#sources">참고한 연구</a></li>
+  <li><a href="#vision-card">비전카드 자세히 보기</a></li><li><a href="#faq">자주 묻는 질문</a></li><li><a href="#privacy">기록과 개인정보</a></li><li><a href="#sources">참고한 연구</a></li>
  </ol></nav>
 
  <section id="start"><h2 class="sec"><b>01</b>3분이면 시작해요</h2>
@@ -148,9 +149,21 @@
   <ol class="steps" id="path-next-list"></ol>
  </section>
 
- <section id="faq" class="faq"><h2 class="sec"><b>08</b>자주 묻는 질문</h2><div id="faq-list"></div></section>
+ <section id="vision-card"><h2 class="sec"><b>08</b>비전카드 자세히 보기</h2>
+  <p class="note" id="vision-what"></p>
+  <h3 class="vh">왜 쓰나요</h3>
+  <div class="grid" id="vision-why"></div>
+  <h3 class="vh">네 구간에서 하는 일</h3>
+  <div id="vision-steps"></div>
+  <h3 class="vh">이렇게 써요</h3>
+  <ol class="steps" id="vision-how"></ol>
+  <h3 class="vh">약속</h3>
+  <ul class="vp" id="vision-promise"></ul>
+ </section>
 
- <section id="privacy"><h2 class="sec"><b>09</b>기록과 개인정보</h2>
+ <section id="faq" class="faq"><h2 class="sec"><b>09</b>자주 묻는 질문</h2><div id="faq-list"></div></section>
+
+ <section id="privacy"><h2 class="sec"><b>10</b>기록과 개인정보</h2>
   <div class="note">
    <p>· 다이어리 기록은 로그인한 본인만 볼 수 있어요. 다른 사람이나 공개 페이지에 보이지 않아요.</p>
    <p>· 다이어리는 리포트와 실행 프로그램을 읽기만 하고 바꾸지 않아요.</p>
@@ -166,7 +179,7 @@
   </div>
  </section>
 
- <section id="sources"><h2 class="sec"><b>10</b>참고한 연구</h2>
+ <section id="sources"><h2 class="sec"><b>11</b>참고한 연구</h2>
   <p class="lead">다이어리의 일부 쪽은 아래 연구를 참고해 만들었어요. 연구 결과는 개인의 효과를 약속하지 않아요.</p>
   <ul class="src">
    <li>‘만약~그러면’ 계획 — Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. <i>Advances in Experimental Social Psychology, 38</i>, 69–119.</li>
@@ -212,6 +225,15 @@
    c.subs.map(function (x) { return "<li><b>" + esc(x.ko) + "</b> — " + esc(x.first) + "</li>"; }).join("") + "</ul></div></details>"; }).join("");
  document.getElementById("asset-note").textContent = AP ? AP.ASSET_NOTE + " 직업은 예시예요. 같은 변화도 집 · 일터 · 동네 어디서나 일어날 수 있어요." : "";
  document.getElementById("path-next-list").innerHTML = H.PATH_NEXT.map(function (x, i) { return "<li><span>" + (i + 1) + "</span><div><b>" + esc(x.name) + "</b> <small>(출시 준비중)</small><br>" + esc(x.line) + "</div></li>"; }).join("");
+ var VI = H.VISION;
+ if (VI) {
+  document.getElementById("vision-what").textContent = VI.what;
+  document.getElementById("vision-why").innerHTML = VI.why.map(function (x) { return '<div class="card"><b>' + esc(x.k) + "</b><p>" + esc(x.v) + "</p></div>"; }).join("");
+  document.getElementById("vision-steps").innerHTML = VI.steps.map(function (x, i) {
+   return '<details class="pg" id="vision-card-' + (i + 1) + '"' + (i === 1 ? " open" : "") + '><summary>' + esc(x.when) + " <small>" + esc(x.aim) + '</small></summary><div class="pgb"><span class="k">누가 확인하나요</span><p>' + esc(x.who) + '</p><span class="k">이 구간에 하는 일</span><p>' + esc(x.doing) + '</p><span class="k">다음 구간으로 그대로 이어지는 것</span><p>' + esc(x.carry) + "</p></div></details>"; }).join("");
+  document.getElementById("vision-how").innerHTML = VI.how.map(function (x, i) { return "<li><span>" + (i + 1) + "</span><div>" + esc(x) + "</div></li>"; }).join("");
+  document.getElementById("vision-promise").innerHTML = VI.promise.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("");
+ }
  document.getElementById("faq-list").innerHTML = H.FAQ.map(function (f) { return "<details><summary>" + esc(f.q) + "</summary><p>" + esc(f.a) + "</p></details>"; }).join("");
  function openHash() { var id = location.hash.slice(1), el = id && document.getElementById(id); if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); el.querySelector("summary").focus(); } }
  H.units(document.getElementById("guide-main")); H.units(document.querySelector("header.hero"));

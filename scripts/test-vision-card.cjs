@@ -18,6 +18,12 @@ t('no-score-date-source-internal',()=>{assert.ok(!/\d{4}년|\d+월 \d+일 출시
 t('no-save-or-send',()=>{assert.ok(!/st\.call\(/.test(vc),'vision card never calls the server');assert.ok(!/fetch\(|navigator\.sendBeacon/.test(vc));});
 t('no-self-centred-card-labels',()=>{['내 자산 카드','내 카드로 남기기','내 카드로 남겼어요','내 기록의 「남긴 것」','내 손으로 쓰는 마지막 한 줄'].forEach(k=>assert.ok(!app.includes(k),'reworded: '+k));});
 t('css-touch-and-mobile',()=>{assert.ok(/button\.vc-svc\{min-height:44px/.test(css));assert.ok(/\.aq-jump a\{[^}]*min-height:44px/.test(css));assert.ok(/\.vc \.badge\{white-space:nowrap/.test(css));});
+t('guide-explains-vision-card',()=>{const g=fs.readFileSync(path.join(root,'diary-guide.html'),'utf8'),H=require(root+'/assets/js/diary-help.js');const V=H.VISION;
+ assert.ok(V&&V.what&&V.why.length===4&&V.steps.length===4&&V.how.length===4&&V.promise.length>=4,'VISION data');
+ ['시작 전','1~4주','5~8주','9~12주'].forEach((k,i)=>assert.equal(V.steps[i].when,k));V.steps.forEach(x=>assert.ok(x.who&&x.doing&&x.carry&&x.aim));
+ assert.equal((g.match(/id="vision"/g)||[]).length,0,'no clash with the page-guide id "vision"');assert.ok(/<section id="vision-card">/.test(g)&&/href="#vision-card"/.test(g));
+ assert.ok(/#vision-card\\?"/.test(vc)||vc.includes('#vision-card"'),'diary card links to the guide section');
+ const txt=JSON.stringify(V);assert.ok(!/내가 |나의 |내 [가-힣]/.test(txt.replace(/「내 변화 찾기」/g,'')),'no self-centred wording');assert.ok(!/LP-|ruleId|asset-quest-v1|\d{4}년/.test(txt));});
 // 대원칙-F population
 {const E=require(root+'/assets/js/report-engine.js'),V=require(root+'/assets/js/report-engine-v4.js'),A=require(root+'/assets/js/asset-map.js'),P=require(root+'/assets/js/asset-path.js'),PE=require(root+'/assets/js/program-engine.js'),R=require(root+'/assets/js/response-evidence.js'),S=require(root+'/assets/js/diary-schema.js');
  const questions=require(root+'/data/questions.json'),mapping=require(root+'/data/mapping.json'),rules=require(root+'/data/report-rules.json'),careerRules=require(root+'/data/career-rules.json'),pr=require(root+'/data/program-rules.json');

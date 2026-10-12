@@ -400,6 +400,7 @@
       '<ul class="vc-faq"><li><b>무엇인가요?</b> 12주 기록이 다음 걸음으로 이어지는 길을 한 장에 보여 줘요.</li><li><b>왜 좋은가요?</b> 지금 채운 칸과 자산 카드가 그대로 이어져요. 다시 적지 않아도 돼요.</li><li><b>지금은 무엇을 하나요?</b> ' + esc(nextTxt) + "</li></ul>" +
       '<ol class="vc-steps">' + steps + "</ol>" +
       '<div class="vc-carry"><p class="vc-k">다음 걸음에 그대로 이어지는 것</p><ul><li>자산 카드 「' + esc(cardName || q.card.name || "") + "」" + (c && c.done ? " · 남겼어요" : " · 작성 중") + "</li><li>12칸 중 " + filled.length + "칸의 기록</li>" + (vis ? "<li>리포트의 비전 한 줄</li>" : "") + "</ul></div>" +
+      '<p class="pf-more"><a href="/diary-guide.html' + (st.sid ? "?sid=" + encodeURIComponent(st.sid) : "") + '#vision-card" target="_blank" rel="noopener">비전카드 자세히 보기 — 왜 쓰나요 · 네 구간에서 하는 일 · 이렇게 써요 ↗</a></p>' +
       '<ul class="vc-promise"><li>AI 도우미는 제안만 해요. 칸을 대신 채우거나 단계를 올리지 않아요.</li><li>동료 피드백부터는 사람이 함께 확인해야 단계가 올라가요.</li><li>지금은 어디에도 보내지 않아요. 서비스가 열리면 직접 고를 때만 이어져요.</li><li>점수나 순위는 없어요. 일정은 준비가 끝나면 안내해 드릴게요.</li></ul></section>';
   }
   function cardFields() { return { name: $("#aq-name").value, kept: $("#aq-kept").value, reuse: $("#aq-reuse").value, next: $("#aq-next").value }; }
