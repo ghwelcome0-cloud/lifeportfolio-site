@@ -1,0 +1,3064 @@
+{
+ "tool": "measure-e1.cjs",
+ "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_version": "v2.0",
+ "evidence": "E1",
+ "startedAt": "2026-10-12T09:50:27.974Z",
+ "results": [
+  {
+   "row": "M01",
+   "name": "CliftonStrengths 34 (Gallup)",
+   "group": "진단",
+   "url": "https://www.gallup.com/cliftonstrengths/en/403127/cliftonstrengths-34-report.aspx",
+   "skip": false,
+   "origin": "https://www.gallup.com",
+   "measuredAt": "2026-10-12T09:50:37.230Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.gallup.com/cliftonstrengths/en/403127/cliftonstrengths-34-report.aspx",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": true,
+    "referrer": false,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 152206,
+    "bodySha256": "6892f9fc29c1928e0e522a8690550827d1ca5d0e57248e4fd5b97bb81c2a8913"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "The CliftonStrengths 34 Report | EN - Gallup",
+    "domSha256": "a8d2f850e5f89c30f465e12ee054a8cd892f117a656a303585be3e79122fa747",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 68,
+     "ge16": 43,
+     "lt12": 9,
+     "chars": 4284,
+     "chars16": 3361
+    },
+    "touch": {
+     "total": 19,
+     "ok44": 2,
+     "ok24": 17
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "M02",
+   "name": "Everything DiSC Workplace (Wiley)",
+   "group": "진단",
+   "url": "https://www.everythingdisc.com/",
+   "skip": false,
+   "origin": "https://www.everythingdisc.com",
+   "measuredAt": "2026-10-12T09:50:44.508Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.everythingdisc.com/",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": true,
+    "referrer": false,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 82269,
+    "bodySha256": "b425f723e141cc86e954e85da179e8442f17eb61f022697ed61cbc67e867cd27"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Everything DiSC® Assessments for Individuals and Teams | Everything DiSC",
+    "domSha256": "938190cf750e9cf5862ac5f388540a3078a0480f07c2daa9662f7567384664ed",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 121,
+     "ge16": 93,
+     "lt12": 0,
+     "chars": 8692,
+     "chars16": 7860
+    },
+    "touch": {
+     "total": 14,
+     "ok44": 5,
+     "ok24": 7
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "M03",
+   "name": "MBTI Complete (Myers-Briggs Co.)",
+   "group": "진단",
+   "url": "https://www.themyersbriggs.com/en-us/explore-solutions/mbti",
+   "skip": false,
+   "origin": "https://www.themyersbriggs.com",
+   "measuredAt": "2026-10-12T09:50:52.667Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.themyersbriggs.com/en-us/explore-solutions/mbti",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": false,
+    "referrer": true,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 161929,
+    "bodySha256": "db3b66fa309a9d67b277323c6d2862a1a15e8dd8a65aa3a7dad77738b394590d"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "MBTI® Assessment - Myers-Briggs Type Indicator Tool | The Myers-Briggs Company",
+    "domSha256": "3104a6420f06237ac2e4aa68e92f72f08528af0f0fed769544966e7e431e6f44",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 64,
+     "ge16": 46,
+     "lt12": 0,
+     "chars": 7286,
+     "chars16": 4026
+    },
+    "touch": {
+     "total": 11,
+     "ok44": 4,
+     "ok24": 9
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G01",
+   "name": "VIA Survey (VIA Institute)",
+   "group": "진단",
+   "url": "https://www.viacharacter.org/",
+   "skip": false,
+   "origin": "https://www.viacharacter.org",
+   "measuredAt": "2026-10-12T09:50:58.688Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.viacharacter.org/",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "Microsoft-IIS/10.0",
+    "bodyBytes": 65216,
+    "bodySha256": "f641511200bb8d5b9483edde0b0a53e5124c67c1c70aafeb335fc20a87299bde"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 302,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 302,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 302,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 302,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 302,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 302,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "VIA Character Strengths Survey & Character Reports",
+    "domSha256": "3b44b4026053ee92bd948b509a8f5050c73eb127fdca449f6737795023253625",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, shrink-to-fit=no",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 67,
+     "ge16": 37,
+     "lt12": 0,
+     "chars": 6257,
+     "chars16": 2145
+    },
+    "touch": {
+     "total": 37,
+     "ok44": 9,
+     "ok24": 25
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G02a",
+   "name": "IPIP Big-Five 50 (ORI)",
+   "group": "진단",
+   "url": "https://ipip.ori.org/new_ipip-50-item-scale.htm",
+   "skip": false,
+   "origin": "https://ipip.ori.org",
+   "measuredAt": "2026-10-12T09:51:04.461Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://ipip.ori.org/new_ipip-50-item-scale.htm",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "Microsoft-IIS/8.5",
+    "bodyBytes": 50306,
+    "bodySha256": "489d66de7a643d13e620ad2907285639f12e0bc083fbb4e68dc54128373e6f5a"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Administering IPIP Measures, with a 50-item Sample Questionnaire",
+    "domSha256": "42ea8c99d6c278b7df24ee453bc9d99cd69c970387212cf7e87fc27864e811f2",
+    "viewportMeta": false,
+    "viewportContent": "",
+    "zoomBlocked": false,
+    "docW": 980,
+    "innerW": 980,
+    "overflow": false,
+    "text": {
+     "blocks": 59,
+     "ge16": 59,
+     "lt12": 0,
+     "chars": 7552,
+     "chars16": 7552
+    },
+    "touch": {
+     "total": 7,
+     "ok44": 0,
+     "ok24": 1
+    },
+    "lang": ""
+   }
+  },
+  {
+   "row": "G03",
+   "name": "HEXACO-PI-R 60",
+   "group": "진단",
+   "url": "https://hexaco.org/hexaco-inventory",
+   "skip": false,
+   "origin": "https://hexaco.org",
+   "measuredAt": "2026-10-12T09:51:09.042Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://hexaco.org/hexaco-inventory",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": true,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 24272,
+    "bodySha256": "023b65ca916b1b67e73e72c3225aed51d96c62bc9a69a9df93345afa149a48a5"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 200,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 200,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 200,
+     "exposed": true
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "The HEXACO Personality Inventory - Revised",
+    "domSha256": "05420219e1e06bf6b4e28d18f1868c878f1b3905f78824a02d64b54a740d1d3a",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 27,
+     "ge16": 2,
+     "lt12": 8,
+     "chars": 5023,
+     "chars16": 79
+    },
+    "touch": {
+     "total": 119,
+     "ok44": 0,
+     "ok24": 98
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G04",
+   "name": "Hogan Insight",
+   "group": "진단",
+   "url": "https://www.hoganassessments.com/",
+   "skip": false,
+   "origin": "https://www.hoganassessments.com",
+   "measuredAt": "2026-10-12T09:51:17.029Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.hoganassessments.com/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 108881,
+    "bodySha256": "4efd19c1829a6e510d3ac96c8f78691a8a818ae90f17162300ff46b729daca53"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Science-Backed Personality Tests for Hiring & Development",
+    "domSha256": "f6490c46583985c459744018c7588c5e9b3fababfd962c00c653246aef41e185",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1, user-scalable=0",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 56,
+     "ge16": 53,
+     "lt12": 0,
+     "chars": 4426,
+     "chars16": 3973
+    },
+    "touch": {
+     "total": 19,
+     "ok44": 8,
+     "ok24": 16
+    },
+    "lang": "en-US"
+   }
+  },
+  {
+   "row": "G06",
+   "name": "Birkman Signature",
+   "group": "진단",
+   "url": "https://birkman.com/",
+   "skip": false,
+   "origin": "https://birkman.com",
+   "measuredAt": "2026-10-12T09:51:29.213Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://birkman.com/",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 119013,
+    "bodySha256": "c95f8b427fcce14e8e19b019634bce983c1971259e68f7d8c23070c00cefb7c6"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "The Leader In Organizational & Team Performance | Birkman",
+    "domSha256": "551959f67fa6604eb79b68f29be44d3410254fd2991e22940d41d712dc815573",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, mini",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 82,
+     "ge16": 34,
+     "lt12": 1,
+     "chars": 9189,
+     "chars16": 4185
+    },
+    "touch": {
+     "total": 95,
+     "ok44": 30,
+     "ok24": 52
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G07",
+   "name": "PI Behavioral Assessment",
+   "group": "진단",
+   "url": "https://www.predictiveindex.com/learn/support/our-assessments/",
+   "skip": false,
+   "origin": "https://www.predictiveindex.com",
+   "measuredAt": "2026-10-12T09:51:38.950Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.predictiveindex.com/learn/support/our-assessments/",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": false,
+    "permissions": true,
+    "csp": false,
+    "cspReporting": true,
+    "server": "cloudflare",
+    "bodyBytes": 167426,
+    "bodySha256": "060fcb21abcedd0815a8ed441b16ee3d7dc8fd8a0735e81fb7cdcbd6454d24e2"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Our assessments - The Predictive Index",
+    "domSha256": "19eb081307863d9736ca2c9fc5542f74f76bce81edbd29feca9b32946ae59576",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1, shrink-to-fit=no",
+    "zoomBlocked": false,
+    "docW": 421,
+    "innerW": 421,
+    "overflow": false,
+    "text": {
+     "blocks": 53,
+     "ge16": 38,
+     "lt12": 0,
+     "chars": 5787,
+     "chars16": 5213
+    },
+    "touch": {
+     "total": 9,
+     "ok44": 4,
+     "ok24": 7
+    },
+    "lang": "en-US"
+   }
+  },
+  {
+   "row": "G08",
+   "name": "Insights Discovery",
+   "group": "진단",
+   "url": "https://www.insights.com/",
+   "skip": false,
+   "origin": "https://www.insights.com",
+   "measuredAt": "2026-10-12T09:51:51.238Z",
+   "headers": {
+    "ok": true,
+    "status": 500,
+    "finalUrl": "https://www.insights.com/us/",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 0,
+    "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 301,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 301,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 301,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 301,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 301,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Global leader in learning and development solutions - Insights",
+    "domSha256": "6e7cf322bfa422b01d9e97885a0eac3a72a0a1a7f1defb769fed4e0071604cdf",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=5",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 37,
+     "ge16": 29,
+     "lt12": 0,
+     "chars": 3642,
+     "chars16": 2924
+    },
+    "touch": {
+     "total": 14,
+     "ok44": 12,
+     "ok24": 14
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G11",
+   "name": "16Personalities Premium Career Suite",
+   "group": "진단",
+   "url": "https://www.16personalities.com/premium/career-suite",
+   "skip": false,
+   "origin": "https://www.16personalities.com",
+   "measuredAt": "2026-10-12T09:51:57.736Z",
+   "headers": {
+    "ok": true,
+    "status": 403,
+    "finalUrl": "https://www.16personalities.com/premium/career-suite",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 5538,
+    "bodySha256": "2ba54dd0d81bba7aea95e3a2421523867984d3f5dbd97183eb1f5b2aff40937d"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 403,
+    "title": "Just a moment...",
+    "domSha256": "391efcec83293386805d23f0e79afb1749ec5cf9929edb506d8458c2cafeb88f",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 4,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 222,
+     "chars16": 195
+    },
+    "touch": {
+     "total": 2,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": "en-us"
+   }
+  },
+  {
+   "row": "G12",
+   "name": "Strengths Profile (Cappfinity)",
+   "group": "진단",
+   "url": "https://www.strengthsprofile.com/",
+   "skip": false,
+   "origin": "https://www.strengthsprofile.com",
+   "measuredAt": "2026-10-12T09:52:04.409Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.strengthsprofile.com/",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 15654,
+    "bodySha256": "82aed03bf814d2be856348e9b7fe2c602592682a657634b7c8d87f1900e9d8d1"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Skills Discovery",
+    "domSha256": "ea2e022a5770e9433dc8f7d3f68474221d522a6fc685d56764093372d09349a1",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 36,
+     "ge16": 33,
+     "lt12": 0,
+     "chars": 2505,
+     "chars16": 2381
+    },
+    "touch": {
+     "total": 20,
+     "ok44": 4,
+     "ok24": 13
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G13",
+   "name": "Working Genius",
+   "group": "진단",
+   "url": "https://www.workinggenius.com/",
+   "skip": false,
+   "origin": "https://www.workinggenius.com",
+   "measuredAt": "2026-10-12T09:52:12.088Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.workinggenius.com/",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 7415,
+    "bodySha256": "5e2902be2fe3952fb56854b647b1d896bcc2cfa52fdd12d219ea8886ba082812"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 200,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 200,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "6 Types Of Working Genius: Discover Your Gifts & Transform Your Work",
+    "domSha256": "1f3888ed12fd8c1ad09eb5b796d5fd37bfff426d6c24c8341b01bbcb70f70f03",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, shrink-t",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 46,
+     "ge16": 26,
+     "lt12": 0,
+     "chars": 3320,
+     "chars16": 2336
+    },
+    "touch": {
+     "total": 14,
+     "ok44": 4,
+     "ok24": 13
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G14",
+   "name": "Strong Interest Inventory",
+   "group": "진단",
+   "url": "https://www.themyersbriggs.com/en-us/explore-solutions/strong",
+   "skip": false,
+   "origin": "https://www.themyersbriggs.com",
+   "measuredAt": "2026-10-12T09:52:20.003Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.themyersbriggs.com/en-us/explore-solutions/strong",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": false,
+    "referrer": true,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 122741,
+    "bodySha256": "382246aa9e1dc6f94e6aa16476dbf7deb1eacf9650f4fd2c09044ed769e52aa0"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Strong Interest Inventory® - Career Assessment Tool | The Myers-Briggs Company",
+    "domSha256": "c40436a145df228b9470f101946af109c389dfcc26f2113735efc485884ddf48",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 35,
+     "ge16": 22,
+     "lt12": 0,
+     "chars": 4492,
+     "chars16": 2437
+    },
+    "touch": {
+     "total": 14,
+     "ok44": 5,
+     "ok24": 12
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G15a",
+   "name": "O*NET Interest Profiler",
+   "group": "진단",
+   "url": "https://www.onetcenter.org/IP.html",
+   "skip": false,
+   "origin": "https://www.onetcenter.org",
+   "measuredAt": "2026-10-12T09:52:25.188Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.onetcenter.org/IP.html",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx/1.24.0",
+    "bodyBytes": 45225,
+    "bodySha256": "336be350116b8e7458a58578bc6c6bc25b83b6b90667e35bbd356be6a2ab090a"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Interest Profiler (IP) at O*NET Resource Center",
+    "domSha256": "340c4488b343f0ddec4532f834e115afdee9466f295073d64d1512f7e138a771",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1, shrink-to-fit=no",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 30,
+     "ge16": 2,
+     "lt12": 0,
+     "chars": 1718,
+     "chars16": 47
+    },
+    "touch": {
+     "total": 38,
+     "ok44": 0,
+     "ok24": 24
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "G15b",
+   "name": "Self-Directed Search (PAR)",
+   "group": "진단",
+   "url": "https://self-directed-search.com/what-is-it/",
+   "skip": false,
+   "origin": "https://self-directed-search.com",
+   "measuredAt": "2026-10-12T09:52:32.207Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://self-directed-search.com/what-is-it/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 154332,
+    "bodySha256": "89fa6bfef774518fe0670a53673c14dd81be005d5703e1e88a3a7a9be76ddad5"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "What is the SDS? | Self-Directed Search",
+    "domSha256": "25ddb570d38d134e59447034b0ee4046c0a1ea29b7eeca9622a7c75c32345a4b",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 20,
+     "ge16": 18,
+     "lt12": 0,
+     "chars": 1701,
+     "chars16": 1462
+    },
+    "touch": {
+     "total": 23,
+     "ok44": 5,
+     "ok24": 16
+    },
+    "lang": "en-US"
+   }
+  },
+  {
+   "row": "E01",
+   "name": "BetterUp",
+   "group": "실행축적",
+   "url": "https://www.betterup.com/",
+   "skip": false,
+   "origin": "https://www.betterup.com",
+   "measuredAt": "2026-10-12T09:52:38.407Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.betterup.com/",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": true,
+    "server": "cloudflare",
+    "bodyBytes": 158743,
+    "bodySha256": "3f03ff4470ddfd8a56820a60f7f39efc9a151e63eefab05964714112336d90cd"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Powering performance-ready workforces in the AI era | BetterUp®",
+    "domSha256": "73275c262829f4893b6b3ecd02f6f01d407fac06de838f47983880bc848d66cc",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 44,
+     "ge16": 35,
+     "lt12": 0,
+     "chars": 3481,
+     "chars16": 2649
+    },
+    "touch": {
+     "total": 12,
+     "ok44": 6,
+     "ok24": 10
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "E02",
+   "name": "CoachHub",
+   "group": "실행축적",
+   "url": "https://www.coachhub.com/",
+   "skip": false,
+   "origin": "https://www.coachhub.com",
+   "measuredAt": "2026-10-12T09:52:44.819Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.coachhub.com/",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": true,
+    "referrer": false,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 198362,
+    "bodySha256": "08391567e8f5abeea03e2ab3abd4af2e49ab668103f673d3c3e514a4ec48aa1c"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "CoachHub - The Digital Coaching Platform",
+    "domSha256": "95d22d920d9ef8e70c7568a451562ce961f5b76973686758188a6cb1b9fab63a",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 85,
+     "ge16": 54,
+     "lt12": 4,
+     "chars": 5816,
+     "chars16": 3855
+    },
+    "touch": {
+     "total": 16,
+     "ok44": 13,
+     "ok24": 13
+    },
+    "lang": "en-US"
+   }
+  },
+  {
+   "row": "E06",
+   "name": "Full Focus Planner",
+   "group": "실행축적",
+   "url": "https://fullfocusstore.com/products/full-focus-planner-linen",
+   "skip": false,
+   "origin": "https://fullfocusstore.com",
+   "measuredAt": "2026-10-12T09:52:51.795Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://fullfocusstore.com/products/full-focus-planner-linen",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": false,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": true,
+    "server": "cloudflare",
+    "bodyBytes": 694199,
+    "bodySha256": "8b4f221039ccfb1a863f6c8c4ff608bb62e7e026a047c39f95faea3dd1b8855a"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 200,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 200,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Full Focus Planner - Linen",
+    "domSha256": "e330fa4d49ed309857316ea364e729955852ba47b5f728780ecd0634491e8fdd",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 5,
+     "ge16": 1,
+     "lt12": 0,
+     "chars": 961,
+     "chars16": 31
+    },
+    "touch": {
+     "total": 4,
+     "ok44": 1,
+     "ok24": 3
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "E07",
+   "name": "BestSelf Self Journal",
+   "group": "실행축적",
+   "url": "https://bestself.co/products/self-journal",
+   "skip": false,
+   "origin": "https://bestself.co",
+   "measuredAt": "2026-10-12T09:53:07.876Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://bestself.co/products/self-journal",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": false,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": true,
+    "server": "cloudflare",
+    "bodyBytes": 2234809,
+    "bodySha256": "6cc1836642e342aa12166180a3368d127e87dcb43dfec9ade7d2e4b883999a77"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 200,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 200,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Self Journal: Best Goal Journal & Planning Journal | BestSelf",
+    "domSha256": "2678af36a656d0d56182f2f6c0496620befcc9818bf89e9309a67eeb80f2e689",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 427,
+    "innerW": 427,
+    "overflow": false,
+    "text": {
+     "blocks": 73,
+     "ge16": 28,
+     "lt12": 1,
+     "chars": 4276,
+     "chars16": 1798
+    },
+    "touch": {
+     "total": 93,
+     "ok44": 35,
+     "ok24": 65
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "E11",
+   "name": "15Five Perform",
+   "group": "실행축적",
+   "url": "https://www.15five.com/pricing",
+   "skip": false,
+   "origin": "https://www.15five.com",
+   "measuredAt": "2026-10-12T09:53:14.177Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.15five.com/pricing",
+    "https": true,
+    "hsts": true,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": true,
+    "server": "cloudflare",
+    "bodyBytes": 427773,
+    "bodySha256": "753d62cf3527f47dfda719397dfdee66e61be5bb55a69d2f12ba9e238bf52223"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "15Five Pricing | Pricing Plan Options for Your Business",
+    "domSha256": "ff4b1434d2a81e06da243db97b7858645b1aa54babfc24d4dbf1dc646e431a5e",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 396,
+    "innerW": 396,
+    "overflow": false,
+    "text": {
+     "blocks": 113,
+     "ge16": 106,
+     "lt12": 0,
+     "chars": 5832,
+     "chars16": 5632
+    },
+    "touch": {
+     "total": 19,
+     "ok44": 14,
+     "ok24": 19
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "E12",
+   "name": "Lattice Performance",
+   "group": "실행축적",
+   "url": "https://lattice.com/pricing",
+   "skip": false,
+   "origin": "https://lattice.com",
+   "measuredAt": "2026-10-12T09:53:23.555Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://lattice.com/pricing",
+    "https": true,
+    "hsts": true,
+    "xcto": false,
+    "frame": true,
+    "referrer": false,
+    "permissions": false,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 302019,
+    "bodySha256": "be7954188b3046c332e9e428cc3a885ee2c33184d5d1b7c42e337f43081739a2"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "Pricing | Lattice",
+    "domSha256": "c7bb81545e43c55977620993d8488d62072e56c2a68ccaa885ae421d616406e1",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 89,
+     "ge16": 8,
+     "lt12": 40,
+     "chars": 6078,
+     "chars16": 402
+    },
+    "touch": {
+     "total": 38,
+     "ok44": 2,
+     "ok24": 20
+    },
+    "lang": "en"
+   }
+  },
+  {
+   "row": "K01",
+   "name": "고용24 직업선호도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T09:55:22.204Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K02",
+   "name": "커리어넷 직업흥미검사 H형",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/guide/counsel",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-12T09:55:34.669Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.career.go.kr/cloud/w/guide/counsel",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 40527,
+    "bodySha256": "20ce8fea22123a9ee080790fa34efd8f86369c2c0f0a1a03c83f8276496e74e6"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "커리어넷 이용안내 > 진로상담 이용안내(FAQ) | 진로정보망 커리어넷",
+    "domSha256": "fa534da817863d0870833059880780c99ac21f495e206eb3909712333bf47be3",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 1380,
+    "innerW": 1380,
+    "overflow": false,
+    "text": {
+     "blocks": 9,
+     "ge16": 8,
+     "lt12": 0,
+     "chars": 271,
+     "chars16": 231
+    },
+    "touch": {
+     "total": 40,
+     "ok44": 17,
+     "ok24": 32
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K03",
+   "name": "어세스타 STRONG II",
+   "group": "국내",
+   "url": "https://www.assesta.com/",
+   "skip": false,
+   "origin": "https://www.assesta.com",
+   "measuredAt": "2026-10-12T09:57:33.293Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K05",
+   "name": "태니지먼트 강점 리포트",
+   "group": "국내",
+   "url": "https://www.tanagement.co.kr/",
+   "skip": false,
+   "origin": "https://www.tanagement.co.kr",
+   "measuredAt": "2026-10-12T09:57:46.390Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.tanagement.co.kr/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 33153,
+    "bodySha256": "34dde65aca69cb95e10499d7b45260538df6fdca1748228decaa7fca6c469f04"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "태니지먼트 - Spark Energy. Sync People, Scale Synergy.",
+    "domSha256": "5ced941d1f52eb119cf4927ba1c67790241212862d68e478b4df0d5cbf1895da",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 1,
+     "ge16": 1,
+     "lt12": 0,
+     "chars": 23,
+     "chars16": 23
+    },
+    "touch": {
+     "total": 11,
+     "ok44": 9,
+     "ok24": 10
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K01a",
+   "name": "고용24 직업선호도검사 L형",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T09:59:45.032Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K08",
+   "name": "고용24 성인용 직업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T10:01:11.049Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K09",
+   "name": "고용24 직업가치관검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T10:03:09.696Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K10",
+   "name": "고용24 구직준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T10:04:35.860Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K11",
+   "name": "고용24 창업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T10:06:32.595Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K12",
+   "name": "고용24 대학생 진로준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-12T10:08:00.652Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K13",
+   "name": "커리어넷 직업가치관검사(성인)",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-12T10:08:07.772Z",
+   "headers": {
+    "ok": true,
+    "status": 404,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/intro",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 78,
+    "bodySha256": "b294a05d78abe49987394d09ec732093b7cc96623864485fc22198ca51a4146a"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 404,
+    "title": "ERROR",
+    "domSha256": "c58eedd5531ef2517f4e204d07411a7e96119c58278cad2e11371a6e9f774195",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 3,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 106,
+     "chars16": 106
+    },
+    "touch": {
+     "total": 1,
+     "ok44": 1,
+     "ok24": 1
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K14",
+   "name": "커리어넷 진로개발준비도검사",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-12T10:08:14.859Z",
+   "headers": {
+    "ok": true,
+    "status": 404,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/intro",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 78,
+    "bodySha256": "1a797b5f4a1fb0ae17b5fe976c94daed39c6f6a9b26226d6cd8bff735750b820"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 404,
+    "title": "ERROR",
+    "domSha256": "c58eedd5531ef2517f4e204d07411a7e96119c58278cad2e11371a6e9f774195",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 3,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 106,
+     "chars16": 106
+    },
+    "touch": {
+     "total": 1,
+     "ok44": 1,
+     "ok24": 1
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K15",
+   "name": "NCS 직업기초능력 자가진단",
+   "group": "국내",
+   "url": "https://www.ncs.go.kr/",
+   "skip": false,
+   "origin": "https://www.ncs.go.kr",
+   "measuredAt": "2026-10-12T10:08:49.986Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.ncs.go.kr/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 1914,
+    "bodySha256": "01a3494d19baf5cd4b1f8e16d8afef910ecc6c8dcb9ef1f98083b63647274d6d"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 400,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 400,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "NCS 공정채용, NCS 국가직무능력표준",
+    "domSha256": "a37260b06d5f5c7395f8ef88c5b1f27b0a32a8905d427f023336024e78c5b4bd",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, use",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 12,
+     "ge16": 0,
+     "lt12": 0,
+     "chars": 405,
+     "chars16": 0
+    },
+    "touch": {
+     "total": 101,
+     "ok44": 65,
+     "ok24": 77
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K16",
+   "name": "한국가이던스 홀랜드 진로탐색검사",
+   "group": "국내",
+   "url": "https://www.guidance.co.kr/",
+   "skip": false,
+   "origin": "https://www.guidance.co.kr",
+   "measuredAt": "2026-10-12T10:08:58.915Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.guidance.co.kr/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "Microsoft-IIS/10.0",
+    "bodyBytes": 560,
+    "bodySha256": "079d828ff723ad844a2423c3844f438332613a890ff7c6178b907df4f49071e9"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 406,
+    "title": "Your browser is not supported (406)",
+    "domSha256": "6b2ee65245846e27d26c38389b819075a7ca8ac32d5d9384706f74b67372425c",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 2,
+     "ge16": 2,
+     "lt12": 0,
+     "chars": 70,
+     "chars16": 70
+    },
+    "touch": {
+     "total": 0,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": ""
+   }
+  },
+  {
+   "row": "K17",
+   "name": "어세스타 MBTI Form M(한국판)",
+   "group": "국내",
+   "url": "https://www.career4u.net/",
+   "skip": false,
+   "origin": "https://www.career4u.net",
+   "measuredAt": "2026-10-12T10:10:57.563Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K18",
+   "name": "TCI 기질및성격검사(인싸이트)",
+   "group": "국내",
+   "url": "https://inpsyt.co.kr/",
+   "skip": false,
+   "origin": "https://inpsyt.co.kr",
+   "measuredAt": "2026-10-12T10:11:14.393Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://inpsyt.co.kr/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "Apache/2.4.6 (CentOS) mod_jk/1.2.48 OpenSSL/1.0.2k-fips mod_fcgid/2.3.9",
+    "bodyBytes": 271,
+    "bodySha256": "b085c8af6003f72d07990d09e48f68c9a869989d851e22ae93f7056ceedd602a"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 303,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 303,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 303,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 303,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 303,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 303,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "인싸이트. Insight of psychology, INPSYT",
+    "domSha256": "d466870df21f49a85e7c10bf3bc6fb66212f86d1da4fd0691bbe8a9a9ac53473",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, use",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 32,
+     "ge16": 13,
+     "lt12": 0,
+     "chars": 1130,
+     "chars16": 426
+    },
+    "touch": {
+     "total": 73,
+     "ok44": 56,
+     "ok24": 67
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K19",
+   "name": "잡코리아 성향·역량 검사",
+   "group": "국내",
+   "url": "https://www.jobkorea.co.kr/",
+   "skip": false,
+   "origin": "https://www.jobkorea.co.kr",
+   "measuredAt": "2026-10-12T10:11:59.262Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.jobkorea.co.kr/",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 213290,
+    "bodySha256": "376d49632228cc71cf0ea83afca078a779ddb50d05a0487bd56971d7ca3f052a"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "잡코리아 | 대한민국 대표 구인구직, 취업 정보 & 채용 플랫폼",
+    "domSha256": "c985b8aa75906114933c066b3eca556434e1c78368322281763c74798c8369e7",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maxi",
+    "zoomBlocked": true,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 293,
+     "ge16": 291,
+     "lt12": 0,
+     "chars": 9118,
+     "chars16": 9053
+    },
+    "touch": {
+     "total": 492,
+     "ok44": 139,
+     "ok24": 395
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K20",
+   "name": "16Personalities 한국어판(무료 MBTI류)",
+   "group": "국내",
+   "url": "https://www.16personalities.com/ko",
+   "skip": false,
+   "origin": "https://www.16personalities.com",
+   "measuredAt": "2026-10-12T10:12:04.927Z",
+   "headers": {
+    "ok": true,
+    "status": 403,
+    "finalUrl": "https://www.16personalities.com/ko",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 5462,
+    "bodySha256": "0de36eab257a72f52f2a60165bae0b4799357961cad56b0895467187ef2ca48c"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 403,
+    "title": "Just a moment...",
+    "domSha256": "25cc02bfcf357214aaa32481620959e59fc5a9d09efe1ca91bdb64f63da6f566",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 4,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 222,
+     "chars16": 195
+    },
+    "touch": {
+     "total": 2,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": "en-us"
+   }
+  }
+ ],
+ "limitation_r3": {
+  "unmeasured_rows": [
+   "K01",
+   "K01a",
+   "K08",
+   "K09",
+   "K10",
+   "K11",
+   "K12",
+   "K03",
+   "K17"
+  ],
+  "cause": "work24.go.kr(고용24) 7행 · career4u.net(어세스타) 2행이 이 샌드박스(해외 egress)에서 연결 시간 초과(ERR_CONNECTION_TIMED_OUT / 45s). 측정 도구·제품 결함이 아니라 접근 경로 한계(국내 IP 제한 추정). 공개 표에는 \"미측정(접근 불가)\"로 둔다. 다음 run은 국내 egress(대표 PC 로컬 에이전트 \"파이스 컴퓨터\") 또는 재시도 창을 바꿔 측정.",
+  "measured_from": "sandbox egress (non-KR)",
+  "at": "2026-10-12T10:10Z"
+ }
+}

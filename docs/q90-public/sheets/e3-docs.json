@@ -24,7 +24,8 @@
  "rule": [
   "source_url 없는 value는 표에 올리지 않는다",
   "값은 덮어쓰지 않고 note에 이력 추가",
-  "자사(OWN) 행도 같은 칸을 같은 기준으로 채운다"
+  "자사(OWN) 행도 같은 칸을 같은 기준으로 채운다",
+  "price_band \"비공개\": A8.1이 문의/숨김으로 확인된 행은 구간 칸에 \"비공개\"(출처=A8.1 근거 URL). 미측정과 구분(2026-10-12)."
  ],
  "rows": [
   {
@@ -176,10 +177,10 @@
     "note": "공식 사이트에 가격 없음(파트너별 책정). → A8.1 \"문의\""
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.everythingdisc.com/",
     "collected_at": "2026-10-12",
-    "note": "가격 비공개 → 구간 미측정"
+    "note": "가격 비공개 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -294,10 +295,10 @@
     "note": "가격이 JS 로드로 공개 페이지 본문에 없음. 제3자(Truity) 인용 USD 49는 출처 규칙상 미채택 → \"미확인\""
    },
    "price_band": {
-    "value": null,
-    "source_url": "https://www.mbtionline.com/",
+    "value": "비공개",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
     "collected_at": "2026-10-12",
-    "note": "미확인 | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
+    "note": "미확인 | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -766,10 +767,10 @@
     "note": "가격 비공개 → A8.1 \"문의\""
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.hoganassessments.com/products/insight-series/",
     "collected_at": "2026-10-12",
-    "note": ""
+    "note": " | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -884,10 +885,10 @@
     "note": ""
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://birkman.com/",
     "collected_at": "2026-10-12",
-    "note": "가격 미공개 → 구간 미측정"
+    "note": "가격 미공개 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -1120,10 +1121,10 @@
     "note": "가격 비공개(상담)"
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.insights.com/products/insights-discovery/",
     "collected_at": "2026-10-12",
-    "note": ""
+    "note": " | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -1347,19 +1348,19 @@
     "value": null,
     "source_url": "https://www.strengthsprofile.com/en-GB/Products",
     "collected_at": "2026-10-12",
-    "note": "가격이 동적 로드로 본문에 없음 — 2차 패스(브라우저 렌더) 필요. 교육 이메일 30% 할인 명시"
+    "note": "렌더(headless chrome 2026-10-12T10:00Z) 본문: \"Introductory Profile £15 plus VAT · Expert Profile £40 · Leader Profile £70 · Team Profile £90\". 환율은 명시 안 함(구간만 표기; £1≈1,800원·$1≈1,400원 가정 — 추정)"
    },
    "price_band": {
-    "value": null,
+    "value": "~5만원",
     "source_url": "https://www.strengthsprofile.com/en-GB/Products",
     "collected_at": "2026-10-12",
-    "note": " | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
+    "note": "Introductory £15(≈2.7만) 기준; Expert £40(≈7.2만)은 ~15만원 구간 — 표에는 입문 리포트 기준 표기"
    },
    "price_transparency": {
     "value": "공개",
     "source_url": "https://www.strengthsprofile.com/en-GB/Products",
     "collected_at": "2026-10-12",
-    "note": "유료 프로파일(60/80 skill 버전) 공개 판매 — 금액은 미전사"
+    "note": "유료 프로파일(60/80 skill 버전) 공개 판매 — 금액은 미전사 | 2차: 렌더 후 공개가 확인(VAT 별도)"
    },
    "reuse_price_krw": {
     "value": null,
@@ -1586,10 +1587,10 @@
     "note": "가격 비공개(전문가 경유)"
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
     "collected_at": "2026-10-12",
-    "note": "미확인"
+    "note": "미확인 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -1934,10 +1935,10 @@
     "note": ""
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.betterup.com/",
     "collected_at": "2026-10-12",
-    "note": "가격 미공개(pricing 페이지 본문 없음) → 구간 미측정"
+    "note": "가격 미공개(pricing 페이지 본문 없음) → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -2046,10 +2047,10 @@
     "note": ""
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.coachhub.com/",
     "collected_at": "2026-10-12",
-    "note": "가격 미공개 → 구간 미측정"
+    "note": "가격 미공개 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"문의\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "문의",
@@ -2265,15 +2266,15 @@
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
-   },
-   "price_band": {
-    "value": null,
     "source_url": "https://bestself.co/products/self-journal",
     "collected_at": "2026-10-12",
-    "note": "가격이 JS 렌더로 본문 미기재(\"Free US shipping over $75\"만 확인) → 구간 미측정 | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
+    "note": "렌더 본문: \"Self Journal … $36 (정가 $39)\", 구독 시 $29. 미국 외 배송비 별도."
+   },
+   "price_band": {
+    "value": "~15만원",
+    "source_url": "https://bestself.co/products/self-journal",
+    "collected_at": "2026-10-12",
+    "note": "$36 ≈ 5만원 안팎 — 환율상 ~5만/~15만 경계. 보수적으로 상위 구간, 주석에 $36 명시"
    },
    "price_transparency": {
     "value": "공개",
@@ -2377,15 +2378,15 @@
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
-   },
-   "price_band": {
-    "value": null,
     "source_url": "https://www.15five.com/pricing",
     "collected_at": "2026-10-12",
-    "note": "인당 월 요금이 JS 렌더로 본문 미기재 → 구간 미측정(2차 패스) | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
+    "note": "렌더 본문: \"Engage $4 / Perform $11 / Total Platform $16 per user per month (billed annually)\". 개인 1회 가격 개념 없음."
+   },
+   "price_band": {
+    "value": "15만+",
+    "source_url": "https://www.15five.com/pricing",
+    "collected_at": "2026-10-12",
+    "note": "Perform $11/인/월 × 12 = $132/년 ≈ 18만원(연 결제 최소 단위) → 15만+. 1회성 개인 구매 아님"
    },
    "price_transparency": {
     "value": "공개(플랜표)",
@@ -4074,10 +4075,10 @@
     "note": ""
    },
    "price_band": {
-    "value": null,
+    "value": "비공개",
     "source_url": "https://www.guidance.co.kr/",
     "collected_at": "2026-10-12",
-    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정"
+    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"숨김(로그인 후)\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
    },
    "price_transparency": {
     "value": "숨김(로그인 후)",
@@ -4180,22 +4181,22 @@
     "note": "소개 페이지에 소요시간 미기재(명부 30분은 미확인 값 → 표에 올리지 않음)"
    },
    "price_krw": {
-    "value": null,
+    "value": 9300,
     "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
     "collected_at": "2026-10-12",
-    "note": "2025 가격표 PDF에 Form M 프로파일 단가 있음 — PDF 본문 전사 필요(2차 패스)"
+    "note": "2025 어세스타 가격표 PDF: \"MBTI® Form M 기본 프로파일 9,300\"(1~9부 단가; 조직용 11,500; Interpretive Report 44,000). 검사지&프로파일 자가채점용도 9,300. 전문가 경유 구매(개인 직접 구매 아님)."
    },
    "price_band": {
-    "value": null,
+    "value": "~1만원",
     "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
     "collected_at": "2026-10-12",
-    "note": "미전사"
+    "note": "기본 프로파일 9,300원 기준(1~9부). 상위 상품(Profile 36,000·Interpretive Report 44,000)은 ~5만원 구간 — 표에는 기본 프로파일 기준 표기"
    },
    "price_transparency": {
     "value": "공개",
     "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
     "collected_at": "2026-10-12",
-    "note": "가격표 PDF 공개"
+    "note": "가격표 PDF 공개 | 2차 패스 2026-10-12: PDF 전사 완료"
    },
    "reuse_price_krw": {
     "value": null,
