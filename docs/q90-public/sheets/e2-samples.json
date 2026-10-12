@@ -1596,7 +1596,7 @@
      "note": "37·38쪽은 회사 고유 도표(유형 원형·색 역학)라 모양만으로 회사가 드러나므로 통째 가림. 채점 축에 필요한 본문 텍스트는 2~36쪽에 모두 있음."
     }
    },
-   "status": "redacted",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -1684,7 +1684,11 @@
     "README.md": "4fdf47b068e453ffe48783f91bb13133ef3c8f2274145c9e7f9169dfc2c97af7",
     "ANSWER.json": "75e7cc60ddf57abcb8894ecdddbd2c4db54a7f0c7c35cfb2141847c8f89f8027"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "aggregate_sha256": "d3921b9e6e8a3cea580c0f47d50cdcdb01df1f67b1a694cda19d34e924152303",
+   "resolved_at": "2026-10-12T23:42Z",
+   "e2_round": 3,
+   "resolve_note": "judge1 6119839 · judge2 6119834 · 차이≥2 축 0 → 제3자 불필요(규칙 diff<=1 → 낮은 값). 총괄 점수 미열람(집계 파일에만)."
   },
   {
    "id": "G11",
