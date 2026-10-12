@@ -29,7 +29,7 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
     A7: o ? cell(o.A7grade, 'E1') : (x.a7grade ? cell(x.a7grade, 'E1') + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : NM),
     A8: d.A8 != null ? cell(d.A8, 'E3') : NM
   };
-  return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: r.appeal || d.appeal || '', limits: r.limits || d.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: r.time_min || d.time_min || null, ...ax, e4: d.E4 || null };
+  return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: d.appeal || r.appeal || '', limits: d.limits || r.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: d.time_min != null ? d.time_min : (r.time_min || null), ...ax, e4: d.E4 || null };
 });
 const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A3 ★', 'A4 ★', 'A5', 'A6', 'A7(등급)', 'A8', '비용 구간', '소요(분)', '한계(공개 문서 기준)'];
 const e1n = Object.values(e1).filter(v => !v.own && (v.a61 || v.a71)).length, nonOwn = roster.rows.filter(r => !r.retired && !r.own).length;
