@@ -3,7 +3,7 @@
  "rubric_sha256": "66a530308e2d59eaf0775b8a6eaee108ee9dead1813ac9a97335d378616b259c",
  "roster": "v2.0",
  "roster_sha256": "7c4a4bcc3eca4e54d8bbcdf2b4df1cbd61bb55a88cf48f2a42b70839dc83f5b8",
- "generatedAt": "2026-10-12T00:40:51.906Z",
+ "generatedAt": "2026-10-12T00:51:33.480Z",
  "rows": [
   {
    "id": "M01",
@@ -461,7 +461,7 @@
    "A4": "미측정",
    "A5": "미측정",
    "A6": "미측정",
-   "A7": "**하**",
+   "A7": "**하** (1판 값 이월 2026-10-09)",
    "A8": "미측정",
    "e4": null
   },

@@ -4,6 +4,7 @@
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const [ROSTER, RUBRIC, RUN, E3, E2, OWN] = process.argv.slice(2);
 const roster = JSON.parse(fs.readFileSync(ROSTER, 'utf8')), rubric = JSON.parse(fs.readFileSync(RUBRIC, 'utf8'));
+const e1raw = fs.existsSync(path.join(RUN, 'e1-results.json')) ? Object.fromEntries(JSON.parse(fs.readFileSync(path.join(RUN, 'e1-results.json'), 'utf8')).results.map(r => [r.row, r])) : {};
 const e1 = fs.existsSync(path.join(RUN, 'e1-scored.json')) ? Object.fromEntries(JSON.parse(fs.readFileSync(path.join(RUN, 'e1-scored.json'), 'utf8')).map(r => [r.row, r])) : {};
 const e3 = E3 && fs.existsSync(E3) ? Object.fromEntries(JSON.parse(fs.readFileSync(E3, 'utf8')).rows.map(r => [r.id, r])) : {};
 const e2 = E2 && fs.existsSync(E2) ? Object.fromEntries(JSON.parse(fs.readFileSync(E2, 'utf8')).rows.map(r => [r.id, r])) : {};
@@ -25,13 +26,16 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
     A4: o ? cell(o.A4, 'E1') : s.A4 != null ? cell(s.A4, 'E2') : NM,
     A5: o ? cell(o.A5, 'E1') : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2') : NM)),
     A6: o ? cell(o.A6, 'E1') : (a6 ? cell(a6 + ' (3/6지표)', 'E1') : NM),
-    A7: o ? cell(o.A7grade, 'E1') : (x.a7grade ? cell(x.a7grade, 'E1') : NM),
+    A7: o ? cell(o.A7grade, 'E1') : (x.a7grade ? cell(x.a7grade, 'E1') + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : NM),
     A8: d.A8 != null ? cell(d.A8, 'E3') : NM
   };
   return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: r.appeal || d.appeal || '', limits: r.limits || d.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: r.time_min || d.time_min || null, ...ax, e4: d.E4 || null };
 });
 const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A3 ★', 'A4 ★', 'A5', 'A6', 'A7(등급)', 'A8', '비용 구간', '소요(분)', '한계(공개 문서 기준)'];
-let md = `# 공개 비교표 v2 — ${path.basename(RUN)}\n\n자: rubric ${rubric.version} (sha256 ${sha(RUBRIC).slice(0, 16)}…) · 명부 ${roster.version} (sha256 ${sha(ROSTER).slice(0, 16)}…) · 생성 ${new Date().toISOString()}\n\n표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
+const e1n = Object.values(e1).filter(v => !v.own && (v.a61 || v.a71)).length, nonOwn = roster.rows.filter(r => !r.retired && !r.own).length;
+let md = `# 공개 비교표 v2 — ${path.basename(RUN)}\n\n자: rubric ${rubric.version} (sha256 ${sha(RUBRIC).slice(0, 16)}…) · 명부 ${roster.version} (sha256 ${sha(ROSTER).slice(0, 16)}…) · 생성 ${new Date().toISOString()}\n\n`;
+md += `E1 실측 분모: ${e1n}/${nonOwn}행 (나머지 행은 E1 미측정). **자사(OWN) 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.**\n\n`;
+md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
 md += '| ' + h.join(' | ') + ' |\n|' + h.map(() => '---').join('|') + '|\n';
 for (const r of rows) md += `| ${r.id} | ${r.own ? '**' + r.name + '** (자사)' : r.name} | ${r.group} | ${r.appeal || '_(채움 예정)_'} | ${r.A1} | ${r.A2} | ${r.A3} | ${r.A4} | ${r.A5} | ${r.A6} | ${r.A7} | ${r.A8} | ${r.price_band} | ${r.time_min ?? '—'} | ${r.limits || '_(채움 예정)_'} |\n`;
 md += `\n주장 범위: 자사 점수는 tag q90-r2-candidate(3d3ebb4) 시점 제품에 한함. 공공 무료 검사는 세금으로 운영됨. 보안(A7)은 등급만 공개(대표 결정 D2).\n`;
@@ -45,6 +49,7 @@ const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>
 <table><thead><tr>${h.map(x => `<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>
 ${rows.map(r => `<tr${r.own ? ' class="own"' : ''}>${[r.id, (r.own ? '**' + r.name + '** (자사)' : r.name), r.group, r.appeal || '_(채움 예정)_', r.A1, r.A2, r.A3, r.A4, r.A5, r.A6, r.A7, r.A8, r.price_band, r.time_min ?? '—', r.limits || '_(채움 예정)_'].map(v => `<td${v === NM ? ' class="nm"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('\n')}
 </tbody></table>
+<p class="lead">E1 실측 분모 ${e1n}/${nonOwn}행. <b>자사 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.</b></p>
 <p class="lead">자: rubric ${rubric.version} · 명부 ${roster.version} · 자사 점수는 tag q90-r2-candidate(3d3ebb4) 시점 제품에 한함 · 공공 무료 검사는 세금으로 운영됨 · 보안은 등급만 공개.</p></body></html>`;
 fs.writeFileSync(path.join(RUN, 'table-v2.html'), html);
 console.log('rows', rows.length, '→', path.join(RUN, 'table-v2.{md,html,json}'));

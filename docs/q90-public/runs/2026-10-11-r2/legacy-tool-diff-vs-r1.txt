@@ -1,0 +1,4 @@
+15c15
+< const OUT = path.join(__dirname, 'out'); fs.mkdirSync(OUT, { recursive: true });
+---
+> const OUT = path.join(__dirname, 'run2'); fs.mkdirSync(OUT, { recursive: true });

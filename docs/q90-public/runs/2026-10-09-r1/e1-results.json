@@ -1,6 +1,6 @@
 {
- "tool": "legacy g18m/measure.cjs (imported)",
- "tool_sha256": null,
+ "tool": "legacy g18m/measure.cjs (imported; copy = legacy-tool.cjs)",
+ "tool_sha256": "9319c23f4ebe31ca200f568e67dd7f2de25676e4999db7b38a7dc7c79864759c",
  "roster_version": "g18 round-1 targets (26) → roster-v2 ids identical",
  "evidence": "E1",
  "imported": true,

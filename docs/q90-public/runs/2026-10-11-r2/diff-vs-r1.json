@@ -1,0 +1,21 @@
+{
+ "a": "2026-10-09-r1",
+ "b": "2026-10-11-r2",
+ "level_changes": 0,
+ "level_list": [],
+ "raw_changes": 1,
+ "raw_list": [
+  {
+   "row": "K03",
+   "changes": [
+    "mobile.docW 400→390",
+    "mobile.overflow true→false",
+    "mobile.touch.total 23→21"
+   ],
+   "carried": null
+  }
+ ],
+ "byte_hash_comparable_rows": 0,
+ "byte_hash_changed": [],
+ "note": "두 run 중 하나에 바이트 hash가 없어 \"사이트 개편 vs 측정 흔들림\"을 가를 수 없음"
+}

@@ -19,7 +19,7 @@
 | `tools/build-table.cjs` | 표 빌더 → `table-v2.{md,html,json}` (프로필형·순위 없음·셀마다 근거 등급) | — |
 | `tools/diff-runs.cjs` | 두 run 사이 E1 변화 목록 | — |
 | `sheets/e3-docs.json` | E3 수집 시트 (41행, 채우는 중) | 수집할 때마다 |
-| `sheets/e2-samples.json` | E2 채점 시트 (40행, 샘플 URL 확보분만 `ready`) | 채점할 때마다 |
+| `sheets/e2-samples.json` | E2 채점 시트 (40행, 샘플 URL 확보분만 `ready`). `salt_sha256` 결박됨; salt 원본은 저장소 밖(총괄 보관, AI Drive 백업), 채점 뒤 `salt_revealed`에 공개 | 채점할 때마다 |
 | `runs/2026-10-09-r1/` | G18 1차 실측(26행) — 구 도구 결과를 `e1-results.json`으로 감싸 이관 | 고정 |
 | `runs/2026-10-11-r2/` | G17 사전측정 2차(26행) + **표 v2 빈 틀**(`table-v2.*`) + `diff-vs-r1.txt`(변화 0) | 고정 |
 | `table/` | 공개 확정본만 복사해 둔다(G19 검토 통과 후) | 공개 때 |
@@ -54,6 +54,7 @@ node tools/diff-runs.cjs runs/2026-10-11-r2 $RUN
 - [x] 명부 v2 41행 고정(결과 보기 전 고정 `frozen_before_results:true`)
 - [x] 루브릭 v2 고정, D1~D7 승인 반영
 - [x] 도구 6종, r1/r2 run 이관(E1 26행), 표 v2 빈 틀 생성 (E1 셀만 채워짐: A6 부분 3/6지표, A7 등급)
+- [x] E2 블라인드 결박: salt 기반 blind_id(salt_sha256 `5516a97e…`), 내용 가림 목록·누출 검사, 집계(차이≤1 낮은 값 / ≥2 제3자 선택), actor 격리 — 2026-10-12 팀 권고 반영
 - [ ] E3 수집 — 41행 × 17칸 (가격·문서·샘플 URL·매력·한계)
 - [ ] E2 — 샘플 리포트 확보 → 블라인드 2인 채점 (Q90 judge 세션과 분리)
 - [ ] E4 — 공개 반응 방향+표본(≥20)
@@ -66,6 +67,10 @@ node tools/diff-runs.cjs runs/2026-10-11-r2 $RUN
 - r1/r2는 구 도구(`g18m/measure.cjs`)로 잰 것을 이관했으므로 `tool_sha256:null`, `imported:true`. 다음 run부터 `measure-e1.cjs`로 잰다.
 - K01(고용24) 2회 모두 타임아웃 → A6 미측정(헤더만 r1 값). 국내 신규 14행(K01a, K08~K20)은 아직 E1 미측정.
 - A6는 6지표 중 3개(6.1/6.3/6.4)만 자동 실측 → 부분합 `/9`로 표기. 나머지는 E2/E3로 보강.
+- **r1↔r2 변화: 레벨 변화 0, 원시값 변화 1행(K03: docW 400→390, overflow true→false, 터치 23→21)** — `diff-vs-r1.json`. 바이트 hash가 없어 사이트 개편인지 측정 흔들림인지 가를 수 없음(Peer 6037125). "재측정 시 값 변동" 표시 기준 = **원시값**(레벨만 같은 경우도 표시) — 결과 전 결박.
+- K01(고용24)의 r2 A7 등급은 **1판 값 이월(2026-10-09)** 이며 표에 그렇게 표기한다. `measuredAt`이 r2 시각으로 들어 있는 것은 이관 자료의 결함(원본 보존, 표기로 보정).
+- r1·r2 도구 사본 `legacy-tool.cjs`와 sha(r1 `9319c23f…`, r2 `6f1e21c2…`), 둘의 diff(`legacy-tool-diff-vs-r1.txt`)를 run 폴더에 넣었다 — 메시지 없이 폴더만 보고 대조 가능.
+- 스크린샷(약 11.6MB)은 이번 run까지만 저장소에 둔다. 다음 run부터는 hash 목록만 저장소, 원본은 AI Drive/Release(TL 6037115).
 - r1·r2에는 표면별 응답 바이트 hash가 없다(Peer 권고 6032265 ②). `measure-e1.cjs`부터 `headers.bodySha256`·`mobile.domSha256`을 적는다. r1↔r2 도구 차이는 출력 폴더명 1줄뿐(diff 보존: 1판 `9319c23f…`, 2판 `6f1e21c2…`).
 - 공개에는 최신 run만 쓰고 이전 run은 부록으로 남긴다(Method 권고 6032261). 두 run이 다른 칸은 "재측정 시 값 변동"으로 표시한다.
 - `table-v2.html`은 git에 넣지 않는다(.gitignore). 저장소의 `ux_quality_gate`가 추적 중인 모든 HTML을 고객 페이지로 세어, 첫 PR #391에서 "구조 태그 0개 +1 악화"로 CI가 떨어졌다(내 실수). md/json에서 재생성 가능하므로 산출물만 뺐고 게이트는 손대지 않았다.

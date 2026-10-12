@@ -13,27 +13,155 @@
   "미측정 ≠ 0점."
  ],
  "axes": [
-  {"id": "A1", "name": "첫인상 직관성", "q90_points": 15, "public_weight": 10, "customer_line": "열자마자 내 얘기인지 알 수 있는지 보는 축", "fixed": false},
-  {"id": "A2", "name": "자기인식 정확도·공감", "q90_points": 15, "public_weight": 20, "customer_line": "나를 정확히 짚고 내 편에서 말하는지 보는 축", "fixed": true},
-  {"id": "A3", "name": "바로 실행가능성", "q90_points": 15, "public_weight": 20, "customer_line": "오늘 할 일이 적혀 있는지 보는 축", "fixed": true},
-  {"id": "A4", "name": "자산화·축적 연결성", "q90_points": 15, "public_weight": 20, "customer_line": "한 번 보고 끝이 아니라 쌓이도록 설계됐는지 보는 축 (낮음 = 일회성 진단으로 설계된 도구, 결함 아님)", "fixed": true},
-  {"id": "A5", "name": "신뢰 근거", "q90_points": 15, "public_weight": 10, "customer_line": "근거를 밝히고 한계를 숨기지 않는지 보는 축", "fixed": false},
-  {"id": "A6", "name": "모바일·접근성", "q90_points": 15, "public_weight": 10, "customer_line": "폰에서 읽히는지 보는 축", "fixed": false},
-  {"id": "A7", "name": "보안", "q90_points": 10, "public_weight": 0, "public_display": "grade_only", "grades": {"상": "HTTPS+헤더≥4/5+CSP 보고 있음+비공개 경로 노출 0", "중": "HTTPS+헤더 2~3/5", "하": "HTTPS만 또는 헤더 0~1/5"}, "customer_line": "결제·답변 정보가 안전하게 다뤄지는지(등급만 공개, 세부는 비공개)", "fixed": false, "decision": "D2 등급만 공개"},
-  {"id": "A8", "name": "비용 대비 효용", "q90_points": 0, "public_weight": 10, "customer_line": "낸 돈만큼 돌아오는지 보는 축 (싸다 = 좋다가 아님)", "fixed": false, "new_in_v2": true,
+  {
+   "id": "A1",
+   "name": "첫인상 직관성",
+   "q90_points": 15,
+   "public_weight": 10,
+   "customer_line": "열자마자 내 얘기인지 알 수 있는지 보는 축",
+   "fixed": false
+  },
+  {
+   "id": "A2",
+   "name": "자기인식 정확도·공감",
+   "q90_points": 15,
+   "public_weight": 20,
+   "customer_line": "나를 정확히 짚고 내 편에서 말하는지 보는 축",
+   "fixed": true
+  },
+  {
+   "id": "A3",
+   "name": "바로 실행가능성",
+   "q90_points": 15,
+   "public_weight": 20,
+   "customer_line": "오늘 할 일이 적혀 있는지 보는 축",
+   "fixed": true
+  },
+  {
+   "id": "A4",
+   "name": "자산화·축적 연결성",
+   "q90_points": 15,
+   "public_weight": 20,
+   "customer_line": "한 번 보고 끝이 아니라 쌓이도록 설계됐는지 보는 축 (낮음 = 일회성 진단으로 설계된 도구, 결함 아님)",
+   "fixed": true
+  },
+  {
+   "id": "A5",
+   "name": "신뢰 근거",
+   "q90_points": 15,
+   "public_weight": 10,
+   "customer_line": "근거를 밝히고 한계를 숨기지 않는지 보는 축",
+   "fixed": false
+  },
+  {
+   "id": "A6",
+   "name": "모바일·접근성",
+   "q90_points": 15,
+   "public_weight": 10,
+   "customer_line": "폰에서 읽히는지 보는 축",
+   "fixed": false
+  },
+  {
+   "id": "A7",
+   "name": "보안",
+   "q90_points": 10,
+   "public_weight": 0,
+   "public_display": "grade_only",
+   "grades": {
+    "상": "HTTPS+헤더≥4/5+CSP 보고 있음+비공개 경로 노출 0",
+    "중": "HTTPS+헤더 2~3/5",
+    "하": "HTTPS만 또는 헤더 0~1/5"
+   },
+   "customer_line": "결제·답변 정보가 안전하게 다뤄지는지(등급만 공개, 세부는 비공개)",
+   "fixed": false,
+   "decision": "D2 등급만 공개"
+  },
+  {
+   "id": "A8",
+   "name": "비용 대비 효용",
+   "q90_points": 0,
+   "public_weight": 10,
+   "customer_line": "낸 돈만큼 돌아오는지 보는 축 (싸다 = 좋다가 아님)",
+   "fixed": false,
+   "new_in_v2": true,
    "indicators": [
-    {"id": "A8.1", "name": "가격 투명성", "evidence": "E3", "anchors": {"L5": "공개가 + 환불 규정 공개", "L3": "공개가만", "L1": "비공개·견적만"}},
-    {"id": "A8.2", "name": "1회 비용 구간", "evidence": "E3", "display_only": true, "bands": ["무료", "~1만원", "~5만원", "~15만원", "15만원+"], "note": "점수화하지 않음. 구간만 표시. 공공 무료 검사는 '세금 운영' 각주."},
-    {"id": "A8.3", "name": "재이용 비용", "evidence": "E3", "anchors": {"L5": "재열람·누적 무료", "L3": "재검사 할인", "L1": "매번 전액"}},
-    {"id": "A8.4", "name": "효용 밀도", "evidence": "계산", "formula": "(A2+A3+A4 공개 점수 합) ÷ 비용 구간 지수(무료=1, ~1만=2, ~5만=3, ~15만=4, 15만+=5)", "note": "A2~A4 중 미측정이 있으면 계산하지 않음. 무료는 '무료라서 높음' 꼬리표."}
-   ]}
+    {
+     "id": "A8.1",
+     "name": "가격 투명성",
+     "evidence": "E3",
+     "anchors": {
+      "L5": "공개가 + 환불 규정 공개",
+      "L3": "공개가만",
+      "L1": "비공개·견적만"
+     }
+    },
+    {
+     "id": "A8.2",
+     "name": "1회 비용 구간",
+     "evidence": "E3",
+     "display_only": true,
+     "bands": [
+      "무료",
+      "~1만원",
+      "~5만원",
+      "~15만원",
+      "15만원+"
+     ],
+     "note": "점수화하지 않음. 구간만 표시. 공공 무료 검사는 '세금 운영' 각주."
+    },
+    {
+     "id": "A8.3",
+     "name": "재이용 비용",
+     "evidence": "E3",
+     "anchors": {
+      "L5": "재열람·누적 무료",
+      "L3": "재검사 할인",
+      "L1": "매번 전액"
+     }
+    },
+    {
+     "id": "A8.4",
+     "name": "효용 밀도",
+     "evidence": "계산",
+     "formula": "(A2+A3+A4 공개 점수 합) ÷ 비용 구간 지수(무료=1, ~1만=2, ~5만=3, ~15만=4, 15만+=5)",
+     "note": "A2~A4 중 미측정이 있으면 계산하지 않음. 무료는 '무료라서 높음' 꼬리표."
+    }
+   ]
+  }
  ],
  "evidence_grades": {
-  "E1": {"name": "실측", "meaning": "우리가 같은 도구·조건으로 직접 잼", "display": "굵게"},
-  "E2": {"name": "공개 샘플 리포트", "meaning": "회사가 공개한 샘플 리포트·데모 결과를 같은 judge 루브릭으로 블라인드 채점", "display": "(샘플) — 회사가 고른 최상 예시라는 꼬리표", "rules": ["채점자는 자사 2회차 judge와 다른 세션", "회사명·로고 가린 뒤 채점", "샘플 URL·수집일·sha256 기록"]},
-  "E3": {"name": "공개 문서", "meaning": "기술 매뉴얼·규준·신뢰도 계수·가격표·약관 등 문서 사실", "display": "(문서)"},
-  "E4": {"name": "공개 반응", "meaning": "공개 리뷰·학술 리뷰·언론의 집계. 개별 인용 금지", "display": "점수 없음. 방향(+/−/혼재) + 표본 수 + 수집일", "rules": ["표본 < 20이면 적지 않음", "A2~A4 점수 근거로 쓰지 않음"]},
-  "none": {"display": "미측정"}
+  "E1": {
+   "name": "실측",
+   "meaning": "우리가 같은 도구·조건으로 직접 잼",
+   "display": "굵게"
+  },
+  "E2": {
+   "name": "공개 샘플 리포트",
+   "meaning": "회사가 공개한 샘플 리포트·데모 결과를 같은 judge 루브릭으로 블라인드 채점",
+   "display": "(샘플) — 회사가 고른 최상 예시라는 꼬리표",
+   "rules": [
+    "채점자는 자사 2회차 judge와 다른 세션",
+    "회사명·로고 가린 뒤 채점",
+    "샘플 URL·수집일·sha256 기록"
+   ]
+  },
+  "E3": {
+   "name": "공개 문서",
+   "meaning": "기술 매뉴얼·규준·신뢰도 계수·가격표·약관 등 문서 사실",
+   "display": "(문서)"
+  },
+  "E4": {
+   "name": "공개 반응",
+   "meaning": "공개 리뷰·학술 리뷰·언론의 집계. 개별 인용 금지",
+   "display": "점수 없음. 방향(+/−/혼재) + 표본 수 + 수집일",
+   "rules": [
+    "표본 < 20이면 적지 않음",
+    "A2~A4 점수 근거로 쓰지 않음"
+   ]
+  },
+  "none": {
+   "display": "미측정"
+  }
  },
  "e2_judge_rubric_public": {
   "note": "Q90 judge 지시문 중 공개 가능한 부분만. 자사 2회차 judge 지시문 원문은 봉인 후 공개.",
@@ -46,9 +174,25 @@
    "A5": "규준·신뢰도·한계·주의 문구가 리포트 안에 적혀 있는가?",
    "A6": "(E1로 대체 — 샘플 PDF에는 적용 안 함)"
   },
-  "scale": "L1~L5, 축당 두 judge 독립, 차이 2 이상이면 제3자 판정. 점수 = 평균 → 공개 가중 환산.",
-  "blind": true
+  "scale": "L1~L5 정수, 축당 두 judge 독립. 차이 ≤1 → 낮은 값(보수적). 차이 ≥2 → 제3자가 두 값 중 하나를 근거와 함께 선택. 평균·새 값 금지. (Method 6037069 ③, 2026-10-12 결박)",
+  "blind": {
+   "id": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수는 저장소 밖 보관, 채점 전 salt_sha256만 공개, 채점 후 salt 공개",
+   "content": "서비스명·도메인·로고 대체텍스트·고유 상품명·연락처 가림 → 명부 문자열 누출 검사 0건",
+   "guess_field": "judge의 \"어디인지 알 것 같다\" 칸은 누출 기록용, 점수에 쓰지 않음"
+  },
+  "actor_isolation": "E2 judge·제3자는 Q90 2회차 judge·adjudicator·X1~X4와 다른 actor"
  },
- "row_required_fields": ["appeal(이럴 때 이 도구, 회사 공개 문서의 말로 1~2줄)", "limits(한계, 공개 문서 기준 1줄, 자사 포함)", "evidence_per_cell"],
- "own_row_rule": "OWN 행의 A1~A7 = Q90 2회차 scorer 출력 전사(출처 ref·sha 표기). A8은 E3 규칙으로 타사와 동일하게 측정. 2회차 미달이면 미달 점수 그대로."
+ "row_required_fields": [
+  "appeal(이럴 때 이 도구, 회사 공개 문서의 말로 1~2줄)",
+  "limits(한계, 공개 문서 기준 1줄, 자사 포함)",
+  "evidence_per_cell"
+ ],
+ "own_row_rule": "OWN 행의 A1~A7 = Q90 2회차 scorer 출력 전사(출처 ref·sha 표기). A8은 E3 규칙으로 타사와 동일하게 측정. 2회차 미달이면 미달 점수 그대로. | 표 머리 필수 문구: 자사 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지 (Method 6037069)",
+ "revision_log": [
+  {
+   "at": "2026-10-12",
+   "what": "E2 집계·블라인드·actor 격리 결박(Method 6037069, TL 6037115, Peer 6037125). 축·가중 변경 없음",
+   "version_unchanged": true
+  }
+ ]
 }
