@@ -57,6 +57,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -118,6 +120,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -179,6 +183,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -240,6 +246,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -301,6 +309,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -364,6 +374,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -425,6 +437,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -486,6 +500,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -547,6 +563,8 @@
   "a59": null,
   "a7grade": "상",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -585,29 +603,12 @@
    "max": 9,
    "W": 60
   },
-  "a71": {
-   "https": true,
-   "controls": 4,
-   "hsts": true,
-   "xcto": true,
-   "frame": true,
-   "referrer": true,
-   "permissions": false,
-   "level": 2
-  },
-  "a76": {
-   "csp": false,
-   "reporting": false,
-   "level": 1
-  },
-  "a75probe": {
-   "exposed": [],
-   "tested": 6
-  },
   "a58": null,
   "a59": null,
-  "a7grade": "중",
+  "a7err": "측정 무효(HTTP 500)",
   "run_tag": "r3·US",
+  "partial": "A6만",
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -618,31 +619,22 @@
   "url": "https://www.16personalities.com/premium/career-suite",
   "at": "2026-10-12T09:51:57.736Z",
   "a6err": "status 403 / blocks 4",
-  "a71": {
-   "https": true,
-   "controls": 4,
-   "hsts": false,
-   "xcto": true,
-   "frame": true,
-   "referrer": true,
-   "permissions": true,
-   "level": 2
-  },
-  "a76": {
-   "csp": true,
-   "reporting": false,
-   "level": 1
-  },
-  "a75probe": {
-   "exposed": [],
-   "tested": 6
-  },
   "a58": null,
   "a59": null,
-  "a7grade": "중",
+  "a7err": "측정 무효(HTTP 403)",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
-  "failure_class": null
+  "failure_class": "접근 차단",
+  "failures": [
+   {
+    "run": "r3",
+    "egress": "US",
+    "status": 403,
+    "error": "HTTP 403"
+   }
+  ]
  },
  {
   "row": "G12",
@@ -702,6 +694,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -763,6 +757,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -824,6 +820,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -885,6 +883,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -946,6 +946,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1007,6 +1009,8 @@
   "a59": null,
   "a7grade": "상",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1068,6 +1072,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1129,6 +1135,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1190,6 +1198,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1251,6 +1261,8 @@
   "a59": null,
   "a7grade": "상",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1312,6 +1324,8 @@
   "a59": null,
   "a7grade": "중",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1345,6 +1359,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r4·KR",
+  "partial": "A7만",
+  "partial_why": "검사 경로 시간 초과",
   "prior_failure_note": "해외 접속 시 시간 초과(r3)",
   "failure_class": null
  },
@@ -1406,6 +1422,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1467,6 +1485,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": "해외 접속 시 시간 초과(r3)",
   "failure_class": null
  },
@@ -1528,6 +1548,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1538,22 +1560,25 @@
   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "at": "2026-10-12T22:36:48.410Z",
   "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
-  "a7err": "fetch failed",
+  "a7err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "a58": null,
   "a59": null,
-  "a7grade": null,
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": "시간 초과",
   "failures": [
    {
     "run": "r3",
     "egress": "US",
+    "status": null,
     "error": "Navigation timeout of 45000 ms exceeded"
    },
    {
     "run": "r4",
     "egress": "KR",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    }
   ]
@@ -1565,22 +1590,25 @@
   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "at": "2026-10-12T22:38:23.172Z",
   "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
-  "a7err": "fetch failed",
+  "a7err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "a58": null,
   "a59": null,
-  "a7grade": null,
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": "시간 초과",
   "failures": [
    {
     "run": "r3",
     "egress": "US",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    },
    {
     "run": "r4",
     "egress": "KR",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    }
   ]
@@ -1592,22 +1620,25 @@
   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "at": "2026-10-12T22:39:57.935Z",
   "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
-  "a7err": "fetch failed",
+  "a7err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "a58": null,
   "a59": null,
-  "a7grade": null,
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": "시간 초과",
   "failures": [
    {
     "run": "r3",
     "egress": "US",
+    "status": null,
     "error": "Navigation timeout of 45000 ms exceeded"
    },
    {
     "run": "r4",
     "egress": "KR",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    }
   ]
@@ -1619,22 +1650,25 @@
   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "at": "2026-10-12T22:41:33.117Z",
   "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
-  "a7err": "fetch failed",
+  "a7err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "a58": null,
   "a59": null,
-  "a7grade": null,
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": "시간 초과",
   "failures": [
    {
     "run": "r3",
     "egress": "US",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    },
    {
     "run": "r4",
     "egress": "KR",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    }
   ]
@@ -1646,22 +1680,25 @@
   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "at": "2026-10-12T22:43:07.915Z",
   "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
-  "a7err": "fetch failed",
+  "a7err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "a58": null,
   "a59": null,
-  "a7grade": null,
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": "시간 초과",
   "failures": [
    {
     "run": "r3",
     "egress": "US",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    },
    {
     "run": "r4",
     "egress": "KR",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    }
   ]
@@ -1673,22 +1710,25 @@
   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "at": "2026-10-12T22:44:42.713Z",
   "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
-  "a7err": "fetch failed",
+  "a7err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
   "a58": null,
   "a59": null,
-  "a7grade": null,
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": "시간 초과",
   "failures": [
    {
     "run": "r3",
     "egress": "US",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    },
    {
     "run": "r4",
     "egress": "KR",
+    "status": null,
     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
    }
   ]
@@ -1698,33 +1738,30 @@
   "name": "커리어넷 직업가치관검사(성인)",
   "group": "국내",
   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
-  "at": "2026-10-12T10:08:07.772Z",
+  "at": "2026-10-12T22:44:46.549Z",
   "a6err": "status 404 / blocks 3",
-  "a71": {
-   "https": true,
-   "controls": 0,
-   "hsts": false,
-   "xcto": false,
-   "frame": false,
-   "referrer": false,
-   "permissions": false,
-   "level": 1
-  },
-  "a76": {
-   "csp": false,
-   "reporting": false,
-   "level": 1
-  },
-  "a75probe": {
-   "exposed": [],
-   "tested": 6
-  },
   "a58": null,
   "a59": null,
-  "a7grade": "하",
-  "run_tag": "r3·US",
+  "a7err": "측정 무효(HTTP 404)",
+  "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
-  "failure_class": null
+  "failure_class": "대상 없음",
+  "failures": [
+   {
+    "run": "r3",
+    "egress": "US",
+    "status": 404,
+    "error": "HTTP 404"
+   },
+   {
+    "run": "r4",
+    "egress": "KR",
+    "status": 404,
+    "error": "HTTP 404"
+   }
+  ]
  },
  {
   "row": "K14",
@@ -1733,31 +1770,22 @@
   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
   "at": "2026-10-12T10:08:14.859Z",
   "a6err": "status 404 / blocks 3",
-  "a71": {
-   "https": true,
-   "controls": 0,
-   "hsts": false,
-   "xcto": false,
-   "frame": false,
-   "referrer": false,
-   "permissions": false,
-   "level": 1
-  },
-  "a76": {
-   "csp": false,
-   "reporting": false,
-   "level": 1
-  },
-  "a75probe": {
-   "exposed": [],
-   "tested": 6
-  },
   "a58": null,
   "a59": null,
-  "a7grade": "하",
+  "a7err": "측정 무효(HTTP 404)",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
-  "failure_class": null
+  "failure_class": "대상 없음",
+  "failures": [
+   {
+    "run": "r3",
+    "egress": "US",
+    "status": 404,
+    "error": "HTTP 404"
+   }
+  ]
  },
  {
   "row": "K15",
@@ -1817,6 +1845,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1850,6 +1880,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": "A7만",
+  "partial_why": "측정 무효(HTTP 406)",
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -1911,6 +1943,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r4·KR",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": "해외 접속 시 시간 초과(r3)",
   "failure_class": null
  },
@@ -1972,6 +2006,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -2033,6 +2069,8 @@
   "a59": null,
   "a7grade": "하",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
   "failure_class": null
  },
@@ -2043,30 +2081,21 @@
   "url": "https://www.16personalities.com/ko",
   "at": "2026-10-12T10:12:04.927Z",
   "a6err": "status 403 / blocks 4",
-  "a71": {
-   "https": true,
-   "controls": 4,
-   "hsts": false,
-   "xcto": true,
-   "frame": true,
-   "referrer": true,
-   "permissions": true,
-   "level": 2
-  },
-  "a76": {
-   "csp": true,
-   "reporting": false,
-   "level": 1
-  },
-  "a75probe": {
-   "exposed": [],
-   "tested": 6
-  },
   "a58": null,
   "a59": null,
-  "a7grade": "중",
+  "a7err": "측정 무효(HTTP 403)",
   "run_tag": "r3·US",
+  "partial": null,
+  "partial_why": null,
   "prior_failure_note": null,
-  "failure_class": null
+  "failure_class": "접근 차단",
+  "failures": [
+   {
+    "run": "r3",
+    "egress": "US",
+    "status": 403,
+    "error": "HTTP 403"
+   }
+  ]
  }
 ]

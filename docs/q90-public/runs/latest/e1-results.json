@@ -29,7 +29,7 @@
   }
  ],
  "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-12T23:08:04.547Z",
+ "generatedAt": "2026-10-12T23:14:45.558Z",
  "roster_version": "v2.0",
  "evidence": "E1",
  "startedAt": "2026-10-12T09:50:27.974Z",
@@ -2520,7 +2520,7 @@
    "url": "https://www.career.go.kr/cloud/w/inspect/intro",
    "skip": false,
    "origin": "https://www.career.go.kr",
-   "measuredAt": "2026-10-12T10:08:07.772Z",
+   "measuredAt": "2026-10-12T22:44:46.549Z",
    "headers": {
     "ok": true,
     "status": 404,
@@ -2535,7 +2535,7 @@
     "cspReporting": false,
     "server": "nginx",
     "bodyBytes": 78,
-    "bodySha256": "b294a05d78abe49987394d09ec732093b7cc96623864485fc22198ca51a4146a"
+    "bodySha256": "e135d141d19e6ad45974220a40fde243488a667aa62a51848a4a7c14d66290c2"
    },
    "publicSurface": [
     {
@@ -2594,7 +2594,7 @@
     },
     "lang": "ko"
    },
-   "assembled_from": "r3·US"
+   "assembled_from": "r4·KR"
   },
   {
    "row": "K14",

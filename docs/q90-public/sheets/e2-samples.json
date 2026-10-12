@@ -5966,10 +5966,122 @@
       "bridge_raw_changes": 0,
       "bridge_hash_changed": [
         "K05",
-        "K13",
         "K18"
       ],
-      "e1_public": "34/40 (r3 31 + r4 3)"
+      "e1_public": "30/40 (2xx 기준; 옛 기준 34)",
+      "bridge_rows_valid": [
+        "K02",
+        "K05",
+        "K18"
+      ],
+      "bridge_excluded": "K13(404 — 근거 불가)",
+      "invalid_404": [
+        "K13",
+        "K14"
+      ],
+      "blocked_403": [
+        "G11",
+        "K20"
+      ],
+      "partial": {
+        "G08": "A7 500",
+        "K01": "A6 시간 초과(검사 경로)",
+        "K16": "A6 406"
+      }
+    },
+    "rule_24c": {
+      "at": "2026-10-12T23:20Z",
+      "rule": "성공 = 최종 응답 2xx (조립기·검사기·표·진행률에만; 측정기 불변)",
+      "applied_after_results": true,
+      "why": "TL 6106475·Peer 6106517(측정 전 권고)을 총괄이 미열람(⑳) → 결과 뒤 적용. 점수를 내리는 방향(34→30)이라 적용",
+      "e1_public": "30/40 (전체 27 + 부분 3: G08 A6만·K01 A7만·K16 A7만)",
+      "r3_alone_corrected": "31→27"
+    },
+    "work24_attempts": {
+      "K01a": {
+        "r3": {
+          "at": "2026-10-12T09:59:45.032Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:36:48.410Z",
+          "tries": 1,
+          "result": "timeout"
+        }
+      },
+      "K08": {
+        "r3": {
+          "at": "2026-10-12T10:01:11.049Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:38:23.172Z",
+          "tries": 1,
+          "result": "timeout"
+        }
+      },
+      "K09": {
+        "r3": {
+          "at": "2026-10-12T10:03:09.696Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:39:57.935Z",
+          "tries": 1,
+          "result": "timeout"
+        }
+      },
+      "K10": {
+        "r3": {
+          "at": "2026-10-12T10:04:35.860Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:41:33.117Z",
+          "tries": 1,
+          "result": "timeout"
+        }
+      },
+      "K11": {
+        "r3": {
+          "at": "2026-10-12T10:06:32.595Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:43:07.915Z",
+          "tries": 1,
+          "result": "timeout"
+        }
+      },
+      "K12": {
+        "r3": {
+          "at": "2026-10-12T10:08:00.652Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:44:42.713Z",
+          "tries": 1,
+          "result": "timeout"
+        }
+      },
+      "K01": {
+        "r3": {
+          "at": "2026-10-12T09:55:22.204Z",
+          "tries": 1,
+          "result": "timeout"
+        },
+        "r4": {
+          "at": "2026-10-12T22:34:57.969Z",
+          "tries": 1,
+          "result": "headers 200 / mobile timeout"
+        }
+      }
     }
   },
   "e2_alt_rule": {

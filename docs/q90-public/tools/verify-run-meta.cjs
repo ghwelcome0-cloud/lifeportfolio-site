@@ -24,7 +24,7 @@ else {
 }
 // 결과·로그 파일에도 IP 유입 검사(측정기는 IP를 적지 않음 — 혹시 모를 유입 방지)
 for (const f of ['measure.log', 'score.log']) { const p = path.join(RUN, f); if (fs.existsSync(p) && /\b\d{1,3}(\.\d{1,3}){3}\b/.test(fs.readFileSync(p, 'utf8'))) fails.push(`${f} 에 IP 패턴`); }
-const ok = res.results.filter(r => !r.skip && r.mobile && r.mobile.ok).length;
-notes.push(`행 ${res.results.length}, 성공 ${ok}`);
+const is2xx = s => typeof s === 'number' && s >= 200 && s < 300; const ok = res.results.filter(r => !r.skip && r.mobile && r.mobile.ok && is2xx(r.mobile.status) && r.headers && is2xx(r.headers.status)).length; const non2xx = res.results.filter(r => !r.skip && ((r.mobile && r.mobile.ok && !is2xx(r.mobile.status)) || (r.headers && r.headers.ok && !is2xx(r.headers.status)))).map(r => `${r.row}:${(r.mobile && r.mobile.status) || (r.headers && r.headers.status)}`);
+notes.push(`행 ${res.results.length}, 전체 성공(A6·A7 모두 2xx) ${ok}, 비-2xx 응답 ${non2xx.length}${non2xx.length ? ' (' + non2xx.join(', ') + ') — 성공으로 세지 않음(§24-c)' : ''}`);
 console.log(fails.length ? 'FAIL\n- ' + fails.join('\n- ') : 'PASS', '\n' + notes.map(n => '· ' + n).join('\n'));
 process.exit(fails.length ? 1 : 0);

@@ -28,14 +28,23 @@
   }
  ],
  "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-12T23:08:04.547Z",
- "measured": 34,
+ "generatedAt": "2026-10-12T23:14:45.558Z",
+ "measured": 30,
+ "measured_full": 27,
+ "measured_partial": [
+  "G08(A6만)",
+  "K01(A7만)",
+  "K16(A7만)"
+ ],
+ "rule_2xx": "최종 응답 2xx만 성공(§24-c, TL 6106475·Peer 6106517). 비-2xx 축은 측정 무효로 비움",
  "total_non_own": 40,
  "provenance": [
   {
    "row": "M01",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -44,6 +53,8 @@
    "row": "M02",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -52,6 +63,8 @@
    "row": "M03",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -60,6 +73,8 @@
    "row": "G01",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -68,6 +83,8 @@
    "row": "G02a",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -76,6 +93,8 @@
    "row": "G03",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -84,6 +103,8 @@
    "row": "G04",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -92,6 +113,8 @@
    "row": "G06",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -100,6 +123,8 @@
    "row": "G07",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -108,6 +133,8 @@
    "row": "G08",
    "from": "r3·US",
    "ok": true,
+   "full": false,
+   "partial": "A6만",
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -115,15 +142,26 @@
   {
    "row": "G11",
    "from": "r3·US",
-   "ok": true,
+   "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
-   "failures": null
+   "failures": [
+    {
+     "run": "r3",
+     "egress": "US",
+     "status": 403,
+     "error": "HTTP 403"
+    }
+   ]
   },
   {
    "row": "G12",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -132,6 +170,8 @@
    "row": "G13",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -140,6 +180,8 @@
    "row": "G14",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -148,6 +190,8 @@
    "row": "G15a",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -156,6 +200,8 @@
    "row": "G15b",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -164,6 +210,8 @@
    "row": "E01",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -172,6 +220,8 @@
    "row": "E02",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -180,6 +230,8 @@
    "row": "E06",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -188,6 +240,8 @@
    "row": "E07",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -196,6 +250,8 @@
    "row": "E11",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -204,6 +260,8 @@
    "row": "E12",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -212,6 +270,8 @@
    "row": "K01",
    "from": "r4·KR",
    "ok": true,
+   "full": false,
+   "partial": "A7만",
    "prior_failure_note": "해외 접속 시 시간 초과(r3)",
    "compare_only_runs": null,
    "failures": null
@@ -220,6 +280,8 @@
    "row": "K02",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": [
     "r4"
@@ -230,6 +292,8 @@
    "row": "K03",
    "from": "r4·KR",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": "해외 접속 시 시간 초과(r3)",
    "compare_only_runs": null,
    "failures": null
@@ -238,6 +302,8 @@
    "row": "K05",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": [
     "r4"
@@ -248,17 +314,21 @@
    "row": "K01a",
    "from": "r4·KR",
    "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": [
     {
      "run": "r3",
      "egress": "US",
+     "status": null,
      "error": "Navigation timeout of 45000 ms exceeded"
     },
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
    ]
@@ -267,17 +337,21 @@
    "row": "K08",
    "from": "r4·KR",
    "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": [
     {
      "run": "r3",
      "egress": "US",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     },
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
    ]
@@ -286,17 +360,21 @@
    "row": "K09",
    "from": "r4·KR",
    "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": [
     {
      "run": "r3",
      "egress": "US",
+     "status": null,
      "error": "Navigation timeout of 45000 ms exceeded"
     },
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
    ]
@@ -305,17 +383,21 @@
    "row": "K10",
    "from": "r4·KR",
    "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": [
     {
      "run": "r3",
      "egress": "US",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     },
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
    ]
@@ -324,17 +406,21 @@
    "row": "K11",
    "from": "r4·KR",
    "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": [
     {
      "run": "r3",
      "egress": "US",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     },
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
    ]
@@ -343,43 +429,71 @@
    "row": "K12",
    "from": "r4·KR",
    "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": [
     {
      "run": "r3",
      "egress": "US",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     },
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
    ]
   },
   {
    "row": "K13",
-   "from": "r3·US",
-   "ok": true,
+   "from": "r4·KR",
+   "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
-   "compare_only_runs": [
-    "r4"
-   ],
-   "failures": null
+   "compare_only_runs": null,
+   "failures": [
+    {
+     "run": "r3",
+     "egress": "US",
+     "status": 404,
+     "error": "HTTP 404"
+    },
+    {
+     "run": "r4",
+     "egress": "KR",
+     "status": 404,
+     "error": "HTTP 404"
+    }
+   ]
   },
   {
    "row": "K14",
    "from": "r3·US",
-   "ok": true,
+   "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
-   "failures": null
+   "failures": [
+    {
+     "run": "r3",
+     "egress": "US",
+     "status": 404,
+     "error": "HTTP 404"
+    }
+   ]
   },
   {
    "row": "K15",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -388,6 +502,8 @@
    "row": "K16",
    "from": "r3·US",
    "ok": true,
+   "full": false,
+   "partial": "A7만",
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -396,6 +512,8 @@
    "row": "K17",
    "from": "r4·KR",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": "해외 접속 시 시간 초과(r3)",
    "compare_only_runs": null,
    "failures": null
@@ -404,6 +522,8 @@
    "row": "K18",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": [
     "r4"
@@ -414,6 +534,8 @@
    "row": "K19",
    "from": "r3·US",
    "ok": true,
+   "full": true,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
    "failures": null
@@ -421,10 +543,19 @@
   {
    "row": "K20",
    "from": "r3·US",
-   "ok": true,
+   "ok": false,
+   "full": false,
+   "partial": null,
    "prior_failure_note": null,
    "compare_only_runs": null,
-   "failures": null
+   "failures": [
+    {
+     "run": "r3",
+     "egress": "US",
+     "status": 403,
+     "error": "HTTP 403"
+    }
+   ]
   }
  ]
 }
