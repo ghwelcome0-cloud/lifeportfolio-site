@@ -5968,7 +5968,7 @@
     "priority": "샘플 > AI응시 > 구매 > 문서도판 (한 행 한 값, 경로 전환 금지)",
     "respondent": "비이해관계 AI 에이전트(격리 확인·memory_check), 페르소나 문서 1개 sha 고정, 응답 원문 저장소 밖",
     "judge_blind_to_path": true,
-    "status": "약관 확인 단계 — 응시 0건",
+    "status": "약관 1차 완료 · 페르소나 v1 고정 · 응시 에이전트 미지정 · 응시 0건",
     "tos_summary_2026-10-12T20:45Z": {
       "가(조건부)": [
         "G15a"
@@ -6009,6 +6009,8 @@
         "K16",
         "K19"
       ]
-    }
+    },
+    "persona_doc": "judge/RESPONDENT-PERSONA-v1.md",
+    "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7"
   }
 }
