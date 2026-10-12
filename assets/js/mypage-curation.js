@@ -119,6 +119,31 @@
     style.textContent = css;
     d.head.appendChild(style);
   }
+  var ASSET_STYLE_ID = 'lp-mypage-asset-style';
+  function injectAssetStyleOnce() {
+    if (d.getElementById(ASSET_STYLE_ID)) return;
+    var st = d.createElement('style'); st.id = ASSET_STYLE_ID;
+    st.textContent = [
+      '.lp-mpa{position:relative;box-sizing:border-box;word-break:keep-all;overflow-wrap:break-word;border-radius:16px;padding:18px 20px;background:linear-gradient(180deg,#FFFDF7,#F8F1E1);border:1.5px solid #C9A04F;box-shadow:inset 0 0 0 4px #FFFDF7,inset 0 0 0 5px rgba(176,140,83,.28),0 2px 12px rgba(23,49,58,.06)}',
+      '.lp-mpa-main{display:flex;align-items:center;gap:14px}',
+      '.lp-mpa-ico{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#fff;border:1.5px solid #C9A04F;box-shadow:0 0 0 3px #FFFDF7,0 0 0 4px rgba(176,140,83,.35);font-size:24px}',
+      '.lp-mpa-txt{min-width:0}',
+      '.lp-mpa-eye{margin:0;font-size:12px;font-weight:700;letter-spacing:.12em;color:#7d5f22}',
+      '.lp-mpa-name{margin:2px 0 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}',
+      '.lp-mpa-name b{font-family:"Noto Serif KR","Nanum Myeongjo",serif;font-size:24px;color:#0A3D2A;letter-spacing:.04em}',
+      '.lp-mpa-name span{font-size:15px;color:#2a2e2c;font-weight:600}',
+      '.lp-mpa-also{margin:4px 0 0;font-size:13px;color:#5a625e}',
+      '.lp-mpa-first{margin:14px 0 0;padding:10px 12px;border-radius:10px;background:#fff;border:1px dashed #D6CFC0;font-size:14.5px;line-height:1.6;color:#222;text-wrap:balance}',
+      '.lp-mpa-k{display:block;font-size:12px;font-weight:700;color:#7d5f22;margin-bottom:2px}',
+      '.lp-mpa-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}',
+      '.lp-mpa-btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:12px;background:#0A3D2A;color:#fff;font-size:14px;font-weight:700;text-decoration:none}',
+      '.lp-mpa-btn.ghost{background:#fff;color:#0A3D2A;border:1.5px solid #0A3D2A}',
+      '.lp-mpa-note{margin:10px 0 0;font-size:12.5px;color:#5a625e}',
+      '.lp-mpa-none{margin:6px 0 10px;font-size:14.5px;line-height:1.65;color:#2a2e2c}',
+      '@media (max-width:480px){.lp-mpa{padding:16px}.lp-mpa-name b{font-size:22px}.lp-mpa-btn{flex:1 1 100%}}'
+    ].join('');
+    d.head.appendChild(st);
+  }
 
   // 인사 스트립(#lp-ambient-slot) 바로 아래에 위젯 컨테이너를 확보(1회).
   function ensureSlot() {
@@ -195,6 +220,7 @@
     } catch (e) {}
     // B6: 4축 그리드 렌더용 상태 캐시 (강→약 순위 + 축별 tier/pct)
     _axisState = {
+      asset: assetFromReport(report),                    // asset-type-card-v1: 고유성 기반 자산화 유형
       ranking: w.LP_AXIS_CODE.rankingFromReport(report), // 한글 배열 강→약
       tierMap: axisTierMapFromReport(report),            // { 축명: {tier,pct} }
       strong: strong,
@@ -211,14 +237,51 @@
   ];
   var AXIS_FB = ['자기이해', '자기표현', '자기설계', '자기실행'];
 
+  // ══════════════════════════════════════════════════════════════════════
+  // asset-type-card-v1 (대표 2026-10-12): 「자기이해부터 실행까지 퍼센트 … 불필요하고 메인으로 두기엔 우선순위가 약해요.
+  //   차라리 자산화 유형으로 그 부분을 대체 … 고유성 기반 자산화가 우리의 궁극적인 목표니까.」
+  //   4축 % 카드 대신, 리포트 XI장이 이미 계산해 저장한 _assetPath(유형·함께 가진 변화·처음 남길 것)를 그대로 보여 준다.
+  //   새로 계산하지 않는다. 점수·% 없음. 옛 리포트(_assetPath 없음)는 다이어리 「내 변화 찾기」로 안내.
+  var _assetSid = null;
+  function assetFromReport(report) {
+    var ap = report && report._assetPath;
+    if (!ap || ap.version !== 'asset-path-v1' || !ap.type || !ap.type.name) return null;
+    var str = function (v) { return typeof v === 'string' ? v.replace(/\s+/g, ' ').trim() : ''; };
+    return { name: str(ap.type.name), line: str(ap.type.line), focus: str(ap.type.focus),
+      also: (Array.isArray(ap.also) ? ap.also : []).map(function (x) { return x && str(x.name); }).filter(Boolean).slice(0, 2),
+      first: str(ap.firstStep), sentence: str(ap.sentence) };
+  }
+  var ASSET_ICON = { '밝힘': '💡', '지음': '🛠️', '펼침': '🎤', '돌봄': '🌱', '이음': '🤝', '세움': '🧱', '지킴': '🛡️' };
+  function buildAssetCardHtml() {
+    var a = _axisState && _axisState.asset;
+    var diary = _assetSid ? '/diary.html?sid=' + encodeURIComponent(_assetSid) + '&open=path' : '/diary.html?open=path';
+    if (!a) {
+      return '<div class="lp-mpa lp-mpa--none"><p class="lp-mpa-eye">고유성 기반 자산화 유형</p>' +
+        '<p class="lp-mpa-none">이 리포트에는 아직 자산화 유형이 없어요. 다이어리 「내 변화 찾기」에서 리포트 응답으로 일곱 가지 변화 중 나의 것을 찾아 드려요.</p>' +
+        '<a class="lp-mpa-btn" href="' + diary + '">💎 내 변화 찾기</a></div>';
+    }
+    var report = _assetSid ? '/report.html?sid=' + encodeURIComponent(_assetSid) : '';
+    return '<div class="lp-mpa" data-asset="' + escapeHtml(a.name) + '">' +
+      '<div class="lp-mpa-main"><span class="lp-mpa-ico" aria-hidden="true">' + (ASSET_ICON[a.name] || '💎') + '</span>' +
+        '<div class="lp-mpa-txt"><p class="lp-mpa-eye">고유성 기반 자산화 유형</p>' +
+        '<p class="lp-mpa-name"><b>' + escapeHtml(a.name) + '</b>' + (a.line ? '<span>' + escapeHtml(a.line) + '</span>' : '') + '</p>' +
+        (a.also.length ? '<p class="lp-mpa-also">함께 가진 변화 · ' + a.also.map(escapeHtml).join(' · ') + '</p>' : '') + '</div></div>' +
+      (a.first ? '<div class="lp-mpa-first"><span class="lp-mpa-k">처음 남길 것</span>' + escapeHtml(a.first) + '</div>' : '') +
+      '<div class="lp-mpa-acts">' + (report ? '<a class="lp-mpa-btn ghost" href="' + report + '">리포트 XI장에서 자세히</a>' : '') +
+        '<a class="lp-mpa-btn" href="' + diary + '">💎 다이어리에서 이어 가기</a></div>' +
+      '<p class="lp-mpa-note">이름표가 아니라 출발점이에요. 고르는 건 직접 정해요.</p></div>';
+  }
+
   // 진단 미완료: 4축 회색 뼈대 + fallback 오버레이
   function renderFallback(host) {
     var dash = t('curation.axis_placeholder_dash', '—');
     var cards = '';
+    // asset-type-card-v1: 미완료 뼈대도 일곱 가지 변화 중 넷(자산화 유형의 자리)로.
+    var SEVEN = ['밝힘', '지음', '돌봄', '세움'];
     for (var i = 0; i < 4; i++) {
       cards +=
         '<div class="lp-mpc-card">' +
-          '<div class="lp-mpc-axis">' + escapeHtml(t(AXIS_KEYS[i], AXIS_FB[i])) + '</div>' +
+          '<div class="lp-mpc-axis">' + escapeHtml(SEVEN[i]) + '</div>' +
           '<div class="lp-mpc-dash">' + escapeHtml(dash) + '</div>' +
         '</div>';
     }
@@ -374,9 +437,10 @@
 
   // 진단 완료: 4축 그리드(신규 · 인식) + 기존 curation.js 단일 제안(행동) 재사용
   function renderActive(host) {
-    var gridHtml = buildAxisGridHtml();
-    host.innerHTML = gridHtml + '<div data-lp-curation-slot="mypage"></div>';
-    if (gridHtml) track('curation_axisgrid_impression', {});
+    // asset-type-card-v1: 4축 % 그리드 대신 자산화 유형 카드(그리드 함수는 남겨 두되 그리지 않는다).
+    var gridHtml = '';
+    host.innerHTML = buildAssetCardHtml() + '<div data-lp-curation-slot="mypage"></div>';
+    track('curation_assettype_impression', { has: !!(_axisState && _axisState.asset) });
     // ── B7-3 진입 stagger 트리거 (3중 안전장치 · B7-2 정합) ──────────────
     //   reduce/IO미지원/JS오류 시 .lp-mpc-enter 미부여 → CSS 초기 은닉 미적용
     //   → 카드 항상 표시. 정상 조건에서만 은닉 후 rAF 로 .is-in 부여(진입).
@@ -425,7 +489,8 @@
 
   function render(opts) {
     opts = opts || {};
-    injectStyleOnce();
+    if (opts.sid) _assetSid = String(opts.sid);
+    injectStyleOnce(); injectAssetStyleOnce();
     var host = ensureSlot();
     if (opts.hasReport) renderActive(host);
     else renderFallback(host);

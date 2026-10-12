@@ -1910,7 +1910,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var _rep = _latest && _latest._reportBody;
         if (window.LP_MYPAGE_CURATION) {
           if (_rep) window.LP_MYPAGE_CURATION.applyAxesFromReport(_rep);
-          window.LP_MYPAGE_CURATION.render({ hasReport: true });
+          window.LP_MYPAGE_CURATION.render({ hasReport: true, sid: _latest && _latest.sid });
         }
       } catch (e) { console.warn("[MyPage] 큐레이션 렌더 스킵:", e && e.message); }
       } catch(e) {
