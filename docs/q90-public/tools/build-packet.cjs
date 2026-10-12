@@ -43,7 +43,7 @@ const readmeMd = bid => `# 채점 패킷 ${bid}
 - 이 패킷에는 회사명이 없습니다. 찾으려 하지 마세요. 짐작이 들면 guess 칸에만 적습니다.
 - ANSWER.json 의 judge_actor_id 에 본인 actor id, scored_at_utc 에 채점 끝낸 UTC 시각을 적습니다.
 - ANSWER.json 의 pages_total 에 PDF 전체 쪽 수, pages_viewed 에 **실제로 읽은 쪽 수**, 읽히지 않은 쪽이 있으면 unreadable_pages 에 쪽 번호를 적습니다. 다 읽지 못했으면 솔직히 적습니다 — 점수에 불이익은 없고, 표에 따로 표시만 됩니다.
-- competitor_research_done_before: 업무로 진로·성격 검사 서비스(어느 회사든)를 조사·열람한 적이 있으면 true 와 한 줄 설명, 없으면 false.
+- competitor_research_done_before (**세 채점자 공통**, Method 6063269): 업무로 진로·성격 검사 서비스(어느 회사든)를 조사·열람·비교한 적이 있으면 true 와 한 줄 설명, 없으면 false. 솔직한 답이 중요하며 점수·판정 방식은 바뀌지 않습니다.
 `;
 const answer = bid => ({
   blind_id: bid, judge_actor_id: null, scored_at_utc: null, declaration: '',
@@ -51,14 +51,18 @@ const answer = bid => ({
   guess: { thinks_knows: null, note: '' }, outside_materials_used: null, time_spent_min: null,
   // Peer 6057976 ③: 긴 이미지 PDF는 앞부분만 읽힐 수 있다 → 실제로 본 쪽 수와 못 읽은 쪽을 적게 한다. 다 읽지 않은 채점은 표에서 따로 표시.
   pages_total: null, pages_viewed: null, unreadable_pages: [],
-  // Method 6057992: 업무로 경쟁 서비스를 조사·열람한 적이 있으면 적는다(해당되면 G21 공개)
+  // Method 6057992·6063269: 세 채점자 공통 — 업무로 경쟁 서비스를 조사·열람한 적이 있으면 적는다(해당되면 G21 공개)
   competitor_research_done_before: null,
 });
 // 패킷 문서 누출 검사 (Peer ③): RUBRIC/README/ANSWER에 명부 이름·자사명이 들어가면 중단
 const banned = ['인생포트폴리오', 'lifeportfolio', 'q90', 'roster', 'e2-samples', 'docs/q90-public'];
 if (ROSTER && fs.existsSync(ROSTER)) {
   const ro = JSON.parse(fs.readFileSync(ROSTER, 'utf8'));
-  for (const r of (ro.rows || [])) for (const k of ['name', 'provider', 'domain']) if (r[k] && String(r[k]).length >= 3) banned.push(String(r[k]).toLowerCase());
+  for (const r of (ro.rows || [])) {
+    for (const k of ['name', 'provider', 'domain']) if (r[k] && String(r[k]).length >= 3) banned.push(String(r[k]).toLowerCase());
+    // Peer 6063344 조건 2: roster v2에는 domain 키가 없고 url·docs_url만 있음 → 호스트를 뽑아 넣는다
+    for (const k of ['url', 'docs_url']) { const m = /^https?:\/\/([^/]+)/.exec(r[k] || ''); if (m) { const h = m[1].toLowerCase().replace(/^www\./, ''); banned.push(h); const root = h.split('.')[0]; if (root.length >= 5) banned.push(root); } }
+  }
 }
 const leakCheck = (label, txt) => {
   const low = txt.toLowerCase(); const hits = [...new Set(banned.filter(b => low.includes(b)))];
@@ -67,7 +71,8 @@ const leakCheck = (label, txt) => {
 leakCheck('RUBRIC.md', rubricMd);
 let n = 0; const order = [];
 for (const r of e2.rows) {
-  if (!['redacted', 'redacted_pending_visual'].includes(r.status)) continue;
+  // Peer 6063344 조건 1: 시각 확인을 거치지 않은 행은 패킷이 되면 안 된다(⑩은 자동 2겹이 놓친 것을 시각 확인이 잡은 사례)
+  if (!(r.status === 'redacted' && r.redaction && r.redaction.visual_check && r.redaction.visual_check.passed === true)) continue;
   const finalName = (r.redaction && r.redaction.final_file) || `${r.blind_id}.img.pdf`;
   const src = path.join(PK, finalName); if (!fs.existsSync(src)) { console.error('missing', src); continue; }
   if (!finalName.endsWith('.img.pdf')) { console.error('not image-pdf (Peer 6054792 ① 차단급):', finalName); continue; }

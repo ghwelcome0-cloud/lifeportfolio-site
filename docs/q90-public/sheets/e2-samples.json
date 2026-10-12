@@ -138,9 +138,15 @@
     "visual_check": {
      "contact_sheet": "S-4e6f48.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "ALLOWLIST 수정 뒤 재처리(CliftonStrengths 추가 가림), 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "ALLOWLIST 수정 뒤 재처리(CliftonStrengths 추가 가림), 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -209,11 +215,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "5ddf8abbf8a938050646a7c8b2265ef83f8f12e4043dd19ac540cc1f64cf2542",
+   "packet_sha256": "26e7ae87b862c11f96dfc23d77eebfccd94d46c7d693b890cc6e9aad9525ef6d",
    "packet_files": {
     "sample.pdf": "62298a114c69ce4b25ecf01aeae0f9fe09698920c61bfb1cffae13c5b8ab5ea9",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "af137054b449e0b54661852ad5a93c35291de8cc89c3a67ce96a07be1c703bf9",
+    "README.md": "531f395a82d2c2971e8a62e82061601c0cb0ad16f252d667e500b37c331433a3",
     "ANSWER.json": "1ffa1a40c092164d7541690a1bd1fadc43631e3f31d26b1e86f69839090f9fbe"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -306,9 +312,15 @@
     "visual_check": {
      "contact_sheet": "S-da397f.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -377,11 +389,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "dacfab7d117a719f63e94d0551d37cef1836f1a4814a3c928402f2fea0434d03",
+   "packet_sha256": "986b7f7ffe43ad51ed4303edce31ac740584e4c262e5e02d9535c9e6974f22e7",
    "packet_files": {
     "sample.pdf": "bb73489b45a111b624d2ace4d63947899e371ea55cbe06022d8f1bbc36793688",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "1226533b74558c31f773aab525402ac2dc5868c50b183f1863909990f1f3c365",
+    "README.md": "a3ff329c735b38796fdd0e229e26936c6ebb95e82123aee04217ee6990b21bad",
     "ANSWER.json": "dfdcf99e07a2492ca2e537230a77f60f2a844d2402a751d7b512cc249e54d189"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -463,9 +475,15 @@
     "visual_check": {
      "contact_sheet": "S-5e149f.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -534,11 +552,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "eda54f1fbf8c0cd9b9d6327b707d2e695c5ac587f2bea76f9151f52e3fa3bd66",
+   "packet_sha256": "ceebfeb0c179329c176bb9bdd7ad70f5e2217f46f221b1d9622b703f038662d5",
    "packet_files": {
     "sample.pdf": "eef488d5a3bf0a6559ff1080d6cfeb509a88cd31c2e618fb5a3c0656c59d0371",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "904dc6247ab0d695b0cdc6cce1fdc46f3d94b71aa8083c459e5f53b8058dce87",
+    "README.md": "f8d5a60e7a94e17c9eac4e769e3dd819ac376a48b1dcc1dd7126e72d59ac16e8",
     "ANSWER.json": "fe7b2c2641ec8262e8e9fd55b6a9131867668565a751b8be6c9262b9a1e31192"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -853,9 +871,15 @@
     "visual_check": {
      "contact_sheet": "S-9d99bb.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "1차 눈 확인에서 Hogan 본문 잔존 발견(결함 ⑩: ALLOWLIST) → 수정 후 재처리, 2차 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "1차 눈 확인에서 Hogan 본문 잔존 발견(결함 ⑩: ALLOWLIST) → 수정 후 재처리, 2차 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -924,11 +948,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "4648be23755d96429d87cac2f101d26328b96088ba41ca270985f9f269dac39e",
+   "packet_sha256": "1a94d6a1ed0e877fbd3f8286a5d4f5541b92eb8efb8caff00d35ef523481c32d",
    "packet_files": {
     "sample.pdf": "baab65120368275e10ea3d6511ee2ac3040aa0603a7fd956c56d1ebdf863d8c7",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "34b41ea90273f976abcdd0be154a29d24b76b3780a043ef70fb4b977493baeb6",
+    "README.md": "a2e03cf6cc6b9541b4fbf58ae03d1c800dec4da5d253e4644ad6831b6b6149e0",
     "ANSWER.json": "8ea3c1d20e87e3ad3a0ffe30a180e5712b10afb5718d5c4aed1e1451a699bb4b"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -1070,9 +1094,15 @@
     "visual_check": {
      "contact_sheet": "S-e9e660.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -1141,11 +1171,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "383d518099461d73594756a9c17c4c4770dda43611ae8bea065e8ae5491b916e",
+   "packet_sha256": "eb9f0c64706fb1ff2da50e56fa45bd161d9d4600b6ace3c762b51bd20036cb42",
    "packet_files": {
     "sample.pdf": "203f1e1c9e9c15174c7ce3d892fcdbda6d937ac58c429f292b504e8ecea1b203",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "57bd42e7744185286237ea3de498b90d12990155d47f6aa50749fe39504f236d",
+    "README.md": "b65516907431939c02c7c4891ccb2e0790e2ee3488869ca59b063acdd429c250",
     "ANSWER.json": "3023c66259ed1389d044a4071efe29d396b22e1dd64308fb76dc0281ed09945f"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -1584,9 +1614,15 @@
     "visual_check": {
      "contact_sheet": "S-f7229a.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "1차 눈 확인에서 머리글 JANE SAMPLE 잔존 → extra 추가 재처리, 2차 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "1차 눈 확인에서 머리글 JANE SAMPLE 잔존 → extra 추가 재처리, 2차 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -1655,11 +1691,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "dca7825176f6d350ea54095f3510cfcd233aeb3d6e05e37f11f59000264fe864",
+   "packet_sha256": "e4e74b08d667d8cbf768ef4e78a8eb4f45413a449031438f62b1d2f53e66c38d",
    "packet_files": {
     "sample.pdf": "6d74432073d28f1484e4d739579e19e76c15a7a090ca3dbe6d1bceb85b98eef6",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "0756b508740cade262517cd0aa2d58fe517c46e7305f3c66516e66f6c56a5af9",
+    "README.md": "8510a77133779500f9b22c808a7a17cb350a6599f05b942278cd7be58f48f65b",
     "ANSWER.json": "0dd0f102240ef9049eb52dbf7a6ce70a6feb827b9695570dfe9388bfd9fc69c1"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -2539,9 +2575,15 @@
     "visual_check": {
      "contact_sheet": "S-10bfa2.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -2610,11 +2652,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "074484d4a555d817d1a6f003615d8d4bf10cd4caa6a200bd82bf2993be2b1e7d",
+   "packet_sha256": "4c6d05d5c3068b671723213ec2aa5e0928480e23812e213d38faa2c8a7ae7742",
    "packet_files": {
     "sample.pdf": "dd662f59460b70f4bf36edb0d25338e210be6d480dbe411faae6b17d47bed0c7",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "b3cc6efd66b382bd77bc440d474e3349eb81a93dc2313cc3e9e500e7e546e631",
+    "README.md": "f17f57181da770b68c2769e3379dc101e3bca3ef8785a2c6a8ce0092d480b3fc",
     "ANSWER.json": "3995e146802b729936d771a53546be5ae3b90b8a2032f939401d3a3f1eb41535"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -2680,9 +2722,15 @@
     "visual_check": {
      "contact_sheet": "S-04d5ce.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -2751,11 +2799,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "62def69a9bfa1c326ee5d9c88d664b36d45e661d657a2112025e51876a291745",
+   "packet_sha256": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
    "packet_files": {
     "sample.pdf": "5c59acbbfbb7060a2f3c798d25a61fd40e277b063d462dbfc1c53c960746cd55",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "6ba63e2dee855017c3461a45c12a896b678378f2ce1c23c2ababa204329dc276",
+    "README.md": "701e2cef75a994e1c2de85681bcb6f41201043e8392f573ecbeb58ebf4b24086",
     "ANSWER.json": "16cff68bfe7cdf0394cbe1fc42aa152c40e24d9736d58664a34796ea020151e0"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -3635,9 +3683,15 @@
     "visual_check": {
      "contact_sheet": "S-927ba4.img.contact.png",
      "passed": true,
-     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "by": "AI 시각 확인(gencode assistant, 사람 아님) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "1차 눈 확인에서 2쪽 하단 로고 조각(벡터) 잔존 → --boxes 2:0.05,0.78,0.20,0.95 재처리, 2차 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)"
+     "note": "1차 눈 확인에서 2쪽 하단 로고 조각(벡터) 잔존 → --boxes 2:0.05,0.78,0.20,0.95 재처리, 2차 확인 통과 | 200dpi 재렌더(rc1 오독 근거) 후 36dpi 다운샘플 픽셀 비교 가림 영역 동일 (2026-10-12T05:24:24Z)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "Peer 6063344 정정: 지금까지의 시각 확인은 AI가 한 것. 대표가 직접 보면 여기에 기록((나)안). 안 보면 (가)안으로 \"AI 시각 확인\"으로 공개."
+     }
     }
    },
    "status": "redacted",
@@ -3706,11 +3760,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "4f165932d9c5df3c2586574eb055e5b5e52f81ef14a6f90076d4d583c1f59e3b",
+   "packet_sha256": "55d6924f28487fde73fc8cc139c25d5fa009050eeddb8344dfcdfa5077dfd580",
    "packet_files": {
     "sample.pdf": "f074683aaa2179d53ee80a3562e0d636eeed13ab297d254b690476790ad6a561",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "b91b7c4f2bf99869744e05042702c2e9a360c13c9cd6fb41c9cbbf5a9b4d8d5d",
+    "README.md": "870d937ea2581c539f6e72abd970c397ff6741840cb1060171b2444a1af56161",
     "ANSWER.json": "722b4c4f5574e546fa6dd4d95afad5ddf71799c78ac358b201444d33b8b78d69"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
@@ -4114,7 +4168,11 @@
      "rc2": "pass 9/9"
     },
     "packets": {},
-    "dm_history_note": "기존 DM 3건(2026-09-11 LP-GROWTH 브랜드 검토 — Q90 아님, 자사 홍보 문구 봄)"
+    "dm_history_note": "기존 DM 3건(2026-09-11 LP-GROWTH 브랜드 검토 — Q90 아님, 자사 홍보 문구 봄)",
+    "self_declaration_fields": [
+     "declaration(관여 0)",
+     "competitor_research_done_before(세 명 공통, Method 6063269)"
+    ]
    },
    {
     "role": "judge2",
@@ -4126,7 +4184,11 @@
      "rc2": "pass 9/9"
     },
     "packets": {},
-    "dm_history_note": "기존 DM 0건(인사말만)"
+    "dm_history_note": "기존 DM 0건(인사말만)",
+    "self_declaration_fields": [
+     "declaration(관여 0)",
+     "competitor_research_done_before(세 명 공통, Method 6063269)"
+    ]
    },
    {
     "role": "third",
@@ -4138,8 +4200,11 @@
      "rc2": "pass 9/9"
     },
     "packets": {},
-    "condition": "Method 6057992: 경쟁 서비스 업무 조사 여부 자기선언 1줄 추가(competitor_research_done_before)",
-    "dm_history_note": "기존 DM 7건(2026-09-11 SEO 공개 진단 — Q90 아님, 자사 사이트 봄)"
+    "dm_history_note": "기존 DM 7건(2026-09-11 SEO 공개 진단 — Q90 아님, 자사 사이트 봄)",
+    "self_declaration_fields": [
+     "declaration(관여 0)",
+     "competitor_research_done_before(세 명 공통, Method 6063269)"
+    ]
    }
   ],
   "packet_record_schema": {
@@ -4160,6 +4225,6 @@
    ],
    "criterion": "Q90(1·2회차 전 역할, task #47·#55·#56·#57, holdout, X1~X4) 관여 0, #lp-quality-gate 비멤버"
   },
-  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완."
+  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록."
  }
 }
