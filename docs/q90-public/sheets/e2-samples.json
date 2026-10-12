@@ -215,11 +215,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "26e7ae87b862c11f96dfc23d77eebfccd94d46c7d693b890cc6e9aad9525ef6d",
+   "packet_sha256": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
    "packet_files": {
     "sample.pdf": "62298a114c69ce4b25ecf01aeae0f9fe09698920c61bfb1cffae13c5b8ab5ea9",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "531f395a82d2c2971e8a62e82061601c0cb0ad16f252d667e500b37c331433a3",
+    "README.md": "85be95f6e4c8a58507ec67f12e3e7983eb7fd395dab389c8a430a1ea278f9e57",
     "ANSWER.json": "1ffa1a40c092164d7541690a1bd1fadc43631e3f31d26b1e86f69839090f9fbe"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -397,11 +397,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "986b7f7ffe43ad51ed4303edce31ac740584e4c262e5e02d9535c9e6974f22e7",
+   "packet_sha256": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
    "packet_files": {
     "sample.pdf": "bb73489b45a111b624d2ace4d63947899e371ea55cbe06022d8f1bbc36793688",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "a3ff329c735b38796fdd0e229e26936c6ebb95e82123aee04217ee6990b21bad",
+    "README.md": "c73556b33117f66c074032275812fdd8f288c50599eb1658236d10be21989d23",
     "ANSWER.json": "dfdcf99e07a2492ca2e537230a77f60f2a844d2402a751d7b512cc249e54d189"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -568,11 +568,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "ceebfeb0c179329c176bb9bdd7ad70f5e2217f46f221b1d9622b703f038662d5",
+   "packet_sha256": "094e232b32879f391c697967d611a5cc3f015232f19d10220f6938ae199babcc",
    "packet_files": {
     "sample.pdf": "eef488d5a3bf0a6559ff1080d6cfeb509a88cd31c2e618fb5a3c0656c59d0371",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "f8d5a60e7a94e17c9eac4e769e3dd819ac376a48b1dcc1dd7126e72d59ac16e8",
+    "README.md": "d390d65eafc30f4a4181a2f32fe782b5f129ea27991dcf55817d55cfbbc98d4b",
     "ANSWER.json": "fe7b2c2641ec8262e8e9fd55b6a9131867668565a751b8be6c9262b9a1e31192"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -972,11 +972,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "1a94d6a1ed0e877fbd3f8286a5d4f5541b92eb8efb8caff00d35ef523481c32d",
+   "packet_sha256": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
    "packet_files": {
     "sample.pdf": "baab65120368275e10ea3d6511ee2ac3040aa0603a7fd956c56d1ebdf863d8c7",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "a2e03cf6cc6b9541b4fbf58ae03d1c800dec4da5d253e4644ad6831b6b6149e0",
+    "README.md": "eaf166428abfd8b55ebe675c95ede48c04d6ad7c1ef194401039a03894d10a6a",
     "ANSWER.json": "8ea3c1d20e87e3ad3a0ffe30a180e5712b10afb5718d5c4aed1e1451a699bb4b"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -1203,11 +1203,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "eb9f0c64706fb1ff2da50e56fa45bd161d9d4600b6ace3c762b51bd20036cb42",
+   "packet_sha256": "81a4abf40a15f068fb6ccfa102d511aa4365233470deef31f7103d8957994ee6",
    "packet_files": {
     "sample.pdf": "203f1e1c9e9c15174c7ce3d892fcdbda6d937ac58c429f292b504e8ecea1b203",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "b65516907431939c02c7c4891ccb2e0790e2ee3488869ca59b063acdd429c250",
+    "README.md": "b64acb7598868b5cdcd90103e419b423d19e73e2da1124dea04e6c7f0201d252",
     "ANSWER.json": "3023c66259ed1389d044a4071efe29d396b22e1dd64308fb76dc0281ed09945f"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -1731,11 +1731,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "e4e74b08d667d8cbf768ef4e78a8eb4f45413a449031438f62b1d2f53e66c38d",
+   "packet_sha256": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
    "packet_files": {
     "sample.pdf": "6d74432073d28f1484e4d739579e19e76c15a7a090ca3dbe6d1bceb85b98eef6",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "8510a77133779500f9b22c808a7a17cb350a6599f05b942278cd7be58f48f65b",
+    "README.md": "4a11c284f7a0b58f04475a50a1229855c8d3cae5535f2e500cb16cee2728df65",
     "ANSWER.json": "0dd0f102240ef9049eb52dbf7a6ce70a6feb827b9695570dfe9388bfd9fc69c1"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -2700,11 +2700,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "4c6d05d5c3068b671723213ec2aa5e0928480e23812e213d38faa2c8a7ae7742",
+   "packet_sha256": "91352576a76890f5cb7551e55214783922beca96c00b7a66766c865be42417dd",
    "packet_files": {
     "sample.pdf": "dd662f59460b70f4bf36edb0d25338e210be6d480dbe411faae6b17d47bed0c7",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "f17f57181da770b68c2769e3379dc101e3bca3ef8785a2c6a8ce0092d480b3fc",
+    "README.md": "5cf0d178e4bb75e7f9f1dabbd510a90ae6aa898d0d84939719cea344131a93a9",
     "ANSWER.json": "3995e146802b729936d771a53546be5ae3b90b8a2032f939401d3a3f1eb41535"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -2855,11 +2855,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+   "packet_sha256": "477f0d940d86e0d9bf4521a71a982ad38c55435f478b278f451e422cde0d5f6f",
    "packet_files": {
     "sample.pdf": "5c59acbbfbb7060a2f3c798d25a61fd40e277b063d462dbfc1c53c960746cd55",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "701e2cef75a994e1c2de85681bcb6f41201043e8392f573ecbeb58ebf4b24086",
+    "README.md": "2f008e09cc735d422ef203ddce223566fc323f72a1bdd5f35d4374aa0c9899e7",
     "ANSWER.json": "16cff68bfe7cdf0394cbe1fc42aa152c40e24d9736d58664a34796ea020151e0"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -3824,11 +3824,11 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "55d6924f28487fde73fc8cc139c25d5fa009050eeddb8344dfcdfa5077dfd580",
+   "packet_sha256": "612da4dc829ed2ab3e12bd7b948788ab42736ba9d4ba3b6a7f65a816ebcd4490",
    "packet_files": {
     "sample.pdf": "f074683aaa2179d53ee80a3562e0d636eeed13ab297d254b690476790ad6a561",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "870d937ea2581c539f6e72abd970c397ff6741840cb1060171b2444a1af56161",
+    "README.md": "d280fb43a7c99b581ad70ca1cfac0d7bb81079da3e3365c38730785bf9d077eb",
     "ANSWER.json": "722b4c4f5574e546fa6dd4d95afad5ddf71799c78ac358b201444d33b8b78d69"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
@@ -4357,6 +4357,18 @@
       "answered_at": "2026-10-12T05:46:55Z",
       "first_line_declaration_ok": true
      }
+    },
+    "packets": {
+     "S-04d5ce": {
+      "sent_msg_id": "6067385",
+      "sent_at": "2026-10-12T06:10:03Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/0Svasr3W",
+      "attachment_sha256_sent": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+      "attachment_sha256_received_redownload": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+      "bytes_match": true,
+      "reply_msg_id": null,
+      "answer_sha256": null
+     }
     }
    },
    {
@@ -4483,7 +4495,8 @@
      "declaration(관여 0)",
      "competitor_research_done_before(세 명 공통, Method 6063269)"
     ],
-    "model_display": "모름 — 런타임이 제품 표시명 미제공, 내부 식별자 비공개 규칙(자기신고 6066088)"
+    "model_display": "모름 — 런타임이 제품 표시명 미제공, 내부 식별자 비공개 규칙(자기신고 6066088)",
+    "status": "active"
    },
    {
     "role": "third",
@@ -4500,14 +4513,21 @@
      "declaration(관여 0)",
      "competitor_research_done_before(세 명 공통, Method 6063269)"
     ],
-    "model_display": "Claude Sonnet 5.5 (자기신고 6066087)"
+    "model_display": "Claude Sonnet 5.5 (자기신고 6066087)",
+    "status": "replaced",
+    "pre_memory_check": {
+     "msg": 6067441,
+     "Q1": "예, 5개(MEMORY.md+notes 4) — 전부 자사 인생포트폴리오 관련(공개 사이트 관찰·현행 상품 정보 포함). 본인이 \"이해관계 있음\" 자진 신고",
+     "Q2": "예(기록 안 함 약속)",
+     "ruling": "결박 규칙상 자사=명부 행 → Q1 예 → 제3자 교체. 채점 미참여였으므로 무효 처리할 답안 없음."
+    }
    },
    {
     "role": "judge1",
     "actor_id": "agent_eqfq2vg1m72e",
     "display": "데스크톱 컴퓨터 관리자",
     "dm_channel_id": "ch_dm_5a346861bd600f17b575",
-    "status": "candidate_pending_team_ok",
+    "status": "active",
     "isolation": {
      "docs_grep": 0,
      "lp_quality_gate_member": false,
@@ -4530,13 +4550,54 @@
       "사용자 선호(젠스파크만·중학생 눈높이·Gemini CLI)",
       "작업 기록(데스크톱 연결·GenCode 보류·GEMINI.md)",
       "대화방 정보(빈)"
-     ]
+     ],
+     "note": "사전 Q2는 \"자사 작업 참여\" 질문 — 채점 후 원래 Q2(\"채점 중 메모 기록\")를 같은 문장으로 다시 받음(Peer 6067451 조건)"
     },
     "read_check": {
      "rc2": "pass 9/9, 18쪽 전부 열람(빈 하단 40%까지 확인)",
      "msg": 6067007
     },
-    "packets": {}
+    "packets": {
+     "S-04d5ce": {
+      "sent_msg_id": "6067593",
+      "sent_at": "2026-10-12T06:12:33Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/55qVDHu4",
+      "attachment_sha256_sent": "477f0d940d86e0d9bf4521a71a982ad38c55435f478b278f451e422cde0d5f6f",
+      "attachment_sha256_received_redownload": "477f0d940d86e0d9bf4521a71a982ad38c55435f478b278f451e422cde0d5f6f",
+      "bytes_match": true,
+      "reply_msg_id": "6067719",
+      "answer_sha256": "ef703111d1d2a5cb88726b0a2bfe2e50c8974223311a94d6c2dbb0b4e65ab85f",
+      "answered_at": "2026-10-12T06:14:06Z",
+      "first_line_declaration_ok": true
+     },
+     "S-10bfa2": {
+      "sent_msg_id": "6067729",
+      "sent_at": "2026-10-12T06:14:14Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/yzA02lcv",
+      "attachment_sha256_sent": "91352576a76890f5cb7551e55214783922beca96c00b7a66766c865be42417dd",
+      "attachment_sha256_received_redownload": "91352576a76890f5cb7551e55214783922beca96c00b7a66766c865be42417dd",
+      "bytes_match": true,
+      "reply_msg_id": "6067888",
+      "answer_sha256": "ae3726aef81b27cfd121b5687e6fa832a101743d4912abcd203e7039bdf6aec2",
+      "answered_at": "2026-10-12T06:15:46Z",
+      "first_line_declaration_ok": true
+     },
+     "S-4e6f48": {
+      "sent_msg_id": "6067991",
+      "sent_at": "2026-10-12T06:15:56Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/Nkfpgbn9",
+      "attachment_sha256_sent": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
+      "attachment_sha256_received_redownload": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
+      "bytes_match": true,
+      "reply_msg_id": null,
+      "answer_sha256": null
+     }
+    },
+    "team_ok": {
+     "TL": 6067449,
+     "Peer": 6067451,
+     "Method": 6067470
+    }
    }
   ],
   "packet_record_schema": {
@@ -4557,7 +4618,7 @@
    ],
    "criterion": "Q90(1·2회차 전 역할, task #47·#55·#56·#57, holdout, X1~X4) 관여 0, #lp-quality-gate 비멤버"
   },
-  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록.",
+  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록. judge1은 원 후보(Brand Strategist) 무효 후 교체(사유: 자사 브랜드 검토 기억). 교체 judge1은 데스크톱 관리 역할의 AI 에이전트, judge2는 디자인 역할 — 둘 다 분야 전문가 아님. 제3자(SEO Specialist)도 자사 SEO 담당으로 자진 신고하여 교체.",
   "third_stage": {
    "prepared_at": "2026-10-12T05:49:30Z",
    "axes_needing_third": 0,
@@ -4617,8 +4678,36 @@
      "deleted_confirmed_msg": 6066665,
      "checkpoint_history_note": "작업 폴더 자동 체크포인트에 삭제 전 버전이 남아 있을 수 있음(judge1 고지). 이력은 손대지 않음."
     }
-   }
+   },
+   "q1_company_definition": "Q1의 \"회사\" = 명부 41행에 있는 회사, 또는 진로·심리·적성검사를 제공하는 회사. 플랫폼·도구 회사(Genspark 등)는 해당 없음 (TL 6067449 결박, Method 6067470·Peer 6067451 동의)"
   },
-  "model_note": "judge1·제3자 = Claude Sonnet 5.5(자기신고). judge2 모델 미확인 → 같은 모델 여부 판단 불가. 표에는 \"두 judge 일치율은 기술 통계일 뿐 평가자 간 신뢰도 아님(모델 동일성 미확인)\"으로 적는다. Genny 4005983 로스터 표시(09-11)는 전원 claude-fable-5-1 → 동일 모델일 가능성 높음(추정)."
+  "model_note": "judge1·제3자 = Claude Sonnet 5.5(자기신고). judge2 모델 미확인 → 같은 모델 여부 판단 불가. 표에는 \"두 judge 일치율은 기술 통계일 뿐 평가자 간 신뢰도 아님(모델 동일성 미확인)\"으로 적는다. Genny 4005983 로스터 표시(09-11)는 전원 claude-fable-5-1 → 동일 모델일 가능성 높음(추정).",
+  "selection_order_bound": "4단계 격리 → memory_check(채점 전) → read_check → 패킷 (op:151 결박, 3인 동의)",
+  "excluded_for_future_rounds": [
+   "agent_7c87affr9bvf Brand Strategist (memory_check Q1 자사 관련 → 무효, 다음 회차 미사용)"
+  ],
+  "third_candidates_screened": [
+   {
+    "actor_id": "agent_dr764xprg5cv",
+    "display": "SEO Specialist",
+    "result": "교체 — Q1 예(자사 노트 5개, 공개 사이트 관찰·상품 정보), 본인 이해관계 자진 신고(6067441)"
+   },
+   {
+    "actor_id": "agent_fmzqbh39p4k3",
+    "display": "Compositing / VFX Supervisor",
+    "result": "제외 — Q2 예(자사 마케팅 쇼츠 VFX·롱폼 QC 참여), Q1 예(마케팅 노트 3개). rc2 9/9, Opus 5.5 (6068071)"
+   },
+   {
+    "actor_id": "agent_mrr4g5dwnbyd",
+    "display": "브랜드 전략가",
+    "result": "제외 — Genny 4005983 Q90 R19 예비 판정자 거명"
+   },
+   {
+    "actor_id": "agent_pt2dn9rvtxrc / agent_0m3vxhdk2sfv",
+    "display": "3D Motion Director / VFX Backup",
+    "result": "제외 — 제품 커스텀 에이전트, 자사 마케팅 영상 파이프라인 채널 멤버"
+   }
+  ],
+  "third_stage_plan": "제3자는 차이≥2 축이 생길 때만 필요. 기존 42명 중 결박 기준(자사 작업 0·검사 서비스 메모 0)을 만족하는 후보 없음. 새 judge1 답안이 모두 오면 차이≥2 축 수를 레벨 비공개 파일로만 계산 → 0이면 제3자 불필요(규칙상 낮은 값), ≥1이면 대표 승인 받아 새 에이전트 생성 후 4단계+memory_check+rc2."
  }
 }

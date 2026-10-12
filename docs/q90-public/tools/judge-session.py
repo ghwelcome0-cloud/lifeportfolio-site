@@ -25,7 +25,7 @@ def gsk(*args, infile=None):
     try: return json.loads(out)
     except Exception: return {'raw': out[:500]}
 
-def judge(role): return next(j for j in js['judges'] if j['role'] == role)
+def judge(role): return next(j for j in js['judges'] if j['role'] == role and j.get('status', 'active') in ('active',))  # 무효·교체된 judge는 건너뜀
 def save(): json.dump(d, open(E2, 'w'), ensure_ascii=False, indent=1)
 
 PACKET_MSG = """[채점 패킷 {n}/{total} · {bid}]
@@ -38,6 +38,7 @@ PACKET_MSG = """[채점 패킷 {n}/{total} · {bid}]
 
 if CMD == 'status':
     for j in js['judges']:
+        if j.get('status', 'active') != 'active': continue
         pk = j.get('packets', {})
         print(j['role'], j['actor_id'], 'sent', len(pk), 'answered', sum(1 for v in pk.values() if v.get('reply_msg_id')))
     sys.exit()
