@@ -2049,18 +2049,136 @@
    "id": "G15b",
    "name": "Self-Directed Search (PAR)",
    "blind_id": "S-7da6e0",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+   "sample_sha256": "cc9230c4e184b0a7c509828e98d647931aade4441cd8a3d621755a368014ffa4",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "PAR",
+      "n": 9
+     },
+     {
+      "term": "Holland",
+      "n": 5
+     },
+     {
+      "term": "HOLLAND",
+      "n": 5
+     },
+     {
+      "term": "SDS",
+      "n": 4
+     },
+     {
+      "term": "Search",
+      "n": 4
+     },
+     {
+      "term": "Standard",
+      "n": 3
+     },
+     {
+      "term": "StandardSDS",
+      "n": 3
+     },
+     {
+      "term": "Standar",
+      "n": 3
+     },
+     {
+      "term": "Resources",
+      "n": 3
+     },
+     {
+      "term": "Self-Directed",
+      "n": 2
+     },
+     {
+      "term": "PAR, Inc",
+      "n": 2
+     },
+     {
+      "term": "Self-Directed Search",
+      "n": 1
+     },
+     {
+      "term": "©-line",
+      "n": 1
+     },
+     {
+      "term": "self-directed-search",
+      "n": 1
+     },
+     {
+      "term": "866.727.2884",
+      "n": 1
+     },
+     {
+      "term": "self-directed-search.com",
+      "n": 1
+     },
+     {
+      "term": "1.866.727.2884",
+      "n": 1
+     },
+     {
+      "term": "727.2884",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "8157ce56820bd605511f2a2195e5d3525956cf5e94d235bea833f978ec5d88a5",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 155,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "career": [
+        3,
+        4,
+        5,
+        6,
+        8
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T08:32:08Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "77b37f03cb9037ca201f5787bdd4be9f637a3e6c7735e519d77204d12b766f15",
+    "final_file": "S-7da6e0.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "9e7444c258eb5b67463ec1dac60086e47f2c7c48cc17e6759291e7aed14f9e05",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "passed": true,
+     "by": "AI 어시스턴트(총괄 세션) — 사람 아님",
+     "checked_at": "2026-10-12T08:50Z",
+     "pages_viewed": "contact sheet 8/8 + 1·2·5·8쪽 확대",
+     "findings": "1차: 8쪽 전화번호(1.866.727.2884)·\"Standar\" 절단 조각 잔존 → 추가어로 2차 가림 후 0건. 부수 효과: \"comparing\"·\"prepared\" 안의 PAR가 가려짐(식별 정보 아님, 가독성 소손 2곳).",
+     "extra_terms_round2": [
+      "1.866.727.2884 변형 6",
+      "Standar",
+      "StandardSDS",
+      "StudentSDS",
+      "VeteranSDS"
+     ]
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -2126,13 +2244,20 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
    "denominator_class": {
-    "class": "미확보(비공개 포함)",
+    "class": "확보(2026-10-12 수집)",
     "evidence_url": "https://self-directed-search.com/what-is-it/",
-    "evidence_line": "공식 샘플 PDF 3종 링크 존재(Standard/Student/Veteran) — 이번 회차 수집 전(확보 대상, 다음 배치).",
+    "evidence_line": "공식 샘플 PDF 3종 링크 존재(Standard/Student/Veteran) — 이번 회차 수집 전(확보 대상, 다음 배치). → 같은 날 수집 완료(8p, sha cc9230c4e184…)",
     "checked_at": "2026-10-12T08:35Z"
-   }
+   },
+   "packet_files": {
+    "sample.pdf": "77b37f03cb9037ca201f5787bdd4be9f637a3e6c7735e519d77204d12b766f15",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "4c03cc21119d2b2a9d3d9484ee3803741d492dcb0694fcfc98a0cede5ca1f363",
+    "ANSWER.json": "d45d3535f86542d2a77ef9b2178d555ee2d6d542b193a2825f88bbf87a8c9318"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "E01",
@@ -4514,6 +4639,7 @@
   "S-10bfa2",
   "S-4e6f48",
   "S-5e149f",
+  "S-7da6e0",
   "S-927ba4",
   "S-9d99bb",
   "S-da397f",
@@ -4906,6 +5032,18 @@
       "answer_sha256": "33fdc61401b1dc7b9380af9b0d8954af1324b095807b7a1dfe57852395bcaa80",
       "answered_at": "2026-10-12T05:46:57Z",
       "first_line_declaration_ok": true
+     },
+     "S-7da6e0": {
+      "sent_msg_id": "6081351",
+      "sent_at": "2026-10-12T08:33:38Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/rGvhj3fE",
+      "attachment_sha256_sent": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
+      "attachment_sha256_received_redownload": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
+      "bytes_match": true,
+      "reply_msg_id": "6081451",
+      "answer_sha256": "a99705f93e7cdf89b0f03812673e1d409ffc01f9797e6590e940ed33d05d3393",
+      "answered_at": "2026-10-12T08:34:45Z",
+      "first_line_declaration_ok": true
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5082,6 +5220,18 @@
       "reply_msg_id": "6069346",
       "answer_sha256": "16b6453b5dcd4330ffba6ebfa0556ced40d6cd6f5b39f29917db0b04488254bf",
       "answered_at": "2026-10-12T06:27:30Z",
+      "first_line_declaration_ok": true
+     },
+     "S-7da6e0": {
+      "sent_msg_id": "6081344",
+      "sent_at": "2026-10-12T08:33:31Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/t6X5gvLr",
+      "attachment_sha256_sent": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
+      "attachment_sha256_received_redownload": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
+      "bytes_match": true,
+      "reply_msg_id": "6081507",
+      "answer_sha256": "ad45f044880a04d02c40a067f75f18aca533b5b094dafb384159d7041ed00556",
+      "answered_at": "2026-10-12T08:35:47Z",
       "first_line_declaration_ok": true
      }
     },
@@ -5418,5 +5568,23 @@
   "n_measured": 9,
   "public_line": "E2 측정 9 / 대상 37(해당 없음 3 제외) / 명부 40",
   "verification": "해당 없음 행 TL·Peer 각 1회 대조 대기"
+ },
+ "packet_order_round1": [
+  "S-04d5ce",
+  "S-10bfa2",
+  "S-4e6f48",
+  "S-5e149f",
+  "S-927ba4",
+  "S-9d99bb",
+  "S-da397f",
+  "S-e9e660",
+  "S-f7229a"
+ ],
+ "packet_round2": {
+  "blind_ids": [
+   "S-7da6e0"
+  ],
+  "built_at": "2026-10-12T08:52Z",
+  "note": "2회차 패킷 1건(G15b). 1회차 9건 sha 불변 확인(S-4e6f48 bf6ea8f1…, S-9d99bb bf2d3ff2…). 같은 judge1·judge2에게 같은 절차(패킷→답→사후 Q2)로 발송."
  }
 }

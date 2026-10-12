@@ -1858,16 +1858,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+    "source_url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+    "collected_at": "2026-10-12",
+    "note": "공식 사이트 what-is-it 페이지 링크 StandardSDS report(8p) — 2026-10-12 수집 | 4465297 bytes, 8p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "cc9230c4e184b0a7c509828e98d647931aade4441cd8a3d621755a368014ffa4",
+    "source_url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
