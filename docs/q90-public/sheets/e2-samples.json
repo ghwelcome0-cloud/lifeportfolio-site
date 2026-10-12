@@ -1,7 +1,7 @@
 {
  "sheet": "E2 공개 샘플 리포트 블라인드 채점",
  "roster_version": "v2.0",
- "generatedAt": "2026-10-12T01:07:37.567Z",
+ "generatedAt": "2026-10-12T01:24:12.127Z",
  "salt_sha256": "5516a97eae8a7825cc28f18f8b77c347b346cab929dc0e71c23264b33185a500",
  "salt_revealed": null,
  "blind_id_rule": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수, 총괄 보관, 채점 뒤 공개",
@@ -48,8 +48,8 @@
    "id": "M01",
    "name": "CliftonStrengths 34 (Gallup)",
    "blind_id": "S-4e6f48",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+   "sample_sha256": "787fa3b55f47988cd710a6d7ebb7e2adbcad90b6f7f5fdd3c2189c844a11b57c",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -59,7 +59,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -131,8 +131,8 @@
    "id": "M02",
    "name": "Everything DiSC Workplace (Wiley)",
    "blind_id": "S-da397f",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+   "sample_sha256": "3960cd201c2a090ad76bbacc8a24058d85a145d4af78aa25b8d492e152cb7331",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -142,7 +142,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -214,8 +214,8 @@
    "id": "M03",
    "name": "MBTI Complete (Myers-Briggs Co.)",
    "blind_id": "S-5e149f",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+   "sample_sha256": "72f8773e4c08ed644548f72603b9fbe8d37d4bbce796930f7030ea866e99304d",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -225,7 +225,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -297,7 +297,7 @@
    "id": "G01",
    "name": "VIA Survey (VIA Institute)",
    "blind_id": "S-7b229a",
-   "sample_url": null,
+   "sample_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
    "sample_sha256": null,
    "redaction": {
     "items_found": [],
@@ -308,7 +308,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ineligible",
    "judge1": {
     "A1": {
      "level": null,
@@ -546,8 +546,8 @@
    "id": "G04",
    "name": "Hogan Insight",
    "blind_id": "S-9d99bb",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+   "sample_sha256": "de5927e92ce87cb196f735a8494b87b05d782a9f611c51aaa5f0158e5a3ece85",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -557,7 +557,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -629,7 +629,7 @@
    "id": "G06",
    "name": "Birkman Signature",
    "blind_id": "S-fbc32a",
-   "sample_url": null,
+   "sample_url": "https://birkman.com/resources/ebooks/sample-signature-report-download",
    "sample_sha256": null,
    "redaction": {
     "items_found": [],
@@ -712,8 +712,8 @@
    "id": "G07",
    "name": "PI Behavioral Assessment",
    "blind_id": "S-e9e660",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+   "sample_sha256": "ddf9cb9d59ea1efdb1c7031d46ba36aa1984913160fab0acfb953ac364f63b4d",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -723,7 +723,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -1127,8 +1127,8 @@
    "id": "G14",
    "name": "Strong Interest Inventory",
    "blind_id": "S-f7229a",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+   "sample_sha256": "63b66d5c1ea80fe962a7b139df06f50aba5ef1aeed8b8a89685cdee47a1a79d9",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -1138,7 +1138,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -1210,7 +1210,7 @@
    "id": "G15a",
    "name": "O*NET Interest Profiler",
    "blind_id": "S-c2bcdd",
-   "sample_url": null,
+   "sample_url": "https://www.onetcenter.org/dl_tools/ipsf/IP_Score_Report.pdf",
    "sample_sha256": null,
    "redaction": {
     "items_found": [],
@@ -1221,7 +1221,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ineligible",
    "judge1": {
     "A1": {
      "level": null,
@@ -2040,7 +2040,7 @@
    "id": "K03",
    "name": "어세스타 STRONG II",
    "blind_id": "S-10bfa2",
-   "sample_url": null,
+   "sample_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
    "sample_sha256": null,
    "redaction": {
     "items_found": [],
@@ -2123,8 +2123,8 @@
    "id": "K05",
    "name": "태니지먼트 강점 리포트",
    "blind_id": "S-04d5ce",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+   "sample_sha256": "4df5a39ad5f86e0cf4a6203937bd51121cb37b8a281f8d0edca1bd8c15345ca0",
    "redaction": {
     "items_found": [],
     "tool_sha256": null,
@@ -2134,7 +2134,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ready",
    "judge1": {
     "A1": {
      "level": null,
@@ -3036,7 +3036,7 @@
    "id": "K17",
    "name": "어세스타 MBTI Form M(한국판)",
    "blind_id": "S-927ba4",
-   "sample_url": null,
+   "sample_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
    "sample_sha256": null,
    "redaction": {
     "items_found": [],

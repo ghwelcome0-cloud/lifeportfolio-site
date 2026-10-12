@@ -26,13 +26,18 @@ const bid = id => salt ? 'S-' + crypto.createHash('sha256').update(Buffer.concat
 const AX = ['A1', 'A2', 'A3', 'A4', 'A5'];
 const judge = () => ({ ...Object.fromEntries(AX.map(a => [a, { level: null, reason: '' }])), guess: { thinks_knows: null, note: '' } });
 const rows = roster.rows.filter(r => !r.own).map(r => {
-  if (prev[r.id]) { const o = prev[r.id]; if (!o.blind_id && salt) o.blind_id = bid(r.id); if (!('packet_sha256' in o)) o.packet_sha256 = null; for (const j of ['judge1','judge2']) if (o[j] && !o[j].guess) o[j].guess = { thinks_knows: null, note: '' }; return o; } // 기존 값 보존 + 새 칸만 보충
+  if (prev[r.id]) { const o = prev[r.id]; if (!o.blind_id && salt) o.blind_id = bid(r.id); if (!('packet_sha256' in o)) o.packet_sha256 = null; for (const j of ['judge1','judge2']) if (o[j] && !o[j].guess) o[j].guess = { thinks_knows: null, note: '' };
+    // 아직 채점 전인 행은 E3 시트의 샘플 정보(URL·sha·적합 판정)를 다시 읽어 상태를 맞춘다. 채점이 시작된 행(judged 이후)은 손대지 않는다.
+    if (!['judged', 'resolved', 'final'].includes(o.status)) { const d = e3[r.id]; const ok = d && d.e2_eligible && d.e2_eligible.value === true && d.sample_report_sha256 && d.sample_report_sha256.value;
+      if (ok) { o.sample_url = d.sample_report_url.value; o.sample_sha256 = d.sample_report_sha256.value; o.status = o.status === 'redacted' ? 'redacted' : 'ready'; }
+      else { o.sample_url = (d && d.sample_report_url && d.sample_report_url.value) || null; o.sample_sha256 = null; o.status = (d && d.e2_eligible && d.e2_eligible.value === false) ? 'ineligible' : 'no_sample'; } }
+    return o; } // 기존 값 보존 + 새 칸 보충 + 샘플 상태 동기화
   const s = e3[r.id] && e3[r.id].sample_report_url && e3[r.id].sample_report_url.value;
   return {
     id: r.id, name: r.name, blind_id: bid(r.id),
     sample_url: s || null, sample_sha256: s ? (e3[r.id].sample_report_sha256.value || null) : null,
     redaction: { items_found: [], tool_sha256: null, leak_check: { roster_strings_found: null, checked_at: null }, redacted_sha256: null }, packet_sha256: null,
-    status: s ? 'ready' : 'no_sample', // no_sample → ready → redacted → judged(2인) → resolved → final
+    status: s ? 'ready' : 'no_sample', // no_sample | ineligible → ready → redacted → judged(2인) → resolved → final
     judge1: judge(), judge2: judge(), judge3: null, // judge3 = {A?: {picked: 'judge1'|'judge2', reason}} 차이≥2 축만
     final: Object.fromEntries(AX.map(a => [a, null])),
     ...Object.fromEntries(AX.map(a => [a, null])) // build-table이 읽는 칸(final과 동일 값)
@@ -51,4 +56,4 @@ fs.writeFileSync(OUT, JSON.stringify({
   judge_repo_access: { judge1: null, judge2: null, judge3: null }, // GenTeam agent면 저장소 읽기 가능 여부(true/false) — 추정 위험 기록, guess 칸과 별개
   rows
 }, null, 1));
-console.log('rows', rows.length, 'ready', rows.filter(r => r.status === 'ready').length, 'no_sample', rows.filter(r => r.status === 'no_sample').length, 'blind_id', salt ? 'set' : 'EMPTY(salt 없음 — 채점 시작 불가)', '→', OUT);
+console.log('rows', rows.length, 'ready', rows.filter(r => r.status === 'ready').length, 'ineligible', rows.filter(r => r.status === 'ineligible').length, 'no_sample', rows.filter(r => r.status === 'no_sample').length, 'blind_id', salt ? 'set' : 'EMPTY(salt 없음 — 채점 시작 불가)', '→', OUT);

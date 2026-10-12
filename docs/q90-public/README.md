@@ -17,7 +17,9 @@
 | `tools/gen-e3-sheet.cjs` | E3 공개 문서 수집 시트 생성(값마다 `source_url`·`collected_at`) | — |
 | `tools/gen-e2-sheet.cjs` | E2 공개 샘플 리포트 블라인드 채점 시트 생성(blind_id, judge 2인+제3자) | — |
 | `tools/build-table.cjs` | 표 빌더 → `table-v2.{md,html,json}` (프로필형·순위 없음·셀마다 근거 등급) | — |
-| `tools/diff-runs.cjs` | 두 run 사이 E1 변화 목록 | — |
+| `tools/diff-runs.cjs` | 두 run 사이 E1 변화(레벨·원시값·바이트 hash 3층) | — |
+| `tools/fetch-sample.cjs` | E2 샘플 리포트 내려받아 sha256·쪽수 기록(원본은 저장소 밖, AI Drive 백업) | — |
+| `tools/progress.cjs` | 진행률 계산(`--md`로 대표 보고용 표) — 추정 없이 "표에 올릴 수 있는 상태"만 셈 | — |
 | `sheets/e3-docs.json` | E3 수집 시트 (41행, 채우는 중) | 수집할 때마다 |
 | `sheets/e2-samples.json` | E2 채점 시트 (40행, 샘플 URL 확보분만 `ready`). `salt_sha256` 결박됨; salt 원본은 저장소 밖(총괄 보관, AI Drive 백업), 채점 뒤 `salt_revealed`에 공개 | 채점할 때마다 |
 | `runs/2026-10-09-r1/` | G18 1차 실측(26행) — 구 도구 결과를 `e1-results.json`으로 감싸 이관 | 고정 |
@@ -55,8 +57,9 @@ node tools/diff-runs.cjs runs/2026-10-11-r2 $RUN
 - [x] 루브릭 v2 고정, D1~D7 승인 반영
 - [x] 도구 6종, r1/r2 run 이관(E1 26행), 표 v2 빈 틀 생성 (E1 셀만 채워짐: A6 부분 3/6지표, A7 등급)
 - [x] E2 블라인드 결박: salt 기반 blind_id(salt_sha256 `5516a97e…`), 내용 가림 목록·누출 검사, 집계(차이≤1 낮은 값 / ≥2 제3자 선택), actor 격리 — 2026-10-12 팀 권고 반영
-- [ ] E3 수집 — 41행 × 17칸. **10/41 착수**(2026-10-12: 고용24 7행·커리어넷 3행, 공식 안내문 기준). 명부 v2 시간 값 정정 3건(K08 90→80, K13 20→10, K14 20→30)은 시트 note에 기록, 명부는 그대로(값은 시트가 우선)
-- [ ] E2 — 샘플 리포트 확보 → 블라인드 2인 채점 (Q90 judge 세션과 분리)
+- [ ] E3 수집 — 핵심 7칸 기준 진행률은 `node tools/progress.cjs --md`로 본다. 2026-10-12 1차: 22/41행 착수. 명부 v2 시간 값 정정 4건(K08 90→80, K13 20→10, K14 20→30, K03 35~40)은 시트 note에 기록, 명부는 그대로(값은 시트가 우선)
+- [ ] E2 샘플 — 공식 샘플 7건 확보(M01 Gallup 25p, M02 DiSC 20p, M03 MBTI Complete 6p, G04 Hogan 18p, G07 PI 5p, G14 Strong 19p, K05 태니지먼트 24p). 부적합 2건(G01 VIA 미리보기, G15a O*NET 빈 양식). 보류: G06 Birkman(이메일 게이트), K03·K17 어세스타(서버 타임아웃, 공식 링크 기록). 원본 PDF는 저장소 밖 → AI Drive `e2-samples_2026-10-12.tar.gz`
+- [ ] E2 — 블라인드 2인 채점 (Q90 judge 세션과 분리; judge에게는 패킷만)
 - [ ] E4 — 공개 반응 방향+표본(≥20)
 - [ ] 자사 행 — Q90 2회차 scorer 결과 전사(own.json)
 - [ ] D7 — Duolingo식 카드 선택 페이지 데이터(표 확정 후)

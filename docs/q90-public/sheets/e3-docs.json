@@ -137,7 +137,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "partial"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식의 공식 샘플"
+   }
   },
   {
    "id": "M02",
@@ -249,7 +255,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "partial"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식의 공식 샘플"
+   }
   },
   {
    "id": "M03",
@@ -258,40 +270,40 @@
    "url": "https://www.themyersbriggs.com/en-us/explore-solutions/mbti",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "The Myers-Briggs Company",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "웹(MBTIonline 개인 구매) 또는 공인 전문가 경유",
+    "source_url": "https://www.mbtionline.com/",
+    "collected_at": "2026-10-12",
+    "note": "MBTI 본검사는 자격 전문가 필요; MBTIonline은 개인용"
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.mbtionline.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 페이지에 소요시간 미기재(일반적으로 알려진 값은 쓰지 않음)"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.mbtionline.com/",
+    "collected_at": "2026-10-12",
+    "note": "가격이 JS 로드로 공개 페이지 본문에 없음. 제3자(Truity) 인용 USD 49는 출처 규칙상 미채택 → \"미확인\""
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.mbtionline.com/",
+    "collected_at": "2026-10-12",
+    "note": "미확인"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "문의",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "\"modest cost\"라는 문구만, 구체 가격 본문 미노출"
    },
    "reuse_price_krw": {
     "value": null,
@@ -300,10 +312,10 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.themyersbriggs.com/en-us/access-resources/mbti-global-version",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "MBTI Global Assessment: 새 글로벌 표본·채점 체계 안내. 매뉴얼은 유료·자격자"
    },
    "reliability_coef": {
     "value": null,
@@ -318,16 +330,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+    "source_url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+    "collected_at": "2026-10-12",
+    "note": "Myers-Briggs Co. Asia 공식 Sample Reports — MBTI Complete (item 161003) | 503406 bytes, 6p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "72f8773e4c08ed644548f72603b9fbe8d37d4bbce796930f7030ea866e99304d",
+    "source_url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -336,22 +348,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "70년 연구 기반의 공식 MBTI로 16유형과 선호 명확도를 보고, 유형별 행동 가이드·비교 도구까지 쓰고 싶을 때. 1,000개 직업 만족도 예측(Careers판).",
+    "source_url": "https://www.mbtionline.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "채용·배치용 아님(공식 명시). 가격이 본문에 드러나지 않음. 리포트 6쪽(Complete 샘플)으로 짧은 편. 한국어 공식 샘플 없음.",
+    "source_url": "https://www.mbtionline.com/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "부분",
+    "source_url": "https://asia.themyersbriggs.com/knowledge-centre/sample-reports/",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 언어: 영어·중국어(간체/번체)·인니어. 한국어판은 국내 라이선스(어세스타, K17 행)로 별도"
    },
    "E4": {
     "value": null,
@@ -361,7 +373,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식의 공식 샘플"
+   }
   },
   {
    "id": "G01",
@@ -712,39 +730,39 @@
    "url": "https://www.hoganassessments.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "Hogan Assessment Systems",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업·공인 코치(Hogan 자격) 경유 — 개인 직접 구매 창구 없음",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "B2B 제품 페이지"
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "미기재"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "가격 비공개 → A8.1 \"문의\""
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "문의",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -754,10 +772,10 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.hoganassessments.com/sites/default/files/uploads/Product_Training_0.pdf",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "Insight Series 소개 자료. 기술 매뉴얼은 자격자 전용"
    },
    "reliability_coef": {
     "value": null,
@@ -772,16 +790,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+    "source_url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+    "collected_at": "2026-10-12",
+    "note": "Hogan 공식 사이트 — HPI Insight 샘플(영문) | 355778 bytes, 18p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "de5927e92ce87cb196f735a8494b87b05d782a9f611c51aaa5f0158e5a3ece85",
+    "source_url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -790,22 +808,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "C-suite 선발에 쓰는 성격 데이터로 \"밝을 때 강점(HPI)·어두울 때 탈선 위험(HDS)·가치(MVPI)\"를 한 번에 보고 싶을 때. 수백만 건 직무 성과 데이터 기반.",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "기업·중간관리자 대상(B2B). 개인 구매 불가, 가격 비공개. 샘플 리포트가 2015년판으로 오래됨. 진로 탐색보다 리더십 개발용.",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.hoganassessments.com/products/insight-series/",
+    "collected_at": "2026-10-12",
+    "note": "한국어판 리포트는 국내 파트너 유통 — 공식 언어 목록 재확인 필요"
    },
    "E4": {
     "value": null,
@@ -815,7 +833,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+    "collected_at": "2026-10-12",
+    "note": "John Doe 2015 — 개인 결과 형식, 오래됨(주의 표기)"
+   }
   },
   {
    "id": "G06",
@@ -884,10 +908,10 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://birkman.com/resources/ebooks/sample-signature-report-download",
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플은 이메일 입력(리드 수집) 뒤 다운로드 — 자동 수집 불가. 대학(GCSU) 게시 샘플 PDF 존재하나 제3자 호스팅 → 출처 규칙상 보류. E2는 공식 경로로 확보 시도 후 결정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -927,7 +951,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "empty",
+   "e2_eligible": {
+    "value": null,
+    "source_url": "https://birkman.com/",
+    "collected_at": "2026-10-12",
+    "note": "보류: 공식 샘플 접근에 이메일 필요"
+   }
   },
   {
    "id": "G07",
@@ -996,16 +1026,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+    "source_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+    "collected_at": "2026-10-12",
+    "note": "PI 공식 'Download PI Sample Reports' — Behavioral Report (2025-06) | 163964 bytes, 5p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "ddf9cb9d59ea1efdb1c7031d46ba36aa1984913160fab0acfb953ac364f63b4d",
+    "source_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -1039,7 +1069,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식의 공식 샘플"
+   }
   },
   {
    "id": "G08",
@@ -1160,52 +1196,52 @@
    "url": "https://www.16personalities.com/premium/career-suite",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "NERIS Analytics Limited",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(가입 없이 무료 검사 가능)",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "공식 페이지 본문에 소요시간 미기재(명부 v2의 12분은 미확인 값 → 표에 올리지 않음)"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 29,
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "USD 29 커리어 패키지(40쪽+ 가이드, AI 커리어 멘토 5종). 환산 전 USD"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "~5만원",
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "USD 29 ≈ 4만원대"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "공개가 + \"30일 환불 보증\" 명시 → A8.1 최고 앵커"
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "재검사 무료·무제한"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.16personalities.com/terms",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "신뢰도·규준 문서는 공개 페이지에 없음(FAQ \"신뢰할 수 있는 서비스인가요\" 항목 존재, 계수 미기재). 자체 모델(NERIS)로 MBTI 공식 도구 아님"
    },
    "reliability_coef": {
     "value": null,
@@ -1221,9 +1257,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "공개 샘플 리포트 PDF 없음(유형별 공개 아티클이 사실상 리포트 역할) → E2 미측정 또는 \"유형 설명 페이지\"를 샘플로 쓸지 Method 판단 필요"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1238,22 +1274,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "무료 16유형 결과를 바탕으로 40쪽 넘는 커리어 가이드와 AI 커리어 멘토(면접·이력서·전환)까지 USD 29에, 30일 환불 보증으로 써 보고 싶을 때.",
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "커리어 가이드는 유형별 공통 문서(개인 응답 기반 리포트가 아님). 신뢰도·타당도 수치가 공개 페이지에 없음. 공식 MBTI가 아닌 자체 5척도 모델. 한국어는 번역(영어가 공식).",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "한국어 전면 제공. 단 \"영어판이 공식 텍스트, 번역은 인간+AI 보조\"라고 명시"
    },
    "E4": {
     "value": null,
@@ -1263,7 +1299,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "G12",
@@ -1496,39 +1532,39 @@
    "url": "https://www.themyersbriggs.com/en-us/explore-solutions/strong",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "The Myers-Briggs Company (Strong Interest Inventory)",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공인 전문가(자격교육 이수자) 경유 — 개인 직접 구매 불가",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "FAQ: Strong은 certification 필요 제품"
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "미기재"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "가격 비공개(전문가 경유)"
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "미확인"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "문의",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -1538,10 +1574,10 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.themyersbriggs.com/en-us/explore-solutions/strong",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "제품 페이지. 기술 매뉴얼은 유료"
    },
    "reliability_coef": {
     "value": null,
@@ -1556,16 +1592,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+    "source_url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "Myers-Briggs Co. Asia 공식 — Strong Profile and Interpretive Report (item 284104) | 657013 bytes, 19p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "63b66d5c1ea80fe962a7b139df06f50aba5ef1aeed8b8a89685cdee47a1a79d9",
+    "source_url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -1574,22 +1610,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "130개 직업군 종사자의 흥미 패턴과 내 흥미를 비교해 \"즐길 가능성이 높은 직업\"을 찾고 싶을 때. 1927년부터 축적된 데이터.",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전문가 경유만 가능(개인 구매 불가), 가격 비공개. 공식 입장: 흥미 ≠ 능력이므로 선발용 아님. 19쪽 리포트는 상담 세션과 함께 해석 권장.",
+    "source_url": "https://www.themyersbriggs.com/en-us/support/faqs",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "부분",
+    "source_url": "https://asia.themyersbriggs.com/knowledge-centre/sample-reports/",
+    "collected_at": "2026-10-12",
+    "note": "한국판은 어세스타(K03 STRONG II) 별도 라이선스"
    },
    "E4": {
     "value": null,
@@ -1599,7 +1635,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식의 공식 샘플"
+   }
   },
   {
    "id": "G15a",
@@ -1608,58 +1650,58 @@
    "url": "https://www.onetcenter.org/IP.html",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "U.S. Department of Labor / O*NET Resource Center",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "미국 노동부 공공"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(My Next Move, 가입 없음) + 지필 Short Form 다운로드",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 20,
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "공식 \"approximately 10-20 minutes\" — 상한값"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "free-of-charge"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "무료",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "공공·세금(미국) 각주"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "공개",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "무제한"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.onetcenter.org/reports/IP.html",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "O*NET Interest Profiler Manual(개발·신뢰도·타당도) 공개"
    },
    "reliability_coef": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "매뉴얼 기재",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "\"construct validity and reliability evidence\" 공개 — 계수 전사는 2차 패스"
    },
    "norm_sample_n": {
     "value": null,
@@ -1668,16 +1710,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.onetcenter.org/dl_tools/ipsf/IP_Score_Report.pdf",
+    "source_url": "https://www.onetcenter.org/dl_tools/ipsf/IP_Score_Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "O*NET Resource Center 공식 — Interest Profiler Short Form Score Report(공공, 빈 양식 가능성 → 내용 확인) | 269932 bytes, 4p | 원본은 저장소 밖 보관 | **E2 부적합**: 이름 빈칸의 양식(템플릿), 개인 결과 아님"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "220e6854dea638faec0c855a3fcec0c281b7cab0123ad1dc98410451bb93d26f",
+    "source_url": "https://www.onetcenter.org/dl_tools/ipsf/IP_Score_Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -1686,22 +1728,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "미국 노동부가 무료로 제공하는 홀랜드 6유형 흥미 검사. 10~20분, 가입 없음, 결과가 900여 O*NET 직업과 바로 연결. 매뉴얼·문항까지 전부 공개.",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "영어·스페인어만(한국어 없음). 직업 연결은 미국 노동시장 기준. 리포트는 점수표 수준으로 짧음.",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음",
+    "source_url": "https://www.onetcenter.org/IP.html",
+    "collected_at": "2026-10-12",
+    "note": "영어·스페인어만"
    },
    "E4": {
     "value": null,
@@ -1711,7 +1753,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.onetcenter.org/dl_tools/ipsf/IP_Score_Report.pdf",
+    "collected_at": "2026-10-12",
+    "note": "빈 양식"
+   }
   },
   {
    "id": "G15b",
@@ -2840,52 +2888,52 @@
    "url": "https://www.tanagement.co.kr/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "태니지먼트(주)",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(무료 검사 → 유료 리포트 구매)",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 48,
+    "source_url": "https://tanagement.co.kr/rocketpunch-landing",
+    "collected_at": "2026-10-12",
+    "note": "공식 \"총 202개 문항으로 48분 내외\""
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 39600,
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "강점 리포트 39,600원 / 커리어·리더십 리포트 각 49,500원 / 무료 결과 요약 0원"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "~5만원",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "공개가. 환불 규정 미확인"
    },
    "reuse_price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "재검사·재열람 정책 미확인"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://tanagement.co.kr/rocketpunch-landing",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "검사 구성(3파트, 202문항) 안내. 신뢰도·규준 문서 미발견"
    },
    "reliability_coef": {
     "value": null,
@@ -2900,16 +2948,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+    "source_url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+    "collected_at": "2026-10-12",
+    "note": "태니지먼트 공식 '샘플 리포트'(report-introduction 페이지 링크, 김재능님 예시) | 931940 bytes, 24p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "4df5a39ad5f86e0cf4a6203937bd51121cb37b8a281f8d0edca1bd8c15345ca0",
+    "source_url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+    "collected_at": "2026-10-12",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -2918,22 +2966,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "한국 조직 맥락으로 만든 강점 검사로, 무료 요약을 먼저 보고 필요하면 강점·커리어·리더십 리포트를 골라 사고 싶을 때. 2천 곳+ 기업 도입, 진단 25만회.",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "유료 리포트(4~5만원). 신뢰도·규준 공개 문서 미발견. 검사 48분으로 긴 편.",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://tanagement.co.kr/report-introduction",
+    "collected_at": "2026-10-12",
+    "note": "국내 서비스"
    },
    "E4": {
     "value": null,
@@ -2943,7 +2991,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": true,
+    "source_url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+    "collected_at": "2026-10-12",
+    "note": "개인 결과 형식 공식 샘플 24p(한국어) — 인물명 \"김재능\" 가림 대상"
+   }
   },
   {
    "id": "K01a",
@@ -4072,40 +4126,40 @@
    "url": "https://www.career4u.net/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "(주)어세스타 (MBTI 한국판 라이선스)",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "1990 Form G, 2002 Form K, 2012 Form M/Q 한국어판"
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "온라인(career4u.net) / 오프라인 — 자격 전문가·기관 경유가 기본",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": 30,
-    "source_url": "https://www.career4u.net/",
-    "collected_at": "2026-10-12 G21 §4",
-    "note": "명부 v2 이관 — 재확인 필요"
+    "value": null,
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "소개 페이지에 소요시간 미기재(명부 30분은 미확인 값 → 표에 올리지 않음)"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "2025 가격표 PDF에 Form M 프로파일 단가 있음 — PDF 본문 전사 필요(2차 패스)"
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "미전사"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://img.assesta.com/mail/form/download_3.asp?filename=2025_assesta_price.pdf&path=/mail/form",
+    "collected_at": "2026-10-12",
+    "note": "가격표 PDF 공개"
    },
    "reuse_price_krw": {
     "value": null,
@@ -4114,10 +4168,10 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "이론·역사 소개. 매뉴얼은 자격자 유료"
    },
    "reliability_coef": {
     "value": null,
@@ -4132,10 +4186,10 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공식 \"온라인보고서 샘플 보기\" — Form M 기본 프로파일(한국, ISTJ 예시). Form Q 전문해석 샘플(INFP)도 있음. 다운로드는 career4u 서버 타임아웃으로 미확보 — 재시도 예정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -4150,22 +4204,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공식 MBTI 한국어판(Form M)으로 16유형과 선호 명확도를 정식 규준으로 확인하고, 전문가 해석을 받고 싶을 때.",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전문가·기관 경유가 기본. 소개 페이지에 소요시간·신뢰도 미기재. 유료.",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "한국어판 공식"
    },
    "E4": {
     "value": null,
@@ -4175,7 +4229,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": null,
+    "source_url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 존재 — 파일 확보 뒤 적합 판정"
+   }
   },
   {
    "id": "K18",
@@ -4408,52 +4468,52 @@
    "url": "https://www.16personalities.com/ko",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "NERIS Analytics Limited",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(가입 없이 무료 검사 가능)",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": 12,
+    "value": null,
     "source_url": "https://www.16personalities.com/ko",
-    "collected_at": "2026-10-12 G21 §4",
-    "note": "명부 v2 이관 — 재확인 필요"
+    "collected_at": "2026-10-12",
+    "note": "공식 페이지 본문에 소요시간 미기재(명부 v2의 12분은 미확인 값 → 표에 올리지 않음)"
    },
    "price_krw": {
     "value": 0,
     "source_url": "https://www.16personalities.com/ko",
-    "collected_at": "2026-10-12 G21 §4",
-    "note": "명부 v2 이관 — 재확인 필요"
+    "collected_at": "2026-10-12",
+    "note": "무료 검사·유형 결과"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "무료",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "공개가 + \"30일 환불 보증\" 명시 → A8.1 최고 앵커"
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "재검사 무료·무제한"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.16personalities.com/terms",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "신뢰도·규준 문서는 공개 페이지에 없음(FAQ \"신뢰할 수 있는 서비스인가요\" 항목 존재, 계수 미기재). 자체 모델(NERIS)로 MBTI 공식 도구 아님"
    },
    "reliability_coef": {
     "value": null,
@@ -4469,9 +4529,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.16personalities.com/ko/%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84-%EC%BB%A4%EB%A6%AC%EC%96%B4-%ED%8C%A8%ED%82%A4%EC%A7%80",
+    "collected_at": "2026-10-12",
+    "note": "공개 샘플 리포트 PDF 없음(유형별 공개 아티클이 사실상 리포트 역할) → E2 미측정 또는 \"유형 설명 페이지\"를 샘플로 쓸지 Method 판단 필요"
    },
    "sample_report_sha256": {
     "value": null,
@@ -4486,22 +4546,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "가입 없이 무료로 10여 분 만에 16유형과 성향 설명을 한국어로 보고 싶을 때. 유형별 설명 아티클 풍부.",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "무료 결과는 유형 일반론 중심. 신뢰도·타당도 수치가 공개 페이지에 없음. 공식 MBTI가 아닌 자체 5척도 모델. 한국어는 번역(영어가 공식).",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.16personalities.com/ko",
+    "collected_at": "2026-10-12",
+    "note": "한국어 전면 제공. 단 \"영어판이 공식 텍스트, 번역은 인간+AI 보조\"라고 명시"
    },
    "E4": {
     "value": null,
@@ -4511,7 +4571,7 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial"
   },
   {
    "id": "OWN",
