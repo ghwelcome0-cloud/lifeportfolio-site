@@ -4240,6 +4240,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ".book.lb-mobile .ap-purpose p,.book.lb-mobile .ap-lead,.book.lb-mobile .ap-tie,.book.lb-mobile .ap-ph3__i,.book.lb-mobile .ap-yr__i b,.book.lb-mobile .ap-today p,.book.lb-mobile .ap-svc li{font-size:16px!important;line-height:1.6!important;}", // AP1
         ".book.lb-mobile .ap-k,.book.lb-mobile .ap-flow li,.book.lb-mobile .ap-ph3__w small,.book.lb-mobile .ap-when,.book.lb-mobile .ap-sub,.book.lb-mobile .ap-yr__w,.book.lb-mobile .ap-yr__h,.book.lb-mobile .ap-reach li,.book.lb-mobile .ap-note,.book.lb-mobile .ap-modph,.book.lb-mobile .ap-bd__c li,.book.lb-mobile .ap-today small,.book.lb-mobile .ap-ph3__w,.book.lb-mobile .ap-ph3__k,.book.lb-mobile .ap-reach b,.book.lb-mobile .ap-reach i,.book.lb-mobile .ap-bd__h,.book.lb-mobile .ap-bd__c em,.book.lb-mobile .ap-yr__i,.book.lb-mobile .ap-svc b,.book.lb-mobile .ap-flow li b{font-size:13px!important;}", // AP1
         ".book.lb-mobile .ap-h{font-size:18px!important;}", // AP1
+        ".ap-hz{list-style:none;margin:0 0 3mm;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4mm;}", // AP1
+        ".ap-hz__i{position:relative;border:0.6px solid var(--bp-line);border-radius:2.4mm;background:#fff;padding:3mm 3.4mm 2.8mm;font-size:8.8pt;line-height:1.5;word-break:keep-all;}", // AP1
+        ".ap-hz__i--2{border-color:#7fb3aa;background:var(--bp-teal-bg);}.ap-hz__i--3{border-color:var(--bp-gold);background:var(--bp-gold-bg,rgba(224,164,88,0.06));}", // AP1
+        ".ap-hz__m{position:absolute;top:2.4mm;right:3mm;font-size:7.8pt;font-weight:800;color:var(--bp-gold-deep);}", // AP1
+        ".ap-hz__s{display:block;font-size:9pt;color:var(--bp-teal-2);font-weight:700;}.ap-hz__s b{font-size:11pt;color:var(--bp-ink);}", // AP1
+        ".ap-hz__p{margin:1.2mm 0;color:var(--bp-ink-soft);text-wrap:pretty;}.ap-hz__g{margin:0 0 1.2mm;font-weight:700;color:var(--bp-ink);text-wrap:pretty;}.ap-hz__g span{display:block;font-size:7.8pt;color:var(--bp-gold-deep);}", // AP1
+        ".ap-hz__c{margin:0;font-size:8.2pt;color:var(--bp-teal-2);font-weight:700;}.ap-hz__c small{display:block;font-weight:500;color:var(--bp-ink-soft);}", // AP1
+        ".ap-grow{display:flex;align-items:center;justify-content:center;gap:2mm;margin:0 0 4mm;font-size:8.2pt;}.ap-grow__c{display:grid;justify-items:center;gap:.4mm;}.ap-grow__c b{color:var(--bp-ink);}.ap-grow__c em{font-style:normal;color:var(--bp-teal-2);font-weight:700;}.ap-grow__c small{color:var(--bp-ink-soft);font-size:7.6pt;}", // AP1
+        ".ap-grow__d{display:flex;gap:.8mm;}.ap-grow__d i{width:3.4mm;height:4.4mm;border-radius:.6mm;border:0.6px solid var(--bp-line);}.ap-grow__d i.on{background:var(--bp-gold);border-color:var(--bp-gold-deep);}.ap-grow__ar{color:var(--bp-gold-deep);font-weight:800;}", // AP1
+        ".ap-y1chk{margin-top:4mm;}", // AP1
+        "@media screen and (max-width:768px){.ap-hz{grid-template-columns:1fr;}}", // AP1
+        ".book.lb-mobile .ap-hz{grid-template-columns:1fr!important;}.book.lb-mobile .ap-hz__i,.book.lb-mobile .ap-hz__s b{font-size:16px!important;line-height:1.6!important;}.book.lb-mobile .ap-hz__m,.book.lb-mobile .ap-hz__s,.book.lb-mobile .ap-hz__g span,.book.lb-mobile .ap-hz__c,.book.lb-mobile .ap-grow,.book.lb-mobile .ap-grow__c small{font-size:13px!important;}", // AP1
         /* [P28] 한눈에 보는 나 — 웹 대시보드 §1 정합(3층 위계) */
         '.glance-anchor{background:var(--bp-teal-bg);border:0.6px solid var(--bp-teal-soft);border-radius:2.5mm;padding:5.5mm 6mm;margin-bottom:6mm;}',
         '.glance-mv{display:flex;align-items:baseline;gap:3mm;}',
@@ -4702,15 +4714,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // IV. 3개월 · 1년 목표
 '(function(){var m3=DATA.month3||{},y1=DATA.year1||{};',
 "var AP=DATA.assetProgram;if(AP&&AP.month3&&AP.year1){var M=AP.month3,Y=AP.year1;", // AP1
-"var h='<h2 class=\"sec-title\">IV. 3개월 · 1년 목표</h2><div class=\"sec-rule\"></div><p class=\"ap-tie\">12주 자산화 퀘스트와 같은 길이에요. 3개월은 퀘스트의 세 매듭, 1년은 같은 카드를 넓히는 네 걸음이에요.</p>';", // AP1
-"h+='<h3 class=\"ap-h\">🎯 3개월 목표 · 12주 퀘스트의 세 매듭</h3><p class=\"ap-lead\">'+sc(M.lead)+'</p><div class=\"goalgrid\">'+M.goals.map(function(g,i){return '<div class=\"goalc\"><span class=\"goalc__no\">'+pad2(i+1)+'</span><div class=\"goalc__b\"><div class=\"ap-when\">'+esc(g.when)+' · '+esc(g.who)+'</div><div class=\"goalc__t\">'+sc(g.title)+'</div>'+(g.sub?'<div class=\"ap-sub\">'+sc(g.sub)+'</div>':'')+'<div class=\"goalc__c\">✓ '+sc(g.criterion)+'</div></div></div>';}).join('')+'</div>';", // AP1
+"var h='<h2 class=\"sec-title\">IV. 3개월 · 1년 목표</h2><div class=\"sec-rule\"></div><p class=\"ap-tie\">12주 퀘스트 · 3개월 · 1년은 한 길의 세 가지 때예요. 싹이 나고, 이삭이 패고, 열매가 익듯 같은 카드가 자라요.</p>';", // AP1
+"var HZ=AP.horizons||[];if(HZ.length===3){h+='<ol class=\"ap-hz\">'+HZ.map(function(z,i){return '<li class=\"ap-hz__i ap-hz__i--'+(i+1)+'\"><span class=\"ap-hz__m\">'+esc(z.mark)+'</span><span class=\"ap-hz__s\">'+esc(z.span)+' · <b>'+esc(z.name)+'</b></span><p class=\"ap-hz__p\">'+sc(z.purpose)+'</p><p class=\"ap-hz__g\"><span>목표</span>'+sc(z.goal)+'</p><p class=\"ap-hz__c\">'+esc(z.count)+'<small>'+esc(z.who)+'</small></p></li>';}).join('')+'</ol>';", // AP1
+"h+='<div class=\"ap-grow\" aria-hidden=\"true\">'+[[1,'12칸',0,'12주'],[2,'카드 1장',1,'3개월'],[3,'카드 4장 · 48칸',4,'1년']].map(function(g){var d='';for(var k=0;k<4;k++)d+='<i class=\"'+(k<g[2]?'on':'')+'\"></i>';return '<span class=\"ap-grow__c\"><b>'+g[3]+'</b><em>'+g[1]+'</em><span class=\"ap-grow__d\">'+d+'</span><small>닿는 범위 '+g[0]+'</small></span>';}).join('<span class=\"ap-grow__ar\">→</span>')+'</div>';}", // AP1
+"h+='<h3 class=\"ap-h\">🎯 3개월 목표 · 성과 — 12주 퀘스트의 세 매듭</h3><p class=\"ap-lead\">'+sc(M.lead)+'</p><div class=\"goalgrid\">'+M.goals.map(function(g,i){return '<div class=\"goalc\"><span class=\"goalc__no\">'+pad2(i+1)+'</span><div class=\"goalc__b\"><div class=\"ap-when\">'+esc(g.when)+' · '+esc(g.who)+'</div><div class=\"goalc__t\">'+sc(g.title)+'</div>'+(g.sub?'<div class=\"ap-sub\">'+sc(g.sub)+'</div>':'')+'<div class=\"goalc__c\">✓ '+sc(g.criterion)+'</div></div></div>';}).join('')+'</div>';", // AP1
 "h+='<div class=\"accrue\"><span class=\"accrue__k\">💎 12주차에 남는 카드</span><div class=\"accrue__b\"><span>'+esc(M.card.name)+'</span>'+M.card.fields.map(function(f){return '<span>'+esc(f)+'</span>';}).join('')+'</div></div>';", // AP1
 "page(h,{anchor:\"ch3\",runhead:RH});", // AP1
-"var h2='<h3 class=\"ap-h\">🌱 1년 목표 · 같은 카드를 네 번 넓히기</h3><p class=\"ap-lead\">'+sc(Y.lead)+'</p>';", // AP1
+"var Z3=(AP.horizons||[])[2];var h2='<h3 class=\"ap-h\">🌱 1년 목표 · 자산 — 같은 카드를 네 번 넓히기</h3><p class=\"ap-lead\">'+sc(Z3?Z3.purpose+' '+Y.lead:Y.lead)+'</p>';", // AP1
 "if(Y.vision)h2+='<div class=\"vision-box\"><div class=\"vision-box__label\">리포트의 비전</div><p class=\"vision-box__line\">'+sc(Y.vision)+'</p></div>';", // AP1
 "h2+='<ol class=\"ap-yr\">'+Y.quarters.map(function(x,i){return '<li class=\"ap-yr__i'+(i===0?' on':'')+'\"><span class=\"ap-yr__w\">'+esc(x.when)+'</span><b>'+sc(x.what)+'</b>'+(x.how?'<span class=\"ap-yr__h\">'+sc(x.how)+'</span>':'')+'</li>';}).join('')+'</ol>';", // AP1
 "h2+='<h3 class=\"ap-h ap-h--s\">닿는 사람이 넓어져요</h3><ol class=\"ap-reach\">'+Y.reach.map(function(r){return '<li><b>'+esc(r.when)+'</b><span>'+esc(r.who)+'</span><i>'+esc(r.stage)+'</i></li>';}).join('')+'</ol>';", // AP1
 "h2+='<h3 class=\"ap-h ap-h--s\">구간마다 함께할 서비스</h3><ul class=\"ap-svc\">'+Y.services.map(function(s){return '<li><b>'+esc(s.when)+'</b>'+s.names.map(function(n){return '<span>'+esc(n)+'</span>';}).join('')+'</li>';}).join('')+'</ul><p class=\"ap-note\">서비스는 출시 준비중이에요. 열리면 다이어리의 카드와 기록을 그대로 가져가요.</p>';", // AP1
+"if(Z3&&Z3.check)h2+='<div class=\"aq-chk ap-y1chk\"><span class=\"aq-card__k\">✓ 1년 뒤에 물어요</span><ul>'+Z3.check.map(function(c){return '<li>'+esc(c)+'</li>';}).join('')+'</ul></div>';", // AP1
 "page(h2,{runhead:RH});return;}", // AP1
 'var h=\'<h2 class="sec-title">IV. 3개월 · 1년 목표</h2><div class="sec-rule"></div>\';',
 'h+=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:2mm">🎯 3개월 목표</h3>\';',

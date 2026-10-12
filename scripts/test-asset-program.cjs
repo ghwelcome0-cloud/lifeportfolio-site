@@ -9,10 +9,10 @@ const html=fs.readFileSync(path.join(root,'program.html'),'utf8'),eng=fs.readFil
 const pr=require(root+'/data/program-rules.json'),AR=pr.assetProgramRule;
 t('rulebook-entry',()=>{assert.equal(AR.code,'AP-1');assert.equal(AR.version,'asset-program-v1');
  ['I','II','III','IV','V','VI','VII','VIII','IX'].forEach(k=>assert.ok(AR.pages[k],'page rule '+k));
- assert.ok(/세 매듭/.test(AR.pages.IV)&&/네 번 넓히기/.test(AR.pages.IV)&&/비전/.test(AR.pages.IV));assert.ok(/다이어리/.test(AR.diary)&&/출시 준비중/.test(AR.services));
+ assert.ok(AR.horizons&&/실행/.test(AR.horizons['12주'])&&/성과/.test(AR.horizons['3개월'])&&/자산/.test(AR.horizons['1년']));assert.ok(/세 매듭/.test(AR.pages.IV)&&/네 번 넓히기/.test(AR.pages.IV)&&/비전/.test(AR.pages.IV));assert.ok(/다이어리/.test(AR.diary)&&/출시 준비중/.test(AR.services));
  const doc=fs.readFileSync(path.join(root,'docs/제작규칙서_v2.1_개정부록_표현규칙_2026-07-31.md'),'utf8');assert.ok(/\*\*제44조 \(자산화 맞춤 실행 프로그램/.test(doc));});
 t('render-wired-every-page',()=>{assert.ok(/assetProgram: \(p\._assetProgram && p\._assetProgram\.version === \\?"asset-program-v1\\?"/.test(html)||html.includes('assetProgram: (p._assetProgram && p._assetProgram.version === "asset-program-v1"'));
- ['II. 분기 테마 · 12주 한 바퀴','3개월 목표 · 12주 퀘스트의 세 매듭','1년 목표 · 같은 카드를 네 번 넓히기','VI. 성과 추적 보드 · 12칸','이 실행이 남기는 자산','오늘 시작하는 한 줄','ap-modph'].forEach(k=>assert.ok(html.includes(k),k));
+ ['II. 분기 테마 · 12주 한 바퀴','ap-hz__i','한 길의 세 가지 때','1년 뒤에 물어요','3개월 목표 · 성과 — 12주 퀘스트의 세 매듭','1년 목표 · 자산 — 같은 카드를 네 번 넓히기','VI. 성과 추적 보드 · 12칸','이 실행이 남기는 자산','오늘 시작하는 한 줄','ap-modph'].forEach(k=>assert.ok(html.includes(k),k));
  assert.ok(/function assetProgram\(ap, fan, quest, report\)/.test(eng));});
 t('no-evidence-panel-on-customer-pages',()=>{assert.ok(html.includes('if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(null); // AP1'));});
 t('marked-and-pinned',()=>{const A=require('./_asset-program-approved.cjs');for(const f of ['assets/js/program-engine.js','program.html'])A.strip(f,fs.readFileSync(path.join(root,f),'utf8'));});
@@ -34,6 +34,11 @@ t('touch-and-mobile-css',()=>{assert.ok(html.includes('.book.lb-mobile .ap-h{fon
   assert.equal(g.month3.card.name,own(q.card.name));assert.deepEqual(g.month3.card.fields,q.card.fields);assert.equal(g.quarter.phases.map(x=>x.when).join(),q.phases.map(x=>x.when).join());
   // 1년 = four quarters growing the same card; first quarter IS the quest card, last reaches the third ring.
   assert.equal(g.year1.quarters.length,4);assert.ok(g.year1.quarters[0].what.startsWith(own(q.kind)));assert.ok(g.year1.quarters[3].how.startsWith(p._assetFan.rings[2].who));
+  // Three seasons (AP-1 §9): 12주 실행 → 3개월 성과 → 1년 자산, each with its own purpose and goal; reach 1 → 2 → 3.
+  assert.deepEqual(g.horizons.map(z=>z.name),['실행','성과','자산']);assert.deepEqual(g.horizons.map(z=>z.span),['12주','3개월','1년']);
+  g.horizons.forEach((z,k)=>{assert.ok(z.purpose&&z.goal&&z.check.length>=2,'horizon '+k+' '+seed);assert.equal(z.who,p._assetFan.rings[k].who);});
+  assert.ok(g.horizons[1].goal.includes(g.kind+' 카드 1장')&&g.horizons[2].goal.includes(g.kind+' 카드 4장'),'card count grows '+seed);
+  const ar=p._assetFan.rings.map(x=>x.area);assert.ok(ar[0]<ar[1]&&ar[1]<ar[2],'fan area grows '+seed);
   if(g.year1.vision)withVision++;
   // VI = the diary's 12 cells, V = one phase per module, IX = the report's first step.
   assert.equal(g.board.phases.flatMap(x=>x.weeks).map(w=>w.week).join(),'1,2,3,4,5,6,7,8,9,10,11,12');assert.equal(g.modules.length,3);
