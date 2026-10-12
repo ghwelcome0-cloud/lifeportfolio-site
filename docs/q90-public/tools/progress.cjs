@@ -16,7 +16,7 @@ for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k])).length; e
 const st = s => e2.rows.filter(r => r.status === s).length;
 // 결함 수정(2026-10-12): 'redacted_pending_visual'(자동 가림 완료, 사람 눈 확인 대기)이 빠져 9건이 0으로 집계됐었다 → 포함
 const e2ready = e2.rows.filter(r => ['ready', 'redacted_pending_visual', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
-const e2final = st('final'), e2inel = st('ineligible'), e2pend = st('redacted_pending_visual'), e2red = st('redacted');
+const e2final = st('final') + st('judged') + st('resolved'), e2inel = st('ineligible'), e2pend = st('redacted_pending_visual'), e2red = st('redacted');
 // E1: 최신 run에서 a61 또는 a71이 있는 비자사 행
 const runs = fs.readdirSync(path.join(B, 'runs')).filter(d => /^\d{4}-\d{2}-\d{2}-r\d+$/.test(d)).sort();
 const latest = runs[runs.length - 1];
@@ -31,7 +31,7 @@ const out = {
     { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: latest ? `${latest} — 구 도구 이관분. r3(새 측정기)부터 공개용` : '' },
     { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length, pct: pct(e3cells, rows.length * E3_KEYS.length), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결 ${e3rowsComplete}` },
     { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: nonOwn.length, pct: pct(e2ready, nonOwn.length), note: `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
-    { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: 'judge 2인 + 제3자, Q90 judge와 다른 actor' },
+    { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: `judged(원본 저장·미집계) ${st('judged')}, final ${st('final')} — judge 2인 + 제3자` },
     { step: '자사 행(Q90 2회차 전사)', done: own ? 1 : 0, total: 1, pct: own ? 100 : 0, note: 'TL D 도구 → 0-c → 실행 → judge → scorer 뒤' }
   ]
 };

@@ -149,7 +149,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -222,7 +222,13 @@
     "README.md": "531f395a82d2c2971e8a62e82061601c0cb0ad16f252d667e500b37c331433a3",
     "ANSWER.json": "1ffa1a40c092164d7541690a1bd1fadc43631e3f31d26b1e86f69839090f9fbe"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "341a4c24dcc5ce8ec414332dfb7152130d247439c3136d7fdf01d93411dfa356",
+    "judge2_answer_sha256": "11d8f64f880d5f6ad66a60280326e223135cb11989bd6d17dfecb033860feaa5",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "M02",
@@ -323,7 +329,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -396,7 +402,13 @@
     "README.md": "a3ff329c735b38796fdd0e229e26936c6ebb95e82123aee04217ee6990b21bad",
     "ANSWER.json": "dfdcf99e07a2492ca2e537230a77f60f2a844d2402a751d7b512cc249e54d189"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "03e8959a13db7827fdb9a70379d4b666780b4a911fd2a5c1747ebe4da7e29c59",
+    "judge2_answer_sha256": "8563c6dee8ba3c33a571fd230a30caa07564ce1041a870f3bd51db66367d6b0b",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "M03",
@@ -486,7 +498,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -559,7 +571,13 @@
     "README.md": "f8d5a60e7a94e17c9eac4e769e3dd819ac376a48b1dcc1dd7126e72d59ac16e8",
     "ANSWER.json": "fe7b2c2641ec8262e8e9fd55b6a9131867668565a751b8be6c9262b9a1e31192"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "03e19c0baf42ee167bd2a0ca4bf7ce9cf20af07fb592c6d3f16d3d3fbdaa93ec",
+    "judge2_answer_sha256": "ea4cd873614cd07cc7a4e552819bb1cf724a6ab7b703942a48d3eb8716a14317",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "G01",
@@ -882,7 +900,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -955,7 +973,13 @@
     "README.md": "a2e03cf6cc6b9541b4fbf58ae03d1c800dec4da5d253e4644ad6831b6b6149e0",
     "ANSWER.json": "8ea3c1d20e87e3ad3a0ffe30a180e5712b10afb5718d5c4aed1e1451a699bb4b"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "93e2ce438d291112ad169dd801853de8714b0c8cf386b701a0fde8aa17174835",
+    "judge2_answer_sha256": "56fce553a7dfb7208964139245599e975dceaf8cbd6a7d9745afc11c800b8dc2",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "G06",
@@ -1105,7 +1129,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -1178,7 +1202,13 @@
     "README.md": "b65516907431939c02c7c4891ccb2e0790e2ee3488869ca59b063acdd429c250",
     "ANSWER.json": "3023c66259ed1389d044a4071efe29d396b22e1dd64308fb76dc0281ed09945f"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "0124b32ec939b6f4fd8d38f97affa398c3354747f0e8872a6b086370d93b9940",
+    "judge2_answer_sha256": "9c531dd058729b8dfc3116da3c4bef66c2bc67583993a6766478785c76a720c4",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "G08",
@@ -1625,7 +1655,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -1698,7 +1728,13 @@
     "README.md": "8510a77133779500f9b22c808a7a17cb350a6599f05b942278cd7be58f48f65b",
     "ANSWER.json": "0dd0f102240ef9049eb52dbf7a6ce70a6feb827b9695570dfe9388bfd9fc69c1"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "a107277db7838a3045eb1f3ff596808dad8a3a62d125b42fd50a45ece138df4d",
+    "judge2_answer_sha256": "33fdc61401b1dc7b9380af9b0d8954af1324b095807b7a1dfe57852395bcaa80",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "G15a",
@@ -2586,7 +2622,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -2659,7 +2695,13 @@
     "README.md": "f17f57181da770b68c2769e3379dc101e3bca3ef8785a2c6a8ce0092d480b3fc",
     "ANSWER.json": "3995e146802b729936d771a53546be5ae3b90b8a2032f939401d3a3f1eb41535"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "bbea59ea35136bbbf7ac123cb83390be935798b6a153498d223188e151ad859a",
+    "judge2_answer_sha256": "3e467c76aaaec8011ea1869d9e31d9719d100de8e7fb3e0e731b9a77d3be4908",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "K05",
@@ -2733,7 +2775,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -2806,7 +2848,13 @@
     "README.md": "701e2cef75a994e1c2de85681bcb6f41201043e8392f573ecbeb58ebf4b24086",
     "ANSWER.json": "16cff68bfe7cdf0394cbe1fc42aa152c40e24d9736d58664a34796ea020151e0"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "02c388915cb39d2f6e01c784933d453e24384a7de0224eecad9e259b285d0432",
+    "judge2_answer_sha256": "302af6f7f4863eeb96bba9d665ab7c4e9c25d21bbfac4b60acc0b015b1c96887",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "K01a",
@@ -3694,7 +3742,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -3767,7 +3815,13 @@
     "README.md": "870d937ea2581c539f6e72abd970c397ff6741840cb1060171b2444a1af56161",
     "ANSWER.json": "722b4c4f5574e546fa6dd4d95afad5ddf71799c78ac358b201444d33b8b78d69"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "judge1_answer_sha256": "bfd73c935923368de37d128bfe23ee86fe76ae6a5003e50d51290193fbcd31b2",
+    "judge2_answer_sha256": "c84316b064b9c64d5d6b4615db6d63585185fa216b36250c35e83314373ad34a",
+    "third_needed_axes": [],
+    "aggregated": false
+   }
   },
   {
    "id": "K18",
@@ -4167,7 +4221,116 @@
      "rc1": "invalid(설계 결함 ⑪)",
      "rc2": "pass 9/9"
     },
-    "packets": {},
+    "packets": {
+     "S-04d5ce": {
+      "sent_msg_id": "6063561",
+      "sent_at": "2026-10-12T05:29:11Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/3d1JzRjZ",
+      "attachment_sha256_sent": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+      "attachment_sha256_received_redownload": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+      "bytes_match": true,
+      "reply_msg_id": "6063674",
+      "answer_sha256": "02c388915cb39d2f6e01c784933d453e24384a7de0224eecad9e259b285d0432",
+      "answered_at": "2026-10-12T05:31:44Z",
+      "first_line_declaration_ok": true
+     },
+     "S-10bfa2": {
+      "sent_msg_id": "6063828",
+      "sent_at": "2026-10-12T05:32:06Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/3u6BtHBO",
+      "attachment_sha256_sent": "4c6d05d5c3068b671723213ec2aa5e0928480e23812e213d38faa2c8a7ae7742",
+      "attachment_sha256_received_redownload": "4c6d05d5c3068b671723213ec2aa5e0928480e23812e213d38faa2c8a7ae7742",
+      "bytes_match": true,
+      "reply_msg_id": "6063926",
+      "answer_sha256": "bbea59ea35136bbbf7ac123cb83390be935798b6a153498d223188e151ad859a",
+      "answered_at": "2026-10-12T05:33:46Z",
+      "first_line_declaration_ok": true
+     },
+     "S-4e6f48": {
+      "sent_msg_id": "6064013",
+      "sent_at": "2026-10-12T05:33:57Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/vLttxnfE",
+      "attachment_sha256_sent": "26e7ae87b862c11f96dfc23d77eebfccd94d46c7d693b890cc6e9aad9525ef6d",
+      "attachment_sha256_received_redownload": "26e7ae87b862c11f96dfc23d77eebfccd94d46c7d693b890cc6e9aad9525ef6d",
+      "bytes_match": true,
+      "reply_msg_id": "6064087",
+      "answer_sha256": "341a4c24dcc5ce8ec414332dfb7152130d247439c3136d7fdf01d93411dfa356",
+      "answered_at": "2026-10-12T05:35:39Z",
+      "first_line_declaration_ok": true
+     },
+     "S-5e149f": {
+      "sent_msg_id": "6064165",
+      "sent_at": "2026-10-12T05:35:47Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/Bhch7jln",
+      "attachment_sha256_sent": "ceebfeb0c179329c176bb9bdd7ad70f5e2217f46f221b1d9622b703f038662d5",
+      "attachment_sha256_received_redownload": "ceebfeb0c179329c176bb9bdd7ad70f5e2217f46f221b1d9622b703f038662d5",
+      "bytes_match": true,
+      "reply_msg_id": "6064197",
+      "answer_sha256": "03e19c0baf42ee167bd2a0ca4bf7ce9cf20af07fb592c6d3f16d3d3fbdaa93ec",
+      "answered_at": "2026-10-12T05:37:29Z",
+      "first_line_declaration_ok": true
+     },
+     "S-927ba4": {
+      "sent_msg_id": "6064296",
+      "sent_at": "2026-10-12T05:37:37Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/DWmVm490",
+      "attachment_sha256_sent": "55d6924f28487fde73fc8cc139c25d5fa009050eeddb8344dfcdfa5077dfd580",
+      "attachment_sha256_received_redownload": "55d6924f28487fde73fc8cc139c25d5fa009050eeddb8344dfcdfa5077dfd580",
+      "bytes_match": true,
+      "reply_msg_id": "6064336",
+      "answer_sha256": "bfd73c935923368de37d128bfe23ee86fe76ae6a5003e50d51290193fbcd31b2",
+      "answered_at": "2026-10-12T05:39:20Z",
+      "first_line_declaration_ok": true
+     },
+     "S-9d99bb": {
+      "sent_msg_id": "6064452",
+      "sent_at": "2026-10-12T05:39:28Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/H5T1Dyg8",
+      "attachment_sha256_sent": "1a94d6a1ed0e877fbd3f8286a5d4f5541b92eb8efb8caff00d35ef523481c32d",
+      "attachment_sha256_received_redownload": "1a94d6a1ed0e877fbd3f8286a5d4f5541b92eb8efb8caff00d35ef523481c32d",
+      "bytes_match": true,
+      "reply_msg_id": "6064531",
+      "answer_sha256": "93e2ce438d291112ad169dd801853de8714b0c8cf386b701a0fde8aa17174835",
+      "answered_at": "2026-10-12T05:41:09Z",
+      "first_line_declaration_ok": true
+     },
+     "S-da397f": {
+      "sent_msg_id": "6064649",
+      "sent_at": "2026-10-12T05:41:18Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/xXJZ31UO",
+      "attachment_sha256_sent": "986b7f7ffe43ad51ed4303edce31ac740584e4c262e5e02d9535c9e6974f22e7",
+      "attachment_sha256_received_redownload": "986b7f7ffe43ad51ed4303edce31ac740584e4c262e5e02d9535c9e6974f22e7",
+      "bytes_match": true,
+      "reply_msg_id": "6064764",
+      "answer_sha256": "03e8959a13db7827fdb9a70379d4b666780b4a911fd2a5c1747ebe4da7e29c59",
+      "answered_at": "2026-10-12T05:43:02Z",
+      "first_line_declaration_ok": true
+     },
+     "S-e9e660": {
+      "sent_msg_id": "6064857",
+      "sent_at": "2026-10-12T05:43:10Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/tLhiZ89E",
+      "attachment_sha256_sent": "eb9f0c64706fb1ff2da50e56fa45bd161d9d4600b6ace3c762b51bd20036cb42",
+      "attachment_sha256_received_redownload": "eb9f0c64706fb1ff2da50e56fa45bd161d9d4600b6ace3c762b51bd20036cb42",
+      "bytes_match": true,
+      "reply_msg_id": "6064909",
+      "answer_sha256": "0124b32ec939b6f4fd8d38f97affa398c3354747f0e8872a6b086370d93b9940",
+      "answered_at": "2026-10-12T05:44:51Z",
+      "first_line_declaration_ok": true
+     },
+     "S-f7229a": {
+      "sent_msg_id": "6065061",
+      "sent_at": "2026-10-12T05:45:13Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/7d7vANVT",
+      "attachment_sha256_sent": "e4e74b08d667d8cbf768ef4e78a8eb4f45413a449031438f62b1d2f53e66c38d",
+      "attachment_sha256_received_redownload": "e4e74b08d667d8cbf768ef4e78a8eb4f45413a449031438f62b1d2f53e66c38d",
+      "bytes_match": true,
+      "reply_msg_id": "6065162",
+      "answer_sha256": "a107277db7838a3045eb1f3ff596808dad8a3a62d125b42fd50a45ece138df4d",
+      "answered_at": "2026-10-12T05:46:55Z",
+      "first_line_declaration_ok": true
+     }
+    },
     "dm_history_note": "기존 DM 3건(2026-09-11 LP-GROWTH 브랜드 검토 — Q90 아님, 자사 홍보 문구 봄)",
     "self_declaration_fields": [
      "declaration(관여 0)",
@@ -4183,7 +4346,116 @@
      "rc1": "invalid(설계 결함 ⑪)",
      "rc2": "pass 9/9"
     },
-    "packets": {},
+    "packets": {
+     "S-04d5ce": {
+      "sent_msg_id": "6063607",
+      "sent_at": "2026-10-12T05:29:56Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/vNFfygH5",
+      "attachment_sha256_sent": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+      "attachment_sha256_received_redownload": "30c2e1d17d7ba1d68bef550a1a3d7ceb31212681874c6c01da0fd1f89a7c2de4",
+      "bytes_match": true,
+      "reply_msg_id": "6063757",
+      "answer_sha256": "302af6f7f4863eeb96bba9d665ab7c4e9c25d21bbfac4b60acc0b015b1c96887",
+      "answered_at": "2026-10-12T05:31:46Z",
+      "first_line_declaration_ok": true
+     },
+     "S-10bfa2": {
+      "sent_msg_id": "6063837",
+      "sent_at": "2026-10-12T05:32:14Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/RQrSP3gQ",
+      "attachment_sha256_sent": "4c6d05d5c3068b671723213ec2aa5e0928480e23812e213d38faa2c8a7ae7742",
+      "attachment_sha256_received_redownload": "4c6d05d5c3068b671723213ec2aa5e0928480e23812e213d38faa2c8a7ae7742",
+      "bytes_match": true,
+      "reply_msg_id": "6063950",
+      "answer_sha256": "3e467c76aaaec8011ea1869d9e31d9719d100de8e7fb3e0e731b9a77d3be4908",
+      "answered_at": "2026-10-12T05:33:58Z",
+      "first_line_declaration_ok": true
+     },
+     "S-4e6f48": {
+      "sent_msg_id": "6064039",
+      "sent_at": "2026-10-12T05:34:07Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/FV44wT3q",
+      "attachment_sha256_sent": "26e7ae87b862c11f96dfc23d77eebfccd94d46c7d693b890cc6e9aad9525ef6d",
+      "attachment_sha256_received_redownload": "26e7ae87b862c11f96dfc23d77eebfccd94d46c7d693b890cc6e9aad9525ef6d",
+      "bytes_match": true,
+      "reply_msg_id": "6064120",
+      "answer_sha256": "11d8f64f880d5f6ad66a60280326e223135cb11989bd6d17dfecb033860feaa5",
+      "answered_at": "2026-10-12T05:35:49Z",
+      "first_line_declaration_ok": true
+     },
+     "S-5e149f": {
+      "sent_msg_id": "6064174",
+      "sent_at": "2026-10-12T05:35:56Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ZdFaI0iU",
+      "attachment_sha256_sent": "ceebfeb0c179329c176bb9bdd7ad70f5e2217f46f221b1d9622b703f038662d5",
+      "attachment_sha256_received_redownload": "ceebfeb0c179329c176bb9bdd7ad70f5e2217f46f221b1d9622b703f038662d5",
+      "bytes_match": true,
+      "reply_msg_id": "6064216",
+      "answer_sha256": "ea4cd873614cd07cc7a4e552819bb1cf724a6ab7b703942a48d3eb8716a14317",
+      "answered_at": "2026-10-12T05:37:41Z",
+      "first_line_declaration_ok": true
+     },
+     "S-927ba4": {
+      "sent_msg_id": "6064314",
+      "sent_at": "2026-10-12T05:37:48Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ZD8NIwIF",
+      "attachment_sha256_sent": "55d6924f28487fde73fc8cc139c25d5fa009050eeddb8344dfcdfa5077dfd580",
+      "attachment_sha256_received_redownload": "55d6924f28487fde73fc8cc139c25d5fa009050eeddb8344dfcdfa5077dfd580",
+      "bytes_match": true,
+      "reply_msg_id": "6064369",
+      "answer_sha256": "c84316b064b9c64d5d6b4615db6d63585185fa216b36250c35e83314373ad34a",
+      "answered_at": "2026-10-12T05:39:30Z",
+      "first_line_declaration_ok": true
+     },
+     "S-9d99bb": {
+      "sent_msg_id": "6064472",
+      "sent_at": "2026-10-12T05:39:37Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/f5Rbgv3N",
+      "attachment_sha256_sent": "1a94d6a1ed0e877fbd3f8286a5d4f5541b92eb8efb8caff00d35ef523481c32d",
+      "attachment_sha256_received_redownload": "1a94d6a1ed0e877fbd3f8286a5d4f5541b92eb8efb8caff00d35ef523481c32d",
+      "bytes_match": true,
+      "reply_msg_id": "6064549",
+      "answer_sha256": "56fce553a7dfb7208964139245599e975dceaf8cbd6a7d9745afc11c800b8dc2",
+      "answered_at": "2026-10-12T05:41:20Z",
+      "first_line_declaration_ok": true
+     },
+     "S-da397f": {
+      "sent_msg_id": "6064697",
+      "sent_at": "2026-10-12T05:41:28Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/gjywsyWr",
+      "attachment_sha256_sent": "986b7f7ffe43ad51ed4303edce31ac740584e4c262e5e02d9535c9e6974f22e7",
+      "attachment_sha256_received_redownload": "986b7f7ffe43ad51ed4303edce31ac740584e4c262e5e02d9535c9e6974f22e7",
+      "bytes_match": true,
+      "reply_msg_id": "6064808",
+      "answer_sha256": "8563c6dee8ba3c33a571fd230a30caa07564ce1041a870f3bd51db66367d6b0b",
+      "answered_at": "2026-10-12T05:43:12Z",
+      "first_line_declaration_ok": true
+     },
+     "S-e9e660": {
+      "sent_msg_id": "6064868",
+      "sent_at": "2026-10-12T05:43:19Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/jiEl9miv",
+      "attachment_sha256_sent": "eb9f0c64706fb1ff2da50e56fa45bd161d9d4600b6ace3c762b51bd20036cb42",
+      "attachment_sha256_received_redownload": "eb9f0c64706fb1ff2da50e56fa45bd161d9d4600b6ace3c762b51bd20036cb42",
+      "bytes_match": true,
+      "reply_msg_id": "6064948",
+      "answer_sha256": "9c531dd058729b8dfc3116da3c4bef66c2bc67583993a6766478785c76a720c4",
+      "answered_at": "2026-10-12T05:45:15Z",
+      "first_line_declaration_ok": true
+     },
+     "S-f7229a": {
+      "sent_msg_id": "6065076",
+      "sent_at": "2026-10-12T05:45:23Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ffid1nlk",
+      "attachment_sha256_sent": "e4e74b08d667d8cbf768ef4e78a8eb4f45413a449031438f62b1d2f53e66c38d",
+      "attachment_sha256_received_redownload": "e4e74b08d667d8cbf768ef4e78a8eb4f45413a449031438f62b1d2f53e66c38d",
+      "bytes_match": true,
+      "reply_msg_id": "6065183",
+      "answer_sha256": "33fdc61401b1dc7b9380af9b0d8954af1324b095807b7a1dfe57852395bcaa80",
+      "answered_at": "2026-10-12T05:46:57Z",
+      "first_line_declaration_ok": true
+     }
+    },
     "dm_history_note": "기존 DM 0건(인사말만)",
     "self_declaration_fields": [
      "declaration(관여 0)",
@@ -4225,6 +4497,11 @@
    ],
    "criterion": "Q90(1·2회차 전 역할, task #47·#55·#56·#57, holdout, X1~X4) 관여 0, #lp-quality-gate 비멤버"
   },
-  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록."
+  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록.",
+  "third_stage": {
+   "prepared_at": "2026-10-12T05:49:30Z",
+   "axes_needing_third": 0,
+   "note": "두 judge 전 축 차이≤1 → 제3자 개입 0. 규칙(diff≤1 → 낮은 값)으로 표 생성 단계에서 집계. 제3자(SEO Specialist)는 read_check만 수행, 채점 미참여."
+  }
  }
 }
