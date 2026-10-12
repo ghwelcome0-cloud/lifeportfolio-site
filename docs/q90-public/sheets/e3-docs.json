@@ -1096,39 +1096,39 @@
    "url": "https://www.insights.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "Insights Learning & Development Ltd",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "기업 L&D 프로그램·공인 실무자(Licensed Practitioner) 경유 — 개인 직접 구매 창구 없음(\"Fill out the form… consultation\")",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "미기재"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "가격 비공개(상담)"
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "문의",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
@@ -1138,16 +1138,16 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.insights.com/media/2728/insights-discovery-validating-the-system-factsheet.pdf",
+    "source_url": "https://www.insights.com/what-we-do/validity/",
+    "collected_at": "2026-10-12",
+    "note": "\"Validating the System\" 팩트시트 공개(신뢰도·타당도 검증 과정). 계수 전사는 2차 패스"
    },
    "reliability_coef": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "팩트시트 기재",
+    "source_url": "https://www.insights.com/what-we-do/validity/",
+    "collected_at": "2026-10-12",
+    "note": "20년+ 측정, 계수 값은 PDF 확인"
    },
    "norm_sample_n": {
     "value": null,
@@ -1157,9 +1157,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 링크 미발견 → E2 미측정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1174,22 +1174,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "4가지 색 에너지라는 기억하기 쉬운 공통 언어로 팀 소통·관리 스타일을 보고, Microsoft Teams 안에서 동료와 비교하며 쓰고 싶을 때. 검증 팩트시트 공개.",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "개인 구매 불가(기업·실무자 경유), 가격 비공개. 공식 사이트에 개인 샘플 프로파일 공개 없음. 팀·조직 맥락 중심.",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "전체",
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "한국어판 프로파일 존재(국내 라이선스) — 재확인"
    },
    "E4": {
     "value": null,
@@ -1199,7 +1199,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.insights.com/products/insights-discovery/",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 없음"
+   }
   },
   {
    "id": "G11",
@@ -1320,40 +1326,40 @@
    "url": "https://www.strengthsprofile.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "Cappfinity (Strengths Profile → \"Skills Discovery\"로 브랜드 전환 중)",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "2026-10 페이지 제목 \"Skills Discovery\""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(개인 구매) + 공인 코치(Accreditation)",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "미기재"
    },
    "price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "가격이 동적 로드로 본문에 없음 — 2차 패스(브라우저 렌더) 필요. 교육 이메일 30% 할인 명시"
    },
    "price_band": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "유료 프로파일(60/80 skill 버전) 공개 판매 — 금액은 미전사"
    },
    "reuse_price_krw": {
     "value": null,
@@ -1362,10 +1368,10 @@
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.strengthsprofile.com/en-GB/Products",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "신뢰도·규준 문서 링크 미발견(2차 패스)"
    },
    "reliability_coef": {
     "value": null,
@@ -1381,9 +1387,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "미발견 → E2 미측정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1398,22 +1404,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "\"잘하는 것\"만이 아니라 잘하지만 힘 빠지는 것(learned behaviours)·약점·숨은 강점 4분면으로 60~80개 스킬을 보고 싶을 때. 코치 공인 과정 있음.",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "영어만. 가격·소요시간이 공개 본문에 없음. 브랜드 전환(Strengths Profile→Skills Discovery) 중이라 명칭 혼선. 공식 샘플 리포트 링크 미발견.",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음",
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "영어"
    },
    "E4": {
     "value": null,
@@ -1423,7 +1429,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 미발견"
+   }
   },
   {
    "id": "G13",
@@ -1432,52 +1444,52 @@
    "url": "https://www.workinggenius.com/",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "The Table Group (Patrick Lencioni)",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "웹(개인 구매, 계정)",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 10,
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 \"10-minute assessment\""
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 25,
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "USD 25 per person — USD 원값"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "~5만원",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "환불 규정 미확인"
    },
    "reuse_price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "미확인"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.workinggenius.com/about/assessment",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "신뢰도·규준 문서 미발견(공식 사이트는 모델 설명·간증 중심)"
    },
    "reliability_coef": {
     "value": null,
@@ -1493,9 +1505,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 링크 없음. 제3자(squarespace/watneyinsights) 사본은 채택 안 함"
    },
    "sample_report_sha256": {
     "value": null,
@@ -1510,22 +1522,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "10분 만에 \"일에서 내가 힘 나는 활동 2가지·힘 빠지는 2가지\"를 알고, 팀 지도(Team Map)로 바로 회의·역할에 적용하고 싶을 때. USD 25.",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "성격 검사라기보다 업무 활동 선호 도구. 신뢰도·타당도 공개 문서 없음. 영어만. 공식 사이트에 샘플 리포트 링크 없음(제3자 호스팅 PDF만 존재 → 출처 규칙상 E2 미채택).",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "없음",
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "영어"
    },
    "E4": {
     "value": null,
@@ -1535,7 +1547,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://www.workinggenius.com/about/assessment",
+    "collected_at": "2026-10-12",
+    "note": "공식 샘플 없음"
+   }
   },
   {
    "id": "G14",

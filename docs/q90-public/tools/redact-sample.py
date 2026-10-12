@@ -22,6 +22,11 @@ Usage: python3 redact-sample.py <e2-samples.json> <roster-v2.json> <id> <in.pdf>
  4. 누출 검사: 처리본 전체 텍스트에서 명부 문자열 재검색 → 0건이어야 통과. 결과를 시트 행의 redaction 칸에 기록:
     items_found(가린 문자열 목록·건수), tool_sha256(이 스크립트), leak_check, redacted_sha256.
  5. 출력 파일명은 blind_id 로만: <outDir>/<blind_id>.pdf  (원본 파일명·id가 드러나지 않게)
+ 6. **최종 패킷용 = 이미지 PDF** (Peer 6054792 ①, 차단급): 가림 처리본은 content stream에 원본 글자·경로가 남고(덮기), 글꼴 이름·XMP·
+    책갈피·링크에도 출처 단서가 남는다. 그래서 가림본의 각 페이지를 170dpi로 렌더해 **텍스트 레이어 없는 이미지 PDF**
+    (<blind_id>.img.pdf, 메타데이터 비움)를 만들고, 누출 검사·sha·패킷은 **이 파일**을 기준으로 한다.
+    가림본(.pdf)은 중간 산출물로만 보관(패킷에 넣지 않음).
+ 7. 이미지 PDF 최종 검사 3겹: ① 텍스트 레이어(0바이트여야 정상) ② OCR(kor+eng) ③ 메타·글꼴 이름·주석 문자열(0건).
 """
 import sys, json, re, hashlib, pathlib, datetime
 import pymupdf  # PyMuPDF
@@ -152,8 +157,23 @@ pathlib.Path(OUTDIR).mkdir(parents=True, exist_ok=True)
 out = pathlib.Path(OUTDIR) / f"{row['blind_id']}.pdf"
 doc.save(str(out), garbage=4, deflate=True); doc.close()
 
-# 3) 누출 검사 ----------------------------------------------------------------
+# 2c) 이미지 PDF로 다시 만들기 ------------------------------------------------
+mid = out  # 가림본(중간 산출물)
+src = pymupdf.open(str(mid)); img_doc = pymupdf.open()
+for pg in src:
+    pm = pg.get_pixmap(dpi=170, alpha=False)
+    np_ = img_doc.new_page(width=pg.rect.width, height=pg.rect.height)
+    np_.insert_image(np_.rect, pixmap=pm)
+img_doc.set_metadata({k: '' for k in ('author', 'producer', 'creator', 'title', 'subject', 'keywords', 'creationDate', 'modDate')})
+img_doc.del_xml_metadata() if hasattr(img_doc, 'del_xml_metadata') else None
+out = pathlib.Path(OUTDIR) / f"{row['blind_id']}.img.pdf"
+img_doc.save(str(out), garbage=4, deflate=True); img_doc.close(); src.close()
+
+# 3) 누출 검사 (최종 = 이미지 PDF) ---------------------------------------------
 chk = pymupdf.open(str(out)); text = ' '.join(p.get_text() for p in chk).lower()
+# ③ 메타·글꼴·주석 문자열 — 이미지 PDF에는 글꼴·주석·책갈피가 없어야 한다
+hidden = {'text_layer_bytes': len(text.strip()), 'fonts': sorted({f[3] for pg in chk for f in pg.get_fonts()}), 'annots': sum(1 for pg in chk for _ in pg.annots()), 'links': sum(len(pg.get_links()) for pg in chk), 'toc': len(chk.get_toc()), 'embedded_files': chk.embfile_count(), 'metadata_nonempty': {k: v for k, v in chk.metadata.items() if v and k not in ('format', 'encryption')}}
+hidden_leak = hidden['text_layer_bytes'] > 0 or hidden['fonts'] or hidden['annots'] or hidden['links'] or hidden['toc'] or hidden['embedded_files']
 # 썸네일 시트(사람 눈 확인용)
 from PIL import Image
 thumbs = [Image.frombytes('RGB', (pm.width, pm.height), pm.samples) for pm in (pg.get_pixmap(dpi=50) for pg in chk)]
@@ -181,13 +201,13 @@ with tempfile.TemporaryDirectory() as td:
                 ocr_hits.setdefault(t, []).append(pg.number + 1)
 chk.close()
 leaks_ocr = sorted(k for k in ocr_hits if not k.startswith('_'))
-leaks = sorted(set(leaks_text) | set(leaks_ocr))
+leaks = sorted(set(leaks_text) | set(leaks_ocr) | ({'_hidden_structure'} if hidden_leak else set()))
 sha = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()
 row['redaction'] = {
     'items_found': [{'term': k, 'n': v} for k, v in sorted(found.items(), key=lambda x: -x[1])],
     'tool_sha256': sha(__file__), 'images_removed': True,
     'leak_check': {'roster_strings_found': len(leaks), 'leaked_terms': leaks, 'text_layer': leaks_text, 'ocr_layer': {k: v for k, v in ocr_hits.items()}, 'ocr_lang': 'kor+eng@150dpi', 'checked_at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')},
-    'redacted_sha256': sha(str(out)) if not leaks else None,
+    'redacted_sha256': sha(str(out)) if not leaks else None, 'final_file': out.name, 'final_format': 'image-pdf@170dpi', 'intermediate_sha256': sha(str(mid)), 'hidden_structure': hidden,
     'visual_check': {'contact_sheet': out.with_suffix('.contact.png').name, 'passed': None, 'by': None, 'at': None},  # 사람이 채움
 }
 row['status'] = 'redacted_pending_visual' if not leaks else 'ready'
