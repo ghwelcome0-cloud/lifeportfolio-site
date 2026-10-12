@@ -97,7 +97,7 @@
       "n": 2
      }
     ],
-    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -105,12 +105,27 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:26:41Z"
+     "check_terms_n": 138,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "Profile": [
+        2,
+        18,
+        19
+       ],
+       "insights": [
+        13
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:38:04Z"
     },
-    "redacted_sha256": "828b3217f1b7ff0b8aca16a0405fd7517a938a2cfa8724473db8cee0b94d3934",
+    "redacted_sha256": "f6aefca92297b676fd4c5bd4b882393b522f27a8683b10f74bd5042ab6764185",
     "final_file": "S-4e6f48.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "0fa06a8d5acdd6831242eeca86680c7b2f918c048275863ba46b2ca826ea65a4",
+    "intermediate_sha256": "401685e6565b40f2f238db1a2f523a1fc69f8c8e0038f705e21e9906f591808a",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -125,7 +140,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "ALLOWLIST 수정 뒤 재처리(CliftonStrengths 추가 가림), 확인 통과"
+     "note": "ALLOWLIST 수정 뒤 재처리(CliftonStrengths 추가 가림), 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 1쪽 미세 픽셀 차이(렌더 비결정성), 60dpi 나란히 확인 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -194,12 +209,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "f939be08afb71317a7facfab56fc1f16946a99892eeb4c695b0feaf805588191",
+   "packet_sha256": "d54f72f2d642be7e669a459c6bd981ae2c0a37899a3a9926e5fd2f4234309efb",
    "packet_files": {
-    "sample.pdf": "828b3217f1b7ff0b8aca16a0405fd7517a938a2cfa8724473db8cee0b94d3934",
+    "sample.pdf": "f6aefca92297b676fd4c5bd4b882393b522f27a8683b10f74bd5042ab6764185",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "d159ba42a15c925ecdd4804ce099be0399927ffedf15296c307f094daf016d90",
-    "ANSWER.json": "c28409c9f3032d43dd346face79399b8d33dd3ecd338a9a803fb3622b782da36"
+    "README.md": "af137054b449e0b54661852ad5a93c35291de8cc89c3a67ce96a07be1c703bf9",
+    "ANSWER.json": "1ffa1a40c092164d7541690a1bd1fadc43631e3f31d26b1e86f69839090f9fbe"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -220,11 +235,11 @@
       "n": 19
      },
      {
-      "term": "Alex Bradley",
+      "term": "John Wiley",
       "n": 19
      },
      {
-      "term": "Bradley",
+      "term": "Alex Bradley",
       "n": 19
      },
      {
@@ -232,7 +247,7 @@
       "n": 19
      },
      {
-      "term": "John Wiley",
+      "term": "Bradley",
       "n": 19
      },
      {
@@ -248,7 +263,7 @@
       "n": 4
      }
     ],
-    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -256,12 +271,29 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:10:54Z"
+     "check_terms_n": 139,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "DiSC": [
+        2,
+        3,
+        4,
+        5,
+        7,
+        12,
+        15,
+        16
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:40:50Z"
     },
-    "redacted_sha256": "7e9e6b029743b16f48add50967595b5ac289a170643ccc45a3c43cb642abd2d2",
+    "redacted_sha256": "928cdd6c884bd61d0b4d169b14219deb51a2489700646062689da42c618e932b",
     "final_file": "S-da397f.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "223fdc74a0b509d381e0c45c93e402ff599c799da0d03b80b0027c02a079b773",
+    "intermediate_sha256": "453d4e14f594ccbe922bcd8a5e5fd099ac76d595f86e9b4e7d3f12192c045748",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -276,7 +308,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -345,12 +377,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "d708aed4fb796829e24cb4372b7cbe0b7d48dcde3abdfc22549e17af5eb81147",
+   "packet_sha256": "07b7d363133e122e3ee9e5007d27cb341157c3b04804f2d085bacbe027da6c05",
    "packet_files": {
-    "sample.pdf": "7e9e6b029743b16f48add50967595b5ac289a170643ccc45a3c43cb642abd2d2",
+    "sample.pdf": "928cdd6c884bd61d0b4d169b14219deb51a2489700646062689da42c618e932b",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "eb0de1cd9306425f9cbb365dc9dc8ed5503664d279ca3efe6ddbb2056404afeb",
-    "ANSWER.json": "c2cbcda08e4e78963e531cc4d1fde242fc1212559f08bdd556f3d796a402042f"
+    "README.md": "1226533b74558c31f773aab525402ac2dc5868c50b183f1863909990f1f3c365",
+    "ANSWER.json": "dfdcf99e07a2492ca2e537230a77f60f2a844d2402a751d7b512cc249e54d189"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -399,7 +431,7 @@
       "n": 1
      }
     ],
-    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -407,12 +439,18 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:11:16Z"
+     "check_terms_n": 139,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:41:19Z"
     },
-    "redacted_sha256": "9eb75edef979882269104c06c6eea523e3e199c6aad8fecd7a0ec17f4217d0f1",
+    "redacted_sha256": "e7f8a2983af269c5fb979a2a5216a6da294006e15638e2cf7d54c01ddd58abe7",
     "final_file": "S-5e149f.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "6ccca37255f29fc8eee90caa7e6ceae9cdbb99cc030f7604c8e4ba0d3cb5abcc",
+    "intermediate_sha256": "d2d6912a720c4ab26c32b835c2740cadaeb39c2095beb0692c90f302861ccd1e",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -427,7 +465,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 1쪽 미세 픽셀 차이(렌더 비결정성), 60dpi 나란히 확인 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -496,12 +534,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "da58d6e2349bee34bb5ad667d9d5fedb7aa0da5b382c4309179c975f4cdb9217",
+   "packet_sha256": "9955fddb46afa823b5abdcaea9a28e299b393f6e018f752e68769d0c0804f0d2",
    "packet_files": {
-    "sample.pdf": "9eb75edef979882269104c06c6eea523e3e199c6aad8fecd7a0ec17f4217d0f1",
+    "sample.pdf": "e7f8a2983af269c5fb979a2a5216a6da294006e15638e2cf7d54c01ddd58abe7",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "d966e612ea1712fe633944a8774f9cb33e14a1bd1fa2a99ccde808f695c06781",
-    "ANSWER.json": "f6d28cba9959215ac5f91b782262dcb4ce083548c77b41bd3e5b3e6b1024eb37"
+    "README.md": "904dc6247ab0d695b0cdc6cce1fdc46f3d94b71aa8083c459e5f53b8058dce87",
+    "ANSWER.json": "fe7b2c2641ec8262e8e9fd55b6a9131867668565a751b8be6c9262b9a1e31192"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -779,7 +817,7 @@
       "n": 7
      }
     ],
-    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -787,12 +825,22 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:24:29Z"
+     "check_terms_n": 139,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "career": [
+        6
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:42:53Z"
     },
-    "redacted_sha256": "72b43f3ba7f32334e729b5154787a50050dc7873550e4f3791bfbeb1ccf4460f",
+    "redacted_sha256": "1172e87150e814b9bc18363ceeba3b91107518959279558addcbd480414fd10c",
     "final_file": "S-9d99bb.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "5674ec400ac71f34c593901453e7546a00287af9b901328cf5e2f3ccdd8e7b1b",
+    "intermediate_sha256": "d3eb5dde18e14850a4f6cbae7bf5028bc40598797134de49dc21b2553bbc5513",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -807,7 +855,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "1차 눈 확인에서 Hogan 본문 잔존 발견(결함 ⑩: ALLOWLIST) → 수정 후 재처리, 2차 확인 통과"
+     "note": "1차 눈 확인에서 Hogan 본문 잔존 발견(결함 ⑩: ALLOWLIST) → 수정 후 재처리, 2차 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -876,12 +924,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "d6e5bb21e76c3c21906508c2e6f4649c7f4a3b68463597b4504e7bd68e2a7ad9",
+   "packet_sha256": "d9a207f4cb9b5589d23855dc9c58d12fb05f08013e69217e1e7b53ed42861dfa",
    "packet_files": {
-    "sample.pdf": "72b43f3ba7f32334e729b5154787a50050dc7873550e4f3791bfbeb1ccf4460f",
+    "sample.pdf": "1172e87150e814b9bc18363ceeba3b91107518959279558addcbd480414fd10c",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "64ece0122caef3dd4fb19dd7517983e24e0ec3ce5faa733b512e3705c1e87c77",
-    "ANSWER.json": "422a765af70ddf6bda974551b102cd35755f0e68b20375f336e99db74504822b"
+    "README.md": "34b41ea90273f976abcdd0be154a29d24b76b3780a043ef70fb4b977493baeb6",
+    "ANSWER.json": "8ea3c1d20e87e3ad3a0ffe30a180e5712b10afb5718d5c4aed1e1451a699bb4b"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -985,7 +1033,7 @@
       "n": 4
      }
     ],
-    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -993,12 +1041,23 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:13:04Z"
+     "check_terms_n": 139,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "Behavioral": [
+        2,
+        3
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:43:18Z"
     },
-    "redacted_sha256": "629944a74689dfe4d576f8035dd45f5911f0f75193a0430d0aa4b91ef79e7e45",
+    "redacted_sha256": "ba1ec2e4a25f094a8109d7b1f3352329b3a0b2e8d9df8461e547dbdc999df7e2",
     "final_file": "S-e9e660.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "4f3e77b2c45ffc5d59173fe341402306e93e5fda5c3e49c0d5479482a8834dad",
+    "intermediate_sha256": "89213be6c276113539946349a5613058e71fee444b7ac731b2c7be60b4edb09f",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -1013,7 +1072,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -1082,12 +1141,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "9f89ad66fb29e17d77faac9381edce0fc2f4e6044b4f007237c6840eebed7073",
+   "packet_sha256": "312824258fbfe1547e9217d4561f9c3860e86fdc0ee0b872986fc47c7c96f7d2",
    "packet_files": {
-    "sample.pdf": "629944a74689dfe4d576f8035dd45f5911f0f75193a0430d0aa4b91ef79e7e45",
+    "sample.pdf": "ba1ec2e4a25f094a8109d7b1f3352329b3a0b2e8d9df8461e547dbdc999df7e2",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "57da4ce26b6711b3d6e83db218a33fa26c9d12d803ed1872449b1138c49be37d",
-    "ANSWER.json": "24e54c099e305d64dc05302fb18a6b26c730fda3d325c9375426b746820f4af2"
+    "README.md": "57bd42e7744185286237ea3de498b90d12990155d47f6aa50749fe39504f236d",
+    "ANSWER.json": "3023c66259ed1389d044a4071efe29d396b22e1dd64308fb76dc0281ed09945f"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -1436,11 +1495,7 @@
       "n": 20
      },
      {
-      "term": "JANE",
-      "n": 18
-     },
-     {
-      "term": "Jane Sample",
+      "term": "Jane",
       "n": 18
      },
      {
@@ -1452,7 +1507,11 @@
       "n": 18
      },
      {
-      "term": "Jane",
+      "term": "Jane Sample",
+      "n": 18
+     },
+     {
+      "term": "JANE",
       "n": 18
      },
      {
@@ -1476,7 +1535,7 @@
       "n": 2
      }
     ],
-    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -1484,12 +1543,35 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:28:54Z"
+     "check_terms_n": 146,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "career": [
+        2,
+        3,
+        5,
+        6,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        17,
+        18,
+        19
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:45:53Z"
     },
-    "redacted_sha256": "b13275f027e39439c921f90033e71694b4764359ecbef54491400f3c134448de",
+    "redacted_sha256": "140249425d5422a1c20ba465868a1299ee7e846e7f01e531134d563ba0d6e4c6",
     "final_file": "S-f7229a.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "7744ebe91b88369459459fb3df815cc7e6fd3aa47d47f5208c8abb2951516882",
+    "intermediate_sha256": "6c3e77a2904da8d1cb7f3633eae493dada20d77d44619029c9b8655f56a454c7",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -1504,7 +1586,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "1차 눈 확인에서 머리글 JANE SAMPLE 잔존 → extra 추가 재처리, 2차 확인 통과"
+     "note": "1차 눈 확인에서 머리글 JANE SAMPLE 잔존 → extra 추가 재처리, 2차 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -1573,12 +1655,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "f7340ffe2b1bba85a5c92884b33b1c7d760907515157d8471c053a4b929306f6",
+   "packet_sha256": "7b5cd652dec92f45154ad39331ba3c6303626a4f39ade3ddbb41c5ae1e136a9d",
    "packet_files": {
-    "sample.pdf": "b13275f027e39439c921f90033e71694b4764359ecbef54491400f3c134448de",
+    "sample.pdf": "140249425d5422a1c20ba465868a1299ee7e846e7f01e531134d563ba0d6e4c6",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "e1ae99256925de8cf9da14dc27dc55736db16096000028a65ad5b98bb14b7d49",
-    "ANSWER.json": "04a68fce73c4c2966220d6e7e195dfea58d7d1033701e88bab681120a73ec601"
+    "README.md": "0756b508740cade262517cd0aa2d58fe517c46e7305f3c66516e66f6c56a5af9",
+    "ANSWER.json": "0dd0f102240ef9049eb52dbf7a6ce70a6feb827b9695570dfe9388bfd9fc69c1"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -2425,7 +2507,7 @@
       "n": 69
      }
     ],
-    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -2433,12 +2515,18 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:19:49Z"
+     "check_terms_n": 137,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:50:55Z"
     },
-    "redacted_sha256": "ca4f7c85e473a1a03e1853cc4992f283285edc026f4ee3ee32b975396d43a5f5",
+    "redacted_sha256": "8e8fbe144b8dbe67f036920f9f274bdb1f8108625d861ea71db860c62eb9bcbf",
     "final_file": "S-10bfa2.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "25890ded9c43aaced92dc7b3ae9035af7e67938340f137da2da22881a5f407cb",
+    "intermediate_sha256": "165af4248f2e21c411c014b254a9e832c53f7c1eba083bc374248408a4d23850",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -2453,7 +2541,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -2522,12 +2610,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "a7117a7314ddd129ef22c3a50c509f198c1596d4fd9c5d3d8405ecfd3bc4a40c",
+   "packet_sha256": "a1ff0efb012ad73db121016edd644d217ada2fa8dca1bc758510b109fe93d9d6",
    "packet_files": {
-    "sample.pdf": "ca4f7c85e473a1a03e1853cc4992f283285edc026f4ee3ee32b975396d43a5f5",
+    "sample.pdf": "8e8fbe144b8dbe67f036920f9f274bdb1f8108625d861ea71db860c62eb9bcbf",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "b7eddca3ea071200160d5f00d27b158c146d06e46145730e62a91ad46026ae2f",
-    "ANSWER.json": "c01939c4b94ada832e11b4985045f8e4c310d786c880c396a69a2dff76ec9ad7"
+    "README.md": "b3cc6efd66b382bd77bc440d474e3349eb81a93dc2313cc3e9e500e7e546e631",
+    "ANSWER.json": "3995e146802b729936d771a53546be5ae3b90b8a2032f939401d3a3f1eb41535"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -2548,11 +2636,11 @@
       "n": 10
      },
      {
-      "term": "tanagement",
+      "term": "TANAGEMENT",
       "n": 10
      },
      {
-      "term": "TANAGEMENT",
+      "term": "tanagement",
       "n": 10
      },
      {
@@ -2560,7 +2648,7 @@
       "n": 1
      }
     ],
-    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -2568,12 +2656,18 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:17:13Z"
+     "check_terms_n": 134,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:48:10Z"
     },
-    "redacted_sha256": "798fd69e19cd4e7d3cc844d7def16b47e98d0bef5ed326513faabb5e202072f2",
+    "redacted_sha256": "30b9de49db8443656699c448001fa1b779f6244f63640e3e8cb507e96717b451",
     "final_file": "S-04d5ce.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "42fa74c30e01f33d762abdf02734161adca6a2d0893a394be3c2cd17ec74047d",
+    "intermediate_sha256": "beb851123beb095c1a63c91547137895d4c6f9a101e937ce640c6fe855628e33",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -2588,7 +2682,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -2657,12 +2751,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "4889e4d315819cb0a03e892bcc5c9dc4767033f9f799f089372318502d3f990c",
+   "packet_sha256": "aa7be3ac2a2ce57df838cdf36e44956c62d72795027da0576120840c27ba5de2",
    "packet_files": {
-    "sample.pdf": "798fd69e19cd4e7d3cc844d7def16b47e98d0bef5ed326513faabb5e202072f2",
+    "sample.pdf": "30b9de49db8443656699c448001fa1b779f6244f63640e3e8cb507e96717b451",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "16b3b95e3e7264addca3bb3e089a4ce6c5214b8d9d46d0fae9ea17d1be3fa945",
-    "ANSWER.json": "a0ce91c128e9874973d1aa3d5b5cb425b78d1eb5caa3a646648214e28a546ab8"
+    "README.md": "6ba63e2dee855017c3461a45c12a896b678378f2ce1c23c2ababa204329dc276",
+    "ANSWER.json": "16cff68bfe7cdf0394cbe1fc42aa152c40e24d9736d58664a34796ea020151e0"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -3509,7 +3603,7 @@
       "n": 1
      }
     ],
-    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "tool_sha256": "4bcda47748e27a018d7cb244323a5631906cb307be733506966e1e709aefc73d",
     "images_removed": true,
     "leak_check": {
      "roster_strings_found": 0,
@@ -3517,12 +3611,18 @@
      "text_layer": [],
      "ocr_layer": {},
      "ocr_lang": "kor+eng@150dpi",
-     "checked_at": "2026-10-12T04:29:44Z"
+     "check_terms_n": 137,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-12T04:48:21Z"
     },
-    "redacted_sha256": "b238cf0dd4a792bbc1a460de61ebe506b9eb54a504abaa7236798c7e38bf0b74",
+    "redacted_sha256": "cd6a6255bc0863892cb842fa327dd91647ee905d1ce8263237ee9d4ff19a232f",
     "final_file": "S-927ba4.img.pdf",
     "final_format": "image-pdf@170dpi",
-    "intermediate_sha256": "280cf7a383571a2bd9dea27a8092e24f7baea815d8638979c6bae8d815721d20",
+    "intermediate_sha256": "a1da985fb389b9a601b5a7ece86797b406f33e6bf36328be4dae39d71b06d384",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -3537,7 +3637,7 @@
      "passed": true,
      "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
      "at": "2026-10-12T04:30:18Z",
-     "note": "1차 눈 확인에서 2쪽 하단 로고 조각(벡터) 잔존 → --boxes 2:0.05,0.78,0.20,0.95 재처리, 2차 확인 통과"
+     "note": "1차 눈 확인에서 2쪽 하단 로고 조각(벡터) 잔존 → --boxes 2:0.05,0.78,0.20,0.95 재처리, 2차 확인 통과 | 재처리(검사 목록 분리, Peer 6057976 ①) 후 72dpi 픽셀 비교: 동일 (2026-10-12T04:53:56Z)"
     }
    },
    "status": "redacted",
@@ -3606,12 +3706,12 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": "1726e571f2bb82b29fb9d79f8374b8f17f51467423a29c6d91bb894854d4f261",
+   "packet_sha256": "01246148b4fb53431b6054fe701bb4d82df386c97090629a772644e7cfbc430e",
    "packet_files": {
-    "sample.pdf": "b238cf0dd4a792bbc1a460de61ebe506b9eb54a504abaa7236798c7e38bf0b74",
+    "sample.pdf": "cd6a6255bc0863892cb842fa327dd91647ee905d1ce8263237ee9d4ff19a232f",
     "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
-    "README.md": "03089e3fe72fdec13d5cb91a0e9a585057703114557e5c3ffc8a841c2c69b651",
-    "ANSWER.json": "0c0540115b68529b01de36633e0ad4d67222a25b8a29b84abca409f7fbe27f76"
+    "README.md": "b91b7c4f2bf99869744e05042702c2e9a360c13c9cd6fb41c9cbbf5a9b4d8d5d",
+    "ANSWER.json": "722b4c4f5574e546fa6dd4d95afad5ddf71799c78ac358b201444d33b8b78d69"
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
@@ -3875,5 +3975,74 @@
   "S-da397f",
   "S-e9e660",
   "S-f7229a"
- ]
+ ],
+ "judge_sessions": {
+  "note": "TL 6054779 5조건 + Peer 6057976 ④(받은 쪽 sha) + TL 6058049(read_check). 채점 전 채움. 값은 사실만.",
+  "read_check": {
+   "doc": "readcheck-rc1.img.pdf (18쪽, 170dpi 이미지 PDF, 명부 밖 합성 문서)",
+   "doc_sha256": "b7b282eae0dcd66c57e857c55a0472b8c3f3df13fc395c4fab6eda04ca33b0d6",
+   "rule": "표지어 3개 + 마지막 쪽 표 값 1개, 4개 모두 정확히 일치 → pass. 하나라도 틀리면 교체 또는 쪽 나눠 보내기. 점수 아님."
+  },
+  "judges": [
+   {
+    "role": "judge1",
+    "actor_id": "agent_7c87affr9bvf",
+    "display": "Brand Strategist",
+    "dm_channel_id": null,
+    "read_check": {
+     "sent_msg_id": null,
+     "reply_msg_id": null,
+     "answers": null,
+     "result": null
+    },
+    "packets": {}
+   },
+   {
+    "role": "judge2",
+    "actor_id": "agent_kxmtj2g9mmyk",
+    "display": "Designer",
+    "dm_channel_id": null,
+    "read_check": {
+     "sent_msg_id": null,
+     "reply_msg_id": null,
+     "answers": null,
+     "result": null
+    },
+    "packets": {}
+   },
+   {
+    "role": "third",
+    "actor_id": "agent_dr764xprg5cv",
+    "display": "SEO Specialist",
+    "dm_channel_id": null,
+    "read_check": {
+     "sent_msg_id": null,
+     "reply_msg_id": null,
+     "answers": null,
+     "result": null
+    },
+    "packets": {},
+    "condition": "Method 6057992: 경쟁 서비스 업무 조사 여부 자기선언 1줄 추가(competitor_research_done_before)"
+   }
+  ],
+  "packet_record_schema": {
+   "<blind_id>": {
+    "sent_msg_id": null,
+    "attachment_sha256_sent": null,
+    "attachment_sha256_received_redownload": null,
+    "reply_msg_id": null,
+    "answer_sha256": null
+   }
+  },
+  "isolation_verified": {
+   "at": "2026-10-12T04:30Z",
+   "by": [
+    "gencode 4단계",
+    "Method 6057992 독립 재확인",
+    "TL 6058049 재확인"
+   ],
+   "criterion": "Q90(1·2회차 전 역할, task #47·#55·#56·#57, holdout, X1~X4) 관여 0, #lp-quality-gate 비멤버"
+  },
+  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완."
+ }
 }

@@ -83,8 +83,12 @@ for t in list(extra):
 # 실측 결함: 'The Myers-Briggs Company' 분해로 'The'·'Sample'이 들어가 본문 the/sample 전부가 검게 칠해짐(M03 1차). COMMON 으로 차단.
 # 너무 일반적인 낱말은 제외(가림이 본문을 망가뜨림)
 STOP = {'report', 'profile', 'strong', 'insight', 'complete', 'premium', 'career', 'suite', 'workplace', 'signature', 'discovery', 'perform', 'planner', 'journal', 'inventory', 'survey', 'index', 'behavioral', 'assessment', '검사', '리포트', '진단', '성격', '직업'}
+# Peer 6057976 ①(구조 결함, ⑩의 근본 원인): 지우는 목록과 검사하는 목록이 같으면 목록의 실수가 검사에서도 통과한다.
+# → 누출 검사용 목록(check_terms)은 STOP·ALLOWLIST를 적용하기 **전**의 전체 문자열로 따로 둔다(명부 41행 name·provider·도메인 + extra 전부).
+#   ALLOWLIST 단어가 적중하면 "통과"가 아니라 allow_hits 로 출력해 사람 눈 확인 칸에 넘긴다.
+check_terms = {t for t in terms if len(t) >= 4 and t.lower() not in COMMON}
 terms = {t for t in terms if t.lower() not in STOP and len(t) >= 3}
-model_terms = {t for t in terms if t.lower() in ALLOWLIST}  # 가리지도, 누출로 세지도 않음(기록만)
+model_terms = {t for t in terms if t.lower() in ALLOWLIST}  # 가리지 않음(모델명). 누출 검사는 check_terms 로 따로 센다.
 terms -= model_terms
 
 # 2) 처리 ---------------------------------------------------------------------
@@ -185,7 +189,10 @@ cols = 4; w = max(t.width for t in thumbs); h = max(t.height for t in thumbs); r
 sheet = Image.new('RGB', (cols * w, rows_n * h), 'white')
 for i, t in enumerate(thumbs): sheet.paste(t, ((i % cols) * w, (i // cols) * h))
 sheet.save(str(out.with_suffix('.contact.png')))
-leaks_text = sorted({t for t in terms if t.lower() in text})
+# 누출 검사는 check_terms(허용 목록 미적용)로 돌린다. 허용 목록 단어·STOP 단어의 적중은 allow_hits 로 분리 출력(차단 아님, 눈 확인 대상).
+def _is_allow(t): return t.lower() in ALLOWLIST or t.lower() in STOP
+leaks_text = sorted({t for t in check_terms if t.lower() in text and not _is_allow(t)})
+allow_hits = {'text_layer': sorted({t for t in check_terms if t.lower() in text and _is_allow(t)}), 'ocr_layer': {}}
 # OCR 겹 — 렌더된 화면에서 다시 찾는다(윤곽선 글자·이미지 안 글자 대비)
 import subprocess, tempfile
 ocr_hits = {}
@@ -198,10 +205,10 @@ with tempfile.TemporaryDirectory() as td:
         except Exception as e:
             txt = ''; ocr_hits.setdefault('_ocr_error', []).append(f'p{pg.number + 1}:{e}')
         flat = re.sub(r'\s+', '', txt)  # OCR이 글자 사이를 띄우는 경우 대비
-        for t in terms:
+        for t in check_terms:
             tl = t.lower()
             if len(tl) >= 4 and (tl in txt or tl.replace(' ', '') in flat):
-                ocr_hits.setdefault(t, []).append(pg.number + 1)
+                (allow_hits['ocr_layer'] if _is_allow(t) else ocr_hits).setdefault(t, []).append(pg.number + 1)
 chk.close()
 leaks_ocr = sorted(k for k in ocr_hits if not k.startswith('_'))
 leaks = sorted(set(leaks_text) | set(leaks_ocr) | ({'_hidden_structure'} if hidden_leak else set()))
@@ -209,7 +216,7 @@ sha = lambda p: hashlib.sha256(open(p, 'rb').read()).hexdigest()
 row['redaction'] = {
     'items_found': [{'term': k, 'n': v} for k, v in sorted(found.items(), key=lambda x: -x[1])],
     'tool_sha256': sha(__file__), 'images_removed': True,
-    'leak_check': {'roster_strings_found': len(leaks), 'leaked_terms': leaks, 'text_layer': leaks_text, 'ocr_layer': {k: v for k, v in ocr_hits.items()}, 'ocr_lang': 'kor+eng@150dpi', 'checked_at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')},
+    'leak_check': {'roster_strings_found': len(leaks), 'leaked_terms': leaks, 'text_layer': leaks_text, 'ocr_layer': {k: v for k, v in ocr_hits.items()}, 'ocr_lang': 'kor+eng@150dpi', 'check_terms_n': len(check_terms), 'allow_hits': allow_hits, 'allow_hits_note': '허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상', 'checked_at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')},
     'redacted_sha256': sha(str(out)) if not leaks else None, 'final_file': out.name, 'final_format': 'image-pdf@170dpi', 'intermediate_sha256': sha(str(mid)), 'hidden_structure': hidden,
     'visual_check': {'contact_sheet': out.with_suffix('.contact.png').name, 'passed': None, 'by': None, 'at': None},  # 사람이 채움
 }
