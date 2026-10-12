@@ -5515,8 +5515,10 @@
       "attachment_sha256_sent": "b539a6390874b147470c4d84007cc0407df9013d3e61dc66377ef748957ce87c",
       "attachment_sha256_received_redownload": "b539a6390874b147470c4d84007cc0407df9013d3e61dc66377ef748957ce87c",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6119834",
+      "answer_sha256": "c72c5e67e5fe92ef5e263c0ec3ba8a036720ba36bb13dc6ef9163bbe01daf72d",
+      "answered_at": "2026-10-12T23:40:45Z",
+      "first_line_declaration_ok": true
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5721,8 +5723,10 @@
       "attachment_sha256_sent": "b539a6390874b147470c4d84007cc0407df9013d3e61dc66377ef748957ce87c",
       "attachment_sha256_received_redownload": "b539a6390874b147470c4d84007cc0407df9013d3e61dc66377ef748957ce87c",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6119839",
+      "answer_sha256": "5ba387e079aa9958fe178baa00d683cfb6708637bfa551e0f81b463cb662d60a",
+      "answered_at": "2026-10-12T23:40:43Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
