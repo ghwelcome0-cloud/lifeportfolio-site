@@ -342,7 +342,7 @@
   function renderQuest() {
     var q = quest(), body = $("#quest-body"), filled = questFilled(), now = questNow(), c = st.card || { fields: {}, done: false };
     var f = c.fields || {}, keptAuto = st.logs.filter(function (l) { return l.week && l.kept; }).map(function (l) { return l.kept; });
-    var h = '<p class="aq-lead">' + esc(q.type) + " · " + esc(q.art) + " → " + esc(q.kind) + '</p><p class="sh-hint">' + esc(q.howto) + "</p>" +
+    var h = '<p class="aq-jump"><a href="#aq-vision" data-vc-jump>🧭 비전카드 · 12주 다음 걸음 보기</a></p><p class="aq-lead">' + esc(q.type) + " · " + esc(q.art) + " → " + esc(q.kind) + '</p><p class="sh-hint">' + esc(q.howto) + "</p>" +
       '<div class="aq-fill"><p><b>12칸 중 ' + filled.length + "칸</b> 채웠어요" + (now ? " · 지금 " + now + "주" : "") + "</p>" + fillDots(filled) + '<p class="sh-hint">칸 수만 세요. 점수나 순위는 없어요. 빠진 주가 있어도 이어서 하면 돼요.</p></div>';
     q.phases.forEach(function (ph, pi) {
       h += '<section class="aq-ph aq-ph--' + (pi + 1) + '"><p class="aq-ph-hd"><b>' + esc(ph.when) + "</b> " + esc(ph.aim) + ' <span class="aq-end">→ ' + esc(ph.end) + '</span></p><p class="aq-who">함께할 사람 · ' + esc(ph.who) + '</p><ol class="aq-list">' +
@@ -353,20 +353,54 @@
         }).join("") + "</ol></section>";
     });
     var nm = f.name != null ? f.name : q.card.name;
-    h += '<section class="aq-cardbox' + (c.done ? " done" : "") + '" id="aq-card"><p class="pf-k">💎 내 자산 카드' + (c.done ? ' <span class="aq-done">내 카드로 남겼어요</span>' : "") + "</p>" +
-      '<p class="sh-hint">이름과 첫 칸은 리포트가 미리 채워 두었어요. 마지막 한 줄은 내 손으로 써요. 12주를 마치면 「내 카드로 남기기」를 눌러요.</p>' +
+    h += '<section class="aq-cardbox' + (c.done ? " done" : "") + '" id="aq-card"><p class="pf-k">💎 자산 카드' + (c.done ? ' <span class="aq-done">카드로 남겼어요</span>' : "") + "</p>" +
+      '<p class="sh-hint">이름과 첫 칸은 리포트가 미리 채워 두었어요. 마지막 한 줄은 직접 써요. 12주를 마치면 「카드로 남기기」를 눌러요.</p>' +
       '<div class="fld"><label class="fld-q" for="aq-name">카드 이름</label><input class="ln" id="aq-name" maxlength="60" value="' + esc(nm) + '"></div>' +
       '<div class="fld"><label class="fld-q" for="aq-kept">무엇이 남았나</label><textarea class="ruled" id="aq-kept" maxlength="300" placeholder="' + esc(keptAuto.length ? "예) " + keptAuto.slice(0, 3).join(" · ") : "예) " + q.art + " 2판 · 들은 말 메모") + '">' + esc(f.kept || "") + "</textarea>" +
-      (keptAuto.length ? '<button type="button" class="copy-btn" data-card-auto>내 기록의 「남긴 것」 ' + keptAuto.length + "개 옮겨 오기</button>" : "") + "</div>" +
-      '<div class="fld"><label class="fld-q" for="aq-reuse">누가 다시 썼나 <small>(내 손으로 쓰는 마지막 한 줄)</small></label><input class="ln" id="aq-reuse" maxlength="300" placeholder="예) 모임의 한 분이 내 기록을 보고 따라 해 봤어요" value="' + esc(f.reuse || "") + '"></div>' +
+      (keptAuto.length ? '<button type="button" class="copy-btn" data-card-auto>기록의 「남긴 것」 ' + keptAuto.length + "개 옮겨 오기</button>" : "") + "</div>" +
+      '<div class="fld"><label class="fld-q" for="aq-reuse">누가 다시 썼나 <small>(직접 쓰는 마지막 한 줄)</small></label><input class="ln" id="aq-reuse" maxlength="300" placeholder="예) 모임의 한 분이 이 기록을 보고 따라 해 봤어요" value="' + esc(f.reuse || "") + '"></div>' +
       '<div class="fld"><label class="fld-q" for="aq-next">다음에 넓힐 곳 <small>(선택)</small></label><input class="ln" id="aq-next" maxlength="300" value="' + esc(f.next || "") + '"></div>' +
       '<p class="aq-ev">이 카드의 근거 · 칸에 붙은 기록 ' + st.logs.filter(function (l) { return l.week; }).length + "개 (" + filled.length + "주)</p>" +
-      '<div class="aq-acts"><button type="button" class="btn line" data-card-save>임시 저장</button><button type="button" class="btn brg" data-card-done>' + (c.done ? "고쳐서 다시 남기기" : "내 카드로 남기기") + "</button></div>" +
-      '<p class="sh-hint">카드는 내 다이어리에만 보관돼요. 어디에도 보내거나 공개하지 않아요.</p></section>' +
-      '<section class="aq-chk"><p class="pf-k">✓ 남김 확인</p><ul>' + q.checks.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></section>";
+      '<div class="aq-acts"><button type="button" class="btn line" data-card-save>임시 저장</button><button type="button" class="btn brg" data-card-done>' + (c.done ? "고쳐서 다시 남기기" : "카드로 남기기") + "</button></div>" +
+      '<p class="sh-hint">카드는 이 다이어리에만 보관돼요. 어디에도 보내거나 공개하지 않아요.</p></section>' +
+      '<section class="aq-chk"><p class="pf-k">✓ 남김 확인</p><ul>' + q.checks.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></section>" +
+      visionCard(q, filled, now, nm, c);
     body.innerHTML = h;
     if (H.units) H.units(body); if (window.LPTypeset) window.LPTypeset.apply(body);
     $$("textarea.ruled", body).forEach(autosize);
+  }
+  // ---------------------------------------------------------------- 비전카드 (vision-card-v1, 대표 승인 2026-10-12)
+  // 「필요한 연결 다리고 두 번 일하는 걸 예방」 — 12주 칸과 자산 카드가 다음 서비스·도우미로 그대로 이어지는 길을 한 장에.
+  // 보여 주기만 한다: 저장·전송·서비스 연결 없음(서비스 연결 동의는 보류). 점수 없음. 날짜 약속 없음.
+  var VC_STEPS = [
+    { tag: "시작 전", aim: "나를 알고 방향 정하기", who: "혼자 해요", svc: ["routes"], help: ["나를 이해하는 도우미", "길찾기 도우미"] },
+    { weeks: [1, 4], who: "혼자 해도 돼요", stages: "해 봤어요 · 결과물을 남겼어요", svc: ["practice"], help: ["오늘의 미션 도우미", "실행 동행 도우미", "기록 정리 도우미"] },
+    { weeks: [5, 8], who: "동료와 멘토가 함께 봐 줘요", stages: "동료 피드백 · 멘토와 확인", svc: ["community", "mentor"], help: ["결과물 피드백 도우미", "대화를 잇는 도우미"] },
+    { weeks: [9, 12], who: "실제로 쓰는 사람이 확인해 줘요", stages: "실제 반응 · 다시 쓰였어요", svc: ["review", "collaboration"], help: ["함께할 일 찾기 도우미", "기록 정리 도우미"] }
+  ];
+  function visionCard(q, filled, now, cardName, c) {
+    var vis = seed().vision || "", cur = now ? (now <= 4 ? 1 : now <= 8 ? 2 : 3) : (filled.length ? 1 : 0);
+    var inRange = function (st) { return st.weeks ? filled.filter(function (w) { return w >= st.weeks[0] && w <= st.weeks[1]; }).length : 0; };
+    var svcChip = function (k) { var sv = S.SERVICES[k]; if (!sv) return "";
+      return sv.available ? (st.reportFound && st.sid ? '<button type="button" class="vc-svc on" data-path><span class="badge on">이용 가능</span>' + esc(sv.name) + "</button>" : '<span class="vc-svc on"><span class="badge on">이용 가능</span>' + esc(sv.name) + "</span>")
+        : '<span class="vc-svc"><span class="badge">출시 준비중</span>' + esc(sv.name) + "</span>"; };
+    var steps = VC_STEPS.map(function (st, i) {
+      var ph = i ? q.phases[i - 1] : null, n = inRange(st), state = i < cur ? "past" : i === cur ? "now" : "next";
+      var when = ph ? (ph.when || st.weeks[0] + "~" + st.weeks[1] + "주") : st.tag, aim = ph ? ph.aim : st.aim;
+      return '<li class="vc-step vc-step--' + state + '"><div class="vc-when"><b>' + esc(when) + "</b>" + (state === "now" ? '<span class="vc-here">지금 여기</span>' : state === "past" ? '<span class="vc-past">지나 왔어요</span>' : "") + "</div>" +
+        '<p class="vc-aim">' + esc(aim) + "</p>" +
+        '<p class="vc-row"><span class="vc-k">누가 확인하나요</span>' + esc(st.who) + "</p>" +
+        (st.weeks ? '<p class="vc-row"><span class="vc-k">이 구간 기록</span>' + n + "칸 / 4칸" + (st.stages ? ' <small>(' + esc(st.stages) + ")</small>" : "") + "</p>" : "") +
+        '<div class="vc-row vc-row--chips"><span class="vc-k">함께할 서비스</span><span class="vc-chips">' + st.svc.map(svcChip).join("") + "</span></div>" +
+        '<div class="vc-row vc-row--chips"><span class="vc-k">도와줄 AI 도우미</span><span class="vc-chips">' + st.help.map(function (x) { return '<span class="vc-help">' + esc(x) + "</span>"; }).join("") + '<span class="vc-soon">출시 준비중</span></span></div></li>';
+    }).join("");
+    var nextTxt = cur === 0 ? "「오늘 해 봤어요」에 첫 줄을 남기고 1주 칸을 골라 보세요." : cur < 3 ? "지금 구간의 칸을 채우면, 다음 구간에서 그 기록을 그대로 보여 주고 고쳐 쓸 수 있어요." : (c && c.done ? "자산 카드를 남겼어요. 서비스가 열리면 이 카드를 들고 바로 이어 갈 수 있어요." : "12칸을 채우고 위의 「카드로 남기기」를 누르면 비전카드가 완성돼요.");
+    return '<section class="vc" id="aq-vision" aria-labelledby="aq-vision-h"><p class="vc-eye">VISION CARD</p><h3 class="vc-h" id="aq-vision-h" tabindex="-1">🧭 비전카드</h3>' +
+      (vis ? '<p class="vc-vis"><span class="vc-k">리포트의 비전</span>' + esc(vis) + "</p>" : "") +
+      '<ul class="vc-faq"><li><b>무엇인가요?</b> 12주 기록이 다음 걸음으로 이어지는 길을 한 장에 보여 줘요.</li><li><b>왜 좋은가요?</b> 지금 채운 칸과 자산 카드가 그대로 이어져요. 다시 적지 않아도 돼요.</li><li><b>지금은 무엇을 하나요?</b> ' + esc(nextTxt) + "</li></ul>" +
+      '<ol class="vc-steps">' + steps + "</ol>" +
+      '<div class="vc-carry"><p class="vc-k">다음 걸음에 그대로 이어지는 것</p><ul><li>자산 카드 「' + esc(cardName || q.card.name || "") + "」" + (c && c.done ? " · 남겼어요" : " · 작성 중") + "</li><li>12칸 중 " + filled.length + "칸의 기록</li>" + (vis ? "<li>리포트의 비전 한 줄</li>" : "") + "</ul></div>" +
+      '<ul class="vc-promise"><li>AI 도우미는 제안만 해요. 칸을 대신 채우거나 단계를 올리지 않아요.</li><li>동료 피드백부터는 사람이 함께 확인해야 단계가 올라가요.</li><li>지금은 어디에도 보내지 않아요. 서비스가 열리면 직접 고를 때만 이어져요.</li><li>점수나 순위는 없어요. 일정은 준비가 끝나면 안내해 드릴게요.</li></ul></section>';
   }
   function cardFields() { return { name: $("#aq-name").value, kept: $("#aq-kept").value, reuse: $("#aq-reuse").value, next: $("#aq-next").value }; }
   function saveCard(done) {
@@ -376,7 +410,7 @@
     var btns = $$("[data-card-save],[data-card-done]", $("#quest-body")); btns.forEach(function (b) { b.disabled = true; });
     st.call({ action: "saveCard", reportSid: st.sid, opId: "op_" + uid6(), card: v.clean, done: !!done }).then(function (r) {
       st.card = r.card; renderQuest(); var box = $("#aq-card"); if (box) box.scrollIntoView({ block: "start" });
-      toast(done ? "내 카드로 남겼어요. 지나온 12주가 한 장에 남았어요." : "카드를 저장했어요.");
+      toast(done ? "카드로 남겼어요. 지나온 12주가 한 장에 남았어요." : "카드를 저장했어요.");
     }, function (e) { btns.forEach(function (b) { b.disabled = false; }); toast((e && e.message) || "저장하지 못했어요. 다시 눌러 주세요."); });
   }
   R.week_r = function (p) {
@@ -725,10 +759,11 @@
       else if (t.matches("[data-start]")) openStart();
       else if (t.matches("[data-quick]")) openQuick();
       else if (t.matches("[data-quick-week]")) { var fromQ = !!t.closest("#sh-quest"); if (fromQ) sheet("sh-quest").close(); openQuick(+t.dataset.quickWeek); qr.fromQuest = fromQ; }
+      else if (t.matches("[data-vc-jump]")) { e.preventDefault(); var vc = $("#aq-vision"); if (vc) { vc.scrollIntoView({ block: "start", behavior: "smooth" }); var hh = $("#aq-vision-h"); if (hh) hh.focus({ preventScroll: true }); } }
       else if (t.matches("[data-quest]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openQuest(); }
       else if (t.matches("[data-card-save]")) saveCard(false);
       else if (t.matches("[data-card-done]")) saveCard(true);
-      else if (t.matches("[data-card-auto]")) { var ka = st.logs.filter(function (l) { return l.week && l.kept; }).map(function (l) { return l.kept; }), el = $("#aq-kept"), joined = ka.filter(function (x, i) { return ka.indexOf(x) === i; }).join(" · ").slice(0, 300); if (el.value.trim() && !confirm("이미 적은 내용이 있어요. 내 기록의 「남긴 것」으로 바꿀까요?")) return; el.value = joined; autosize(el); el.focus(); toast("옮겨 왔어요. 내 말로 조금 고쳐 보세요."); }
+      else if (t.matches("[data-card-auto]")) { var ka = st.logs.filter(function (l) { return l.week && l.kept; }).map(function (l) { return l.kept; }), el = $("#aq-kept"), joined = ka.filter(function (x, i) { return ka.indexOf(x) === i; }).join(" · ").slice(0, 300); if (el.value.trim() && !confirm("이미 적은 내용이 있어요. 기록의 「남긴 것」으로 바꿀까요?")) return; el.value = joined; autosize(el); el.focus(); toast("옮겨 왔어요. 자기 말로 조금 고쳐 보세요."); }
       else if (t.matches("[data-oneq]")) openOneQ(t.dataset.oneq);
       else if (t.matches("[data-copy-page]")) {
         var pk = t.dataset.copyPage, fk = t.dataset.copyField, cur = val(pk, fk);
