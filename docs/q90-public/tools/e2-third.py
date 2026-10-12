@@ -10,16 +10,38 @@ Usage: python3 e2-third.py <e2-samples.json> <answersDir> prepare   → 차이�
 """
 import sys, json, pathlib, random, hashlib, datetime, subprocess, tempfile, re
 E2, AD, CMD = sys.argv[1], pathlib.Path(sys.argv[2]), sys.argv[3]
-d = json.load(open(E2)); js = d['judge_sessions']; third = next(j for j in js['judges'] if j['role'] == 'third')
+d = json.load(open(E2)); js = d['judge_sessions']; third = next((j for j in js['judges'] if j['role'] == 'third' and j.get('status') == 'active'), None)
 AX = ['A1', 'A2', 'A3', 'A4', 'A5']
 now = lambda: datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
 TD = AD / 'third'; TD.mkdir(exist_ok=True)
+def rubric_sha(tgz):
+    import tarfile
+    with tarfile.open(tgz) as t:
+        for m in t.getmembers():
+            if m.name.endswith('RUBRIC.md'): return hashlib.sha256(t.extractfile(m).read()).hexdigest()
+    return 'none'
 def save(): json.dump(d, open(E2, 'w'), ensure_ascii=False, indent=1)
 def gsk(*a, infile=None):
     c = ['gsk', 'genteam', *a] + (['--args-file', infile] if infile else [])
     o = subprocess.run(c, capture_output=True, text=True, timeout=120).stdout
     try: return json.loads(o)
     except Exception: return {'raw': o[:300]}
+
+
+if CMD == 'register':
+    # python3 e2-third.py <e2> <answersDir> register <agent_id> <dm_channel_id> <display_name> <model_display> <bio_file>
+    aid, dm, disp, model, bio = sys.argv[4:9]
+    btxt = pathlib.Path(bio).read_text()
+    assert not any(w in btxt for w in ['Q90', '인생포트폴리오', '진로검사', '파이스']), 'bio에 금지어'
+    sha = hashlib.sha256(pathlib.Path(bio).read_bytes()).hexdigest()
+    js['judges'].append({'role': 'third', 'actor_id': aid, 'dm_channel_id': dm, 'display_name': disp, 'status': 'active', 'registered_at': now(),
+        'third_agent_creation': {'created_by': '대표(이해관계자)', 'created_at': now(), 'agent_id': aid, 'display_name': disp, 'description_sha256': sha,
+            'description_text': btxt, 'model_display': model, 'channels': [], 'template': 'none(blank New agent)', 'skills': 0,
+            'model_note': ('대표 선택 Opus 5.5 — 명세 v2 권고(Opus 5.5 아닌 것)와 다름. 교체 judge1과 같은 모델 → 같은 모델 답에 끌릴 가능성(추정)을 한계 줄에 기록' if '5.5' in model else '')}})
+    save(); print('registered third', aid, dm, 'bio sha', sha[:16], 'model', model)
+    sys.exit(0)
+if third is None and CMD != 'prepare':
+    sys.exit('active third 없음 — register 먼저')
 
 if CMD == 'prepare':
     rnd = random.Random(hashlib.sha256(open(E2, 'rb').read()).hexdigest())
@@ -42,14 +64,14 @@ elif CMD == 'send':
     for bid in d['packet_order']:
         p = json.loads((TD / f'{bid}.third-packet.json').read_text())
         if not p['items'] or bid in pk: continue
+        tgz = AD.parent / f'{bid}.tar.gz'
         lines = [f'[제3자 판정 · {bid} · 축 {len(p["items"])}개]', '',
-                 '두 채점자의 답이 2단계 이상 벌어진 축만 왔습니다. 첨부 sample.pdf(이전에 받은 적 없는 그림 PDF)를 끝까지 읽고, 축마다 **A 또는 B 중 하나만** 고르고 이유 1문장을 적어 주세요. 평균·새 값은 안 됩니다.',
+                 '두 평가자의 답이 2단계 이상 벌어진 축만 왔습니다. 첨부 tar 안의 sample.pdf(그림 PDF)를 끝까지 읽고, 같은 tar 안의 RUBRIC.md 해당 축 문구·레벨 앵커만 기준으로, 축마다 **X 또는 Y 중 하나만** 고르고 이유 1문장(자료의 어느 부분 때문인지)을 적어 주세요. 평균·새 값은 안 됩니다.',
+                 'tar 안의 README·ANSWER 파일은 앞선 채점자용 안내입니다. 당신의 일은 아래 축의 X/Y 선택뿐입니다. (RUBRIC.md sha256: ' + rubric_sha(tgz) + ')',
                  '답장 첫 줄은 자기선언: "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다". 마지막에 competitor_research_done_before(true/false + 한 줄)와 pages_viewed/pages_total을 적어 주세요.', '']
         for it in p['items']:
-            lines += [f'### {it["axis"]}', f'- A: L{it["A"]["level"]} — {it["A"]["reason"]}', f'- B: L{it["B"]["level"]} — {it["B"]["reason"]}', '']
-        lines += ['답 형식(JSON): {"blind_id":"' + bid + '","picks":{' + ','.join(f'"{it["axis"]}":{{"pick":"A|B","reason":""}}' for it in p['items']) + '},"competitor_research_done_before":null,"pages_viewed":null,"pages_total":null}']
-        # sample.pdf만 따로 보낸다(RUBRIC 포함 패킷은 같은 tar를 재사용)
-        tgz = AD.parent / f'{bid}.tar.gz'
+            lines += [f'### {it["axis"]}', f'- X: L{it["A"]["level"]} — {it["A"]["reason"]}', f'- Y: L{it["B"]["level"]} — {it["B"]["reason"]}', '']
+        lines += ['답 형식(JSON): {"blind_id":"' + bid + '","picks":{' + ','.join(f'"{it["axis"]}":{{"pick":"X|Y","reason":""}}' for it in p['items']) + '},"competitor_research_done_before":null,"pages_viewed":null,"pages_total":null}']
         up = json.loads(subprocess.run(['gsk', 'upload', str(tgz)], capture_output=True, text=True).stdout)['data']['file_wrapper_url']
         with tempfile.NamedTemporaryFile('w', suffix='.json', delete=False) as f:
             json.dump({'channel_id': third['dm_channel_id'], 'content': '\n'.join(lines), 'file_path': up, 'file_name': f'{bid}.tar.gz'}, f, ensure_ascii=False); fn = f.name
@@ -75,6 +97,9 @@ elif CMD == 'poll':
             try: ans = json.loads(mm.group(0))
             except Exception: continue
             if ans.get('blind_id') != bid: continue
+            for ax, v in (ans.get('picks') or {}).items():
+                if isinstance(v, dict) and v.get('pick') in ('X', 'Y'): v['pick_label'] = v['pick']; v['pick'] = {'X': 'A', 'Y': 'B'}[v['pick']]
+                elif isinstance(v, dict) and v.get('pick') not in ('A', 'B'): v['pick'] = None  # 새 값·중간값 → 무효(재질문)
             first = txt.strip().split('\n')[0]
             (TD / f'{bid}.third-answer.json').write_text(json.dumps({'first_line_declaration': first, 'answer': ans, 'reply_msg_id': m.get('comet_message_id'), 'received_at': now()}, ensure_ascii=False, indent=1))
             rec.update({'reply_msg_id': m.get('comet_message_id'), 'answered_at': now(), 'first_line_declaration_ok': '관여' in first and '없' in first}); save()

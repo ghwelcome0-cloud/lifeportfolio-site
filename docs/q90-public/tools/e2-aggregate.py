@@ -25,7 +25,7 @@ for r in d['rows']:
     for ax in AX:
         l1, l2 = int(a1[ax]['level']), int(a2[ax]['level'])
         if abs(l1 - l2) <= 1: out['axes'][ax] = {'level': min(l1, l2), 'rule': 'diff<=1 → lower'}
-        elif ax in tans:
+        elif ax in tans and tans[ax].get('pick') in ('A', 'B'):
             pick = tans[ax]['pick']; who = tmap[ax][pick]; lv = l1 if who == 'judge1' else l2
             out['axes'][ax] = {'level': lv, 'rule': f'diff>=2 → third picked {pick}', 'third_reason': tans[ax].get('reason', '')}; n_third_used += 1
         else:
