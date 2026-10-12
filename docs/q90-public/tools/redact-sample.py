@@ -51,6 +51,8 @@ if '--bands' in args:
 if '--extra' in args:
     i = args.index('--extra'); extra = [s for s in args[i + 1].split('|') if s]; del args[i:i + 2]
 E2, ROSTER, ID, INPDF, OUTDIR = args[:5]
+# 읽기 확인 rc1 실측(2026-10-12): 170dpi 12pt 한글을 judge 3명이 똑같이 오독('물레방아'→'몰레방아') → 200dpi로 올림(rc2 200dpi 오독 0).
+RENDER_DPI = 200
 e2 = json.load(open(E2, encoding='utf-8')); roster = json.load(open(ROSTER, encoding='utf-8'))
 row = next(r for r in e2['rows'] if r['id'] == ID)
 if not row.get('blind_id'):
@@ -168,7 +170,7 @@ doc.save(str(out), garbage=4, deflate=True); doc.close()
 mid = out  # 가림본(중간 산출물)
 src = pymupdf.open(str(mid)); img_doc = pymupdf.open()
 for pg in src:
-    pm = pg.get_pixmap(dpi=170, alpha=False)
+    pm = pg.get_pixmap(dpi=RENDER_DPI, alpha=False)
     np_ = img_doc.new_page(width=pg.rect.width, height=pg.rect.height)
     np_.insert_image(np_.rect, pixmap=pm)
 img_doc.set_metadata({k: '' for k in ('author', 'producer', 'creator', 'title', 'subject', 'keywords', 'creationDate', 'modDate')})
@@ -217,7 +219,7 @@ row['redaction'] = {
     'items_found': [{'term': k, 'n': v} for k, v in sorted(found.items(), key=lambda x: -x[1])],
     'tool_sha256': sha(__file__), 'images_removed': True,
     'leak_check': {'roster_strings_found': len(leaks), 'leaked_terms': leaks, 'text_layer': leaks_text, 'ocr_layer': {k: v for k, v in ocr_hits.items()}, 'ocr_lang': 'kor+eng@150dpi', 'check_terms_n': len(check_terms), 'allow_hits': allow_hits, 'allow_hits_note': '허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상', 'checked_at': datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds').replace('+00:00', 'Z')},
-    'redacted_sha256': sha(str(out)) if not leaks else None, 'final_file': out.name, 'final_format': 'image-pdf@170dpi', 'intermediate_sha256': sha(str(mid)), 'hidden_structure': hidden,
+    'redacted_sha256': sha(str(out)) if not leaks else None, 'final_file': out.name, 'final_format': f'image-pdf@{RENDER_DPI}dpi', 'intermediate_sha256': sha(str(mid)), 'hidden_structure': hidden,
     'visual_check': {'contact_sheet': out.with_suffix('.contact.png').name, 'passed': None, 'by': None, 'at': None},  # 사람이 채움
 }
 row['status'] = 'redacted_pending_visual' if not leaks else 'ready'
