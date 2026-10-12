@@ -68,4 +68,5 @@ node tools/diff-runs.cjs runs/2026-10-11-r2 $RUN
 - A6는 6지표 중 3개(6.1/6.3/6.4)만 자동 실측 → 부분합 `/9`로 표기. 나머지는 E2/E3로 보강.
 - r1·r2에는 표면별 응답 바이트 hash가 없다(Peer 권고 6032265 ②). `measure-e1.cjs`부터 `headers.bodySha256`·`mobile.domSha256`을 적는다. r1↔r2 도구 차이는 출력 폴더명 1줄뿐(diff 보존: 1판 `9319c23f…`, 2판 `6f1e21c2…`).
 - 공개에는 최신 run만 쓰고 이전 run은 부록으로 남긴다(Method 권고 6032261). 두 run이 다른 칸은 "재측정 시 값 변동"으로 표시한다.
+- `table-v2.html`은 git에 넣지 않는다(.gitignore). 저장소의 `ux_quality_gate`가 추적 중인 모든 HTML을 고객 페이지로 세어, 첫 PR #391에서 "구조 태그 0개 +1 악화"로 CI가 떨어졌다(내 실수). md/json에서 재생성 가능하므로 산출물만 뺐고 게이트는 손대지 않았다.
 - 빌더 초판은 E3 시트의 `{value,source_url}` 묶음을 그대로 찍는 결함이 있었음(`[object Object]`). 같은 날 수정, 미공개 상태에서 발견.
