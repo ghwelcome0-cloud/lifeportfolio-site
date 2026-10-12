@@ -277,6 +277,45 @@
     var d = new Date(s + "T00:00:00Z");
     return !isNaN(d) && d.toISOString().slice(0, 10) === s;
   }
+  // 12주 자산화 퀘스트 · 내 자산 카드 (asset-quest-v1). 카드는 다이어리에만 저장되고, 마지막 한 줄은 고객이 직접 쓴다.
+  var QUEST_WEEKS = 12;
+  var CARD_FIELDS = [
+    { key: "name", label: "카드 이름", max: 60 },
+    { key: "kept", label: "무엇이 남았나", max: 300 },
+    { key: "reuse", label: "누가 다시 썼나", max: 300 },
+    { key: "next", label: "다음에 넓힐 곳", max: 300 }
+  ];
+  // done=true(「내 카드로 남기기」)일 때는 이름 · 무엇이 남았나 · 누가 다시 썼나가 있어야 한다. 다음에 넓힐 곳은 선택.
+  function validateCard(card, done) {
+    if (!card || typeof card !== "object" || Array.isArray(card)) return { ok: false, error: "bad-card" };
+    var keys = Object.keys(card), out = {};
+    for (var i = 0; i < keys.length; i++) {
+      var f = CARD_FIELDS.filter(function (x) { return x.key === keys[i]; })[0], v = card[keys[i]];
+      if (!f) return { ok: false, error: "unknown-field" };
+      if (v == null) continue;
+      if (typeof v !== "string") return { ok: false, error: "bad-value" };
+      v = v.replace(/\s+/g, " ").trim();
+      if (v.length > f.max) return { ok: false, error: "too-long" };
+      if (v) out[f.key] = v;
+    }
+    if (done && !(out.name && out.kept && out.reuse)) return { ok: false, error: "incomplete" };
+    return { ok: true, clean: out };
+  }
+  // Customer view of a program's 12주 자산화 퀘스트. Whitelist only: the internal source code (ref) and the
+  // design rule never reach the diary. Older or English programs (no asset-quest-v1) → null.
+  function questView(q) {
+    var t = function (v) { return typeof v === "string" ? v.replace(/\s+/g, " ").trim() : ""; };
+    if (!q || q.version !== "asset-quest-v1" || !Array.isArray(q.phases) || q.phases.length !== 3) return null;
+    var phases = q.phases.map(function (ph) {
+      return { when: t(ph.when), who: t(ph.who), aim: t(ph.aim), end: t(ph.end),
+        weeks: (Array.isArray(ph.weeks) ? ph.weeks : []).map(function (w) { return { week: Number(w.week), verb: t(w.verb), quest: t(w.quest), keep: t(w.keep), stage: t(w.stage), s: Number(w.s) || 0 }; }) };
+    });
+    var weeks = [].concat.apply([], phases.map(function (ph) { return ph.weeks; }));
+    if (weeks.length !== QUEST_WEEKS || weeks.some(function (w, i) { return w.week !== i + 1 || !w.quest || !w.verb; })) return null;
+    var card = q.card || {}, list = function (a) { return Array.isArray(a) ? a.map(t).filter(Boolean).slice(0, 3) : []; };
+    return { title: t(q.title), type: t(q.type), art: t(q.art), kind: t(q.kind), howto: t(q.howto), phases: phases,
+      card: { name: t(card.name).slice(0, 60), kind: t(card.kind), fields: list(card.fields) }, checks: list(q.checks) };
+  }
   // Quick record ("오늘 해 봤어요").
   function validateLog(log) {
     if (!log || typeof log !== "object") return { ok: false, error: "bad-log" };
@@ -287,6 +326,8 @@
     if (log.kept && log.kept.trim()) out.kept = log.kept.replace(/\s+/g, " ").trim();
     // X5 (2026-10-09): optional — which of my seven changes this record shows. Shown as my own trace, never scored.
     if (log.change != null) { if (ASSET_DIRECTIONS.indexOf(log.change) < 0) return { ok: false, error: "bad-change" }; out.change = log.change; }
+    // asset-quest-v1 (2026-10-12): optional — which 12주 퀘스트 칸 this record fills. Counted as filled, never scored.
+    if (log.week != null) { if (!(Number.isInteger(log.week) && log.week >= 1 && log.week <= QUEST_WEEKS)) return { ok: false, error: "bad-week" }; out.week = log.week; }
     return { ok: true, clean: out };
   }
   // Calendar helpers for the undated diary: dates follow the owner's chosen start date.
@@ -300,5 +341,6 @@
   return { VERSION: VERSION, DOMAINS: DOMAINS, SERVICES: SERVICES, COMING_NOTE: COMING_NOTE, ASSET_DIRECTIONS: ASSET_DIRECTIONS, ASSET_CHANGES: ASSET_CHANGES, LEGACY_DIRECTIONS: LEGACY_DIRECTIONS,
     STAGES: STAGES, STAGE_NOTE: STAGE_NOTE, MOODS: MOODS, AXES: AXES, WEEKDAYS: WEEKDAYS, TEMPLATES: TEMPLATES, PAGES: PAGES, BY_KEY: BY_KEY,
     LIMITS: LIMITS, validatePatch: validatePatch, validateLog: validateLog, isDate: isDate,
+    QUEST_WEEKS: QUEST_WEEKS, CARD_FIELDS: CARD_FIELDS, validateCard: validateCard, questView: questView,
     addDays: addDays, daysBetween: daysBetween, weekOf: weekOf, monthStart: monthStart };
 });

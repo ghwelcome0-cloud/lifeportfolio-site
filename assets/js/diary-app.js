@@ -10,7 +10,7 @@
   var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var WD = ["일", "월", "화", "수", "목", "금", "토"];
 
-  var st = { call: null, sid: null, seed: null, meta: null, pages: {}, logs: [], reportFound: false };
+  var st = { call: null, sid: null, seed: null, meta: null, pages: {}, logs: [], reportFound: false, card: null };
   var view = { mode: "single", idx: 0 };
   var printing = false; // PDF 본문을 만드는 동안만 true (분기 회고 네 분기를 모두 펼치는 등) // idx into SEQ (single) — spread derives its pair
   var SEQ = [{ key: "cover", tpl: "cover", no: 0 }].concat(S.PAGES.filter(Boolean));
@@ -181,7 +181,7 @@
     }).join("") + "</div>";
   }
   function logItem(l) {
-    return '<li class="log"><span class="log-d">' + esc(md(l.date)) + " (" + WD[wd(l.date)] + ')</span><p class="log-t">' + esc(l.text) + "</p>" + (l.kept ? '<p class="log-k">남긴 것 · ' + esc(l.kept) + "</p>" : "") + stageChips(l.stage) +
+    return '<li class="log"><span class="log-d">' + esc(md(l.date)) + " (" + WD[wd(l.date)] + ")</span>" + (l.week && quest() ? '<span class="log-q">💎 12주 퀘스트 ' + l.week + "주 칸</span>" : "") + '<p class="log-t">' + esc(l.text) + "</p>" + (l.kept ? '<p class="log-k">남긴 것 · ' + esc(l.kept) + "</p>" : "") + stageChips(l.stage) +
       '<div class="log-a">' + (l.kept ? "" : '<button type="button" class="mini-btn" data-keep="' + esc(l.id) + '">남긴 것 적기</button>') + '<button type="button" class="mini-btn danger" data-del-log="' + esc(l.id) + '">지우기</button></div></li>';
   }
 
@@ -192,7 +192,7 @@
     return '<div class="pg pg-center"><p class="cv-latin">LIFE PORTFOLIO</p><div class="rule-g"></div><h1 class="cv-ko pg-h" tabindex="-1">인생포트폴리오 맞춤형 다이어리</h1><p class="cv-only">Only One</p>' +
       (name ? '<p class="cv-owner"><b>' + esc(name) + "</b> 님의 한 권</p>" : "") +
       '<div class="cv-actions">' + (started
-        ? '<button type="button" class="btn gold" data-go-week>이번 주 펼치기 · ' + currentWeek() + "주차</button>" + '<button type="button" class="btn ghost" data-go="intro">처음부터 보기</button>'
+        ? '<button type="button" class="btn gold" data-go-week>이번 주 펼치기 · ' + currentWeek() + "주차</button>" + (quest() ? '<button type="button" class="btn ghost" data-quest>💎 12주 자산화 퀘스트 · ' + questFilled().length + " / 12</button>" : "") + '<button type="button" class="btn ghost" data-go="intro">처음부터 보기</button>'
         : '<button type="button" class="btn gold" data-start>다이어리 시작하기</button><button type="button" class="btn ghost" data-go="intro">먼저 둘러보기</button>') +
       '</div><p class="cv-note">' + (started ? '<span class="mu">시작한 날 · ' + esc(start().replace(/-/g, ".")) + '</span><br><span class="mu">날짜가 정해져 있지 않은</span> <span class="mu">만년형이에요.</span>' : '<span class="mu">리포트를 받은 날,</span> <span class="mu">지금 이 순간이</span> <span class="mu">출발일이에요.</span><br><span class="mu">1월이 아니어도 괜찮아요.</span>') + "</p>" +
       '<p class="cv-rights"><span class="mu">양식 © 파이스 · 인생포트폴리오</span><br><span class="mu">직접 쓰신 글은 회원님의 것이에요</span></p></div>';
@@ -315,11 +315,70 @@
     }).join("");
     return '<div class="pg">' + head("WEEK " + String(i).padStart(2, "0") + " · LEFT", i + "주차 <em>이번 주</em>", "") + (rng ? '<span class="pg-range">' + md(rng[0]) + " (" + WD[wd(rng[0])] + ") – " + md(rng[1]) + " (" + WD[wd(rng[1])] + ")</span>" : "") +
       (prevNext ? seedCard("지난주에 적은 ‘다음 주’", prevNext) : "") +
+      questWeekCard(i) +
       (wa ? seedCard(wa.label, (wa.title ? wa.title + " — " : "") + wa.action, (wa.done ? '<p class="card-s">완료 기준 · ' + esc(wa.done) + "</p>" : "") + copyBtn(p.key, "a", wa.action, "A에 옮겨 적기")) : "") +
       fld(p.key, "mission") + '<p class="sec-k">A · B · C 우선순위</p>' + fld(p.key, "a") + fld(p.key, "b") + fld(p.key, "c") +
       '<p class="sec-k">만약 ~하면, 그러면 ~한다' + tip("spot", "ifthen") + '</p>' + fld(p.key, "if1") + fld(p.key, "if2", { hint: "" }) + fld(p.key, "if3", { hint: "" }) +
       '<p class="sec-k">요일별 일정</p><div class="days">' + days + "</div></div>";
   };
+  // ---------------------------------------------------------------- 12주 자산화 퀘스트 (asset-quest-v1)
+  // 지도는 실행 프로그램, 카드는 다이어리에서 자란다. 고객은 「오늘 해 봤어요」 한 줄만 쓰고, 그 기록이 그 주 칸에 붙는다.
+  // 칸이 몇 개 찼는지만 센다. 점수·순위·비교는 없다.
+  function quest() { var pr = seed().program; return (pr && pr.quest) || null; }
+  function questWeeks() { var q = quest(); return q ? [].concat.apply([], q.phases.map(function (ph) { return ph.weeks; })) : []; }
+  function questLogs(w) { return st.logs.filter(function (l) { return l.week === w; }); }
+  function questFilled() { var seen = {}; st.logs.forEach(function (l) { if (l.week >= 1 && l.week <= S.QUEST_WEEKS) seen[l.week] = 1; }); return Object.keys(seen).map(Number).sort(function (a, b) { return a - b; }); }
+  function questNow() { if (!start()) return null; var w = S.weekOf(start(), todayISO()); return w >= 1 && w <= S.QUEST_WEEKS ? w : null; }
+  function fillDots(filled) {
+    return '<div class="aq-dots" role="img" aria-label="12칸 중 ' + filled.length + '칸 채움">' + questWeeks().map(function (w) { return '<i class="' + (filled.indexOf(w.week) >= 0 ? "on" : "") + (w.week === questNow() ? " now" : "") + '"></i>'; }).join("") + "</div>";
+  }
+  function questWeekCard(i) {
+    var w = questWeeks()[i - 1]; if (!w) return "";
+    var n = questLogs(i).length;
+    return '<div class="seed aq-seed"><p class="seed-k">💎 12주 자산화 퀘스트 · ' + i + '주 <span class="aq-verb">' + esc(w.verb) + '</span></p><p class="seed-t">' + esc(w.quest) + '</p><p class="card-s">손에 남는 것 · ' + esc(w.keep) + "</p>" +
+      '<span class="btn-row"><button type="button" class="copy-btn" data-quick-week="' + i + '">' + (n ? "이 칸에 한 줄 더 · 기록 " + n + "개" : "이 칸에 기록하기") + '</button><button type="button" class="copy-btn" data-quest>12주 한눈에 보기</button>' + tip("spot", "quest") + "</span></div>";
+  }
+  function openQuest() { if (!quest()) { toast("이 리포트의 실행 프로그램에는 12주 자산화 퀘스트가 없어요."); return; } renderQuest(); openSheet(sheet("sh-quest")); }
+  function renderQuest() {
+    var q = quest(), body = $("#quest-body"), filled = questFilled(), now = questNow(), c = st.card || { fields: {}, done: false };
+    var f = c.fields || {}, keptAuto = st.logs.filter(function (l) { return l.week && l.kept; }).map(function (l) { return l.kept; });
+    var h = '<p class="aq-lead">' + esc(q.type) + " · " + esc(q.art) + " → " + esc(q.kind) + '</p><p class="sh-hint">' + esc(q.howto) + "</p>" +
+      '<div class="aq-fill"><p><b>12칸 중 ' + filled.length + "칸</b> 채웠어요" + (now ? " · 지금 " + now + "주" : "") + "</p>" + fillDots(filled) + '<p class="sh-hint">칸 수만 세요. 점수나 순위는 없어요. 빠진 주가 있어도 이어서 하면 돼요.</p></div>';
+    q.phases.forEach(function (ph, pi) {
+      h += '<section class="aq-ph aq-ph--' + (pi + 1) + '"><p class="aq-ph-hd"><b>' + esc(ph.when) + "</b> " + esc(ph.aim) + ' <span class="aq-end">→ ' + esc(ph.end) + '</span></p><p class="aq-who">함께할 사람 · ' + esc(ph.who) + '</p><ol class="aq-list">' +
+        ph.weeks.map(function (w) {
+          var L = questLogs(w.week), on = L.length > 0;
+          return '<li class="aq-row' + (on ? " on" : "") + (w.week === now ? " now" : "") + '"><span class="aq-n">' + w.week + '주</span><div class="aq-body"><p class="aq-q"><span class="aq-verb">' + esc(w.verb) + "</span> " + esc(w.quest) + '</p><p class="aq-k">손에 남는 것 · ' + esc(w.keep) + "</p>" +
+            (on ? '<p class="aq-log">✓ ' + esc(L[0].text) + (L.length > 1 ? " 외 " + (L.length - 1) + "개" : "") + "</p>" : "") + '</div><button type="button" class="mini-btn" data-quick-week="' + w.week + '" aria-label="' + w.week + '주 칸에 기록하기">' + (on ? "한 줄 더" : "기록하기") + "</button></li>";
+        }).join("") + "</ol></section>";
+    });
+    var nm = f.name != null ? f.name : q.card.name;
+    h += '<section class="aq-cardbox' + (c.done ? " done" : "") + '" id="aq-card"><p class="pf-k">💎 내 자산 카드' + (c.done ? ' <span class="aq-done">내 카드로 남겼어요</span>' : "") + "</p>" +
+      '<p class="sh-hint">이름과 첫 칸은 리포트가 미리 채워 두었어요. 마지막 한 줄은 내 손으로 써요. 12주를 마치면 「내 카드로 남기기」를 눌러요.</p>' +
+      '<div class="fld"><label class="fld-q" for="aq-name">카드 이름</label><input class="ln" id="aq-name" maxlength="60" value="' + esc(nm) + '"></div>' +
+      '<div class="fld"><label class="fld-q" for="aq-kept">무엇이 남았나</label><textarea class="ruled" id="aq-kept" maxlength="300" placeholder="' + esc(keptAuto.length ? "예) " + keptAuto.slice(0, 3).join(" · ") : "예) " + q.art + " 2판 · 들은 말 메모") + '">' + esc(f.kept || "") + "</textarea>" +
+      (keptAuto.length ? '<button type="button" class="copy-btn" data-card-auto>내 기록의 「남긴 것」 ' + keptAuto.length + "개 옮겨 오기</button>" : "") + "</div>" +
+      '<div class="fld"><label class="fld-q" for="aq-reuse">누가 다시 썼나 <small>(내 손으로 쓰는 마지막 한 줄)</small></label><input class="ln" id="aq-reuse" maxlength="300" placeholder="예) 모임의 한 분이 내 기록을 보고 따라 해 봤어요" value="' + esc(f.reuse || "") + '"></div>' +
+      '<div class="fld"><label class="fld-q" for="aq-next">다음에 넓힐 곳 <small>(선택)</small></label><input class="ln" id="aq-next" maxlength="300" value="' + esc(f.next || "") + '"></div>' +
+      '<p class="aq-ev">이 카드의 근거 · 칸에 붙은 기록 ' + st.logs.filter(function (l) { return l.week; }).length + "개 (" + filled.length + "주)</p>" +
+      '<div class="aq-acts"><button type="button" class="btn line" data-card-save>임시 저장</button><button type="button" class="btn brg" data-card-done>' + (c.done ? "고쳐서 다시 남기기" : "내 카드로 남기기") + "</button></div>" +
+      '<p class="sh-hint">카드는 내 다이어리에만 보관돼요. 어디에도 보내거나 공개하지 않아요.</p></section>' +
+      '<section class="aq-chk"><p class="pf-k">✓ 남김 확인</p><ul>' + q.checks.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></section>";
+    body.innerHTML = h;
+    if (H.units) H.units(body);
+    $$("textarea.ruled", body).forEach(autosize);
+  }
+  function cardFields() { return { name: $("#aq-name").value, kept: $("#aq-kept").value, reuse: $("#aq-reuse").value, next: $("#aq-next").value }; }
+  function saveCard(done) {
+    var card = cardFields(), v = S.validateCard(card, done);
+    if (!v.ok) { toast(v.error === "incomplete" ? "카드 이름, 무엇이 남았나, 누가 다시 썼나를 적어 주세요." : v.error === "too-long" ? "글이 너무 길어요. 조금 줄여 주세요." : "카드 내용을 확인해 주세요."); var e = !v.clean && (!card.name.trim() ? "#aq-name" : !card.kept.trim() ? "#aq-kept" : "#aq-reuse"); if (e && $(e)) $(e).focus(); return; }
+    if (!st.sid) { toast("리포트와 연결되어야 카드를 저장할 수 있어요."); return; }
+    var btns = $$("[data-card-save],[data-card-done]", $("#quest-body")); btns.forEach(function (b) { b.disabled = true; });
+    st.call({ action: "saveCard", reportSid: st.sid, opId: "op_" + uid6(), card: v.clean, done: !!done }).then(function (r) {
+      st.card = r.card; renderQuest(); var box = $("#aq-card"); if (box) box.scrollIntoView({ block: "start" });
+      toast(done ? "내 카드로 남겼어요. 지나온 12주가 한 장에 남았어요." : "카드를 저장했어요.");
+    }, function (e) { btns.forEach(function (b) { b.disabled = false; }); toast((e && e.message) || "저장하지 못했어요. 다시 눌러 주세요."); });
+  }
   R.week_r = function (p) {
     var i = p.idx, rng = start() ? weekRange(i) : null, logs = rng ? logsIn(rng[0], rng[1]) : [];
     var logsHTML = rng ? (logs.length ? '<ul class="logs">' + logs.map(logItem).join("") + "</ul>" : '<div class="empty">이번 주에 해 본 일이 아직 없어요.<br>작은 것 하나라도 해 봤다면 한 줄로 남겨 보세요.<br><button type="button" class="copy-btn" data-quick>오늘 해 봤어요</button></div>') : '<div class="empty">시작한 날을 정하면 이 주에 남긴 ‘오늘 해 봤어요’ 기록이 여기에 모여요.</div>';
@@ -563,14 +622,15 @@
 
   // quick record
   var qr = { step: 1, text: "", kept: "", date: null, logId: null };
-  function openQuick() {
+  function openQuick(week) {
     if (!start()) { toast("먼저 다이어리를 시작해 주세요."); openStart(); return; }
-    qr = { step: 1, text: "", kept: "", change: null, date: todayISO(), logId: "log_" + uid6() };
+    qr = { step: 1, text: "", kept: "", change: null, week: quest() ? ((Number.isInteger(week) && week >= 1 && week <= S.QUEST_WEEKS) ? week : questNow()) : null, date: todayISO(), logId: "log_" + uid6() };
     renderQuick(); openSheet(sheet("sh-quick"));
   }
   function renderQuick() {
     var d = sheet("sh-quick"), body = $(".sh-body", d), w = currentWeek(), a = val("week-" + w + "-l", "a"), wa = weekAction(w);
-    var sugg = [a, wa && wa.action].filter(Boolean).filter(function (x, i, arr) { return arr.indexOf(x) === i; }).slice(0, 2);
+    var qw = qr.week && questWeeks()[qr.week - 1];
+    var sugg = [qw && qw.quest, a, wa && wa.action].filter(Boolean).filter(function (x, i, arr) { return arr.indexOf(x) === i; }).slice(0, 3);
     if (qr.step === 1) {
       body.innerHTML = '<p class="sh-step">1 / 2</p><label class="sh-q" for="qr-text" style="display:block">오늘 무엇을 해 봤나요?</label><p class="sh-hint">한 줄이면 충분해요. 작게 해 본 것도 소중한 기록이에요.</p>' +
         '<div class="sh-meta"><label for="qr-date">날짜</label><input type="date" id="qr-date" value="' + qr.date + '" max="' + todayISO() + '"></div>' +
@@ -581,12 +641,14 @@
       body.innerHTML = '<p class="sh-step">2 / 2 · 선택</p><label class="sh-q" for="qr-kept" style="display:block">해 보고 남은 것이 있나요?</label><p class="sh-hint">메모 · 자료 · 사진 · 대화처럼 남은 것의 이름만 적어요. 파일은 올리지 않아요. 없으면 건너뛰어도 돼요.</p>' +
         '<input class="ln" type="text" id="qr-kept" maxlength="300" placeholder="예) 예상·실제 비교 메모 한 장" value="' + esc(qr.kept) + '">' +
         '<p class="fld-h" style="margin-top:12px">어떤 변화였나요? <small>(선택)</small></p><div class="pills" id="qr-change">' + S.ASSET_DIRECTIONS.map(function (n) { return '<label class="pill"><input type="radio" name="qr-change" value="' + esc(n) + '"' + (qr.change === n ? " checked" : "") + "><span>" + esc(n) + "</span></label>"; }).join("") + "</div>" +
-        '<p class="sh-hint">고르면 「내 변화 찾기」에 내 기록으로 쌓여요. 점수에는 들어가지 않아요.</p>';
+        '<p class="sh-hint">고르면 「내 변화 찾기」에 내 기록으로 쌓여요. 점수에는 들어가지 않아요.</p>' +
+        (quest() ? '<p class="fld-h" style="margin-top:12px">💎 12주 퀘스트 몇 주 칸인가요? <small>(선택)</small></p><div class="pills aq-pick" id="qr-week">' + questWeeks().map(function (w) { return '<label class="pill"><input type="radio" name="qr-week" value="' + w.week + '"' + (qr.week === w.week ? " checked" : "") + '><span title="' + esc(w.verb) + '">' + w.week + "주</span></label>"; }).join("") +
+          '<label class="pill"><input type="radio" name="qr-week" value=""' + (!qr.week ? " checked" : "") + "><span>칸 없음</span></label></div>" + '<p class="sh-hint">고른 주의 칸에 이 기록이 붙어요. 옮겨 적을 필요가 없어요.</p>' : "");
       $("#qr-back").textContent = "이전"; $("#qr-next").textContent = qr.kept ? "저장" : "건너뛰고 저장";
     } else {
       var rng = weekRange(S.weekOf(start(), qr.date) || 1), n = logsIn(rng[0], rng[1]).length;
-      body.innerHTML = '<div class="done-mark" aria-hidden="true">✓</div><p class="sh-q" style="text-align:center" tabindex="-1" id="qr-done">기록했어요</p><p class="sh-hint" style="text-align:center">이번 주 기록 ' + n + "개 · " + (qr.kept ? "결과물을 남긴 기록이에요 (1단계)." : "해 본 기록이에요 (0단계).") + "</p>" + stageChips(qr.kept ? 1 : 0) + '<p class="notice">' + esc(S.STAGE_NOTE) + " 2단계부터는 동료·멘토·사용자의 확인이 필요해서, 함께 배우는 소그룹·멘토와의 동행·결과물 검토 서비스가 준비되면 열려요 (출시 준비중).</p>";
-      $("#qr-back").textContent = "닫기"; $("#qr-next").textContent = "이번 주 펼치기";
+      body.innerHTML = '<div class="done-mark" aria-hidden="true">✓</div><p class="sh-q" style="text-align:center" tabindex="-1" id="qr-done">기록했어요</p><p class="sh-hint" style="text-align:center">이번 주 기록 ' + n + "개 · " + (qr.kept ? "결과물을 남긴 기록이에요 (1단계)." : "해 본 기록이에요 (0단계).") + "</p>" + stageChips(qr.kept ? 1 : 0) + (qr.week && quest() ? '<p class="aq-saved">💎 12주 퀘스트 ' + qr.week + "주 칸에 붙었어요 · 12칸 중 " + questFilled().length + "칸</p>" : "") + '<p class="notice">' + esc(S.STAGE_NOTE) + " 2단계부터는 동료·멘토·사용자의 확인이 필요해서, 함께 배우는 소그룹·멘토와의 동행·결과물 검토 서비스가 준비되면 열려요 (출시 준비중).</p>";
+      $("#qr-back").textContent = "닫기"; $("#qr-next").textContent = qr.fromQuest ? "12주 퀘스트로 돌아가기" : "이번 주 펼치기";
     }
     if (H.units) H.units(body);
     var f = $("textarea,input[type=text]", body) || $("#qr-done", body); if (f) setTimeout(function () { f.focus(); }, 30);
@@ -601,15 +663,16 @@
     if (qr.step === 2) {
       qr.kept = $("#qr-kept").value.trim();
       var qc = $('input[name="qr-change"]:checked'); qr.change = qc ? qc.value : null;
+      var qwk = $('input[name="qr-week"]:checked'); if (qwk) qr.week = qwk.value ? +qwk.value : null;
       var btn = $("#qr-next"); btn.disabled = true;
-      st.call({ action: "addLog", logId: qr.logId, log: Object.assign({ date: qr.date, text: qr.text, kept: qr.kept || null }, qr.change ? { change: qr.change } : {}) }).then(function (r) {
-        btn.disabled = false; st.logs = st.logs.filter(function (l) { return l.id !== r.log.id; }); st.logs.unshift({ id: r.log.id, date: r.log.date, text: r.log.text, kept: r.log.kept || null, change: r.log.change || null, stage: r.log.stage });
+      st.call({ action: "addLog", logId: qr.logId, log: Object.assign({ date: qr.date, text: qr.text, kept: qr.kept || null }, qr.change ? { change: qr.change } : {}, qr.week ? { week: qr.week } : {}) }).then(function (r) {
+        btn.disabled = false; st.logs = st.logs.filter(function (l) { return l.id !== r.log.id; }); st.logs.unshift({ id: r.log.id, date: r.log.date, text: r.log.text, kept: r.log.kept || null, change: r.log.change || null, week: r.log.week || null, stage: r.log.stage });
         st.logs.sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : 0; });
         qr.step = 3; renderQuick(); render(false);
       }, function (e) { btn.disabled = false; toast((e && e.message) || "저장하지 못했어요. 다시 눌러 주세요."); });
       return;
     }
-    sheet("sh-quick").close(); var w = S.weekOf(start(), qr.date) || 1; goKey("week-" + Math.min(52, w) + "-r");
+    sheet("sh-quick").close(); if (qr.fromQuest) { openQuest(); return; } var w = S.weekOf(start(), qr.date) || 1; goKey("week-" + Math.min(52, w) + "-r");
   }
 
   // start date
@@ -632,6 +695,7 @@
     var link = function (k, label) { var p = S.BY_KEY[k]; return '<li><button type="button" data-go="' + k + '"><span>' + esc(label || pageTitle(p)) + "</span><small>p. " + p.no + "</small></button></li>"; };
     var grid = function (title, n, kf, lab) { var h = '<section class="toc-sec"><h3>' + title + '</h3><div class="toc-grid">'; for (var i = 1; i <= n; i++) { var k = kf(i); h += '<button type="button" data-go="' + k + '" class="' + (now === k || now === k.replace(/-l$/, "-r") || now === k.replace(/-grid$/, "-pri") ? "now " : "") + (hasData(k) || hasData(k.replace(/-l$/, "-r")) ? "has" : "") + '" aria-label="' + esc(lab(i)) + '">' + i + "</button>"; } return h + "</div></section>"; };
     body.innerHTML = (start() ? '<button type="button" class="btn brg" data-go-week style="width:100%;margin:0 0 10px">이번 주 펼치기 · ' + currentWeek() + "주차</button>" : "") +
+      (quest() ? '<button type="button" class="btn line" data-quest style="width:100%;margin:0 0 10px">💎 12주 자산화 퀘스트 · ' + questFilled().length + " / 12칸</button>" : "") +
       '<button type="button" class="btn line" data-export style="width:100%;margin:0 0 10px">내 다이어리 내려받기 (PDF · 텍스트)</button>' +
       '<a class="btn line" href="/diary-guide.html" target="_blank" rel="noopener" style="width:100%;margin:0 0 14px">해설서 전체 보기 ↗</a>' +
       '<section class="toc-sec"><h3>PART 0 · 리포트를 내 말로</h3><ul class="toc-list">' + ["intro", "mission", "vision", "axes-a", "axes-b", "top3", "top2", "profile", "career", "outro"].map(function (k) { return link(k); }).join("") + "</ul></section>" +
@@ -660,6 +724,11 @@
       else if (t.matches("[data-go-week]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); goWeek(); }
       else if (t.matches("[data-start]")) openStart();
       else if (t.matches("[data-quick]")) openQuick();
+      else if (t.matches("[data-quick-week]")) { var fromQ = !!t.closest("#sh-quest"); if (fromQ) sheet("sh-quest").close(); openQuick(+t.dataset.quickWeek); qr.fromQuest = fromQ; }
+      else if (t.matches("[data-quest]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openQuest(); }
+      else if (t.matches("[data-card-save]")) saveCard(false);
+      else if (t.matches("[data-card-done]")) saveCard(true);
+      else if (t.matches("[data-card-auto]")) { var ka = st.logs.filter(function (l) { return l.week && l.kept; }).map(function (l) { return l.kept; }), el = $("#aq-kept"), joined = ka.filter(function (x, i) { return ka.indexOf(x) === i; }).join(" · ").slice(0, 300); if (el.value.trim() && !confirm("이미 적은 내용이 있어요. 내 기록의 「남긴 것」으로 바꿀까요?")) return; el.value = joined; autosize(el); el.focus(); toast("옮겨 왔어요. 내 말로 조금 고쳐 보세요."); }
       else if (t.matches("[data-oneq]")) openOneQ(t.dataset.oneq);
       else if (t.matches("[data-copy-page]")) {
         var pk = t.dataset.copyPage, fk = t.dataset.copyField, cur = val(pk, fk);
@@ -677,7 +746,7 @@
       else if (t.matches("[data-path-add]")) addPathDirs();
       else if (t.matches("[data-export]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openExport(); }
     });
-    $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
+    $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = function () { openQuick(); }; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
     $("#xp-pdf").onclick = function () { runExport("pdf"); }; $("#xp-page").onclick = function () { runExport("page"); }; $("#xp-txt").onclick = function () { runExport("txt"); }; $("#xp-copy").onclick = function () { runExport("copy"); };
     window.addEventListener("afterprint", function () { document.body.classList.remove("dy-printing"); });
     $("#oq-prev").onclick = function () { flush(oq.pk); oq.i--; renderOneQ(); };
@@ -686,6 +755,7 @@
     $("#qr-next").onclick = quickNext; $("#qr-back").onclick = function () { if (qr.step === 2) { qr.kept = $("#qr-kept").value; qr.step = 1; renderQuick(); } else sheet("sh-quick").close(); };
     $("#start-save").onclick = saveStart;
     $("#path-close").onclick = function () { sheet("sh-path").close(); };
+    $("#quest-close").onclick = function () { sheet("sh-quest").close(); };
     $("#sh-path").addEventListener("change", function (e) { var t = e.target; if (t && t.name === "pf-pick") { var on = $$('#path-body input[name="pf-pick"]:checked'); if (on.length > 2) { t.checked = false; toast("최대 2개까지 고를 수 있어요."); } return; }
       if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t);
       if (t && t.id === "pf-consent") { pathStatus("저장 중…"); st.call({ action: "pathfind", reportSid: st.sid, consent: !!t.checked }).then(function () { pathStatus("✓ 저장했어요"); bubble(t.checked ? "동의했어요. 서비스가 열리면 그때 다시 알려 드려요." : "동의를 껐어요. 아무 데도 쓰이지 않아요."); }, function (e) { t.checked = !t.checked; pathStatus((e && e.message) || "저장하지 못했어요.", true); }); } });
@@ -831,7 +901,7 @@
   }
   function resetDiary() {
     var t = prompt("다이어리의 모든 기록을 지웁니다. 리포트와 실행 프로그램은 그대로예요.\n계속하려면 ‘다이어리 비우기’라고 적어 주세요."); if (t !== "다이어리 비우기") return;
-    st.call({ action: "reset", confirm: t }).then(function () { st.pages = {}; st.logs = []; st.meta = null; go(0); toast("다이어리를 비웠어요."); }, function (e) { toast(e.message || "비우지 못했어요."); });
+    st.call({ action: "reset", confirm: t }).then(function () { st.pages = {}; st.logs = []; st.meta = null; st.card = null; go(0); toast("다이어리를 비웠어요."); }, function (e) { toast(e.message || "비우지 못했어요."); });
   }
 
 
@@ -942,11 +1012,12 @@
       try { if (localStorage.getItem("lp_diary_motion") === "0") document.body.classList.add("no-motion"); } catch (_) {}
       $("#dy-loading").hidden = false;
       return st.call({ action: "open", reportSid: st.sid, latest: !!(opts.openPath && !st.sid) }).then(function (r) {
-        st.seed = r.seed; st.meta = r.meta; st.pages = r.pages || {}; st.logs = r.logs || []; st.reportFound = !!r.reportFound;
+        st.seed = r.seed; st.meta = r.meta; st.pages = r.pages || {}; st.logs = r.logs || []; st.reportFound = !!r.reportFound; st.card = r.card || null;
         if (!st.sid && r.reportSid) st.sid = r.reportSid;
         if (!st.sid && st.meta) st.sid = st.meta.reportSid;
         $("#dy-loading").hidden = true; $("#dy-app").hidden = false;
         layout(); bind(); render(true); setSave("");
+        if (opts.openQuest) { if (quest()) setTimeout(openQuest, 350); else toast(st.reportFound ? "이 리포트의 실행 프로그램에는 12주 자산화 퀘스트가 없어요." : "리포트와 연결되면 12주 자산화 퀘스트를 쓸 수 있어요. 마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어와 주세요."); }
         if (opts.openPath) { goKey("career"); if (st.reportFound && st.sid) setTimeout(openPath, 450); else toast("리포트와 연결되면 「내 변화 찾기」를 쓸 수 있어요. 마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어와 주세요."); }
         return r;
       });
