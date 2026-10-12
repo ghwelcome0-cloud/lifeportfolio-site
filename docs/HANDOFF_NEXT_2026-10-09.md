@@ -239,9 +239,9 @@
 | #394 | 사명·비전 부연 설명(서브라인) 제거 — 문구만 | 병합 · 배포 |
 | #395 | 사명·비전 상장형 지면(mvCert) — 이중 금테·청록 모서리, 새 설명 문장 0 | 병합 · 배포 |
 | #396 | 비전카드(vision-card-v1) — 퀘스트 창 맨 아래, 화면 전용, Functions 무변경 · 「내 …」 카드 문구 정리 | 병합 · 배포 · 실서비스 확인 |
-| #397 | 이름: 정식 「자산화 맞춤 실행 프로그램」, 짧은 「🚀 자산화 실행」 (대표 확정) | CI 대기 → 병합·배포 |
-| #399 | 상장 지면 로고 → 둥근 금박 인장(assets/trademark/lifeportfolio-mark-gold-foil-320.png, 파생본) | CI 대기 → 병합·배포 |
-| #400 | 계획서 §7 비전카드 승인·§8 이름 기록 | CI 대기 → 병합 |
+| #397 | 이름: 정식 「자산화 맞춤 실행 프로그램」, 짧은 「🚀 자산화 실행」 (대표 확정) | 병합 · 배포 · 실서비스 확인 |
+| #399 | 상장 지면 로고 → 둥근 금박 인장(assets/trademark/lifeportfolio-mark-gold-foil-320.png, 파생본) | 병합 · 배포 · 실서비스 확인 |
+| #400 | 계획서 §7 비전카드 승인·§8 이름 기록 | 병합 |
 
 - 승인 문장 해시 = chat-user-sha256:<sha256 첫 32자>. Functions 배포 없음(전부 Hosting).
 - 고정 테스트 우회 금지: 승인 변경은 _typeset-approved / _mv-headline-approved(+_mv-certificate-edits.json) / _name-approved(.json) 의 정확한 쌍만 되돌려 비교.
