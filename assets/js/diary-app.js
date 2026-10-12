@@ -395,7 +395,7 @@
         '<div class="vc-row vc-row--chips"><span class="vc-k">도와줄 AI 도우미</span><span class="vc-chips">' + st.help.map(function (x) { return '<span class="vc-help">' + esc(x) + "</span>"; }).join("") + '<span class="vc-soon">출시 준비중</span></span></div></li>';
     }).join("");
     var nextTxt = cur === 0 ? "「오늘 해 봤어요」에 첫 줄을 남기고 1주 칸을 골라 보세요." : cur < 3 ? "지금 구간의 칸을 채우면, 다음 구간에서 그 기록을 그대로 보여 주고 고쳐 쓸 수 있어요." : (c && c.done ? "자산 카드를 남겼어요. 서비스가 열리면 이 카드를 들고 바로 이어 갈 수 있어요." : "12칸을 채우고 위의 「카드로 남기기」를 누르면 비전카드가 완성돼요.");
-    return '<section class="vc" id="aq-vision" aria-labelledby="aq-vision-h"><p class="vc-eye">VISION CARD</p><h3 class="vc-h" id="aq-vision-h" tabindex="-1">🧭 비전카드</h3>' +
+    return '<section class="vc" id="aq-vision" aria-labelledby="aq-vision-h"><p class="vc-eye">VISION CARD</p><h3 class="vc-h" id="aq-vision-h" tabindex="-1">🧭 비전카드 ' + tip("spot", "vision") + "</h3>" +
       (vis ? '<p class="vc-vis"><span class="vc-k">리포트의 비전</span>' + esc(vis) + "</p>" : "") +
       '<ul class="vc-faq"><li><b>무엇인가요?</b> 12주 기록이 다음 걸음으로 이어지는 길을 한 장에 보여 줘요.</li><li><b>왜 좋은가요?</b> 지금 채운 칸과 자산 카드가 그대로 이어져요. 다시 적지 않아도 돼요.</li><li><b>지금은 무엇을 하나요?</b> ' + esc(nextTxt) + "</li></ul>" +
       '<ol class="vc-steps">' + steps + "</ol>" +

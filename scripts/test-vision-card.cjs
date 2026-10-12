@@ -19,7 +19,7 @@ t('no-save-or-send',()=>{assert.ok(!/st\.call\(/.test(vc),'vision card never cal
 t('no-self-centred-card-labels',()=>{['내 자산 카드','내 카드로 남기기','내 카드로 남겼어요','내 기록의 「남긴 것」','내 손으로 쓰는 마지막 한 줄'].forEach(k=>assert.ok(!app.includes(k),'reworded: '+k));});
 t('css-touch-and-mobile',()=>{assert.ok(/button\.vc-svc\{min-height:44px/.test(css));assert.ok(/\.aq-jump a\{[^}]*min-height:44px/.test(css));assert.ok(/\.vc \.badge\{white-space:nowrap/.test(css));});
 // 대원칙-F population
-{const E=require(root+'/assets/js/report-engine.js'),V=require(root+'/assets/js/report-engine-v4.js'),A=require(root+'/assets/js/asset-map.js'),P=require(root+'/assets/js/asset-path.js'),PE=require(root+'/assets/js/program-engine.js'),R=require(root+'/assets/js/response-evidence.js'),DM=require(root+'/functions/_diary_module.js');
+{const E=require(root+'/assets/js/report-engine.js'),V=require(root+'/assets/js/report-engine-v4.js'),A=require(root+'/assets/js/asset-map.js'),P=require(root+'/assets/js/asset-path.js'),PE=require(root+'/assets/js/program-engine.js'),R=require(root+'/assets/js/response-evidence.js'),S=require(root+'/assets/js/diary-schema.js');
  const questions=require(root+'/data/questions.json'),mapping=require(root+'/data/mapping.json'),rules=require(root+'/data/report-rules.json'),careerRules=require(root+'/data/career-rules.json'),pr=require(root+'/data/program-rules.json');
  const rnd=seed=>{let s=seed*2654435761%4294967296;return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296;};};
  const N=Number(process.env.VC_USERS||1000);let legacy=0,withQuest=0,noQuest=0,withVision=0;
@@ -28,8 +28,9 @@ t('css-touch-and-mobile',()=>{assert.ok(/button\.vc-svc\{min-height:44px/.test(c
   const i={questions,mapping,rules,careerRules,answers:a,inputContractVersion:seed%2?undefined:'input-v2',profile:{name:'S',submittedAt:10},lang:'ko'};
   let r=V.upgrade(E.build(i),i);if(seed%2)legacy++;else r=R.attachAxes(r,questions,a);r={...r,_assetPath:P.compose(A,r,a)};
   const p=PE.build({report:r,rules:pr,name:'S',lang:'ko',axisProgram:true,cardShape:'rq-01'});
-  const sd=DM.seedFrom({report:r},{program:p}),q=sd&&sd.program&&sd.program.quest;
-  if(sd&&sd.vision)withVision++;
+  // Same path as the server seed (functions/_diary_module.js questFrom → S.questView) without loading firebase-functions.
+  const q=S.questView(p&&p._assetQuest),mv=(r.sections||[]).find(x=>x&&x.id==='mission_vision');
+  if(mv&&mv.content&&String(mv.content.vision||mv.content.visionHeadline||'').trim())withVision++;
   if(!q){noQuest++;continue;}withQuest++;
   assert.equal(q.phases.length,3);q.phases.forEach((ph,k)=>{assert.ok(ph.aim,'phase aim '+k);assert.equal(ph.weeks.length,4);});
   assert.ok(q.card&&q.card.name,'card name');assert.ok(!/LP-|ref|rule|_v\d/.test(JSON.stringify(q)),'no internal ids');}
