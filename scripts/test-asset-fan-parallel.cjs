@@ -46,6 +46,12 @@ function run({from,to}){
   const qt=JSON.stringify(q);assert.ok(!/—|을\(를\)|\(으\)로|이\(가\)|undefined|null|NaN|을을|를를/.test(qt),qt);
   assert.equal(off._assetQuest,undefined);assert.equal(en._assetQuest,undefined);c(8);
   out.quests=(out.quests||[]);out.quests.push(wks.map(w=>w.quest+'|'+w.keep).join('/'));
+  // 2026-10-12 diary link (대원칙-F): the shared customer view (diary-schema questView, used by the server) of this quest keeps the person's own 12 weeks, hides ref/rule,
+  // every week can take a record (validateLog week 1–12), and the pre-filled card name passes validateCard. Older programs → null.
+  {const DS=require(root+'/assets/js/diary-schema.js'),DM={questFrom:DS.questView};const v=DM.questFrom(q),vw=v.phases.flatMap(p=>p.weeks);
+   assert.deepEqual(vw.map(w=>w.quest+'|'+w.keep+'|'+w.verb),wks.map(w=>w.quest+'|'+w.keep+'|'+w.verb),'diary view = program quest');assert.ok(!/"ref"|AQ\d\d|"rule"/.test(JSON.stringify(v)),'제41조 staff-only');
+   vw.forEach(w=>assert.equal(DS.validateLog({date:'2026-10-10',text:w.quest,week:w.week}).clean.week,w.week));assert.ok(DS.validateCard({name:v.card.name},false).ok&&v.card.name.length<=60,'card name '+v.card.name);
+   assert.equal(DM.questFrom(off._assetQuest),null);assert.equal(DM.questFrom(en._assetQuest),null);c(16);out.cards=(out.cards||[]);out.cards.push(v.card.name);}
   out.lines.forEach((L,i)=>L.push(f.rings[i].line));out.weekly.push(f.weekly.join('|'));out.types[f.type]=(out.types[f.type]||0)+1;out.n++;
  }
  return out;}
@@ -63,6 +69,7 @@ else{{const srcT=require('node:fs').readFileSync(root+'/docs/자산화퀘스트_
   const fan=new Set(parts.flatMap(p=>p.lines[0].map((l,i)=>l+'|'+p.lines[1][i]+'|'+p.lines[2][i]))).size;
   assert.ok(d[0]>=20&&d[1]>=d[0]&&d[2]>=d[1],'widening distinctness '+d);assert.ok(fan>=N*0.25,'whole-fan distinct '+fan);
   assert.ok(dw>=20,'week lines '+dw);
+  const dc=new Set(parts.flatMap(p=>p.cards)).size;assert.ok(dc>=5,'card names '+dc);
   const dq=new Set(parts.flatMap(p=>p.quests)).size;assert.ok(dq>=N*0.9,'F-4 12주 distinct '+dq);assert.ok(Object.keys(types).length>=5,'types '+JSON.stringify(types));
-  console.log('PASS asset-fan parallel: '+n+' users ('+legacy+' older reports without evidence reader) × '+W+' workers, '+checks+' checks, distinct lines 30일 '+d[0]+' / 3개월 '+d[1]+' / 1년 '+d[2]+', whole fan '+fan+', 12주 '+dq+', weeks '+dw+', types '+JSON.stringify(types)+', '+(Date.now()-t0)+'ms');
+  console.log('PASS asset-fan parallel: '+n+' users ('+legacy+' older reports without evidence reader) × '+W+' workers, '+checks+' checks, distinct lines 30일 '+d[0]+' / 3개월 '+d[1]+' / 1년 '+d[2]+', whole fan '+fan+', 12주 '+dq+', diary cards '+dc+', weeks '+dw+', types '+JSON.stringify(types)+', '+(Date.now()-t0)+'ms');
  }).catch(e=>{console.error(e);process.exit(1);});}

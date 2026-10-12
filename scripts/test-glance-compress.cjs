@@ -8,6 +8,10 @@ const questions=require(root+'/data/questions.json'),mapping=require(root+'/data
 const src=fs.readFileSync(root+'/program.html','utf8'),a0=src.indexOf('// ②③ 압축형'),a1=src.indexOf('"var idr=[];",',a0);assert.ok(a0>0&&a1>a0);
 const lines=src.slice(src.indexOf('\n',a0)+1,a1).trim().split('\n').map(l=>JSON.parse(l.replace(/,$/,'')));
 const G=new Function('sc',lines.join('\n')+';return {gxStr,gxGap,gxEnv,gxPaths};')(x=>String(x));
+// The whole book render script (one string array in program.html) must parse — one missing quote blanks every program page.
+{const b0=src.indexOf('      function bookRenderScript(){'),b1=src.indexOf('\n      }\n',b0);assert.ok(b0>0&&b1>b0,'bookRenderScript');
+ const body=new Function(src.slice(b0,b1+8)+';return bookRenderScript;')()();assert.ok(typeof body==='string'&&body.length>10000);new Function(body);
+ assert.ok(body.includes('DATA.diaryQuestHref?')&&body.includes('&open=quest')===false,'link href comes from data only');}
 const rnd=seed=>{let s=seed*2654435761%4294967296;return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296;};};
 const N=Number(process.env.GX_USERS||600),hit={str:0,gap:0,env:0,paths:0};let n=0;
 const words=t=>String(t).replace(/[.,·—()‘’“”]/g,' ').split(/\s+/).filter(w=>w.length>1);

@@ -81,6 +81,11 @@
   <p class="pf-bubble" id="pf-bubble" role="status" aria-live="polite" hidden></p>
   <div class="sh-foot"><p class="pf-status" id="path-status" role="status" aria-live="polite"></p><button type="button" class="btn brg" id="path-close">닫기</button></div>
 </div></dialog>
+<dialog class="sheet" id="sh-quest" aria-labelledby="sh-quest-h"><div class="sh">
+  <div class="sh-head"><h2 id="sh-quest-h" tabindex="-1">💎 12주 자산화 퀘스트</h2><button type="button" class="sh-x" aria-label="닫기">×</button></div>
+  <div class="sh-body" id="quest-body"></div>
+  <div class="sh-foot"><button type="button" class="btn brg" id="quest-close">닫기</button></div>
+</div></dialog>
 <dialog class="sheet" id="sh-export" aria-labelledby="sh-export-h"><div class="sh">
   <div class="sh-head"><h2 id="sh-export-h" tabindex="-1">내 다이어리 내려받기</h2><button type="button" class="sh-x" aria-label="닫기">×</button></div>
   <div class="sh-body">
@@ -119,12 +124,13 @@
  const sid = sidRaw && /^s_[A-Za-z0-9_]{1,78}$/.test(sidRaw) ? sidRaw : null;
  let booted = false;
  const openPath = params.get("open") === "path";
+ const openQuest = params.get("open") === "quest";
  { const gl = document.getElementById("gate-login"); if (gl) gl.href = "/login?returnTo=" + encodeURIComponent("diary" + location.search); }
  onAuthStateChanged(auth, user => {
   if (!user) { document.getElementById("dy-app").hidden = true; document.getElementById("dy-gate").hidden = false; return; }
   if (booted) return; booted = true;
   document.getElementById("dy-gate").hidden = true;
-  window.DiaryApp.boot({ call, sid, openPath }).catch(() => {
+  window.DiaryApp.boot({ call, sid, openPath, openQuest }).catch(() => {
    booted = false; document.getElementById("dy-loading").hidden = true;
    const g = document.getElementById("dy-gate"); g.hidden = false;
    g.querySelector(".cv-note").textContent = "다이어리를 열지 못했어요. 잠시 뒤 다시 시도해 주세요.";

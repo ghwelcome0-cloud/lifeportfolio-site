@@ -111,6 +111,49 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
   const o3=await call(u3,{action:'open',latest:true});result('open-latest-picks-own-newest-report',o3.ok&&o3.reportFound&&o3.reportSid==='s_1791440430847_new',o3.reportSid);
   result('open-without-latest-stays-empty',(await call(u3,{action:'open'})).reportFound===false);
   result('open-latest-other-user-has-none',(await call((await signUp()).localId,{action:'open',latest:true})).reportFound===false);}
+ // ---- 12주 자산화 퀘스트 · 내 자산 카드 (asset-quest-v1, owner-approved 2026-10-12)
+ {const AMx=require('../assets/js/asset-map.js'),APx=require('../assets/js/asset-path.js');
+  const rq={...report,_assetPath:APx.compose(AMx,report,a)},qsid='s_1791440430847_quest';
+  const qprog=P.build({report:rq,rules:require('../data/program-rules.json'),name:'합성',lang:'ko',publishedAt:new Date(0),axisProgram:true});
+  const u6=(await signUp()).localId,u7=(await signUp()).localId;
+  await db('reports/'+u6+'/'+qsid).set({sid:qsid,report:rq});await db('programs/'+u6+'/'+qsid).set({sid:qsid,program:qprog});
+  const qBefore=JSON.stringify((await db('programs/'+u6+'/'+qsid).get()).val());
+  const qo=await call(u6,{action:'open',reportSid:qsid}),Q=qo.seed&&qo.seed.program&&qo.seed.program.quest;
+  const wk=Q?Q.phases.flatMap(p=>p.weeks):[];
+  result('quest-seed-from-own-program',!!Q&&Q.phases.length===3&&wk.length===12&&wk.map(w=>w.week).join()==='1,2,3,4,5,6,7,8,9,10,11,12'&&wk[0].quest===rq._assetPath.firstStep&&Q.card.name===qprog._assetQuest.card.name,Q);
+  result('quest-seed-hides-ref-and-rule',!/"ref"|AQ\d\d|"rule"|부채꼴|근거표/.test(JSON.stringify(qo)),JSON.stringify(qo).match(/"ref"|AQ\d\d|"rule"/));
+  result('quest-absent-for-old-program',opened.seed.program.quest===null);
+  result('quest-other-user-sees-none',(await call(u7,{action:'open',reportSid:qsid})).seed===null);
+  await call(u6,{action:'start',startDate:'2026-10-01',reportSid:qsid});
+  const w1=await call(u6,{action:'addLog',logId:'log_quest01',log:{date:'2026-10-02',text:wk[0].quest,week:1}});
+  result('log-attaches-to-quest-week',w1.ok&&w1.log.week===1&&w1.log.stage===0,w1);
+  const w2=await call(u6,{action:'addLog',logId:'log_quest02',log:{date:'2026-10-09',text:'다듬어 봤어요',kept:'1판 메모',week:2}});
+  result('log-week-with-kept-stage1',w2.ok&&w2.log.week===2&&w2.log.stage===1,w2);
+  result('log-week-validated',(await call(u6,{action:'addLog',logId:'log_quest03',log:{date:'2026-10-09',text:'x',week:13}})).error==='invalid-argument'&&(await call(u6,{action:'addLog',logId:'log_quest04',log:{date:'2026-10-09',text:'x',week:'2'}})).error==='invalid-argument'&&(await call(u6,{action:'addLog',logId:'log_quest05',log:{date:'2026-10-09',text:'x',week:0}})).error==='invalid-argument');
+  const ro=await call(u6,{action:'open'});
+  result('reopen-keeps-week-links',ro.logs.filter(l=>l.week).map(l=>l.week).sort().join()==='1,2'&&ro.card===null,ro.logs);
+  result('card-needs-quest-program',(await call(u6,{action:'saveCard',reportSid:'s_1791440430847_none',opId:'op_card0000',card:{name:'x'}})).error==='failed-precondition');
+  result('card-other-user-cannot-save',(await call(u7,{action:'saveCard',reportSid:qsid,opId:'op_card0001',card:{name:'x'}})).error==='failed-precondition');
+  const c1=await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0002',card:{name:'  '+Q.card.name+'  ',kept:'1판 메모'}});
+  result('card-draft-saves-trimmed',c1.ok&&c1.applied&&c1.card.fields.name===Q.card.name&&c1.card.done===false&&c1.card.weeks.join()==='1,2'&&c1.card.rev===1,c1);
+  const c1r=await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0002',card:{name:'다른 이름'}});
+  result('card-retry-idempotent',c1r.ok&&c1r.applied===false&&c1r.card.fields.name===Q.card.name&&c1r.card.rev===1,c1r);
+  result('card-done-needs-last-line-by-owner',(await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0003',card:{name:'n',kept:'k'},done:true})).error==='invalid-argument');
+  result('card-rejects-unknown-and-long',(await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0004',card:{name:'n',score:5}})).error==='invalid-argument'&&(await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0005',card:{name:'가'.repeat(61)}})).error==='invalid-argument'&&(await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0006',card:{name:'n'},done:'yes'})).error==='invalid-argument');
+  const c2=await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0007',card:{name:'내가 고친 이름',kept:'1판 · 2판',reuse:'모임의 한 분이 따라 써 봤어요',next:'지역 모임'},done:true});
+  result('card-done-by-owner',c2.ok&&c2.card.done===true&&typeof c2.card.doneAt==='number'&&c2.card.fields.reuse==='모임의 한 분이 따라 써 봤어요'&&c2.card.rev===2,c2);
+  const c3=await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0008',card:{name:'내가 고친 이름',kept:'1판 · 2판',reuse:'고쳐 썼어요'}});
+  result('card-done-stays-done-and-doneAt-kept',c3.ok&&c3.card.done===true&&c3.card.doneAt===c2.card.doneAt,c3);
+  const ro2=await call(u6,{action:'open',reportSid:qsid});
+  result('card-returned-on-open',ro2.card&&ro2.card.done&&ro2.card.fields.name==='내가 고친 이름',ro2.card);
+  result('card-not-scored',!/score|점수|순위|rank/i.test(JSON.stringify(ro2.card)));
+  result('card-hidden-from-other-user-open',(await call(u7,{action:'open'})).card===null);
+  const url2=(p,tok)=>'http://'+process.env.FIREBASE_DATABASE_EMULATOR_HOST+'/'+p+'.json?ns='+ns+'&auth='+encodeURIComponent(tok);
+  result('rules-deny-direct-card-read-write',(await fetch(url2('diary/'+u6+'/cards/'+qsid,owner.idToken))).status===401&&(await fetch(url2('diary/'+u6+'/cards/'+qsid,owner.idToken),{method:'PUT',body:JSON.stringify({doc:'{}'})})).status===401);
+  result('quest-program-never-modified',JSON.stringify((await db('programs/'+u6+'/'+qsid).get()).val())===qBefore);
+  const dl=await call(u6,{action:'deleteLog',logId:'log_quest01',confirm:true});const c4=await call(u6,{action:'saveCard',reportSid:qsid,opId:'op_card0009',card:{name:'n',kept:'k',reuse:'r'}});
+  result('card-weeks-follow-own-records',dl.ok&&c4.card.weeks.join()==='2',c4.card.weeks);
+  await call(u6,{action:'reset',confirm:'다이어리 비우기'});result('reset-clears-card',!(await db('diary/'+u6+'/cards').get()).exists());}
  result('report-and-program-never-modified',JSON.stringify((await db('reports/'+uid+'/'+sid).get()).val())+JSON.stringify((await db('programs/'+uid+'/'+sid).get()).val())===before);
 
  result('delete-log-needs-confirm',(await call(uid,{action:'deleteLog',logId:'log_000002'})).error==='failed-precondition');

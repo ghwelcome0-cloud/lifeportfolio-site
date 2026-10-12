@@ -79,4 +79,17 @@ t('homepage-header-diary-shortcut-and-crisp-nav',()=>{const h=fs.readFileSync(pa
   assert.ok(/--hd-ink:#0f241b/.test(c)&&/-webkit-font-smoothing:antialiased/.test(c)&&/min-height:44px/.test(c)&&/:focus-visible/.test(c));
   assert.ok(!/opacity:\s*\.[0-6]/.test(c.replace(/\[disabled\]\{[^}]*\}/,'')),'no faded text');});
 t('cover-stays-dark-while-turning',()=>{const c=fs.readFileSync(path.join(root,'assets/css/diary.css'),'utf8');const i=c.indexOf('.leaf .face{'),j=c.indexOf('.leaf .face.cover,.leaf .face.divider-pg');assert.ok(i>0&&j>i,'override must come after the paper-coloured face rule');assert.ok(/\.leaf \.face\.cover,\.leaf \.face\.divider-pg[^{]*\{background:var\(--brg\)\}/.test(c));});
+t('quest-diary-link-asset-quest-v1',()=>{const app=files[1][1],html=files[2][1],css=files[3][1],H=require('../assets/js/diary-help.js');
+  // 2026-10-12 (owner-approved): 지도는 프로그램, 카드는 다이어리에서 자란다 + 마지막 한 줄은 내 손으로.
+  assert.equal(S.QUEST_WEEKS,12);assert.deepEqual(S.CARD_FIELDS.map(f=>f.key),['name','kept','reuse','next']);
+  assert.equal(S.validateLog({date:'2026-10-10',text:'a',week:12}).clean.week,12);[0,13,1.5,'3'].forEach(w=>assert.equal(S.validateLog({date:'2026-10-10',text:'a',week:w}).ok,false,String(w)));
+  assert.equal(S.validateCard({name:'n',kept:'k'},true).error,'incomplete');assert.ok(S.validateCard({name:'n',kept:'k',reuse:'r'},true).ok);assert.equal(S.validateCard({name:'n',score:1}).ok,false);
+  assert.equal(S.questView(null),null);assert.equal(S.questView({version:'asset-quest-v0'}),null);
+  assert.ok(html.includes('id="sh-quest"')&&html.includes('params.get("open") === "quest"')&&html.includes('openPath, openQuest'));
+  assert.ok(app.includes('function renderQuest(')&&app.includes('data-quick-week')&&app.includes('action: "saveCard"')&&app.includes('qr.week ? { week: qr.week } : {}'));
+  assert.ok(H.SPOT.quest&&app.includes('tip("spot", "quest")'));assert.ok(css.includes('.aq-dots{'));
+  // 제41조: the 근거 사슬 is staff-only — never on customer diary screens. No score/rank wording for the 12 slots.
+  for(const f of files)assert.ok(!/AQ\d\d|근거표|기념의 돌/.test(f[1]),f[0]);
+  const q=app.slice(app.indexOf('// ---------------------------------------------------------------- 12주 자산화 퀘스트'),app.indexOf('R.week_r = function'));assert.ok(q.length>1000);assert.ok(!/누가복음|마태복음|여호수아/.test(q),'quest screens carry no source chain');assert.ok(!/점수[를가는]? 매|순위[를가]|등급/.test(q));assert.ok(q.includes('점수나 순위는 없어요'));
+  const pg=fs.readFileSync(path.join(root,'program.html'),'utf8');assert.ok(pg.includes('&open=quest')&&pg.includes('📔 다이어리에서 이어 쓰기'));});
 console.log(JSON.stringify({passed:n,scope:'offline source checks; synthetic only'}));

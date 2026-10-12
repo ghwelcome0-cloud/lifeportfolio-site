@@ -60,7 +60,7 @@
     var rest = logs.filter(function (_, i) { return !usedLogs[i]; });
     if (rest.length) sections.push({ no: null, key: "logs", title: "오늘 해 봤어요 · 기록", range: null, items: [], logs: rest.map(logView) });
     return { name: (st.seed && st.seed.name) || "", start: start, today: today, sections: sections, pagesWritten: sections.filter(function (s) { return s.no; }).length, logCount: logs.length };
-    function logView(l) { return { date: dot(l.date) + " (" + WD[wd(l.date)] + ")", text: l.text, kept: l.kept || null }; }
+    function logView(l) { return { date: dot(l.date) + " (" + WD[wd(l.date)] + ")", text: (l.week ? "[12주 퀘스트 " + l.week + "주] " : "") + l.text, kept: l.kept || null }; }
   }
 
   function fileBase(m) { return "인생포트폴리오_다이어리_" + (m.name ? m.name.replace(/[\\/:*?"<>|\s]+/g, "") + "_" : "") + m.today.replace(/-/g, ""); }
