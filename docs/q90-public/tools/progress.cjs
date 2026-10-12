@@ -10,8 +10,10 @@ const rows = roster.rows.filter(r => !r.retired), nonOwn = rows.filter(r => !r.o
 const E3_KEYS = ['price_band', 'price_transparency', 'time_min', 'docs_url', 'appeal', 'limits', 'korean_support'];
 // 명부에서 이관된 값(note '재확인 필요')은 아직 확인 안 된 값이므로 세지 않는다
 const filled = v => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && !/재확인 필요/.test(v.note || '');
-let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0;
-for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k])).length; e3cells += n; if (n > 0) e3rowsTouched++; if (n === E3_KEYS.length) e3rowsComplete++; }
+// E3 '해당 없음' 칸(value null + note '해당 없음' + 근거 URL)은 분모에서 뺀다(E3 rule 3차-b). 두 분모 병기.
+const na = v => v && typeof v === 'object' && v.value == null && v.source_url && /^해당 없음/.test(v.note || '');
+let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0;
+for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k])).length, m = E3_KEYS.filter(k => na(r[k])).length; e3cells += n; e3na += m; if (n > 0) e3rowsTouched++; if (n + m === E3_KEYS.length) e3rowsComplete++; }
 // E2: 샘플 확보(ready 이상) / 채점 완료(final)
 const st = s => e2.rows.filter(r => r.status === s).length;
 // 결함 수정(2026-10-12): 'redacted_pending_visual'(자동 가림 완료, 사람 눈 확인 대기)이 빠져 9건이 0으로 집계됐었다 → 포함
@@ -31,7 +33,7 @@ const out = {
   at: new Date().toISOString().slice(0, 16) + 'Z', roster_rows: rows.length, compare_rows: nonOwn.length, latest_run: latest || null,
   steps: [
     { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: latest ? `${latest} — 구 도구 이관분. r3(새 측정기)부터 공개용` : '' },
-    { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length, pct: pct(e3cells, rows.length * E3_KEYS.length), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결 ${e3rowsComplete}` },
+    { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length - e3na, pct: pct(e3cells, rows.length * E3_KEYS.length - e3na), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결(해당 없음 포함) ${e3rowsComplete} · 해당 없음 ${e3na}칸 제외(옛 분모 ${rows.length * E3_KEYS.length} 기준 ${pct(e3cells, rows.length * E3_KEYS.length)}%)` },
     { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: e2target, pct: pct(e2ready, e2target), note: `측정 ${e2ready} / 대상 ${e2target}(해당 없음 ${e2na} 제외) / 명부 ${nonOwn.length} · 옛 분모 기준 ${pct(e2ready, nonOwn.length)}% → 분모 정정 효과 +${pct(e2ready, e2target) - pct(e2ready, nonOwn.length)}%p · ` + `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
     { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: `judged(원본 저장·미집계) ${st('judged')}, final ${st('final')} — judge 2인 + 제3자` },
     { step: '자사 행(Q90 2회차 전사)', done: own ? 1 : 0, total: 1, pct: own ? 100 : 0, note: 'TL D 도구 → 0-c → 실행 → judge → scorer 뒤' }
