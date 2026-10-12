@@ -4704,6 +4704,102 @@
      "Q2": "아니오 — 메모·노트 미수정, 오늘 바뀐 메모 파일 0, 패킷 ID·채점 내용 파일 0",
      "result": "유효"
     }
+   },
+   {
+    "role": "third",
+    "actor_id": "agent_vebhkh44mp67",
+    "dm_channel_id": "ch_dm_eeb4c0b036bc17aa99b5",
+    "display_name": "문서 판정 보조",
+    "status": "active",
+    "registered_at": "2026-10-12T07:52:07Z",
+    "third_agent_creation": {
+     "created_by": "대표(이해관계자)",
+     "created_at": "2026-10-12T07:51:50Z",
+     "agent_id": "agent_vebhkh44mp67",
+     "display_name": "문서 판정 보조",
+     "description_sha256": "a85bacc3a96cd20b071234c37052e923cc0e8be69ed30ea2e4a9b55cda940c27",
+     "description_text": "두 사람의 평가가 갈릴 때, 제시된 자료만 보고 둘 중 어느 평가가 자료에 더 맞는지 고르는 판정 보조입니다.\n\n[판정 원칙 — 모든 답변에 항상 적용]\n1. 주어진 자료만 봅니다. 웹 검색·이미지 검색·다른 대화·저장된 메모를 쓰지 않습니다. 자료의 출처를 알아내려 하지 않습니다.\n2. 둘 중 하나만 고릅니다. 평균·중간값·새 값을 만들지 않습니다. 고른 이유는 자료의 어느 부분 때문인지 1문장으로 적습니다.\n3. 판정 기준은 함께 받은 RUBRIC 파일의 해당 축 문구와 레벨 앵커뿐입니다. 그 밖의 기준(분량·디자인·가린 부분·자기 선호)은 쓰지 않습니다.\n4. 모르는 것은 모른다고 적습니다. 못 읽은 쪽이 있으면 쪽 번호를 그대로 적습니다. 추정은 \"추정\"이라고 표시합니다.\n5. 쉬운 말로 씁니다. 중학생도 이해할 수 있게, 전문용어에는 한 줄 풀이를 붙입니다. 서론·인사말 없이 결론부터.\n6. 판정 내용(선택·이유·자료 설명)을 메모·노트 파일에 저장하지 않습니다. 세션이 끝나면 아무것도 남기지 않습니다.\n7. 요청받은 일 외에는 하지 않습니다. 다른 작업 요청은 \"이 역할은 판정 보조만 합니다\"라고 답하고 거절합니다.\n",
+     "model_display": "Claude Opus 5.5(대표 선택)",
+     "channels": [],
+     "template": "none(blank New agent)",
+     "skills": 0,
+     "model_note": "대표 선택 Opus 5.5 — 명세 v2 권고(Opus 5.5 아닌 것)와 다름. 교체 judge1과 같은 모델 → 같은 모델 답에 끌릴 가능성(추정)을 한계 줄에 기록",
+     "created_via": "Genny(플랫폼 내장 도우미, agent_vnh8ynfhj5hc)가 대표 승인(원문 인용) 하에 생성; 확인 카드 6077209 → 승인 6077262 → 생성 6077285"
+    },
+    "isolation_4step": {
+     "doc_grep": 0,
+     "channel_membership": 0,
+     "message_search_hits": 0,
+     "self_declaration": "Q1/Q2 아니오(6077502)",
+     "bio_matches_file": false,
+     "checked_at": "2026-10-12T07:52:07Z"
+    },
+    "defect_13": {
+     "what": "감지기(thirdwatch)가 1회 실행 후 exit 0 → pm2 자동 재시작으로 사전확인+rc2 메시지 8회 중복 발송(6077358~6077459) 및 시트 중복 등록 8건",
+     "fix": "pm2 삭제, 중복 7건 제거, 제3자에게 첫 메시지(6077358)만 답하도록 안내, 중복 메시지 7건 삭제 시도",
+     "at": "2026-10-12T07:55:00Z"
+    },
+    "pre_check": {
+     "msg_id": "6077358",
+     "reply_msg_id": "6077502",
+     "q1_company_memo": "아니오(0개; MEMORY.md 역할·원칙 + 빈 노트 3개)",
+     "q2_own_company_work": "아니오",
+     "q3_model_self_report": "Claude Opus 5.5",
+     "ruling": "valid",
+     "checked_at": "2026-10-12T07:56:00Z"
+    },
+    "read_check": {
+     "version": "rc2",
+     "sent_sha256": "69b88e769338fb6ca6c7fe84ad8c8308c7183bdcd5190cf4034a4fe8ed7a1b29",
+     "markers": {
+      "1": "종이배",
+      "15": "구름다리",
+      "18": "솔방울"
+     },
+     "probe": {
+      "page": 4,
+      "word": "달팽이"
+     },
+     "table_ga": 83,
+     "pages_opened": "1~18 전부",
+     "result": "pass 5/5",
+     "note": "중복 발송 8건을 스스로 대조해 1회 답함(결함 ⑬ 대상자 측 영향 0)"
+    },
+    "packets": {
+     "S-9d99bb": {
+      "sent_msg_id": "6077566",
+      "sent_at": "2026-10-12T07:54:23Z",
+      "axes": [
+       "A1"
+      ],
+      "attachment_sha256_sent": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
+      "attachment_sha256_received_redownload": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
+      "bytes_match": true,
+      "reply_msg_id": null
+     },
+     "S-da397f": {
+      "sent_msg_id": "6077579",
+      "sent_at": "2026-10-12T07:54:31Z",
+      "axes": [
+       "A1"
+      ],
+      "attachment_sha256_sent": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
+      "attachment_sha256_received_redownload": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
+      "bytes_match": true,
+      "reply_msg_id": null
+     },
+     "S-f7229a": {
+      "sent_msg_id": "6077590",
+      "sent_at": "2026-10-12T07:54:38Z",
+      "axes": [
+       "A1"
+      ],
+      "attachment_sha256_sent": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
+      "attachment_sha256_received_redownload": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
+      "bytes_match": true,
+      "reply_msg_id": null
+     }
+    }
    }
   ],
   "packet_record_schema": {
