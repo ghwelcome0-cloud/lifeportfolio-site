@@ -1999,6 +1999,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    </div><!-- /.lp-shell -->
   </div>
 
+  <script src="assets/js/typeset.js?v=typeset-v1"></script>
   <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
   <script src="assets/js/axis-compose.js?v=axis-compose-v1"></script>
   <script src="assets/js/asset-map.js?v=asset-map-v1"></script>
@@ -6667,6 +6668,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 //   부모(메인 페이지)가 목차 클릭 시 postMessage({t:"lb-go",anchor|page})를 보내면
 //   해당 .page 만 활성 표시(책장 넘김). 무한 스크롤이 아니라 '한 지면씩' 보여줘 매칭이 100% 정확.
 //   지면은 뷰포트에 맞춰 비율유지 확대/축소(가로·세로 모두 고려) → 사진처럼 넓게, 여백 최소화.
+// typeset-v1 (2026-10-12): 어절 · 의미 단위 · 시각 안정 — 지면을 다 만든 뒤, 크기 맞춤(pfFit) 전에 한 번. 저장된 글은 바꾸지 않는다.
+'try{if(window.LPTypeset)window.LPTypeset.apply(document.getElementById("book"));}catch(e){}',
 '(function lbBridge(){',
 '  var pages=Array.prototype.slice.call(document.querySelectorAll(".page"));',
 '  if(!pages.length)return;',
@@ -7055,7 +7058,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<link rel="preload" as="font" href="'+location.origin+'/assets/fonts/pretendard/Pretendard-Regular.woff2" type="font/woff2" crossorigin>'+
           '<link rel="preload" as="font" href="'+location.origin+'/assets/fonts/pretendard/Pretendard-Bold.woff2" type="font/woff2" crossorigin>'+
           '<link rel="stylesheet" href="'+location.origin+'/assets/fonts/pretendard/pretendard.css">'+
-          '<style>'+buildBookCSS(theme)+embedCSS+'</style></head><body>'+
+          '<style>'+buildBookCSS(theme)+embedCSS+(window.LPTypeset?window.LPTypeset.CSS_BOOK:'')+'</style></head><body>'+
           (isEmbed ? '' :
             '<div class="toolbar">'+
               '<button onclick="window.print()">'+btnLabel+'</button>'+
@@ -7063,6 +7066,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             '</div>')+
           '<div class="book" id="book"></div>'+
           '<script>window.DATA='+JSON.stringify(data).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029")+';<\/script>'+
+          (window.LPTypeset&&window.LPTypeset.SRC?'<script>'+window.LPTypeset.SRC+'<\/script>':'')+
           '<script>'+bookRenderScript()+'<\/script>'+
           '</body></html>';
       }

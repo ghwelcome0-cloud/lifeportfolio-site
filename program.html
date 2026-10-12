@@ -1604,6 +1604,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    </div><!-- /.lp-shell -->
   </div>
 
+  <script src="assets/js/typeset.js?v=typeset-v1"></script>
   <script src="assets/js/response-evidence.js?v=input-v2"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -4797,6 +4798,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // [P27 · Living Book 브리지] 부모(iframe 밖) TOC 클릭 ↔ 앵커/페이지로 이동.
 //   페이지 뷰어 모델: 무한 스크롤이 아니라 '한 지면씩' .page.lb-active 로 표시 → 매칭 100% 정확.
 //   지면은 뷰포트에 맞춰 비율유지 확대/축소(가로·세로 모두) → 사진처럼 넓게, 여백 최소화.
+// typeset-v1 (2026-10-12): 어절 · 의미 단위 · 시각 안정 — 지면을 다 만든 뒤, 크기 맞춤(pfFit) 전에 한 번. 저장된 글은 바꾸지 않는다.
+'try{if(window.LPTypeset)window.LPTypeset.apply(document.getElementById("book"));}catch(e){}',
 '(function lbBridge(){',
 '  var pages=Array.prototype.slice.call(document.querySelectorAll(".page"));',
 '  if(!pages.length)return;',
@@ -5137,7 +5140,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<link rel="preload" as="font" href="'+location.origin+'/assets/fonts/pretendard/Pretendard-Regular.woff2" type="font/woff2" crossorigin>'+
           '<link rel="preload" as="font" href="'+location.origin+'/assets/fonts/pretendard/Pretendard-Bold.woff2" type="font/woff2" crossorigin>'+
           '<link rel="stylesheet" href="'+location.origin+'/assets/fonts/pretendard/pretendard.css">'+
-          '<style>'+buildBookCSS(theme)+embedCSS+'</style></head><body>'+
+          '<style>'+buildBookCSS(theme)+embedCSS+(window.LPTypeset?window.LPTypeset.CSS_BOOK:'')+'</style></head><body>'+
           (isEmbed ? '' :
             '<div class="toolbar">'+
               '<button onclick="window.print()">'+btnLabel+'</button>'+
@@ -5145,6 +5148,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             '</div>')+
           '<div class="book" id="book"></div>'+
           '<script>window.DATA='+JSON.stringify(data)+';<\/script>'+
+          (window.LPTypeset&&window.LPTypeset.SRC?'<script>'+window.LPTypeset.SRC+'<\/script>':'')+
           '<script>'+bookRenderScript()+'<\/script>'+
           '</body></html>';
       }

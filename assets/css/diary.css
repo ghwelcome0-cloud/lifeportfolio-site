@@ -425,3 +425,5 @@ body.no-motion .pf-bubble{transition:none}
 .log-q{display:inline-block;margin-left:6px;font-size:12px;font-weight:700;color:var(--gold-2)}
 @media (max-width:420px){.aq-row{grid-template-columns:34px 1fr}.aq-row .mini-btn{grid-column:2;justify-self:start}}
 .aq-cardbox .copy-btn,.aq-seed .copy-btn{min-height:44px}
+/* typeset-v1 (2026-10-12): 짧은 덩어리는 줄 길이를 고르게, 긴 문단은 마지막 줄에 한 어절만 남지 않게. */
+.ts-short,.ts-long{overflow-wrap:break-word}.ts-short{text-wrap:balance}.ts-long{text-wrap:pretty}

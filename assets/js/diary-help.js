@@ -112,7 +112,7 @@
         if (lead) frag.appendChild(document.createTextNode(lead));
         if (body.length && body.length <= MAX_UNIT) { var sp = document.createElement("span"); sp.className = "mu"; sp.textContent = body; frag.appendChild(sp); }
         else frag.appendChild(document.createTextNode(body));
-        if (parts[i + 1]) frag.appendChild(document.createTextNode(" "));
+        if (parts[i + 1]) frag.appendChild(document.createTextNode(" ")); // break only AFTER a separator, never before it
       }
       n.parentNode.replaceChild(frag, n);
     });

@@ -365,7 +365,7 @@
       '<p class="sh-hint">카드는 내 다이어리에만 보관돼요. 어디에도 보내거나 공개하지 않아요.</p></section>' +
       '<section class="aq-chk"><p class="pf-k">✓ 남김 확인</p><ul>' + q.checks.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></section>";
     body.innerHTML = h;
-    if (H.units) H.units(body);
+    if (H.units) H.units(body); if (window.LPTypeset) window.LPTypeset.apply(body);
     $$("textarea.ruled", body).forEach(autosize);
   }
   function cardFields() { return { name: $("#aq-name").value, kept: $("#aq-kept").value, reuse: $("#aq-reuse").value, next: $("#aq-next").value }; }
@@ -480,7 +480,7 @@
     } else book.appendChild(pageEl(keys[0]));
     var frac = view.idx / (SEQ.length - 1);
     book.style.setProperty("--edgeL", (2 + frac * 12).toFixed(1) + "px"); book.style.setProperty("--edgeR", (2 + (1 - frac) * 12).toFixed(1) + "px");
-    if (H.units) H.units(book);
+    if (H.units) H.units(book); if (window.LPTypeset) window.LPTypeset.apply(book);
     $$("textarea.ruled", book).forEach(autosize);
     updateFoot();
     if (focus) { var hd = $(".pg-h", book); if (hd) hd.focus({ preventScroll: true }); }
@@ -614,7 +614,7 @@
     if (p.tpl === "axes_a" || p.tpl === "axes_b") { var ai = S.AXES.findIndex(function (a) { return a.key === f.key; }); if (ai >= 0) { var a = (seed().axes || [])[ai]; labelOpt.hint = a && a.reflection ? "돌아볼 질문 · " + a.reflection : f.hint; } }
     if (p.tpl === "quarterly") labelOpt.label = S.DOMAINS[p.domain].name + " · " + f.label;
     body.innerHTML = '<p class="sh-step">' + (oq.i + 1) + " / " + oq.list.length + "</p>" + fieldHTML(oq.pk, f, labelOpt).replace(/id="f-/g, 'id="q-').replace(/for="f-/g, 'for="q-').replace(/"f-([^"]+)-h"/g, '"q-$1-h"').replace('class="fld-q"', 'class="fld-q sh-q"');
-    if (H.units) H.units(body);
+    if (H.units) H.units(body); if (window.LPTypeset) window.LPTypeset.apply(body);
     $$("textarea.ruled", body).forEach(autosize);
     $("#oq-prev").disabled = oq.i === 0; $("#oq-next").textContent = oq.i === oq.list.length - 1 ? "마치기" : "다음";
     var inp = $("input:not([type=radio]):not([type=checkbox]),textarea,select", body) || $("input", body); if (inp) setTimeout(function () { inp.focus(); }, 30);
@@ -650,7 +650,7 @@
       body.innerHTML = '<div class="done-mark" aria-hidden="true">✓</div><p class="sh-q" style="text-align:center" tabindex="-1" id="qr-done">기록했어요</p><p class="sh-hint" style="text-align:center">이번 주 기록 ' + n + "개 · " + (qr.kept ? "결과물을 남긴 기록이에요 (1단계)." : "해 본 기록이에요 (0단계).") + "</p>" + stageChips(qr.kept ? 1 : 0) + (qr.week && quest() ? '<p class="aq-saved">💎 12주 퀘스트 ' + qr.week + "주 칸에 붙었어요 · 12칸 중 " + questFilled().length + "칸</p>" : "") + '<p class="notice">' + esc(S.STAGE_NOTE) + " 2단계부터는 동료·멘토·사용자의 확인이 필요해서, 함께 배우는 소그룹·멘토와의 동행·결과물 검토 서비스가 준비되면 열려요 (출시 준비중).</p>";
       $("#qr-back").textContent = "닫기"; $("#qr-next").textContent = qr.fromQuest ? "12주 퀘스트로 돌아가기" : "이번 주 펼치기";
     }
-    if (H.units) H.units(body);
+    if (H.units) H.units(body); if (window.LPTypeset) window.LPTypeset.apply(body);
     var f = $("textarea,input[type=text]", body) || $("#qr-done", body); if (f) setTimeout(function () { f.focus(); }, 30);
   }
   function quickNext() {
@@ -706,7 +706,7 @@
       '<section class="toc-sec"><h3>PART 5–7 · 감사 · 추적 · 부록 · 저널</h3><ul class="toc-list">' + link("gratitude-1", "감사 (열두 달)") + link("tracker-1", "실행 추적 보드") + link("quotes-1", "말씀 · 문장 모음") + link("guide13") + link("usage") + link("owner") + link("daily-1", "데일리 저널") + link("free-1", "자유 메모") + "</ul></section>" +
       '<section class="toc-sec"><h3>쪽 번호로 가기</h3><form id="toc-page-form" class="sh-meta"><label for="toc-page">p.</label><input id="toc-page" type="number" inputmode="numeric" min="3" max="256" style="width:90px"><button type="submit" class="mini-btn">가기</button></form></section>' +
       '<section class="toc-sec"><h3>설정</h3><label class="setting"><span>넘김 효과</span><input type="checkbox" id="motion-toggle"' + (motionOK() ? " checked" : "") + ' style="width:22px;height:22px;accent-color:var(--brg)"></label></section>';
-    if (H.units) H.units(body);
+    if (H.units) H.units(body); if (window.LPTypeset) window.LPTypeset.apply(body);
     openSheet(d);
   }
 
