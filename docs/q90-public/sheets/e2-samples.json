@@ -2103,11 +2103,11 @@
       },
       "e2_alt": {
         "path_candidate": "E2-s",
-        "tos_url": "https://www.onetcenter.org/IP.html",
-        "tos_quote": "\"Creative Commons licensed — The O*NET Interest Profiler may be redistributed or used to develop other assessments under a choice of licenses\" · \"licensed under a Creative Commons Attribution 4.0 International License\"",
-        "tos_verdict": "가",
-        "checked_at": "2026-10-12T20:40Z",
-        "note": "CC-BY 4.0. 봇·자동화 금지 조항 없음(IP.html·help/ip·about 3페이지). 공공(미 노동부). 첫 AI응시 대상(blind_id 사전순 무관 — 가 판정 1행뿐)"
+        "tos_url": "onetinterestprofiler.org 응시 흐름 내 \"Special Notice: User's Agreement\" (정확 URL 미확보 — SPA, 응시자 보고 6112724; 같은 문구가 O*NET 도구 공식 매뉴얼류에 있음)",
+        "tos_quote": "\"the use of the O*NET Career Exploration Tools is authorized for career exploration, career planning, and career counseling purposes only. No other use of these tools or any part of the tools is valid or authorized.\"",
+        "tos_verdict": "대안 없음(약관)",
+        "checked_at": "2026-10-12T21:50Z",
+        "note": "1차 확인(라이선스 페이지 3곳, CC-BY)에는 없던 목적 제한 조항을 **응시 보조가 응시 전 흐름에서 발견**해 멈춤(0문항). 총괄 판정: 공개 비교 채점 용도는 세 목적에 해당하지 않음(보수적) → 응시 안 함. 결함 ⑰(R1: 앱 내 약관을 읽기 전에 \"가\" 선언, 영향 0 — 응시 전 중단)."
       }
     },
     {
@@ -5968,7 +5968,7 @@
     "priority": "샘플 > AI응시 > 구매 > 문서도판 (한 행 한 값, 경로 전환 금지)",
     "respondent": "비이해관계 AI 에이전트(격리 확인·memory_check), 페르소나 문서 1개 sha 고정, 응답 원문 저장소 밖",
     "judge_blind_to_path": true,
-    "status": "응시 1건 진행(G15a) · 나머지 보류/국내 확인/문서도판 탐색",
+    "status": "해외 무료 응시 후보 전부 소진(약관 3·보류 2). 남은 길: 국내 11행 약관·본인인증 확인(국내 egress 필요) · 문서도판 4행 · 응시 0건",
     "tos_summary_2026-10-12T20:45Z": {
       "가(조건부)": [
         "G15a"
@@ -6058,13 +6058,57 @@
         "path": "E2-s (AI응시)",
         "sent": "6109538",
         "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7",
-        "status": "응시 중(회신 대기)"
+        "status": "종료 — 약관(목적 제한)으로 응시 0문항",
+        "closed": "2026-10-12T21:50Z",
+        "respondent_report": "6112605/6112724"
       }
     ],
     "purchase_decision": {
       "at": "2026-10-12T20:50Z",
       "decision": "구매(E2-p) 전면 미실행 — 비용 0 원칙",
       "by": "대표(원문: \"구매 승인은 하지 않을게요. 그런 비용이 발생하지 않는 선에서 우선 진행\")"
+    },
+    "tos_summary_2026-10-12T21:50Z": {
+      "가": [],
+      "대안 없음(약관)": [
+        "G01",
+        "G12",
+        "G15a"
+      ],
+      "대안 없음(B2B)": [
+        "E01",
+        "E02",
+        "E11",
+        "E12"
+      ],
+      "구매 미실행(대표 결정)": [
+        "G11",
+        "G13",
+        "K18"
+      ],
+      "보류(약관 미확인)": [
+        "G03",
+        "K20"
+      ],
+      "국내 확인 필요": [
+        "K01",
+        "K01a",
+        "K08",
+        "K09",
+        "K10",
+        "K11",
+        "K12",
+        "K02",
+        "K13",
+        "K14",
+        "K15"
+      ],
+      "문서도판 탐색": [
+        "G06",
+        "G08",
+        "K16",
+        "K19"
+      ]
     }
   }
 }
