@@ -4244,7 +4244,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             // [PR-카피압축 2026-06-15] 2단 구조: 압축 헤드라인(위·크게) + 고유성 디테일(아래·작게)
             //   디테일(missionDetail)은 응답 기반 분야·기준·동기·가치2 종합 → 고유성 보존 노출.
             //   '🔍 …도출' 근거 문구는 헤드라인 반복이 아니므로 제외(footer로만).
-            if (mSub && mSub.indexOf("🔍") === -1) m.appendChild(el("div", { cls:"mv-subline", text: _mvWrap2(mSub) }));
+            // [mv-headline-only 2026-10-12 대표 지시] 「기존 사명과 비전 문구만」 — 부연 설명(서브라인)은 보여 주지 않는다. 저장값은 그대로.
             if (c.diaryMission) {
               m.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_mission_label', "📓 다이어리 본문") }));
               m.appendChild(el("div", { cls:"mv-diary", text: c.diaryMission }));
@@ -4260,7 +4260,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (hasVisionTier) {
             if (c.visionHeadline) v.appendChild(el("div", { cls:"mv-headline", text: _mvWrap2(c.visionHeadline) }));
             // [PR-카피압축 2026-06-15] 2단 구조: 압축 헤드라인(위·크게) + 고유성 디테일(아래·작게)
-            if (vSub && vSub.indexOf("🔍") === -1) v.appendChild(el("div", { cls:"mv-subline", text: _mvWrap2(vSub) }));
             if (c.diaryVision) {
               v.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_vision_label', "📓 10년 뒤 회상 (Diary)") }));
               v.appendChild(el("div", { cls:"mv-diary", text: c.diaryVision }));
@@ -6457,7 +6456,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  h+=\'</div>\';}',
 'h+=\'</div>\';',
 'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
-'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="mv-card mv-card--mission"><div class="mv-tag">사명</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.missionHeadline)))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(mvw(scrub(DATA.missionVision.missionSubline)))+\'</p></div><div class="mv-card mv-card--vision"><div class="mv-tag">비전</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.visionHeadline)))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(mvw(scrub(DATA.missionVision.visionSubline)))+\'</p></div>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
+'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="mv-card mv-card--mission"><div class="mv-tag">사명</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.missionHeadline)))+\'</p></div><div class="mv-card mv-card--vision"><div class="mv-tag">비전</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.visionHeadline)))+\'</p></div>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
 'var ep=DATA.executionProfile;',
 'var _cyc=(function(){var x=DATA.executionProfile&&DATA.executionProfile.cycle;if(!x||!x.steps||!x.steps.length)return null;var st=[];for(var i=0;i<x.steps.length;i++){var v=x.steps[i]||{};var a=scrub(String(v.action||"").trim());if(!a)continue;st.push({order:(v.order||(i+1)),action:a,doneWhen:scrub(String(v.doneWhen||"").trim())});}if(st.length<2)return null;var nx=null;if(x.next&&x.next.action){nx={action:scrub(String(x.next.action).trim()),doneWhen:scrub(String(x.next.doneWhen||"").trim()),minutes:(x.next.minutes||0)};}return {steps:st,next:nx,isEn:!!x.isEn};})();',
 'var _cycHtml=(function(){if(!_cyc)return "";var en=_cyc.isEn;var n=_cyc.steps.length;',
