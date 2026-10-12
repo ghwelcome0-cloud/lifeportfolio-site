@@ -12,7 +12,7 @@ const cert=(src.match(/'function mvCert\(\)[\s\S]*?\';\}',/)||[''])[0];
 ok(cert.length>0,'mvCert defined');
 const words=cert.replace(/<[^>]+>/g,' ').match(/[가-힣]+/g)||[];
 ok(words.every(w=>['사명','비전','님의','사명과','인생포트폴리오'].includes(w)),'certificate adds no explanation words: '+words.join(','));
-ok(/y>=2020/.test(src)&&/getFullYear\(\)>=2020/.test(src),'placeholder dates (1970 …) are never printed');
+ok(!/mvDate|mvc__sig[^']*<small>/.test(src),'certificate footer is 「인생포트폴리오」 only — no date (대표 2026-10-12)');
 ok(/\.book\.lb-mobile \.mvc\{/.test(src)&&/\.mvc__seg\{display:block;text-wrap:balance;\}/.test(src),'certificate has mobile rules and balanced lines');
 ok(/cls:"mv-headline", text: _mvWrap2\(mHead\)/.test(src)&&/cls:"mv-headline", text: _mvWrap2\(c\.visionHeadline\)/.test(src),'screen keeps both headlines');
 const M=require('./_mv-headline-approved.cjs');const before='<p class="mv-headline">A</p><div class="mv-sep"></div><p class="mv-subline">B</p>';
