@@ -11,7 +11,9 @@
 **E3(공개 문서) 수집 규칙**
 - 값은 `{value, source_url, collected_at, note}` 묶음. **source_url 없는 값은 표에 올리지 않는다.** 명부 값이 시트 값과 다르면 시트(출처 있음)가 우선(빌더 2판 결함에서 배움).
 - 핵심 7칸(provider·access·price_band·price_transparency·appeal·limits·korean_support)으로 진척을 센다.
-- 가격이 JS로만 렌더되는 사이트(Strengths Profile·15Five·Full Focus·BestSelf·mbtionline·SDS)는 일반 크롤·JS 렌더 크롤 모두 본문에 숫자가 안 나옴 → "미측정 + 사유" 기록. 제3자(Truity 등) 인용가는 출처 규칙상 **미채택**.
+- 가격이 JS로만 렌더되는 사이트는 서버 크롤·JS 렌더 크롤 모두 본문에 숫자가 안 나올 수 있다 → **로컬 headless chrome으로 직접 렌더**(`tools/render-price.cjs <targets.json> <out.json>`, puppeteer-core + 저장소 node_modules에서 실행)하면 Strengths Profile(£15/£40/£70)·15Five($4/$11/$16)·BestSelf($36)는 잡힌다. mbtionline·Full Focus·SDS·인싸이트·가이던스는 렌더해도 본문에 가격 없음(결제 단계/로그인 뒤). 공식 PDF 가격표(어세스타)는 `summarize_large_document`로 원문 전사. 제3자(Truity 등) 인용가는 **미채택**.
+- **"비공개" 표기 규약(2026-10-12):** A8.1이 "문의/숨김"으로 공식 출처에서 확인된 행은 price_band에 "비공개"(출처=A8.1 근거 URL). "미측정"(근거 없음)과 구분. 점수 아님(A8.2 display_only). 표 범례에 명시.
+- **E1 측정의 egress 한계:** 샌드박스(해외 IP)에서 고용24(work24.go.kr)·어세스타(career4u.net)는 연결 시간 초과 → 국내 egress(로컬 에이전트)로 별도 run. 재현성 위해 같은 run에 append하지 않고 run 번호를 나눈다(팀 확인 중).
 - 효율: `gsk batch_crawl_url_and_answer`에 행당 2~3 URL × 7문항(원문 인용 요구) → 38 URL을 25초에 처리. 결과 파싱은 `## [url]` 블록 + `### Question:` 단위.
 
 **E2 분모(결박 §21)**
