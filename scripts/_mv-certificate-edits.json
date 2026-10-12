@@ -1,5 +1,13 @@
 [
  [
+  "// [mv-certificate 2026-10-12 대표 지시] 「상장 수준으로 … 리포트의 결을 유지하면서」 — 사명·비전 문구만, 새 설명 문장 없음.\n'function mvCert(){var mv=DATA.missionVision||{},nm=scrub(String((DATA.profile&&DATA.profile.name)||\"\").trim());',\n",
+  "// [mv-certificate 2026-10-12 대표 지시] 「상장 수준으로 … 리포트의 결을 유지하면서」 — 사명·비전 문구만, 새 설명 문장 없음.\n'function mvDate(v){if(v==null||v===\"\")return \"\";var d=(typeof v===\"number\"||/^\\\\d{10,13}$/.test(String(v)))?new Date(+v):null;if(d&&!isNaN(d)&&d.getFullYear()>=2020)return d.getFullYear()+\". \"+(d.getMonth()+1)+\". \"+d.getDate()+\".\";var t=String(v).trim();var y=+(t.match(/^(\\\\d{4})[.\\\\-\\\\/년]/)||[])[1];return y>=2020?t.slice(0,16):\"\";}',\n'function mvCert(){var mv=DATA.missionVision||{},nm=scrub(String((DATA.profile&&DATA.profile.name)||\"\").trim()),dt=mvDate(DATA.profile&&DATA.profile.submittedAt);',\n"
+ ],
+ [
+  "_sig\"><b>인생포트폴리오</b></span></footer></di",
+  "_sig\"><b>인생포트폴리오</b>\\'+(dt?\\'<small>\\'+esc(dt)+\\'</small>\\':\"\")+\\'</span></footer></di"
+ ],
+ [
   "        '.mvc__c--bl{bottom:6mm;left:6mm;border-bottom-width:.7mm;border-left-width:.7mm;}.mvc__c--br{bottom:6mm;right:6mm;border-bottom-width:.7mm;border-right-width:.7mm;}',\n        '.mvc__hd{position:relative;z-index:1;}.mvc__emb{position:relative;display:flex;align-items:center;justify-content:center;width:24mm;height:24mm;margin:0 auto 3.6mm;border-radius:50%;background:radial-gradient(circle at 50% 38%,#FFFDF6 0%,#FBF3E1 62%,#F3E6C8 100%);border:.55mm solid var(--bp-gold);box-shadow:0 0 0 1mm #FFFDF8,0 0 0 1.25mm rgba(176,140,83,.45),0 1.5mm 4mm rgba(122,92,40,.12);}',\n        '.mvc__emb::before{content:\"\";position:absolute;inset:1.3mm;border-radius:50%;border:.25mm solid rgba(176,140,83,.55);}',\n        '.mvc__emb img{position:relative;display:block;width:68%;height:68%;object-fit:contain;}',\n",
   "        '.mvc__c--bl{bottom:6mm;left:6mm;border-bottom-width:.7mm;border-left-width:.7mm;}.mvc__c--br{bottom:6mm;right:6mm;border-bottom-width:.7mm;border-right-width:.7mm;}',\n        '.mvc__hd{position:relative;z-index:1;}.mvc__emb{display:block;width:17mm;height:17mm;object-fit:contain;margin:0 auto 3mm;}',\n"
  ],
