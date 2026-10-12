@@ -149,7 +149,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -204,17 +204,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 16,
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 4,
+   "A2": 4,
+   "A3": 4,
+   "A4": 2,
+   "A5": 2,
    "packet_sha256": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
    "packet_files": {
     "sample.pdf": "62298a114c69ce4b25ecf01aeae0f9fe09698920c61bfb1cffae13c5b8ab5ea9",
@@ -334,7 +355,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -389,17 +410,41 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 14,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked A",
+      "third_reason": "처음 보이는 내용 쪽(2쪽 'Introduction to DiSC')은 일반 소개와 4유형 형용사뿐이고 'Your DiSC Style: Si'는 3쪽에 처음 나오므로, 1쪽만 보는 A1 기준으로는 L2 '흔적만'이 맞습니다."
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": [
+     "A1"
+    ]
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 4,
+   "A3": 4,
+   "A4": 2,
+   "A5": 2,
    "packet_sha256": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
    "packet_files": {
     "sample.pdf": "bb73489b45a111b624d2ace4d63947899e371ea55cbe06022d8f1bbc36793688",
@@ -508,7 +553,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -563,17 +608,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 11,
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 4,
+   "A2": 2,
+   "A3": 1,
+   "A4": 1,
+   "A5": 3,
    "packet_sha256": "094e232b32879f391c697967d611a5cc3f015232f19d10220f6938ae199babcc",
    "packet_files": {
     "sample.pdf": "eef488d5a3bf0a6559ff1080d6cfeb509a88cd31c2e618fb5a3c0656c59d0371",
@@ -915,7 +981,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -970,17 +1036,41 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 14,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked B",
+      "third_reason": "A1은 '처음 1페이지만' 보고 판단하는 축인데, 처음 보이는 내용 쪽(2쪽)은 검사 소개와 척도 정의표뿐이라 사람에 대한 정보는 'Mr.(가림)' 이름 자리 정도의 흔적만 있고, X가 근거로 든 요약은 3쪽에 있어 L2 '흔적만'이 맞습니다."
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": [
+     "A1"
+    ]
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 4,
+   "A3": 2,
+   "A4": 2,
+   "A5": 4,
    "packet_sha256": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
    "packet_files": {
     "sample.pdf": "baab65120368275e10ea3d6511ee2ac3040aa0603a7fd956c56d1ebdf863d8c7",
@@ -1149,7 +1239,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -1204,17 +1294,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 11,
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 4,
+   "A2": 3,
+   "A3": 2,
+   "A4": 1,
+   "A5": 1,
    "packet_sha256": "81a4abf40a15f068fb6ccfa102d511aa4365233470deef31f7103d8957994ee6",
    "packet_files": {
     "sample.pdf": "203f1e1c9e9c15174c7ce3d892fcdbda6d937ac58c429f292b504e8ecea1b203",
@@ -1680,7 +1791,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -1735,17 +1846,41 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 17,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked B",
+      "third_reason": "처음 보이는 내용 쪽(2쪽 'How the Strong can help you')은 검사 소개와 리포트 구성 안내뿐이고 'Your highest themes: Social, Artistic(SA)'는 3쪽에 처음 나오므로, 1쪽만 보는 A1 기준으로는 L2가 맞습니다."
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": [
+     "A1"
+    ]
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 4,
+   "A3": 4,
+   "A4": 3,
+   "A5": 4,
    "packet_sha256": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
    "packet_files": {
     "sample.pdf": "6d74432073d28f1484e4d739579e19e76c15a7a090ca3dbe6d1bceb85b98eef6",
@@ -2652,7 +2787,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -2707,17 +2842,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 14,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 3,
+   "A4": 2,
+   "A5": 4,
    "packet_sha256": "91352576a76890f5cb7551e55214783922beca96c00b7a66766c865be42417dd",
    "packet_files": {
     "sample.pdf": "dd662f59460b70f4bf36edb0d25338e210be6d480dbe411faae6b17d47bed0c7",
@@ -2810,7 +2966,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -2865,17 +3021,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 13,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 3,
+   "A4": 3,
+   "A5": 2,
    "packet_sha256": "477f0d940d86e0d9bf4521a71a982ad38c55435f478b278f451e422cde0d5f6f",
    "packet_files": {
     "sample.pdf": "5c59acbbfbb7060a2f3c798d25a61fd40e277b063d462dbfc1c53c960746cd55",
@@ -3782,7 +3959,7 @@
      }
     }
    },
-   "status": "judged",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -3837,17 +4014,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 8,
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:01:02Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 3,
+   "A2": 1,
+   "A3": 2,
+   "A4": 1,
+   "A5": 1,
    "packet_sha256": "612da4dc829ed2ab3e12bd7b948788ab42736ba9d4ba3b6a7f65a816ebcd4490",
    "packet_files": {
     "sample.pdf": "f074683aaa2179d53ee80a3562e0d636eeed13ab297d254b690476790ad6a561",
@@ -4710,7 +4908,7 @@
     "actor_id": "agent_vebhkh44mp67",
     "dm_channel_id": "ch_dm_eeb4c0b036bc17aa99b5",
     "display_name": "문서 판정 보조",
-    "status": "active",
+    "status": "done",
     "registered_at": "2026-10-12T07:52:07Z",
     "third_agent_creation": {
      "created_by": "대표(이해관계자)",
@@ -4775,7 +4973,9 @@
       "attachment_sha256_sent": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
       "attachment_sha256_received_redownload": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
       "bytes_match": true,
-      "reply_msg_id": null
+      "reply_msg_id": "6077770",
+      "answered_at": "2026-10-12T07:57:04Z",
+      "first_line_declaration_ok": true
      },
      "S-da397f": {
       "sent_msg_id": "6077579",
@@ -4786,7 +4986,9 @@
       "attachment_sha256_sent": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
       "attachment_sha256_received_redownload": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
       "bytes_match": true,
-      "reply_msg_id": null
+      "reply_msg_id": "6077771",
+      "answered_at": "2026-10-12T07:57:06Z",
+      "first_line_declaration_ok": true
      },
      "S-f7229a": {
       "sent_msg_id": "6077590",
@@ -4797,8 +4999,24 @@
       "attachment_sha256_sent": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
       "attachment_sha256_received_redownload": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
       "bytes_match": true,
-      "reply_msg_id": null
+      "reply_msg_id": "6077775",
+      "answered_at": "2026-10-12T07:57:07Z",
+      "first_line_declaration_ok": true
      }
+    },
+    "post_memory_check": {
+     "msg_id": "6077909",
+     "reply_msg_id": "6077922",
+     "q2_wrote_notes": "아니오(메모 폴더 변경 기록 확인, 바뀐 파일 없음)",
+     "ruling": "valid",
+     "checked_at": "2026-10-12T08:05:00Z"
+    },
+    "bio_post_check": {
+     "listing_api_truncated_at": 300,
+     "prefix_300_matches_file": true,
+     "full_sha_source": "Genny 회신 대기(6077935)",
+     "file_sha_with_newline": "a85bacc3a96cd20b071234c37052e923cc0e8be69ed30ea2e4a9b55cda940c27",
+     "file_sha_no_newline": "018ca9e539844148…"
     }
    }
   ],
@@ -4820,7 +5038,7 @@
    ],
    "criterion": "Q90(1·2회차 전 역할, task #47·#55·#56·#57, holdout, X1~X4) 관여 0, #lp-quality-gate 비멤버"
   },
-  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록. judge1은 원 후보(Brand Strategist) 무효 후 교체(사유: 자사 브랜드 검토 기억). 교체 judge1은 데스크톱 관리 역할의 AI 에이전트, judge2는 디자인 역할 — 둘 다 분야 전문가 아님. 제3자(SEO Specialist)도 자사 SEO 담당으로 자진 신고하여 교체.",
+  "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(데스크톱 관리 역할·디자인 역할) + 제3자 1인(이 평가를 위해 새로 만든 '문서 판정 보조' AI, 분야 전문가 아님) — 인간 전문가 판정 아님. 원 judge1(브랜드 역할)은 사후 memory_check Q1 '예'(자사 관련 메모)로 무효 처리 후 교체; 원 제3자(SEO 역할)는 자사 이해관계 자진 신고로 교체. 제3자 생성자는 이해관계자(대표)이며 플랫폼 도우미(Genny)가 대표 승인 하에 생성, 설명문 원문 공개(설명문에 판정 기준 없음, RUBRIC만 적용). 제3자와 judge1은 같은 모델(Claude Opus 5.5, 자기신고·대표 선택) — 같은 모델 답에 끌릴 가능성 배제 못 함. 제3자가 판정한 3축(A1×3)에서 judge1 답을 고른 수: 3/3(사실만, 3건이라 검정 불가). 런타임이 세션 시작 시 자기 메모를 자동 로드하며 내용 무관은 자기선언(검증 수단 없음). 모델 동일성 미확인 → 일치율은 기술 통계. 가림 결과 시각 확인은 AI 수행(사람 아님). 원 구성 judge 간 차이≥2 축 0/45 → 교체 구성 3/45(사실만).",
   "third_stage": {
    "prepared_at": "2026-10-12T06:29:38Z",
    "axes_needing_third": 3,
@@ -4829,7 +5047,7 @@
     "S-da397f",
     "S-f7229a"
    ],
-   "status": "A_approved_by_owner_awaiting_agent_creation",
+   "status": "A_done_2026-10-12",
    "note": "unreadable_pages [1]은 표지(전면 가림) — 가림 결과이지 읽기 실패 아님.",
    "decision_bound_at": "2026-10-12T06:34:20Z",
    "bound_rule": "차이≥2 축 3개는 새 에이전트 제3자(A)로 판정. (A)가 2026-10-14 23:59 UTC까지 성립하지 않으면(대표 미승인·생성 불가) (B)를 최종으로 함 — 해당 3샘플의 3축 + 샘플 합계·A축 집계 \"미확정(judge 간 차이≥2, 제3자 부재)\" 공개. 어떤 경우에도 레벨을 본 뒤 A/B를 바꾸지 않음. (C) 낮은 값 채택은 규칙 변경이라 불가. (TL 6069927·Method 6069939·Peer 6069948/6069975 일치)",
@@ -4859,7 +5077,22 @@
     ],
     "rule": "제3자가 3축에서 고른 답안이 judge1(Opus 5.5)의 것인지 judge2의 것인지를 G21과 공개 표 해당 3칸 각주에 축별로 공개함. 3건이라 편향 검정은 불가하며, 결과를 보고 판정이나 제3자를 바꾸지 않음.",
     "public_limitation_line": "제3자와 judge1이 같은 모델(자기신고·대표 선택) — 같은 모델 답에 끌릴 가능성 배제 못 함. 제3자가 judge1 답을 고른 칸 수를 숫자로 함께 공개."
-   }
+   },
+   "picked_judge_facts": {
+    "S-9d99bb:A1": {
+     "picked_label": "Y",
+     "picked_judge": "judge1"
+    },
+    "S-da397f:A1": {
+     "picked_label": "X",
+     "picked_judge": "judge1"
+    },
+    "S-f7229a:A1": {
+     "picked_label": "Y",
+     "picked_judge": "judge1"
+    }
+   },
+   "picked_judge1_count": 3
   },
   "memory_check": {
    "bound_at": "2026-10-12T05:52:55Z",
@@ -4945,6 +5178,15 @@
     "result": "제외 — 제품 커스텀 에이전트, 자사 마케팅 영상 파이프라인 채널 멤버"
    }
   ],
-  "third_stage_plan": "제3자는 차이≥2 축이 생길 때만 필요. 기존 42명 중 결박 기준(자사 작업 0·검사 서비스 메모 0)을 만족하는 후보 없음. 새 judge1 답안이 모두 오면 차이≥2 축 수를 레벨 비공개 파일로만 계산 → 0이면 제3자 불필요(규칙상 낮은 값), ≥1이면 대표 승인 받아 새 에이전트 생성 후 4단계+memory_check+rc2."
+  "third_stage_plan": "제3자는 차이≥2 축이 생길 때만 필요. 기존 42명 중 결박 기준(자사 작업 0·검사 서비스 메모 0)을 만족하는 후보 없음. 새 judge1 답안이 모두 오면 차이≥2 축 수를 레벨 비공개 파일로만 계산 → 0이면 제3자 불필요(규칙상 낮은 값), ≥1이면 대표 승인 받아 새 에이전트 생성 후 4단계+memory_check+rc2.",
+  "aggregation": {
+   "file_sha256": "91010f5b9a99e61ffd0aa4cc605c205d10addf46dba76ff2eca64798bba6c38b",
+   "aggregated_at": "2026-10-12T07:59:25Z",
+   "n_samples": 9,
+   "n_third_used": 3,
+   "n_unresolved": 0,
+   "levels_first_read_by_coordinator_at": "2026-10-12T08:01:02Z",
+   "note": "레벨 값은 제3자 3축 완료 후 처음 열람·전사(결박 순서 준수)"
+  }
  }
 }
