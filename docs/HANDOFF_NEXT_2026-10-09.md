@@ -221,3 +221,12 @@
 - 썸네일에 가격이나 "무료"를 쓰지 않습니다.
 - 숏츠는 첫 1~2초가 승부입니다. 설명형 숏츠는 만들지 않습니다.
 - 자세한 내용은 `docs/marketing/youtube/80_EP02_PRODUCTION_RECORD.md`에 있습니다.
+
+## 2026-10-12 · #392 다이어리 × 12주 자산화 퀘스트 + 내 자산 카드 (배포 완료)
+- 승인: 「지도는 프로그램, 카드는 다이어리에서 자란다 + 마지막 한 줄은 내 손으로」 · approval chat-user-sha256:9249f188d2ac0a7d788cb4dcc72c5d41
+- Functions diary 38191813450 success → Hosting 38192010817 success (manifest e3442b10…). main cb59492.
+- 서버: seed.program.quest(고객 문장만), addLog.week 1–12, saveCard → diary/{uid}/cards/{sid}. 저장 규칙 변경 없음(루트 거부, 401 확인).
+- 화면: 다이어리 12주 시트·주간 쪽 칸·오늘 해 봤어요 주차 선택·카드, ?open=quest; program III 「다이어리에서 이어 쓰기」.
+- 시험: 에뮬레이터 85/85, diary-content 30, 2000명 94,000 checks, 390/768/1280 넘침·오류 0, book script 구문 가드 추가.
+- 계획 메모: docs/자산화맞춤실행프로그램_전환계획 §7(소그룹·멘토·도우미 시리즈·슈퍼 에이전트 이어받기) — 구현 전 대표 확인.
+- 남은 것: 실계정 실사용 확인(대표 계정), 영어판, 서비스 연결(보류).
