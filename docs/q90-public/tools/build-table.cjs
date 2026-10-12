@@ -39,7 +39,7 @@ const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A
 const e1n = Object.values(e1).filter(v => !v.own && (v.a61 || v.a71)).length, nonOwn = roster.rows.filter(r => !r.retired && !r.own).length;
 let md = `# 공개 비교표 v2 — ${path.basename(RUN)}\n\n자: rubric ${rubric.version} (sha256 ${sha(RUBRIC).slice(0, 16)}…) · 명부 ${roster.version} (sha256 ${sha(ROSTER).slice(0, 16)}…) · 생성 ${new Date().toISOString()}\n\n`;
 md += `E1 실측 분모: ${e1n}/${nonOwn}행 (나머지 행은 E1 미측정). **자사(OWN) 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.**\n\n`;
-md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
+md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
 md += '| ' + h.join(' | ') + ' |\n|' + h.map(() => '---').join('|') + '|\n';
 for (const r of rows) md += `| ${r.id} | ${r.own ? '**' + r.name + '** (자사)' : r.name} | ${r.group} | ${r.appeal || '_(채움 예정)_'} | ${r.A1} | ${r.A2} | ${r.A3} | ${r.A4} | ${r.A5} | ${r.A6} | ${r.A7} | ${r.A8} | ${r.price_band} | ${r.time_min ?? '—'} | ${r.limits || '_(채움 예정)_'} |\n`;
 if (thirdCells.length) md += `\n‡ judge 2인 차이≥2 → 제3자가 두 답 중 하나를 고른 칸(${thirdCells.length}칸: ${thirdCells.join(' · ')}). 제3자와 judge1은 같은 모델(Claude Opus 5.5, 자기신고·대표 선택). ${thirdCells.length}칸 모두 judge1 답 선택 = 모두 낮은 쪽 값 선택(사실만, 검정 불가, 결과 보고 판정 안 바꿈 — 결과 전 결박).\n`;
