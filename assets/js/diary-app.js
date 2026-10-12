@@ -277,7 +277,7 @@
   };
   R.annual = function (p) { var pr = seed().program || {};
     return '<div class="pg">' + head("PART 2 · ANNUAL VISION", "연간 비전", "1년의 종착지를 먼저 그려 봅니다.") +
-      seedCard("리포트의 비전", seed().vision) + seedCard("실행 프로그램 · 1년 뒤의 모습", pr.year1) + seedCard("실행 프로그램 · 분기 테마", pr.theme) + fld(p.key, "word") + fld(p.key, "dec31") + "</div>"; };
+      seedCard("리포트의 비전", seed().vision) + seedCard("자산화 실행 · 1년 뒤의 모습", pr.year1) + seedCard("자산화 실행 · 분기 테마", pr.theme) + fld(p.key, "word") + fld(p.key, "dec31") + "</div>"; };
   R.ninety = function (p) { var g = (seed().program || {}).month3 || [];
     return '<div class="pg">' + head("PART 2 · 90 DAYS", "90일 마일스톤", "1년을 네 분기로 나누고, 분기 끝에 손에 남길 결과 하나씩을 적어요. 열두 달은 멀어도 90일은 손에 잡혀요.") +
       (g.length ? '<div class="seed"><p class="seed-k">실행 프로그램이 제안한 3개월 목표</p><ul style="margin:4px 0 0;padding-left:18px;font-size:14px;line-height:1.6">' + g.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" : "") +
@@ -303,7 +303,7 @@
   function weekAction(i) {
     var pr = seed().program; if (!pr) return null;
     var w = pr.weeks || [];
-    if (i <= w.length) return { label: "맞춤 실행 프로그램 · " + i + "주차 활동", title: w[i - 1].title, action: w[i - 1].action, done: w[i - 1].doneWhen };
+    if (i <= w.length) return { label: "자산화 실행 · " + i + "주차 활동", title: w[i - 1].title, action: w[i - 1].action, done: w[i - 1].doneWhen };
     if (pr.focus) return { label: "이번 주에도 이어 갈 활동", title: "", action: pr.focus.action, done: pr.focus.doneWhen, artifact: pr.focus.artifact };
     return null;
   }
