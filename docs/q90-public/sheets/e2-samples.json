@@ -149,7 +149,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -229,7 +229,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "341a4c24dcc5ce8ec414332dfb7152130d247439c3136d7fdf01d93411dfa356",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "610dcc2f336b2b0cce916a8f53720fd2f23d5e3ba0c8de215bf9702ee8660d5d",
+    "third_needed_axes_n": 0
    }
   },
   {
@@ -331,7 +334,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -411,7 +414,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "03e8959a13db7827fdb9a70379d4b666780b4a911fd2a5c1747ebe4da7e29c59",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "a64e6a96e19eca6567875b01fdc689e0f6f4308e9a911e040d58e95744a818a2",
+    "third_needed_axes_n": 1
    }
   },
   {
@@ -502,7 +508,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -582,7 +588,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "03e19c0baf42ee167bd2a0ca4bf7ce9cf20af07fb592c6d3f16d3d3fbdaa93ec",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "eea55568aebc0fd1a5d56f953ac81afc75e07a6ed1fa37a423273a415f5a6166",
+    "third_needed_axes_n": 0
    }
   },
   {
@@ -906,7 +915,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -986,7 +995,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "93e2ce438d291112ad169dd801853de8714b0c8cf386b701a0fde8aa17174835",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "0466a268b05155c466b093c8a5b05f8bb72ad8a5a1ced6aefbb63ca1930a6c18",
+    "third_needed_axes_n": 1
    }
   },
   {
@@ -1137,7 +1149,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -1217,7 +1229,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "0124b32ec939b6f4fd8d38f97affa398c3354747f0e8872a6b086370d93b9940",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "0cdc1678b876dfac70b4f05adc67b1bd6ce075f5408ff6381fa0a0fbe3bd0a79",
+    "third_needed_axes_n": 0
    }
   },
   {
@@ -1665,7 +1680,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -1745,7 +1760,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "a107277db7838a3045eb1f3ff596808dad8a3a62d125b42fd50a45ece138df4d",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "16b6453b5dcd4330ffba6ebfa0556ced40d6cd6f5b39f29917db0b04488254bf",
+    "third_needed_axes_n": 1
    }
   },
   {
@@ -2634,7 +2652,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -2714,7 +2732,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "bbea59ea35136bbbf7ac123cb83390be935798b6a153498d223188e151ad859a",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "ae3726aef81b27cfd121b5687e6fa832a101743d4912abcd203e7039bdf6aec2",
+    "third_needed_axes_n": 0
    }
   },
   {
@@ -2789,7 +2810,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -2869,7 +2890,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "02c388915cb39d2f6e01c784933d453e24384a7de0224eecad9e259b285d0432",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "ef703111d1d2a5cb88726b0a2bfe2e50c8974223311a94d6c2dbb0b4e65ab85f",
+    "third_needed_axes_n": 0
    }
   },
   {
@@ -3758,7 +3782,7 @@
      }
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -3838,7 +3862,10 @@
     "aggregated": false,
     "judge1_invalidated": true,
     "judge1_answer_sha256_invalid": "bfd73c935923368de37d128bfe23ee86fe76ae6a5003e50d51290193fbcd31b2",
-    "note": "judge1 무효(memory_check) → judge2 답안 유지, 새 judge1 재채점 대기"
+    "note": "judge1(교체) + judge2 답안 보관. 제3자 필요 축은 n만 기록(축 이름·레벨은 파일에만)",
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge1_answer_sha256": "360a672c8260d1da614209dc114f316f025ecc4ab1e2da6f5f57c642c6cceda8",
+    "third_needed_axes_n": 0
    }
   },
   {
@@ -4589,14 +4616,93 @@
       "attachment_sha256_sent": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
       "attachment_sha256_received_redownload": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6068190",
+      "answer_sha256": "610dcc2f336b2b0cce916a8f53720fd2f23d5e3ba0c8de215bf9702ee8660d5d",
+      "answered_at": "2026-10-12T06:17:28Z",
+      "first_line_declaration_ok": true
+     },
+     "S-5e149f": {
+      "sent_msg_id": "6068235",
+      "sent_at": "2026-10-12T06:17:35Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/sxsudMA0",
+      "attachment_sha256_sent": "094e232b32879f391c697967d611a5cc3f015232f19d10220f6938ae199babcc",
+      "attachment_sha256_received_redownload": "094e232b32879f391c697967d611a5cc3f015232f19d10220f6938ae199babcc",
+      "bytes_match": true,
+      "reply_msg_id": "6068302",
+      "answer_sha256": "eea55568aebc0fd1a5d56f953ac81afc75e07a6ed1fa37a423273a415f5a6166",
+      "answered_at": "2026-10-12T06:19:07Z",
+      "first_line_declaration_ok": true
+     },
+     "S-927ba4": {
+      "sent_msg_id": "6068456",
+      "sent_at": "2026-10-12T06:19:22Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/MfmctWGS",
+      "attachment_sha256_sent": "612da4dc829ed2ab3e12bd7b948788ab42736ba9d4ba3b6a7f65a816ebcd4490",
+      "attachment_sha256_received_redownload": "612da4dc829ed2ab3e12bd7b948788ab42736ba9d4ba3b6a7f65a816ebcd4490",
+      "bytes_match": true,
+      "reply_msg_id": "6068524",
+      "answer_sha256": "360a672c8260d1da614209dc114f316f025ecc4ab1e2da6f5f57c642c6cceda8",
+      "answered_at": "2026-10-12T06:20:47Z",
+      "first_line_declaration_ok": true
+     },
+     "S-9d99bb": {
+      "sent_msg_id": "6068643",
+      "sent_at": "2026-10-12T06:21:01Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/0WUuaG2M",
+      "attachment_sha256_sent": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
+      "attachment_sha256_received_redownload": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
+      "bytes_match": true,
+      "reply_msg_id": "6068738",
+      "answer_sha256": "0466a268b05155c466b093c8a5b05f8bb72ad8a5a1ced6aefbb63ca1930a6c18",
+      "answered_at": "2026-10-12T06:22:27Z",
+      "first_line_declaration_ok": true
+     },
+     "S-da397f": {
+      "sent_msg_id": "6068810",
+      "sent_at": "2026-10-12T06:22:41Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/pgiUwSFG",
+      "attachment_sha256_sent": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
+      "attachment_sha256_received_redownload": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
+      "bytes_match": true,
+      "reply_msg_id": "6068900",
+      "answer_sha256": "a64e6a96e19eca6567875b01fdc689e0f6f4308e9a911e040d58e95744a818a2",
+      "answered_at": "2026-10-12T06:24:08Z",
+      "first_line_declaration_ok": true
+     },
+     "S-e9e660": {
+      "sent_msg_id": "6068958",
+      "sent_at": "2026-10-12T06:24:18Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/SbzwRsA6",
+      "attachment_sha256_sent": "81a4abf40a15f068fb6ccfa102d511aa4365233470deef31f7103d8957994ee6",
+      "attachment_sha256_received_redownload": "81a4abf40a15f068fb6ccfa102d511aa4365233470deef31f7103d8957994ee6",
+      "bytes_match": true,
+      "reply_msg_id": "6069043",
+      "answer_sha256": "0cdc1678b876dfac70b4f05adc67b1bd6ce075f5408ff6381fa0a0fbe3bd0a79",
+      "answered_at": "2026-10-12T06:25:51Z",
+      "first_line_declaration_ok": true
+     },
+     "S-f7229a": {
+      "sent_msg_id": "6069125",
+      "sent_at": "2026-10-12T06:26:02Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/yGqTxblb",
+      "attachment_sha256_sent": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
+      "attachment_sha256_received_redownload": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
+      "bytes_match": true,
+      "reply_msg_id": "6069346",
+      "answer_sha256": "16b6453b5dcd4330ffba6ebfa0556ced40d6cd6f5b39f29917db0b04488254bf",
+      "answered_at": "2026-10-12T06:27:30Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
      "TL": 6067449,
      "Peer": 6067451,
      "Method": 6067470
+    },
+    "post_memory_check": {
+     "msg": 6069691,
+     "Q2": "아니오 — 메모·노트 미수정, 오늘 바뀐 메모 파일 0, 패킷 ID·채점 내용 파일 0",
+     "result": "유효"
     }
    }
   ],
@@ -4620,9 +4726,15 @@
   },
   "limitation": "E2 judge는 해당 분야 전문가가 아닌 AI 에이전트 2인(브랜드·디자인) + 제3자 1인(SEO), 인간 전문가 판정 아님. Q90 1회차 judge(법률·HR·회계)와 같은 구조. 실제 열람 이력 조회 수단 없음 → 자기선언으로 보완. 가림 결과의 시각 확인은 AI 어시스턴트가 수행(사람 확인 아님) — 대표 직접 확인 시 human_check에 기록. judge1은 원 후보(Brand Strategist) 무효 후 교체(사유: 자사 브랜드 검토 기억). 교체 judge1은 데스크톱 관리 역할의 AI 에이전트, judge2는 디자인 역할 — 둘 다 분야 전문가 아님. 제3자(SEO Specialist)도 자사 SEO 담당으로 자진 신고하여 교체.",
   "third_stage": {
-   "prepared_at": "2026-10-12T05:49:30Z",
-   "axes_needing_third": 0,
-   "note": "두 judge 전 축 차이≤1 → 제3자 개입 0. 규칙(diff≤1 → 낮은 값)으로 표 생성 단계에서 집계. 제3자(SEO Specialist)는 read_check만 수행, 채점 미참여."
+   "prepared_at": "2026-10-12T06:29:38Z",
+   "axes_needing_third": 3,
+   "samples_needing_third": [
+    "S-9d99bb",
+    "S-da397f",
+    "S-f7229a"
+   ],
+   "status": "blocked — 결박 기준 만족 후보 0명(42명 심사). 새 에이전트 생성은 대표 승인 필요.",
+   "note": "unreadable_pages [1]은 표지(전면 가림) — 가림 결과이지 읽기 실패 아님."
   },
   "memory_check": {
    "bound_at": "2026-10-12T05:52:55Z",
