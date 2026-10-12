@@ -3,7 +3,14 @@
  "roster_version": "v2.0",
  "generatedAt": "2026-10-12T02:18:24.742Z",
  "salt_sha256": "5516a97eae8a7825cc28f18f8b77c347b346cab929dc0e71c23264b33185a500",
- "salt_revealed": null,
+ "salt_revealed": {
+  "hex": "16c4a4458467edb8c1f47d91918d2759bdb6194a3945ad195781916d20f21daa5e72205c549870dfd8e34b044e06f826",
+  "bytes": 48,
+  "sha256_check": true,
+  "revealed_at": "2026-10-12T08:20:00Z",
+  "rule": "⑥ 채점 종료 후 공개 — 재계산: blind_id = \"S-\" + sha256(salt|id|roster.version)[0:6]",
+  "recompute_check": "40/40 blind_id 일치 — 정확한 식: \"S-\" + sha256(salt_bytes + \"|\" + id + \"|\" + roster.version)[0:6]"
+ },
  "blind_id_rule": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수, 총괄 보관, 채점 뒤 공개",
  "redaction_items": [
   "서비스명·회사명(명부 name·provider)",
@@ -5092,7 +5099,9 @@
      "picked_judge": "judge1"
     }
    },
-   "picked_judge1_count": 3
+   "picked_judge1_count": 3,
+   "cause_candidate_next_round": "제3자 이유 3건이 동일: 표지(1쪽) 전면 가림 → 처음 내용이 보이는 쪽은 2쪽, 사람 정보는 3쪽에 처음 등장. 차이≥2는 잡음이 아니라(추정) 가림 패킷에서 A1 \"첫 페이지\"를 어느 쪽으로 볼지 RUBRIC이 정하지 않아 생긴 해석 차이. 이번 판정은 바꾸지 않음. 다음 회차 RUBRIC 사전 고정: \"A1 = 가림 표지 다음의 첫 내용 쪽\".",
+   "picked_values_fact": "제3자가 고른 3칸 값은 모두 낮은 쪽(L2) — \"judge1 답 3/3\" = \"낮은 값 3/3\"(사실만)"
   },
   "memory_check": {
    "bound_at": "2026-10-12T05:52:55Z",
@@ -5187,6 +5196,12 @@
    "n_unresolved": 0,
    "levels_first_read_by_coordinator_at": "2026-10-12T08:01:02Z",
    "note": "레벨 값은 제3자 3축 완료 후 처음 열람·전사(결박 순서 준수)"
+  },
+  "publication_fact": {
+   "note": "E2 레벨(45축)이 G19 검토 전에 공개 저장소 브랜치 q90-public/e3-e2-batch2에 push됨 — \"G19 전 미게시\"는 사실이 아님. 정정: \"G19 전 확정본 아님(초안 상태로 공개 브랜치에 있음)\". 되돌리지 않음(기록 보존).",
+   "first_push_utc": "2026-10-12T08:01Z",
+   "commit": "fdc0de1",
+   "defect": "⑭"
   }
  }
 }
