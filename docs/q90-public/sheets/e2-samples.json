@@ -1,7 +1,7 @@
 {
  "sheet": "E2 공개 샘플 리포트 블라인드 채점",
  "roster_version": "v2.0",
- "generatedAt": "2026-10-12T01:24:12.127Z",
+ "generatedAt": "2026-10-12T01:26:26.397Z",
  "salt_sha256": "5516a97eae8a7825cc28f18f8b77c347b346cab929dc0e71c23264b33185a500",
  "salt_revealed": null,
  "blind_id_rule": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수, 총괄 보관, 채점 뒤 공개",
@@ -391,7 +391,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ineligible",
    "judge1": {
     "A1": {
      "level": null,
@@ -474,7 +474,7 @@
     },
     "redacted_sha256": null
    },
-   "status": "no_sample",
+   "status": "ineligible",
    "judge1": {
     "A1": {
      "level": null,

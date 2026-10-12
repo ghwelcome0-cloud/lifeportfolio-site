@@ -506,52 +506,52 @@
    "url": "https://ipip.ori.org/new_ipip-50-item-scale.htm",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "International Personality Item Pool (Oregon Research Institute, 공공 도메인)",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "공개 도메인 문항(3,320개)·척도 — 운영 사이트는 제3자 다수",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "IPIP 자체는 검사 서비스가 아니라 문항 풀"
    },
    "time_min": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "50문항 Big-Five 버전 소요시간 공식 미기재"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "public domain"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "무료",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "공개",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": 0,
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://ipip.ori.org/",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "문항·채점키·번역 안내 공개"
    },
    "reliability_coef": {
     "value": null,
@@ -567,9 +567,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "없음"
    },
    "sample_report_sha256": {
     "value": null,
@@ -584,22 +584,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "누구나 무료로 쓸 수 있는 공개 도메인 Big-Five 문항으로, 상업 검사 없이 성격 5요인을 보고 싶을 때. 학술 인용 풍부.",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "IPIP는 \"문항 풀\"이지 리포트 서비스가 아님 — 결과 해석·실행 가이드는 운영 사이트마다 다름. 공식 샘플 리포트 없음.",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "부분",
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "번역 안내 페이지 존재, 한국어판 유무 재확인 필요"
    },
    "E4": {
     "value": null,
@@ -609,7 +609,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://ipip.ori.org/",
+    "collected_at": "2026-10-12",
+    "note": "문항 풀, 리포트 없음"
+   }
   },
   {
    "id": "G03",
@@ -618,52 +624,52 @@
    "url": "https://hexaco.org/hexaco-inventory",
    "own": false,
    "provider": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "Kibeom Lee & Michael C. Ashton (학술, hexaco.org)",
+    "source_url": "https://hexaco.org/hexaco-online",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "access": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "웹(온라인 설문, 익명) + 연구용 지필 양식 무료",
+    "source_url": "https://hexaco.org/hexaco-online",
+    "collected_at": "2026-10-12",
+    "note": "온라인 버전은 UCalgary 설문 링크"
    },
    "time_min": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 20,
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "공식: 100문항 20분 / 60문항 12분(학부생 표본 기준) — 상한값"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 0,
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "비영리 학술용 무료. 상업적 이용은 별도"
    },
    "price_band": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "무료",
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "학술 도구 각주"
    },
    "price_transparency": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": "공개",
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "reuse_price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
+    "value": 0,
+    "source_url": "https://hexaco.org/hexaco-online",
+    "collected_at": "2026-10-12",
     "note": ""
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://hexaco.org/references",
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "논문 목록·척도 설명 공개. 신뢰도 계수는 논문 본문"
    },
    "reliability_coef": {
     "value": null,
@@ -679,9 +685,9 @@
    },
    "sample_report_url": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://hexaco.org/hexaco-online",
+    "collected_at": "2026-10-12",
+    "note": "공개 샘플 리포트 없음 → E2 미측정"
    },
    "sample_report_sha256": {
     "value": null,
@@ -696,22 +702,22 @@
     "note": ""
    },
    "appeal": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "학계 표준 6요인 성격 모형(정직-겸손 포함)으로 내 성격을 연구급 척도로 보고 싶을 때. 무료·익명, 문항·논문 전부 공개.",
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "공식 문구 바탕"
    },
    "limits": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "연구 도구라 결과 해설이 척도 점수 위주(실행 가이드 없음). 영어. 상업적 이용 불가. 개인 샘플 리포트 없음.",
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "부분",
+    "source_url": "https://hexaco.org/hexaco-inventory",
+    "collected_at": "2026-10-12",
+    "note": "번역 페이지에 한국어 미표기 → 지필 양식 한국어판 유무 재확인 필요(온라인은 영어)"
    },
    "E4": {
     "value": null,
@@ -721,7 +727,13 @@
    },
    "A5": null,
    "A8": null,
-   "status": "empty"
+   "status": "partial",
+   "e2_eligible": {
+    "value": false,
+    "source_url": "https://hexaco.org/hexaco-online",
+    "collected_at": "2026-10-12",
+    "note": "샘플 없음"
+   }
   },
   {
    "id": "G04",
