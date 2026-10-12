@@ -2178,7 +2178,7 @@
      ]
     }
    },
-   "status": "redacted",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -2233,17 +2233,38 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 15,
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T08:40:01Z",
+    "third_used": []
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 3,
+   "A2": 4,
+   "A3": 3,
+   "A4": 3,
+   "A5": 2,
    "packet_sha256": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
    "denominator_class": {
     "class": "확보(2026-10-12 수집)",
@@ -2257,7 +2278,14 @@
     "README.md": "4c03cc21119d2b2a9d3d9484ee3803741d492dcb0694fcfc98a0cede5ca1f363",
     "ANSWER.json": "d45d3535f86542d2a77ef9b2178d555ee2d6d542b193a2825f88bbf87a8c9318"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "round": 2,
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge2_actor": "agent_kxmtj2g9mmyk",
+    "third_needed_axes_n": 0,
+    "post_q2": "발송(6081824·6081826), 회신 대기"
+   }
   },
   {
    "id": "E01",
@@ -5438,7 +5466,8 @@
    },
    "picked_judge1_count": 3,
    "cause_candidate_next_round": "제3자 이유 3건이 동일: 표지(1쪽) 전면 가림 → 처음 내용이 보이는 쪽은 2쪽, 사람 정보는 3쪽에 처음 등장. 차이≥2는 잡음이 아니라(추정) 가림 패킷에서 A1 \"첫 페이지\"를 어느 쪽으로 볼지 RUBRIC이 정하지 않아 생긴 해석 차이. 이번 판정은 바꾸지 않음. 다음 회차 RUBRIC 사전 고정: \"A1 = 가림 표지 다음의 첫 내용 쪽\".",
-   "picked_values_fact": "제3자가 고른 3칸 값은 모두 낮은 쪽(L2) — \"judge1 답 3/3\" = \"낮은 값 3/3\"(사실만)"
+   "picked_values_fact": "제3자가 고른 3칸 값은 모두 낮은 쪽(L2) — \"judge1 답 3/3\" = \"낮은 값 3/3\"(사실만)",
+   "prepare_idempotency_fix": "2026-10-12 결함 ⑮(근접): prepare 재실행이 답 있는 패킷의 X/Y 배정을 다시 섞음 → 커밋된 picked_judge_facts로 복원, prepare는 답/발송된 blind_id를 건너뛰도록 수정"
   },
   "memory_check": {
    "bound_at": "2026-10-12T05:52:55Z",
@@ -5526,13 +5555,14 @@
   ],
   "third_stage_plan": "제3자는 차이≥2 축이 생길 때만 필요. 기존 42명 중 결박 기준(자사 작업 0·검사 서비스 메모 0)을 만족하는 후보 없음. 새 judge1 답안이 모두 오면 차이≥2 축 수를 레벨 비공개 파일로만 계산 → 0이면 제3자 불필요(규칙상 낮은 값), ≥1이면 대표 승인 받아 새 에이전트 생성 후 4단계+memory_check+rc2.",
   "aggregation": {
-   "file_sha256": "91010f5b9a99e61ffd0aa4cc605c205d10addf46dba76ff2eca64798bba6c38b",
-   "aggregated_at": "2026-10-12T07:59:25Z",
-   "n_samples": 9,
+   "file_sha256": "9ce565e442990b9e4ccc96bc4fedfa0e5cbf92ad8788b57015142865428b30ea",
+   "aggregated_at": "2026-10-12T08:40:01Z",
+   "n_samples": 10,
    "n_third_used": 3,
    "n_unresolved": 0,
    "levels_first_read_by_coordinator_at": "2026-10-12T08:01:02Z",
-   "note": "레벨 값은 제3자 3축 완료 후 처음 열람·전사(결박 순서 준수)"
+   "note": "레벨 값은 제3자 3축 완료 후 처음 열람·전사(결박 순서 준수)",
+   "round2_note": "10번째(G15b) 2026-10-12 2회차: judge 2인 차이≥2 축 0 → 제3자 불필요"
   },
   "publication_fact": {
    "note": "E2 레벨(45축)이 G19 검토 전에 공개 저장소 브랜치 q90-public/e3-e2-batch2에 push됨 — \"G19 전 미게시\"는 사실이 아님. 정정: \"G19 전 확정본 아님(초안 상태로 공개 브랜치에 있음)\". 되돌리지 않음(기록 보존).",
@@ -5565,8 +5595,8 @@
   "n_roster": 40,
   "n_not_applicable": 3,
   "n_target": 37,
-  "n_measured": 9,
-  "public_line": "E2 측정 9 / 대상 37(해당 없음 3 제외) / 명부 40",
+  "n_measured": 10,
+  "public_line": "E2 측정 10 / 대상 37(해당 없음 3 제외) / 명부 40",
   "verification": "해당 없음 행 TL·Peer 각 1회 대조 대기"
  },
  "packet_order_round1": [

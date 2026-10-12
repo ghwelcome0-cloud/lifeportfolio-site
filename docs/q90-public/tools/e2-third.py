@@ -47,6 +47,9 @@ if CMD == 'prepare':
     rnd = random.Random(hashlib.sha256(open(E2, 'rb').read()).hexdigest())
     summary = []
     for bid in d['packet_order']:
+        # 결박: 이미 제3자 답이 있거나 패킷이 발송된 blind_id는 다시 섞지 않는다(X/Y 배정이 바뀌면 기록된 선택이 뒤집힘 — 2026-10-12 근접 사고)
+        if (TD / f'{bid}.third-answer.json').exists() or (third and bid in (third.get('packets') or {})):
+            summary.append((bid, len(json.loads((TD / f'{bid}.third-packet.json').read_text())['items']))); continue
         a1 = json.load(open(AD / f'{bid}.judge1.json'))['answer']; a2 = json.load(open(AD / f'{bid}.judge2.json'))['answer']
         items = []
         for ax in AX:
