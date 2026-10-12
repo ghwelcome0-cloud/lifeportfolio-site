@@ -27,7 +27,8 @@
     "자사(OWN) 행도 같은 칸을 같은 기준으로 채운다",
     "price_band \"비공개\": A8.1이 문의/숨김으로 확인된 행은 구간 칸에 \"비공개\"(출처=A8.1 근거 URL). 미측정과 구분(2026-10-12).",
     "2026-10-12 3차: time_min은 공식 FAQ/제품 페이지 문장 그대로(범위면 상한), 묶음 제품은 1종 값만 적고 묶음 합계는 추정 금지. 가격은 운영사 소매 사이트도 공식 출처로 인정(M03 mbtionline.com $59.95 → \"비공개\" 정정).",
-    "2026-10-12 3차-b: 제품 유형상 칸이 성립하지 않는 경우(코칭 플랫폼·SaaS·종이 제품의 time_min/docs_url) value=null + note \"해당 없음\"으로 적고 표에는 \"해당 없음\"(미측정과 구분). 진행률은 이런 칸을 분모에서 뺀다(E2 §21과 같은 원칙, 근거 URL 필수)."
+    "2026-10-12 3차-b: 제품 유형상 칸이 성립하지 않는 경우(코칭 플랫폼·SaaS·종이 제품의 time_min/docs_url) value=null + note \"해당 없음\"으로 적고 표에는 \"해당 없음\"(미측정과 구분). 진행률은 이런 칸을 분모에서 뺀다(E2 §21과 같은 원칙, 근거 URL 필수).",
+    "2026-10-12 3차-c: 명부 이관 가격이 공식 가격표와 다르면 공식 값으로 정정하고 note에 이전 값 남김(M01 ~15만→~8만원). 기관 키트 가격은 개인 1회 비용으로 쓰지 않음(G15b)."
   ],
   "rows": [
     {
@@ -61,16 +62,16 @@
         "note": "USD 59.99 (CliftonStrengths 34). 환산 전 USD 원값 — 환율 적용은 표 생성 시 collected_at 기준"
       },
       "price_band": {
-        "value": "~15만원",
+        "value": "~8만원",
         "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
         "collected_at": "2026-10-12",
-        "note": "USD 59.99 ≈ 8만원대(1,350원/USD 가정 — 표에는 구간만)"
+        "note": "공식 \"CliftonStrengths 34 $59.99\" (Top 5 $24.99) — 2026-10-12 전사, 환율 ~1,350원 → 약 8.1만원. 이전 \"~15만원\"(명부 이관값)을 공식 가격으로 정정"
       },
       "price_transparency": {
-        "value": "공개",
+        "value": "명시",
         "source_url": "https://www.gallup.com/cliftonstrengths/en/253868/popular-cliftonstrengths-assessment-products.aspx",
         "collected_at": "2026-10-12",
-        "note": "공개가. 환불 규정은 store 약관 확인 필요"
+        "note": "가격 공개"
       },
       "reuse_price_krw": {
         "value": 0,
@@ -524,7 +525,7 @@
         "value": null,
         "source_url": "https://ipip.ori.org/",
         "collected_at": "2026-10-12",
-        "note": "50문항 Big-Five 버전 소요시간 공식 미기재"
+        "note": "해당 없음 — 문항·척도 저장소(검사 운영 주체 아님, §21 해당 없음 행). 50문항 척도 등 공개되나 운영 시간 표기 없음"
       },
       "price_krw": {
         "value": 0,
@@ -1816,7 +1817,7 @@
         "value": 20,
         "source_url": "https://self-directed-search.com/faq/",
         "collected_at": "2026-10-12",
-        "note": "공식 FAQ \"five different sections and takes about 20 minutes to complete\""
+        "note": "공식 FAQ \"five different sections and takes about 20 minutes to complete\" · PAR 제품 페이지(parinc.com/products/SDS) \"Admin Time 25-35 minutes\" — 소비자 사이트 20분과 다름; 소비자 사이트 값 유지, 범위는 note에"
       },
       "price_krw": {
         "value": null,
@@ -1825,16 +1826,16 @@
         "note": ""
       },
       "price_band": {
-        "value": null,
+        "value": "비공개",
         "source_url": "https://self-directed-search.com/",
         "collected_at": "2026-10-12",
-        "note": "가격이 결제 단계(JS)에만 표시 → 본문 미기재, 구간 미측정(2차 패스 필요) | 2차 패스(2026-10-12, JS 렌더 크롤)에서도 가격 숫자 본문 미노출 → 미측정 유지"
+        "note": "소비자용 온라인 SDS 가격이 사이트 본문에 미노출(JS/결제 단계). PAR 전문가용 Kit $311(10663-KT, parinc.com)은 기관 키트 가격이라 개인 1회 비용 아님 → \"비공개\"(A8.1 문의/숨김)"
       },
       "price_transparency": {
-        "value": "공개(결제 단계)",
-        "source_url": "https://self-directed-search.com/faq/",
+        "value": "숨김",
+        "source_url": "https://self-directed-search.com/",
         "collected_at": "2026-10-12",
-        "note": "신용카드 결제 후 리포트 생성 절차 명시, 금액은 본문 미기재"
+        "note": "개인 1회 가격 본문 미노출"
       },
       "reuse_price_krw": {
         "value": null,
