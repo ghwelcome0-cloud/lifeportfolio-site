@@ -5968,7 +5968,7 @@
     "priority": "샘플 > AI응시 > 구매 > 문서도판 (한 행 한 값, 경로 전환 금지)",
     "respondent": "비이해관계 AI 에이전트(격리 확인·memory_check), 페르소나 문서 1개 sha 고정, 응답 원문 저장소 밖",
     "judge_blind_to_path": true,
-    "status": "약관 1차 완료 · 페르소나 v1 고정 · 응시 에이전트 미지정 · 응시 0건",
+    "status": "응시 1건 진행(G15a) · 나머지 보류/국내 확인/문서도판 탐색",
     "tos_summary_2026-10-12T20:45Z": {
       "가(조건부)": [
         "G15a"
@@ -6042,7 +6042,24 @@
       "model": "claude-opus-5-5 (Genny 조회)",
       "bio_full_text_verified": "Genny 회신 전문 == judge/RESPONDENT-AGENT-BIO-v1.txt (sha e596d90f… 바이트 동일, 제3자 때의 300자 prefix 대조보다 강함)",
       "browser_tool": "Genny가 켤 권한 없음 — 응시 가능 여부는 첫 과제에서 실측",
-      "created_by": "Genny(플랫폼 도우미), 총괄 승인(대표 사전 위임)"
-    }
+      "created_by": "Genny(플랫폼 도우미), 총괄 승인(대표 사전 위임)",
+      "pre_memory_check": {
+        "msg": "6109451",
+        "Q1": "아니오",
+        "Q2": "아니오(일반 지식만)",
+        "Q3": "아니오",
+        "result": "통과"
+      }
+    },
+    "assignments": [
+      {
+        "id": "E2S-01",
+        "row": "G15a",
+        "path": "E2-s (AI응시)",
+        "sent": "6109538",
+        "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7",
+        "status": "응시 중(회신 대기)"
+      }
+    ]
   }
 }
