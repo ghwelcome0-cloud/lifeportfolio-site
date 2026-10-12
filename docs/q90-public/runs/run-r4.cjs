@@ -34,8 +34,8 @@ const run = (cmd, args, env) => { const r = spawnSync(cmd, args, { stdio: 'inher
   const END = new Date().toISOString();
   const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
   const NET = await new Promise(r => rl.question('Network kind (home-wifi / office-wired / mobile-tether): ', a => { rl.close(); r((a || 'unknown').trim()); }));
-  let bv = 'puppeteer ' + require(path.join(ROOT, 'node_modules', 'puppeteer', 'package.json')).version + ' bundled chrome-headless-shell';
-  try { bv += ' ' + execSync(`"${exe}" --version`, { encoding: 'utf8' }).trim(); } catch {}
+  // 브라우저 버전은 경로에서 읽는다 — chrome.exe --version 은 Windows에서 GUI 창을 띄운다(⑲)
+  const bvm = exe.match(/(win64|linux|mac[^\\/]*)-(\d+\.\d+\.\d+\.\d+)/); const bv = 'puppeteer ' + require(path.join(ROOT, 'node_modules', 'puppeteer', 'package.json')).version + ' bundled chrome ' + (bvm ? bvm[2] : path.basename(exe));
   const meta = { bound_commit: '9557e46', run: 'r4', egress_country: 'KR', machine_kind: 'owner-local-pc', network_kind: NET, browser: bv, profile: 'fresh (puppeteer new page, no cookies/cache, not logged in)', rows_requested: 13, bridge_rows: ['K02', 'K05', 'K13', 'K18'], started_utc: START, ended_utc: END, browser_lang_flag: 'en-US', os_kind: `${os.type()} ${os.release()}`, os_timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, accept_language_sent: AL, tool_sha_before_run: toolSha, roster_subset_sha256: sha('roster/roster-v2.r4-subset.json') };
   fs.writeFileSync(path.join(RUN, 'run-meta.json'), JSON.stringify(meta, null, 1));
   log('== 6/6 packing');
