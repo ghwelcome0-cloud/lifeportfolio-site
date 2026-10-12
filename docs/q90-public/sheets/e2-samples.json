@@ -1225,9 +1225,9 @@
     "path_candidate": "E2-d",
     "tos_url": "https://birkman.com/",
     "tos_quote": "문서도판 경로 — 약관 대신 공식 문서 내 리포트 전체 쪽 유무 탐색",
-    "tos_verdict": "탐색 중",
-    "checked_at": "2026-10-12T20:35Z",
-    "note": ""
+    "tos_verdict": "E2-d 불가(이번 턴)",
+    "checked_at": "2026-10-12T23:58Z",
+    "note": "공식 샘플 PDF는 birkman.com 이메일 게이트(폼 제출 후 발송). 사설 미러 3곳(대학·코치 사이트, \"JOHN Q. PUBLIC\" 2017판) 검색 노출되나 §21 출처 규칙(제3자 호스팅 미채택, G13 선례)으로 거름. 남은 길: 대표 메일로 정식 요청 → 받으면 E2 정식 (샘플). 대표 결정 필요 항목으로 올림"
    }
   },
   {
@@ -3292,10 +3292,11 @@
        "finding": "정상. 1쪽(판독 불가 썸네일·회사명 헤더) 통째 가림, 4쪽 \"비회원님은…\" 문장 상자 가림. 남은 글자 중 회사 식별 문자열 없음(OCR 0)"
       }
      ],
-     "note": "(문서도판·부분 3/4) — 채점 가능 쪽 3"
+     "note": "(문서도판·부분 3/4) — 채점 가능 쪽 3",
+     "post_hoc_finding": "T11: 4쪽 \"비회원님은 일반흥미와 (\" 앞부분이 가림 상자 왼쪽에 남음(상자 x0=0.50을 너무 오른쪽에 잡음). 눈 확인 3회차 축소판에서 보고도 지나침. judge1이 guess 칸에 이 단어를 근거로 적음(회사는 오추정, 점수 미반영 선언). 회사명 자체는 아니므로 재발송 안 함. KB T11 기록"
     }
    },
-   "status": "redacted",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -3384,7 +3385,11 @@
     "README.md": "0ecf54517a66028272db95da049bd4fba478be97c844f207f9c82b65511faf4d",
     "ANSWER.json": "c799f0aa33e2870b244006bf0b1e347fe12884c6533ea90a2c5c6f783220b558"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "aggregate_sha256": "f6e7abee2909338766497ccec263eadbffe41929a622d9944856e52c356d18f6",
+   "resolved_at": "2026-10-12T23:58Z",
+   "e2_round": 4,
+   "resolve_note": "judge1·judge2 답 수신(judge-r4.log), 차이≥2 축 0 → 제3자 불필요. 경로 (문서도판·부분 3/4) — 표 꼬리표로 구분, (샘플)과 직접 비교 금지"
   },
   {
    "id": "K03",
@@ -5585,8 +5590,10 @@
       "attachment_sha256_sent": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
       "attachment_sha256_received_redownload": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6120685",
+      "answer_sha256": "93ad9151acdb9297c0b9640c02381d048c02297d6b929bdc9bf16ba5a48fdf1b",
+      "answered_at": "2026-10-12T23:57:09Z",
+      "first_line_declaration_ok": true
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5803,8 +5810,10 @@
       "attachment_sha256_sent": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
       "attachment_sha256_received_redownload": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6120684",
+      "answer_sha256": "cf0c1764a3fea742163a329038454c4c099831c1b2e6f0b6a54a4a5f1bf7d60f",
+      "answered_at": "2026-10-12T23:57:07Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
@@ -6559,7 +6568,9 @@
    "K16": "인싸이트 Holland 적성검사 해석지침서(32쪽) 발견 — 그러나 K16(한국가이던스 SDS)과 다른 출판사·다른 제품, 도판도 발췌(그림 1~6) → 불가. guidance.co.kr 자료실은 응답지만",
    "K01·K01a·K08~K12": "work24.go.kr site: PDF 0건, KEIS 사이트 US 접속 시간 초과(연구보고서 2008·2007만 검색 노출, 결과표 전체 도판 아님)",
    "K13·K14": "커리어넷 성인 검사 — 같은 KRIVET 저장소에서 성인용 안내서 미발견(이번 턴)",
-   "owner_decision": "(b) 문서도판만 — 국내 행 응시·구매 닫힘"
+   "owner_decision": "(b) 문서도판만 — 국내 행 응시·구매 닫힘",
+   "K13·K14(2차)": "KRIVET 길라잡이 2종(학생용 118쪽·교사용 140쪽) 수신. 직업가치관검사 결과는 조회 방법 캡처·작은 썸네일만 — 결과표 전체 도판 없음 → 불가",
+   "G06": "공식 샘플 이메일 게이트, 미러 미채택 → 대표 메일 요청 안 제시"
   }
  },
  "packet_round3": {
