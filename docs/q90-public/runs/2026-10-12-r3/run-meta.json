@@ -1,0 +1,20 @@
+{
+ "bound_commit": "(r3는 §24 결박 전 run — 사후 기록, 2026-10-12T19:30Z)",
+ "run": "r3",
+ "egress_country": "US",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh (puppeteer new page, no cookies/cache, not logged in)",
+ "rows_requested": 40,
+ "bridge_rows": [],
+ "started_utc": "2026-10-12T09:50:27.974Z",
+ "ended_utc": "2026-10-12T10:12:04.927Z",
+ "roster_subset_sha256": null,
+ "roster_sha256_note": "roster/roster-v2.json 전체",
+ "retro_note": "egress_country 는 ipinfo.io 조회(US, 2026-10-12T19:05Z) — r3 당시 조회는 없었음, 같은 샌드박스라 같다고 가정(가정임을 적음)",
+ "os_kind": "Linux (sandbox)",
+ "os_timezone": "UTC",
+ "browser_lang_flag": "en-US",
+ "accept_language_sent": "미기록(§24-b 전 run)"
+}
