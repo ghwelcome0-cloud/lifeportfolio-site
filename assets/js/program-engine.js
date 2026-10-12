@@ -1416,6 +1416,19 @@
         reach: fan.rings.map(function (g) { return { when: g.when, who: g.who, stage: g.stage }; }), // AP1
         services: P.map(function (ph, i) { return { when: ph.when, names: SV[i] }; }) }, // AP1
       modules: P.map(function (ph) { return { when: ph.when, aim: ph.aim, keep: last(ph).keep }; }), // AP1
+      // AP-1 §9 세 가지 때 (대표 2026-10-12): 막 4:28 싹 → 이삭 → 충실한 곡식. 12주 = 실행, 3개월 = 성과, 1년 = 자산. // AP1
+      // 수: 1주 = 1칸 · 12칸 = 카드 1장 · 분기마다 1장 = 1년 4장(48칸); 닿는 범위 r = 1 → 2 → 3 (부채꼴 고리). 근거는 직원용 근거표 §5. // AP1
+      horizons: [ // AP1
+        { key: "quest", mark: "싹", span: "12주", name: "실행", purpose: "매주 한 가지를 해 보고 한 줄 남겨요. 해 본 것이 몸에 붙어요.", // AP1
+          goal: "「" + own(ap.firstStep) + "」부터 12칸 채우기", count: "1주 = 1칸 · 12칸", who: fan.rings[0].who, // AP1
+          check: ["다이어리 12칸이 채워졌나요?", "남김 단계가 「다시 쓰였어요」까지 올라갔나요?"] }, // AP1
+        { key: "month3", mark: "이삭", span: "3개월", name: "성과", purpose: "해 본 것이 남이 확인한 결과물로 남아요.", // AP1
+          goal: eul(kind + " 카드 1장") + " 손에 쥐기 · " + art + " 2판 담기", count: "12칸 → 카드 1장", who: fan.rings[1].who, // AP1
+          check: ["남긴 것이 다시 쓰였나요?", "누군가에게 실제로 도움이 됐나요?", "다른 사람도 쓸 수 있게 남았나요?"] }, // AP1
+        { key: "year1", mark: "열매", span: "1년", name: "자산", purpose: "성과가 다른 사람에게 다시 쓰이고, 더 큰 일을 맡게 돼요.", // AP1
+          goal: kind + " 카드 4장 · " + fan.rings[2].who + "에서 다시 쓰이게 하기", count: "분기마다 1장 · 4장 · 48칸", who: fan.rings[2].who, // AP1
+          check: ["카드 4장 모두 「누가 다시 썼나」 칸이 채워졌나요?", "처음보다 맡겨진 일이 넓어졌나요?"].concat(vis ? ["리포트의 비전 한 줄에 한 걸음 가까워졌나요?"] : []) } // AP1
+      ], // AP1
       board: { line: "한 주에 한 줄이면 12칸 중 한 칸이 채워져요. 「오늘 해 봤어요」에 적고 몇 주 칸인지 고르면 돼요.", // AP1
         phases: P.map(function (ph) { return { when: ph.when, aim: ph.aim, weeks: ph.weeks.map(function (w) { return { week: w.week, verb: w.verb }; }) }; }), checks: quest.checks.slice() }, // AP1
       effects: { assets: (ap.assets || []).filter(function (x) { return x && x.k && !/금융/.test(x.k); }).slice(0, 3).map(function (x) { return { k: own(x.k), v: own(x.v) }; }), // AP1
