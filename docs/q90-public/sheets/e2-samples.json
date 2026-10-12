@@ -1591,9 +1591,9 @@
         "path_candidate": "E2-p",
         "tos_url": "https://www.16personalities.com/terms",
         "tos_quote": "약관 페이지가 봇 검증 화면(403, \"verifies you are not a bot\")",
-        "tos_verdict": "미확인→보류",
+        "tos_verdict": "구매 경로 미실행(대표 결정)",
         "checked_at": "2026-10-12T20:45Z",
-        "note": "자동 접근을 적극 차단하는 사이트. AI 응시는 사이트 정책과 충돌할 가능성 높음 → 사람(비이해관계자) 열람으로 약관 확인 전까지 보류"
+        "note": "자동 접근을 적극 차단하는 사이트. AI 응시는 사이트 정책과 충돌할 가능성 높음 → 사람(비이해관계자) 열람으로 약관 확인 전까지 보류 | 2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → 이 행은 \"공개 샘플 없음\"으로 남김"
       }
     },
     {
@@ -1785,9 +1785,9 @@
         "path_candidate": "E2-p",
         "tos_url": "https://www.workinggenius.com/terms-of-use",
         "tos_quote": "약관 URL이 6 Geniuses 홈으로 리디렉션(약관 본문 미노출)",
-        "tos_verdict": "미확인→보류",
+        "tos_verdict": "구매 경로 미실행(대표 결정)",
         "checked_at": "2026-10-12T20:45Z",
-        "note": ""
+        "note": "2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → 이 행은 \"공개 샘플 없음\"으로 남김"
       }
     },
     {
@@ -2103,11 +2103,11 @@
       },
       "e2_alt": {
         "path_candidate": "E2-s",
-        "tos_url": "https://www.onetcenter.org/IP.html",
-        "tos_quote": "\"Creative Commons licensed — The O*NET Interest Profiler may be redistributed or used to develop other assessments under a choice of licenses\" · \"licensed under a Creative Commons Attribution 4.0 International License\"",
-        "tos_verdict": "가",
-        "checked_at": "2026-10-12T20:40Z",
-        "note": "CC-BY 4.0. 봇·자동화 금지 조항 없음(IP.html·help/ip·about 3페이지). 공공(미 노동부). 첫 AI응시 대상(blind_id 사전순 무관 — 가 판정 1행뿐)"
+        "tos_url": "onetinterestprofiler.org 응시 흐름 내 \"Special Notice: User's Agreement\" (정확 URL 미확보 — SPA, 응시자 보고 6112724; 같은 문구가 O*NET 도구 공식 매뉴얼류에 있음)",
+        "tos_quote": "\"the use of the O*NET Career Exploration Tools is authorized for career exploration, career planning, and career counseling purposes only. No other use of these tools or any part of the tools is valid or authorized.\"",
+        "tos_verdict": "대안 없음(약관)",
+        "checked_at": "2026-10-12T21:50Z",
+        "note": "1차 확인(라이선스 페이지 3곳, CC-BY)에는 없던 목적 제한 조항을 **응시 보조가 응시 전 흐름에서 발견**해 멈춤(0문항). 총괄 판정: 공개 비교 채점 용도는 세 목적에 해당하지 않음(보수적) → 응시 안 함. 결함 ⑰(R1: 앱 내 약관을 읽기 전에 \"가\" 선언, 영향 0 — 응시 전 중단)."
       }
     },
     {
@@ -4709,9 +4709,9 @@
         "path_candidate": "E2-p",
         "tos_url": "https://inpsyt.co.kr/customer/terms",
         "tos_quote": "로그인 벽(약관 본문 미노출)",
-        "tos_verdict": "미확인→보류",
+        "tos_verdict": "구매 경로 미실행(대표 결정)",
         "checked_at": "2026-10-12T20:35Z",
-        "note": "전문가(자격) 구매 제한 가능성 — TCI는 전문가용 검사(추정, 확인 필요)"
+        "note": "전문가(자격) 구매 제한 가능성 — TCI는 전문가용 검사(추정, 확인 필요) | 2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → 이 행은 \"공개 샘플 없음\"으로 남김"
       }
     },
     {
@@ -5940,14 +5940,36 @@
     "public_fields": "국가 코드·기계 종류·브라우저·UA·viewport·UTC·프로필만 (IP·기계 이름·사용자명 저장소 밖)",
     "assembly": "tools/assemble-latest.cjs → runs/latest (행마다 최신 성공 run, 셀 태그 rN·CC)",
     "instructions": "runs/r4-INSTRUCTIONS.md",
-    "status": "측정 대기 — 국내 egress 실행자(파이스 컴퓨터/대표) 필요",
+    "status": "완료 — 2026-10-12T22:33Z 측정, 23:05Z 수령·채택. 조립본 runs/latest E1 34/40",
     "amendment_24a": "2026-10-12T19:30Z 측정 전 보완: 사전 재현 run(r3b-us-repro)에서 K13이 r3와 같이 404(명부 URL 결함, A6 비교 불가) → 겹침에 K18 추가(13행). 9행 시간 초과 재현, K02 바이트 hash r3와 동일, K05·K13 hash 변화(원시값 변화 0 — 동적 콘텐츠 가능성, 단정 안 함).",
     "amendment_24b": "2026-10-12T19:45Z 측정 전 보완(Peer 6105340 4건·TL 6105372): ① 조립 규칙 하나로: 표 = 앞선 run 성공 행은 그 값, 앞선 run 실패 행만 뒤 run 값, 뒤 run 나머지는 §25 비교용(40행 측정도 동일; assemble-latest 코드 반영) ② r4 1회 실행만 채택, 재실행은 r5+새 결박 ③ 실행자 증명 4건(실행 직전 도구 sha·결과 tar sha·스크린샷 원본·OS) 시트 기록 ④ 공개 한계: r4 실행 기계=이해관계자(대표) PC, 새 프로필·sha 고정으로 보완 ⑤ run-meta에 browser_lang_flag(en-US 도구 고정)·OS 시간대·OS·실제 Accept-Language 추가; 공개 한계 \"r3·r4 모두 브라우저 언어 en-US 고정 — 한국어 사용자 첫 화면과 다를 수 있음\"(r3에도 해당); 한국어 설정 측정은 r5",
     "executor_proofs": {
-      "tool_sha_before_run": null,
-      "result_tar_sha256": null,
-      "screenshots_received": null,
-      "os_kind": null
+      "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b (화면 보고 = 파일 계산 일치)",
+      "result_tar_sha256": "6a02569b56290a25b86834ec0723d3bdd3f99e06a86007c980929bd613990ab1 (화면 보고 = 수령 파일 일치)",
+      "screenshots_received": "6장(K02·K03·K05·K13·K17·K18) 원본 저장소 밖, sha 목록 runs/2026-10-12-r4/png-sha256.json",
+      "os_kind": "Windows_NT 10.0.26300"
+    },
+    "result": {
+      "measured_new": [
+        "K03",
+        "K17",
+        "K01(A7만)"
+      ],
+      "still_unmeasured": [
+        "K01a",
+        "K08",
+        "K09",
+        "K10",
+        "K11",
+        "K12"
+      ],
+      "bridge_raw_changes": 0,
+      "bridge_hash_changed": [
+        "K05",
+        "K13",
+        "K18"
+      ],
+      "e1_public": "34/40 (r3 31 + r4 3)"
     }
   },
   "e2_alt_rule": {
@@ -5968,7 +5990,7 @@
     "priority": "샘플 > AI응시 > 구매 > 문서도판 (한 행 한 값, 경로 전환 금지)",
     "respondent": "비이해관계 AI 에이전트(격리 확인·memory_check), 페르소나 문서 1개 sha 고정, 응답 원문 저장소 밖",
     "judge_blind_to_path": true,
-    "status": "응시 1건 진행(G15a) · 나머지 보류/국내 확인/문서도판 탐색",
+    "status": "해외 무료 응시 후보 전부 소진(약관 3·보류 2). 남은 길: 국내 11행 약관·본인인증 확인(국내 egress 필요) · 문서도판 4행 · 응시 0건",
     "tos_summary_2026-10-12T20:45Z": {
       "가(조건부)": [
         "G15a"
@@ -6058,8 +6080,57 @@
         "path": "E2-s (AI응시)",
         "sent": "6109538",
         "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7",
-        "status": "응시 중(회신 대기)"
+        "status": "종료 — 약관(목적 제한)으로 응시 0문항",
+        "closed": "2026-10-12T21:50Z",
+        "respondent_report": "6112605/6112724"
       }
-    ]
+    ],
+    "purchase_decision": {
+      "at": "2026-10-12T20:50Z",
+      "decision": "구매(E2-p) 전면 미실행 — 비용 0 원칙",
+      "by": "대표(원문: \"구매 승인은 하지 않을게요. 그런 비용이 발생하지 않는 선에서 우선 진행\")"
+    },
+    "tos_summary_2026-10-12T21:50Z": {
+      "가": [],
+      "대안 없음(약관)": [
+        "G01",
+        "G12",
+        "G15a"
+      ],
+      "대안 없음(B2B)": [
+        "E01",
+        "E02",
+        "E11",
+        "E12"
+      ],
+      "구매 미실행(대표 결정)": [
+        "G11",
+        "G13",
+        "K18"
+      ],
+      "보류(약관 미확인)": [
+        "G03",
+        "K20"
+      ],
+      "국내 확인 필요": [
+        "K01",
+        "K01a",
+        "K08",
+        "K09",
+        "K10",
+        "K11",
+        "K12",
+        "K02",
+        "K13",
+        "K14",
+        "K15"
+      ],
+      "문서도판 탐색": [
+        "G06",
+        "G08",
+        "K16",
+        "K19"
+      ]
+    }
   }
 }

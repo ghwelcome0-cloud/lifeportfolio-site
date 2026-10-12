@@ -23,7 +23,10 @@ const e2na = e2.rows.filter(r => r.status === 'not_applicable').length, e2target
 const e2final = st('final') + st('judged') + st('resolved'), e2inel = st('ineligible'), e2pend = st('redacted_pending_visual'), e2red = st('redacted');
 // E1: 최신 run에서 a61 또는 a71이 있는 비자사 행
 const runs = fs.readdirSync(path.join(B, 'runs')).filter(d => /^\d{4}-\d{2}-\d{2}-r\d+$/.test(d)).sort();
-const latest = runs[runs.length - 1];
+// G21 §24-b: runs/latest(조립본)가 있으면 그것을 공개 E1로 쓴다. 비고에 입력 run 구성을 적는다.
+const asmPath = path.join(B, 'runs', 'latest', 'assembly.json');
+const asm = fs.existsSync(asmPath) ? J('runs/latest/assembly.json') : null;
+const latest = asm ? 'latest' : runs[runs.length - 1];
 const scored = latest && fs.existsSync(path.join(B, 'runs', latest, 'e1-scored.json')) ? J(`runs/${latest}/e1-scored.json`) : [];
 const e1n = scored.filter(v => !v.own && (v.a61 || v.a71)).length;
 // 자사 행: own.json 존재 여부
@@ -32,7 +35,7 @@ const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
 const out = {
   at: new Date().toISOString().slice(0, 16) + 'Z', roster_rows: rows.length, compare_rows: nonOwn.length, latest_run: latest || null,
   steps: [
-    { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: latest ? `${latest} — 구 도구 이관분. r3(새 측정기)부터 공개용` : '' },
+    { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: asm ? `조립본(runs/latest) = ${asm.inputs.map(i => `${i.run}·${i.egress_country}(${i.rows}행)`).join(' + ')} · r3 단독 31/${nonOwn.length} → 조립 ${e1n}/${nonOwn.length} · 미측정 ${nonOwn.length - e1n}행은 국내 접속에서도 시간 초과(고용24 6)` : (latest ? `${latest}` : '') },
     { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length - e3na, pct: pct(e3cells, rows.length * E3_KEYS.length - e3na), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결(해당 없음 포함) ${e3rowsComplete} · 해당 없음 ${e3na}칸 제외(옛 분모 ${rows.length * E3_KEYS.length} 기준 ${pct(e3cells, rows.length * E3_KEYS.length)}%)` },
     { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: e2target, pct: pct(e2ready, e2target), note: `측정 ${e2ready} / 대상 ${e2target}(해당 없음 ${e2na} 제외) / 명부 ${nonOwn.length} · 옛 분모 기준 ${pct(e2ready, nonOwn.length)}% → 분모 정정 효과 +${pct(e2ready, e2target) - pct(e2ready, nonOwn.length)}%p · ` + `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
     { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: `judged(원본 저장·미집계) ${st('judged')}, final ${st('final')} — judge 2인 + 제3자` },

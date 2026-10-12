@@ -25,6 +25,9 @@
 | `runs/2026-10-09-r1/` | G18 1차 실측(26행) — 구 도구 결과를 `e1-results.json`으로 감싸 이관 | 고정 |
 | `runs/2026-10-11-r2/` | G17 사전측정 2차(26행) + **표 v2 빈 틀**(`table-v2.*`) + `diff-vs-r1.txt`(변화 0) | 고정 |
 | `runs/2026-10-12-r3/` | 새 측정기 첫 run(40행, 31 성공 — 국내 9행 해외 egress 시간 초과) + 표 v2 r3 + `run-meta.json`(사후 기록, egress US) | 고정 |
+| `runs/2026-10-12-r4/` | 국내(KR) 재측정 13행(대표 PC) + `run-meta.json` + `diff-vs-r3.json` + PNG sha 목록 | 고정 |
+| `runs/latest/` | r3+r4 조립본(§24-b 규칙) — 공개 E1은 이것을 쓴다 | 새 run마다 |
+| `runs/run-r4.cjs`, `finish-r4.cjs` | r4 원클릭 실행기(Node)·마무리 전용 | — |
 | `runs/r4-INSTRUCTIONS.md` | r4(국내 egress 재측정) 실행 지침 — 도구 sha 동일·12행 부분집합·run-meta 공개 항목 규칙 | §24 결박 뒤 |
 | `roster/roster-v2.r4-subset.json` | r4용 명부 부분집합(미측정 9 + 겹침 3: K02·K05·K13). 행은 명부 v2와 바이트 동일 | 고정 |
 | `tools/assemble-latest.cjs` | 여러 run을 "행마다 성공한 가장 최근 run" 규칙으로 조립 → `runs/latest/` (셀 태그 `rN·CC`, 실패 분류, 도구 sha 불일치면 중단) | — |
@@ -65,7 +68,7 @@ node tools/diff-runs.cjs runs/2026-10-11-r2 $RUN
 - [ ] E3 수집 — 핵심 7칸 기준 진행률은 `node tools/progress.cjs --md`로 본다. 2026-10-12 1차: 22/41행 착수. 명부 v2 시간 값 정정 4건(K08 90→80, K13 20→10, K14 20→30, K03 35~40)은 시트 note에 기록, 명부는 그대로(값은 시트가 우선)
 - [ ] E2 샘플 — 공식 샘플 7건 확보(M01 Gallup 25p, M02 DiSC 20p, M03 MBTI Complete 6p, G04 Hogan 18p, G07 PI 5p, G14 Strong 19p, K05 태니지먼트 24p). 부적합 2건(G01 VIA 미리보기, G15a O*NET 빈 양식). 보류: G06 Birkman(이메일 게이트), K03·K17 어세스타(서버 타임아웃, 공식 링크 기록). 원본 PDF는 저장소 밖 → AI Drive `e2-samples_2026-10-12.tar.gz`
 - [x] E2 — 블라인드 2인 채점 + 제3자 3축 완료(2026-10-12). 9샘플 45축 모두 확정(차이≤1 → 낮은 값 42축, 차이≥2 → 제3자 선택 3축). 레벨 값은 제3자 완료 뒤 처음 열람. **G19 전 확정본 아님(초안 상태로 공개 브랜치에 있음, 2026-10-12T08:01Z부터 — 결함 ⑭)**. salt 공개됨(`salt_revealed`, 40/40 재계산 일치(자사 행 제외 40행)). 상세·한계는 `sheets/e2-samples.json` `judge_sessions`
-- [ ] **E1 r4(국내 egress)** — G21 §24 결박(`9557e46`) 완료, 지침서·부분집합·조립기·수령 검사기 준비됨. **측정 대기: 국내 접속 실행자 필요**(대표 PC 로컬 에이전트). 받으면 r3+r4 조립 → `runs/latest/`. 조립 전까지 공개 E1 분모는 31/40(r3)
+- [x] **E1 r4(국내 egress)** — 2026-10-12 대표 PC(KR)에서 측정·수령·채택(§24 4단계 검사 PASS). 해외 시간 초과 9행 중 **3행 측정됨**(K03·K17·K01 A7만), 6행(고용24 하위 경로)은 국내에서도 시간 초과. 겹침 4행 원시값 차이 0. 조립본 `runs/latest/` **E1 34/40**
 - [ ] E4 — 공개 반응 방향+표본(≥20)
 - [ ] 자사 행 — Q90 2회차 scorer 결과 전사(own.json)
 - [ ] D7 — Duolingo식 카드 선택 페이지 데이터(표 확정 후)
