@@ -35,7 +35,10 @@ import pymupdf  # PyMuPDF
 # 이것까지 지우면 리포트가 읽히지 않아 채점이 불가능하다. 그래서 가림 범위는 **회사명·인물명·URL·연락처·로고·표지·저작권 줄**로 정의하고,
 # 모델명은 남긴다. 그 결과 judge는 "어느 계열 도구인지"는 짐작할 수 있다(guess 칸에 기록). 이 한계는 표에 공개한다.
 # → 유출 검사 용어에서 모델명을 뺀다(ALLOWLIST). 회사명·사람명은 뺄 수 없다.
-ALLOWLIST = {'disc', 'mbti', 'strong', 'hogan', 'cliftonstrengths', 'strengthsfinder', 'via', 'hexaco', 'birkman', 'insights', 'kolbe', 'enneagram'}
+# 결함 ⑩(2026-10-12, 사람 눈 확인에서 발견): hogan·cliftonstrengths·birkman·kolbe는 "모델명"이지만 동시에 회사명·창업자 성(姓)이다.
+# ALLOWLIST에 있어 G04 18쪽 전부에 'Hogan'이 남았고, 누출검사도 같은 목록을 써서 못 잡았다 → 사람 이름·회사명인 것은 전부 뺀다.
+# 남기는 것은 사람·회사가 아닌 일반 모델명뿐(disc, mbti, strong, via, hexaco, insights, enneagram, strengthsfinder).
+ALLOWLIST = {'disc', 'mbti', 'strong', 'strengthsfinder', 'via', 'hexaco', 'insights', 'enneagram'}
 
 args = sys.argv[1:]
 extra = []; bands = (0.12, 0.08); cover_pages = 1; boxes = []  # boxes: 페이지별 사용자 지정 가림 사각형 "p:x0,y0,x1,y1" (비율 0~1)

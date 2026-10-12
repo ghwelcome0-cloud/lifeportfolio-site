@@ -1,7 +1,7 @@
 {
  "sheet": "E2 공개 샘플 리포트 블라인드 채점",
  "roster_version": "v2.0",
- "generatedAt": "2026-10-12T01:26:26.397Z",
+ "generatedAt": "2026-10-12T02:18:24.742Z",
  "salt_sha256": "5516a97eae8a7825cc28f18f8b77c347b346cab929dc0e71c23264b33185a500",
  "salt_revealed": null,
  "blind_id_rule": "S- + sha256(salt|id|roster.version)[0:6]; salt 32B+ 난수, 총괄 보관, 채점 뒤 공개",
@@ -51,15 +51,84 @@
    "sample_url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
    "sample_sha256": "787fa3b55f47988cd710a6d7ebb7e2adbcad90b6f7f5fdd3c2189c844a11b57c",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Strengths",
+      "n": 74
+     },
+     {
+      "term": "Clifton",
+      "n": 72
+     },
+     {
+      "term": "CliftonStrengths",
+      "n": 48
+     },
+     {
+      "term": "Don",
+      "n": 41
+     },
+     {
+      "term": "gallup",
+      "n": 26
+     },
+     {
+      "term": "Gallup",
+      "n": 26
+     },
+     {
+      "term": "©-line",
+      "n": 24
+     },
+     {
+      "term": "Donald Clifton",
+      "n": 24
+     },
+     {
+      "term": "Donald",
+      "n": 24
+     },
+     {
+      "term": "CliftonStrengths 34",
+      "n": 6
+     },
+     {
+      "term": "Strengths Profile",
+      "n": 2
+     }
+    ],
+    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:26:41Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "828b3217f1b7ff0b8aca16a0405fd7517a938a2cfa8724473db8cee0b94d3934",
+    "final_file": "S-4e6f48.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "0fa06a8d5acdd6831242eeca86680c7b2f918c048275863ba46b2ca826ea65a4",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-4e6f48.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "ALLOWLIST 수정 뒤 재처리(CliftonStrengths 추가 가림), 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -125,7 +194,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "f939be08afb71317a7facfab56fc1f16946a99892eeb4c695b0feaf805588191",
+   "packet_files": {
+    "sample.pdf": "828b3217f1b7ff0b8aca16a0405fd7517a938a2cfa8724473db8cee0b94d3934",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "d159ba42a15c925ecdd4804ce099be0399927ffedf15296c307f094daf016d90",
+    "ANSWER.json": "c28409c9f3032d43dd346face79399b8d33dd3ecd338a9a803fb3622b782da36"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "M02",
@@ -134,15 +210,76 @@
    "sample_url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
    "sample_sha256": "3960cd201c2a090ad76bbacc8a24058d85a145d4af78aa25b8d492e152cb7331",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Alex",
+      "n": 34
+     },
+     {
+      "term": "©-line",
+      "n": 19
+     },
+     {
+      "term": "Alex Bradley",
+      "n": 19
+     },
+     {
+      "term": "Bradley",
+      "n": 19
+     },
+     {
+      "term": "Wiley",
+      "n": 19
+     },
+     {
+      "term": "John Wiley",
+      "n": 19
+     },
+     {
+      "term": "Everything",
+      "n": 7
+     },
+     {
+      "term": "Everything DiSC",
+      "n": 6
+     },
+     {
+      "term": "Everything DiSC Workplace",
+      "n": 4
+     }
+    ],
+    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:10:54Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "7e9e6b029743b16f48add50967595b5ac289a170643ccc45a3c43cb642abd2d2",
+    "final_file": "S-da397f.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "223fdc74a0b509d381e0c45c93e402ff599c799da0d03b80b0027c02a079b773",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-da397f.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -208,7 +345,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "d708aed4fb796829e24cb4372b7cbe0b7d48dcde3abdfc22549e17af5eb81147",
+   "packet_files": {
+    "sample.pdf": "7e9e6b029743b16f48add50967595b5ac289a170643ccc45a3c43cb642abd2d2",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "eb0de1cd9306425f9cbb365dc9dc8ed5503664d279ca3efe6ddbb2056404afeb",
+    "ANSWER.json": "c2cbcda08e4e78963e531cc4d1fde242fc1212559f08bdd556f3d796a402042f"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "M03",
@@ -217,15 +361,76 @@
    "sample_url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
    "sample_sha256": "72f8773e4c08ed644548f72603b9fbe8d37d4bbce796930f7030ea866e99304d",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Myers",
+      "n": 18
+     },
+     {
+      "term": "Briggs",
+      "n": 16
+     },
+     {
+      "term": "Myers-Briggs",
+      "n": 11
+     },
+     {
+      "term": "Mark",
+      "n": 8
+     },
+     {
+      "term": "Mark Sample",
+      "n": 5
+     },
+     {
+      "term": "©-line",
+      "n": 3
+     },
+     {
+      "term": "themyersbriggs",
+      "n": 3
+     },
+     {
+      "term": "themyersbriggs.com",
+      "n": 3
+     },
+     {
+      "term": "The Myers-Briggs Company",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:11:16Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "9eb75edef979882269104c06c6eea523e3e199c6aad8fecd7a0ec17f4217d0f1",
+    "final_file": "S-5e149f.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "6ccca37255f29fc8eee90caa7e6ceae9cdbb99cc030f7604c8e4ba0d3cb5abcc",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-5e149f.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -291,7 +496,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "da58d6e2349bee34bb5ad667d9d5fedb7aa0da5b382c4309179c975f4cdb9217",
+   "packet_files": {
+    "sample.pdf": "9eb75edef979882269104c06c6eea523e3e199c6aad8fecd7a0ec17f4217d0f1",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "d966e612ea1712fe633944a8774f9cb33e14a1bd1fa2a99ccde808f695c06781",
+    "ANSWER.json": "f6d28cba9959215ac5f91b782262dcb4ce083548c77b41bd3e5b3e6b1024eb37"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "G01",
@@ -549,15 +761,56 @@
    "sample_url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
    "sample_sha256": "de5927e92ce87cb196f735a8494b87b05d782a9f611c51aaa5f0158e5a3ece85",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Doe",
+      "n": 37
+     },
+     {
+      "term": "Hogan",
+      "n": 31
+     },
+     {
+      "term": "HoganDevelop",
+      "n": 17
+     },
+     {
+      "term": "HPI",
+      "n": 7
+     }
+    ],
+    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:24:29Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "72b43f3ba7f32334e729b5154787a50050dc7873550e4f3791bfbeb1ccf4460f",
+    "final_file": "S-9d99bb.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "5674ec400ac71f34c593901453e7546a00287af9b901328cf5e2f3ccdd8e7b1b",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-9d99bb.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "1차 눈 확인에서 Hogan 본문 잔존 발견(결함 ⑩: ALLOWLIST) → 수정 후 재처리, 2차 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -623,7 +876,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "d6e5bb21e76c3c21906508c2e6f4649c7f4a3b68463597b4504e7bd68e2a7ad9",
+   "packet_files": {
+    "sample.pdf": "72b43f3ba7f32334e729b5154787a50050dc7873550e4f3791bfbeb1ccf4460f",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "64ece0122caef3dd4fb19dd7517983e24e0ec3ce5faa733b512e3705c1e87c77",
+    "ANSWER.json": "422a765af70ddf6bda974551b102cd35755f0e68b20375f336e99db74504822b"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "G06",
@@ -715,15 +975,48 @@
    "sample_url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
    "sample_sha256": "ddf9cb9d59ea1efdb1c7031d46ba36aa1984913160fab0acfb953ac364f63b4d",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Pamela",
+      "n": 12
+     },
+     {
+      "term": "Coleman",
+      "n": 4
+     }
+    ],
+    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:13:04Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "629944a74689dfe4d576f8035dd45f5911f0f75193a0430d0aa4b91ef79e7e45",
+    "final_file": "S-e9e660.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "4f3e77b2c45ffc5d59173fe341402306e93e5fda5c3e49c0d5479482a8834dad",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-e9e660.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -789,7 +1082,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "9f89ad66fb29e17d77faac9381edce0fc2f4e6044b4f007237c6840eebed7073",
+   "packet_files": {
+    "sample.pdf": "629944a74689dfe4d576f8035dd45f5911f0f75193a0430d0aa4b91ef79e7e45",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "57da4ce26b6711b3d6e83db218a33fa26c9d12d803ed1872449b1138c49be37d",
+    "ANSWER.json": "24e54c099e305d64dc05302fb18a6b26c730fda3d325c9375426b746820f4af2"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "G08",
@@ -1130,15 +1430,84 @@
    "sample_url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
    "sample_sha256": "63b66d5c1ea80fe962a7b139df06f50aba5ef1aeed8b8a89685cdee47a1a79d9",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Strong Interest Inventory",
+      "n": 20
+     },
+     {
+      "term": "JANE",
+      "n": 18
+     },
+     {
+      "term": "Jane Sample",
+      "n": 18
+     },
+     {
+      "term": "JANE SAMPLE",
+      "n": 18
+     },
+     {
+      "term": "SAMPLE F",
+      "n": 18
+     },
+     {
+      "term": "Jane",
+      "n": 18
+     },
+     {
+      "term": "CPP",
+      "n": 4
+     },
+     {
+      "term": "©-line",
+      "n": 2
+     },
+     {
+      "term": "cpp.com",
+      "n": 2
+     },
+     {
+      "term": "CPP, Inc",
+      "n": 2
+     },
+     {
+      "term": "guidance",
+      "n": 2
+     }
+    ],
+    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:28:54Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "b13275f027e39439c921f90033e71694b4764359ecbef54491400f3c134448de",
+    "final_file": "S-f7229a.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "7744ebe91b88369459459fb3df815cc7e6fd3aa47d47f5208c8abb2951516882",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-f7229a.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "1차 눈 확인에서 머리글 JANE SAMPLE 잔존 → extra 추가 재처리, 2차 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -1204,7 +1573,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "f7340ffe2b1bba85a5c92884b33b1c7d760907515157d8471c053a4b929306f6",
+   "packet_files": {
+    "sample.pdf": "b13275f027e39439c921f90033e71694b4764359ecbef54491400f3c134448de",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "e1ae99256925de8cf9da14dc27dc55736db16096000028a65ad5b98bb14b7d49",
+    "ANSWER.json": "04a68fce73c4c2966220d6e7e195dfea58d7d1033701e88bab681120a73ec601"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "G15a",
@@ -2041,17 +2417,46 @@
    "name": "어세스타 STRONG II",
    "blind_id": "S-10bfa2",
    "sample_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
-   "sample_sha256": null,
+   "sample_sha256": "87709d9354ef440fa53f6d8c48e73023f4c039cba25802851a2b2f7fd7024f87",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "홍길동",
+      "n": 69
+     }
+    ],
+    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:19:49Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "ca4f7c85e473a1a03e1853cc4992f283285edc026f4ee3ee32b975396d43a5f5",
+    "final_file": "S-10bfa2.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "25890ded9c43aaced92dc7b3ae9035af7e67938340f137da2da22881a5f407cb",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-10bfa2.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -2117,7 +2522,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "a7117a7314ddd129ef22c3a50c509f198c1596d4fd9c5d3d8405ecfd3bc4a40c",
+   "packet_files": {
+    "sample.pdf": "ca4f7c85e473a1a03e1853cc4992f283285edc026f4ee3ee32b975396d43a5f5",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "b7eddca3ea071200160d5f00d27b158c146d06e46145730e62a91ad46026ae2f",
+    "ANSWER.json": "c01939c4b94ada832e11b4985045f8e4c310d786c880c396a69a2dff76ec9ad7"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K05",
@@ -2126,15 +2538,60 @@
    "sample_url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
    "sample_sha256": "4df5a39ad5f86e0cf4a6203937bd51121cb37b8a281f8d0edca1bd8c15345ca0",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "김재능",
+      "n": 12
+     },
+     {
+      "term": "Tanagement",
+      "n": 10
+     },
+     {
+      "term": "tanagement",
+      "n": 10
+     },
+     {
+      "term": "TANAGEMENT",
+      "n": 10
+     },
+     {
+      "term": "태니지먼트",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "a4db0e38677ecd95717f1aa4a30312d5d73fbe834d6c1b15ff73c5d20ee9fdc2",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:17:13Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "798fd69e19cd4e7d3cc844d7def16b47e98d0bef5ed326513faabb5e202072f2",
+    "final_file": "S-04d5ce.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "42fa74c30e01f33d762abdf02734161adca6a2d0893a394be3c2cd17ec74047d",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-04d5ce.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "썸네일 시트·머리/바닥글 확대 확인 통과"
+    }
    },
-   "status": "ready",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -2200,7 +2657,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "4889e4d315819cb0a03e892bcc5c9dc4767033f9f799f089372318502d3f990c",
+   "packet_files": {
+    "sample.pdf": "798fd69e19cd4e7d3cc844d7def16b47e98d0bef5ed326513faabb5e202072f2",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "16b3b95e3e7264addca3bb3e089a4ce6c5214b8d9d46d0fae9ea17d1be3fa945",
+    "ANSWER.json": "a0ce91c128e9874973d1aa3d5b5cb425b78d1eb5caa3a646648214e28a546ab8"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K01a",
@@ -3037,17 +3501,46 @@
    "name": "어세스타 MBTI Form M(한국판)",
    "blind_id": "S-927ba4",
    "sample_url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
-   "sample_sha256": null,
+   "sample_sha256": "e85d5dd4b0097829e4a2bfc944c3e76f7c82a33c9e39bb4cb7af56a0e929e67b",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Myers-Briggs",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "f4074de58eba8ef4114bb164ecf355df126d8970b91ccb7978a8b1c4134e13ce",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "checked_at": "2026-10-12T04:29:44Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "b238cf0dd4a792bbc1a460de61ebe506b9eb54a504abaa7236798c7e38bf0b74",
+    "final_file": "S-927ba4.img.pdf",
+    "final_format": "image-pdf@170dpi",
+    "intermediate_sha256": "280cf7a383571a2bd9dea27a8092e24f7baea815d8638979c6bae8d815721d20",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-927ba4.img.contact.png",
+     "passed": true,
+     "by": "gencode(assistant) — 썸네일 시트 + 의심 부위 110~130dpi 확대",
+     "at": "2026-10-12T04:30:18Z",
+     "note": "1차 눈 확인에서 2쪽 하단 로고 조각(벡터) 잔존 → --boxes 2:0.05,0.78,0.20,0.95 재처리, 2차 확인 통과"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -3113,7 +3606,14 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null
+   "packet_sha256": "1726e571f2bb82b29fb9d79f8374b8f17f51467423a29c6d91bb894854d4f261",
+   "packet_files": {
+    "sample.pdf": "b238cf0dd4a792bbc1a460de61ebe506b9eb54a504abaa7236798c7e38bf0b74",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "03089e3fe72fdec13d5cb91a0e9a585057703114557e5c3ffc8a841c2c69b651",
+    "ANSWER.json": "0c0540115b68529b01de36633e0ad4d67222a25b8a29b84abca409f7fbe27f76"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K18",
@@ -3364,5 +3864,16 @@
    "A5": null,
    "packet_sha256": null
   }
+ ],
+ "packet_order": [
+  "S-04d5ce",
+  "S-10bfa2",
+  "S-4e6f48",
+  "S-5e149f",
+  "S-927ba4",
+  "S-9d99bb",
+  "S-da397f",
+  "S-e9e660",
+  "S-f7229a"
  ]
 }
