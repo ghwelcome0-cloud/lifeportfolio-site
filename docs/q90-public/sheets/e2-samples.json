@@ -6011,6 +6011,32 @@
       ]
     },
     "persona_doc": "judge/RESPONDENT-PERSONA-v1.md",
-    "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7"
+    "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7",
+    "respondent_screening": [
+      {
+        "agent": "QA agent_7wqfjbes9jms",
+        "msg": "6108924",
+        "Q1": "예(라이프포트폴리오 QA 이력)",
+        "result": "불가"
+      },
+      {
+        "agent": "데이터 사이언티스트 agent_4w44sy00532j",
+        "msg": "6109067",
+        "Q1": "예(Q90 문항 감사)",
+        "result": "불가"
+      },
+      {
+        "agent": "데이터 분석가 agent_h23b3e0hykxz",
+        "msg": "6109058",
+        "Q1": "예(라이프포트폴리오 감사)",
+        "result": "불가"
+      }
+    ],
+    "respondent_agent": {
+      "status": "Genny 생성 요청 6109154 (확인 카드 대기)",
+      "name": "검사 응시 보조",
+      "bio_doc": "judge/RESPONDENT-AGENT-BIO-v1.txt",
+      "bio_sha256": "0d6e444df181cf46db875c044000202d5b4e918ee25025fb818be0927b563bef"
+    }
   }
 }
