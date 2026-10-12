@@ -254,7 +254,7 @@
 | #402 | 사명·비전 상장 지면 아래 날짜 제거, 「인생포트폴리오」만 | 병합 · 배포 · 실서비스 확인 |
 | #403 | 마이페이지 네 축 퍼센트 → 「고유성 기반 자산화 유형」 카드(asset-type-card-v1) | 병합 · 배포 · 실서비스 확인 |
 | #404 | 다이어리 해설서 08 「비전카드 자세히 보기」(#vision-card) + 비전카드 아래 링크 | 병합 · 배포 · 실서비스 확인 |
-| #405 | asset-program-v1: II·IV·V·VI·VII·VIII·IX 를 12주 퀘스트 한 축에(IV 3개월=세 매듭, 1년=카드 네 번 넓히기), 제작규칙 AP-1(program-rules.json assetProgramRule) · 제작규칙서 제44조, 프로그램 화면 「응답 근거」 버튼 제거 | PR · CI 대기 |
+| #405 | asset-program-v1: II·IV·V·VI·VII·VIII·IX 를 12주 퀘스트 한 축에(IV 3개월=세 매듭, 1년=카드 네 번 넓히기), 제작규칙 AP-1(program-rules.json assetProgramRule) · 제작규칙서 제44조, 프로그램 화면 「응답 근거」 버튼 제거 | 병합 · 배포 · 실서비스 확인 |
 
 - #405 고정: 추가 줄 전부 `// AP1` 로 끝남 → scripts/_asset-program-approved.cjs 가 제거·sha 고정(test-axis-program-link, test-viewer-toolbar-layout). 새 줄을 넣을 때도 같은 표시 + json 재고정.
 - 새 프로그램에만 적용(새로 만들기·다시 만들기). 이미 저장된 프로그램은 「🔄 프로그램 재생성」을 눌러야 새 장이 보임.
