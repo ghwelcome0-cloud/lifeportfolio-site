@@ -29,7 +29,8 @@
   "2026-10-12 3차: time_min은 공식 FAQ/제품 페이지 문장 그대로(범위면 상한), 묶음 제품은 1종 값만 적고 묶음 합계는 추정 금지. 가격은 운영사 소매 사이트도 공식 출처로 인정(M03 mbtionline.com $59.95 → \"비공개\" 정정).",
   "2026-10-12 3차-b: 제품 유형상 칸이 성립하지 않는 경우(코칭 플랫폼·SaaS·종이 제품의 time_min/docs_url) value=null + note \"해당 없음\"으로 적고 표에는 \"해당 없음\"(미측정과 구분). 진행률은 이런 칸을 분모에서 뺀다(E2 §21과 같은 원칙, 근거 URL 필수).",
   "2026-10-12 3차-c: 명부 이관 가격이 공식 가격표와 다르면 공식 값으로 정정하고 note에 이전 값 남김(M01 ~15만→~8만원). 기관 키트 가격은 개인 1회 비용으로 쓰지 않음(G15b).",
-  "2026-10-12 3차-d: 자사(OWN) 행을 같은 7칸·같은 출처 규칙으로 채움. 자사 가점 금지 — limits에 회사가 공개 인정한 미검증 사실(신뢰도 계수 없음) 그대로 적음. reliability_coef는 \"해당 없음\"이 아니라 \"없음(공개 인정)\"으로 구분(제품 유형상 성립 안 하는 칸이 아니라 아직 못 한 칸이므로 분모에 남김)."
+  "2026-10-12 3차-d: 자사(OWN) 행을 같은 7칸·같은 출처 규칙으로 채움. 자사 가점 금지 — limits에 회사가 공개 인정한 미검증 사실(신뢰도 계수 없음) 그대로 적음. reliability_coef는 \"해당 없음\"이 아니라 \"없음(공개 인정)\"으로 구분(제품 유형상 성립 안 하는 칸이 아니라 아직 못 한 칸이므로 분모에 남김).",
+  "2026-10-13 4차 마감: 남은 21칸은 공식 페이지에 값이 없거나(소요시간 대부분) JS/차단으로 본문 미노출. 제3자 수치 금지 규칙 유지 → 미기재로 확정, 추가 탐색 중단(E3 90%)."
  ],
  "rows": [
   {
@@ -880,7 +881,7 @@
     "value": null,
     "source_url": null,
     "collected_at": null,
-    "note": ""
+    "note": "birkman.com 제품·메서드 페이지에 분·문항 수 없음(4차)"
    },
    "price_krw": {
     "value": null,
@@ -1234,7 +1235,7 @@
     "value": null,
     "source_url": "https://www.16personalities.com/ko",
     "collected_at": "2026-10-12",
-    "note": "공식 페이지 본문에 소요시간 미기재(명부 v2의 12분은 미확인 값 → 표에 올리지 않음) | 4차 2026-10-12 시도: 16personalities.com 60바이트(차단) → 미확인"
+    "note": "공식 페이지 본문에 소요시간 미기재(명부 v2의 12분은 미확인 값 → 표에 올리지 않음) | 4차 2026-10-12 시도: 16personalities.com 60바이트(차단) → 미확인 | 16personalities.com 검사 페이지 JS 렌더 뒤에도 소요시간 문장 없음(4차)"
    },
    "price_krw": {
     "value": 29,
@@ -2166,7 +2167,7 @@
     "value": null,
     "source_url": "https://fullfocusstore.com/products/full-focus-planner-linen",
     "collected_at": "2026-10-12",
-    "note": "미측정 — 상점 페이지가 봇 요청에 429(차단). 렌더 2회 실패. 국내 egress/수동 확인 후보"
+    "note": "미측정 — 상점 페이지가 봇 요청에 429(차단). 렌더 2회 실패. 국내 egress/수동 확인 후보 | fullfocusstore.com 18바이트(차단) — 가격 미확인(4차)"
    },
    "price_transparency": {
     "value": "공개",
@@ -3732,9 +3733,9 @@
    },
    "time_min": {
     "value": 10,
-    "source_url": "https://www.career.go.kr/cloud/m/inspect/student",
-    "collected_at": "2026-10-12",
-    "note": "공식 표기 10분, 28문항"
+    "source_url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+    "collected_at": "2026-10-13",
+    "note": "공식 표기 10분, 28문항 | 4차 2026-10-13: 현행 소개 페이지 \"10분 · 28문항\""
    },
    "price_krw": {
     "value": 0,
@@ -3844,9 +3845,9 @@
    },
    "time_min": {
     "value": 30,
-    "source_url": "https://www.career.go.kr/cloud/m/inspect/student",
-    "collected_at": "2026-10-12",
-    "note": "공식 표기 25~30분, 35문항 — 상한값 기재"
+    "source_url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+    "collected_at": "2026-10-13",
+    "note": "공식 표기 25~30분, 35문항 — 상한값 기재 | 4차 2026-10-13: 현행 소개 페이지 \"30분 · 35문항\""
    },
    "price_krw": {
     "value": 0,
@@ -4067,40 +4068,40 @@
     "note": "FAQ: \"회원 자격에 따라 구매 가능한 검사 및 가격이 상이\" · 기관/전문가 회원 승인 1일"
    },
    "time_min": {
-    "value": 40,
-    "source_url": "https://www.guidance.co.kr/",
-    "collected_at": "2026-10-12 G21 §4",
-    "note": "명부 v2 이관 — 재확인 필요"
+    "value": 45,
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "명부 v2 이관 — 재확인 필요 | 4차 2026-10-13: 적성탐색검사(대학·성인용, Holland SDS) 상품 페이지 \"45 분\" — 명부 이관값 40은 미확인이었음 → 공식값으로 정정 (이전 값 40)"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 30000,
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "4차 2026-10-13: \"전산용Set : 30,000원 / 온라인카운트 : 30,000원\" 로그인 없이 표시(기관 구매 단가, 개인 1회 비용 근사)"
    },
    "price_band": {
-    "value": "비공개",
-    "source_url": "https://www.guidance.co.kr/",
-    "collected_at": "2026-10-12",
-    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"숨김(로그인 후)\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
+    "value": "1~5만원",
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"숨김(로그인 후)\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only). | 4차 2026-10-13: 공식 상품 페이지에 가격 공개 확인 → \"비공개\"는 2차 때 스토어 로그인 화면만 본 오판(제품 소개 페이지는 공개). 정정 (이전 값 '비공개')"
    },
    "price_transparency": {
-    "value": "숨김(로그인 후)",
-    "source_url": "https://www.guidance.co.kr/",
-    "collected_at": "2026-10-12",
-    "note": "\"상품명과 가격이 안보여요 → 로그인 후 확인\""
+    "value": "공개",
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "\"상품명과 가격이 안보여요 → 로그인 후 확인\" | 4차 2026-10-13: 상품 페이지에 가격 명시 (이전 값 '숨김(로그인 후)')"
    },
    "reuse_price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "4차 2026-10-13: 재응시 가격 미기재(온라인카운트 1건=1회)"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "4차 2026-10-13: \"검사요강(진로탐색·전공탐색·적성탐색 공통요강)\" 매뉴얼은 유료 상품으로만 존재 — 공개 기술문서 없음. 상품 소개 페이지를 문서 URL로 기록, 신뢰도·규준 수치 미기재"
    },
    "reliability_coef": {
     "value": null,
@@ -4524,7 +4525,7 @@
     "value": null,
     "source_url": "https://www.16personalities.com/ko",
     "collected_at": "2026-10-12",
-    "note": "공식 페이지 본문에 소요시간 미기재(명부 v2의 12분은 미확인 값 → 표에 올리지 않음) | 4차 2026-10-12 시도: 16personalities.com/ko 60바이트(차단) → 미확인"
+    "note": "공식 페이지 본문에 소요시간 미기재(명부 v2의 12분은 미확인 값 → 표에 올리지 않음) | 4차 2026-10-12 시도: 16personalities.com/ko 60바이트(차단) → 미확인 | 16personalities.com/ko 검사 페이지 JS 렌더 뒤에도 소요시간 문장 없음(크롤러 render_js, 4차)"
    },
    "price_krw": {
     "value": 0,

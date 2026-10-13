@@ -46,14 +46,17 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
 const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A3 ★', 'A4 ★', 'A5', 'A6', 'A7(등급)', 'A8', '비용 구간', '소요(분)', '한계(공개 문서 기준)'];
 const e1full = Object.values(e1).filter(v => !v.own && v.a61 && v.a71).length; const e1n = Object.values(e1).filter(v => !v.own && (v.a61 || v.a71)).length, nonOwn = roster.rows.filter(r => !r.retired && !r.own).length;
 let md = `# 공개 비교표 v2 — ${path.basename(RUN)}\n\n자: rubric ${rubric.version} (sha256 ${sha(RUBRIC).slice(0, 16)}…) · 명부 ${roster.version} (sha256 ${sha(ROSTER).slice(0, 16)}…) · 생성 ${new Date().toISOString()}\n\n`;
-md += `E1 실측 분모: ${e1n}/${nonOwn}행(전체 ${e1full} + 부분 ${e1n - e1full}; 최종 응답 2xx만 성공으로 셈, 비-2xx 축은 "측정 무효(HTTP 코드)") (나머지 행은 E1 미측정). **자사(OWN) 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.**\n\n`;
-md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서도판)=회사 공식 문서 안에 실린 리포트 도판(쪽수 적음, 부분 n/m=판독 가능 쪽) — **(샘플)과 (문서도판)은 같은 열이라도 직접 비교 금지** · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · "해당 없음"=제품 유형상 그 칸이 성립하지 않음(근거 URL 있음) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
 const asm = fs.existsSync(path.join(RUN, 'assembly.json')) ? JSON.parse(fs.readFileSync(path.join(RUN, 'assembly.json'), 'utf8')) : null;
+md += `E1 실측 분모: ${e1n}/${nonOwn}행(전체 ${e1full} + 부분 ${e1n - e1full}; 최종 응답 2xx만 성공으로 셈, 비-2xx 축은 "측정 무효(HTTP 코드)"${asm && asm.url_corrected_rows ? `; 그중 ${asm.url_corrected_rows.rows.length}행(${asm.url_corrected_rows.rows.join('·')})은 명부 URL이 404라 결과 뒤 현행 주소로 교정해 다시 잼(G21 §28)` : ''}) (나머지 행은 E1 미측정). **자사(OWN) 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.**\n\n`;
+md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서도판)=회사 공식 문서 안에 실린 리포트 도판(쪽수 적음, 부분 n/m=판독 가능 쪽) — **(샘플)과 (문서도판)은 같은 열이라도 직접 비교 금지** · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · "해당 없음"=제품 유형상 그 칸이 성립하지 않음(근거 URL 있음) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
 if (asm) md += `E1 조립(G21 §24): 행마다 성공적으로 측정한 가장 최근 run 값 — 입력 ${asm.inputs.map(i => `${i.run}·${i.egress_country}(${i.rows}행)`).join(', ')} · 도구 sha ${String(asm.tool_sha256).slice(0, 12)}… · E1 칸의 \`rN·CC\` = 측정 run 번호·출구 국가 · 미측정(시간 초과/접근 차단/대상 없음/기타 오류)=실패 분류, 0점 아님 · 미측정(시간 초과)인 고용24 행은 국내 접속에서도 시간 초과.\n\n`;
 md += '| ' + h.join(' | ') + ' |\n|' + h.map(() => '---').join('|') + '|\n';
 for (const r of rows) md += `| ${r.id} | ${r.own ? '**' + r.name + '** (자사)' : r.name} | ${r.group} | ${r.appeal || '_(채움 예정)_'} | ${r.A1} | ${r.A2} | ${r.A3} | ${r.A4} | ${r.A5} | ${r.A6} | ${r.A7} | ${r.A8} | ${r.price_band} | ${r.time_min ?? '—'} | ${r.limits || '_(채움 예정)_'} |\n`;
 if (thirdCells.length) md += `\n‡ judge 2인 차이≥2 → 제3자가 두 답 중 하나를 고른 칸(${thirdCells.length}칸: ${thirdCells.join(' · ')}). 제3자와 judge1은 같은 모델(Claude Opus 5.5, 자기신고·대표 선택). ${thirdCells.length}칸 모두 judge1 답 선택 = 모두 낮은 쪽 값 선택(사실만, 검정 불가, 결과 보고 판정 안 바꿈 — 결과 전 결박).\n`;
-if (priorFail.length) md += `\n※ 해외 접속 시 시간 초과였다가 국내 접속에서 측정된 행(${priorFail.length}): ${priorFail.map(p => p.split(':')[0]).join(' · ')} — ${priorFail[0].split(': ')[1]}.\n`;
+if (priorFail.length) { // 사유별로 묶어 각주(T12: 사유를 한 문장으로 뭉뚱그리던 결함 수정)
+  const groups = {}; for (const p of priorFail) { const [id, why] = p.split(/: (.+)/); const k = why.replace(/\(r\d+\)/, '(rN)'); (groups[k] = groups[k] || []).push(id); }
+  for (const [why, ids] of Object.entries(groups)) md += `\n※ ${why.replace('(rN)', '')} — 해당 행(${ids.length}): ${ids.join(' · ')}.\n`;
+}
 md += `\n주장 범위: 자사 점수는 tag q90-r2-candidate(3d3ebb4) 시점 제품에 한함. 공공 무료 검사는 세금으로 운영됨. 보안(A7)은 등급만 공개(대표 결정 D2).\n`;
 fs.writeFileSync(path.join(RUN, 'table-v2.md'), md);
 fs.writeFileSync(path.join(RUN, 'table-v2.json'), JSON.stringify({ rubric: rubric.version, rubric_sha256: sha(RUBRIC), roster: roster.version, roster_sha256: sha(ROSTER), generatedAt: new Date().toISOString(), third_cells: thirdCells, rows }, null, 1));

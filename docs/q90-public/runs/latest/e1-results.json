@@ -26,10 +26,19 @@
     "K13",
     "K18"
    ]
+  },
+  {
+   "run": "r5",
+   "dir": "2026-10-13-r5",
+   "egress_country": "US",
+   "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+   "startedAt": "2026-10-13T00:52:57.775Z",
+   "rows": 2,
+   "bridge_rows": []
   }
  ],
  "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-12T23:14:45.558Z",
+ "generatedAt": "2026-10-13T01:01:29.127Z",
  "roster_version": "v2.0",
  "evidence": "E1",
  "startedAt": "2026-10-12T09:50:27.974Z",
@@ -2517,14 +2526,14 @@
    "row": "K13",
    "name": "커리어넷 직업가치관검사(성인)",
    "group": "국내",
-   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
    "skip": false,
    "origin": "https://www.career.go.kr",
-   "measuredAt": "2026-10-12T22:44:46.549Z",
+   "measuredAt": "2026-10-13T00:53:11.886Z",
    "headers": {
     "ok": true,
-    "status": 404,
-    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/intro",
+    "status": 200,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/value/intro",
     "https": true,
     "hsts": false,
     "xcto": false,
@@ -2534,8 +2543,8 @@
     "csp": false,
     "cspReporting": false,
     "server": "nginx",
-    "bodyBytes": 78,
-    "bodySha256": "e135d141d19e6ad45974220a40fde243488a667aa62a51848a4a7c14d66290c2"
+    "bodyBytes": 86917,
+    "bodySha256": "86897396ed76ef7fc5c059ec81318c53556f0e2dc2dab6004fa29601683802ef"
    },
    "publicSurface": [
     {
@@ -2571,43 +2580,43 @@
    ],
    "mobile": {
     "ok": true,
-    "status": 404,
-    "title": "ERROR",
-    "domSha256": "c58eedd5531ef2517f4e204d07411a7e96119c58278cad2e11371a6e9f774195",
+    "status": 200,
+    "title": "진로심리검사 > 대학생∙일반용 > 직업가치관검사 | 진로정보망 커리어넷",
+    "domSha256": "be42a2346106d58a8de62913fffaa0992e8bfbb62290391ae6fad38bdb8a2e1a",
     "viewportMeta": true,
-    "viewportContent": "width=device-width, initial-scale=1.0",
+    "viewportContent": "width=device-width",
     "zoomBlocked": false,
-    "docW": 390,
-    "innerW": 390,
+    "docW": 1380,
+    "innerW": 1380,
     "overflow": false,
     "text": {
-     "blocks": 3,
-     "ge16": 3,
+     "blocks": 29,
+     "ge16": 28,
      "lt12": 0,
-     "chars": 106,
-     "chars16": 106
+     "chars": 2174,
+     "chars16": 2134
     },
     "touch": {
-     "total": 1,
-     "ok44": 1,
-     "ok24": 1
+     "total": 24,
+     "ok44": 8,
+     "ok24": 22
     },
     "lang": "ko"
    },
-   "assembled_from": "r4·KR"
+   "assembled_from": "r5·US"
   },
   {
    "row": "K14",
    "name": "커리어넷 진로개발준비도검사",
    "group": "국내",
-   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
    "skip": false,
    "origin": "https://www.career.go.kr",
-   "measuredAt": "2026-10-12T10:08:14.859Z",
+   "measuredAt": "2026-10-13T00:53:19.465Z",
    "headers": {
     "ok": true,
-    "status": 404,
-    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/intro",
+    "status": 200,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
     "https": true,
     "hsts": false,
     "xcto": false,
@@ -2617,8 +2626,8 @@
     "csp": false,
     "cspReporting": false,
     "server": "nginx",
-    "bodyBytes": 78,
-    "bodySha256": "1a797b5f4a1fb0ae17b5fe976c94daed39c6f6a9b26226d6cd8bff735750b820"
+    "bodyBytes": 55399,
+    "bodySha256": "b32b964b277b3edfe5c047d86b8283636c2013efe5fe8de5dcec6c7bd594e996"
    },
    "publicSurface": [
     {
@@ -2654,30 +2663,30 @@
    ],
    "mobile": {
     "ok": true,
-    "status": 404,
-    "title": "ERROR",
-    "domSha256": "c58eedd5531ef2517f4e204d07411a7e96119c58278cad2e11371a6e9f774195",
+    "status": 200,
+    "title": "진로심리검사 > 대학생∙일반용 > 진로개발준비도검사 | 진로정보망 커리어넷",
+    "domSha256": "9d1abc0e2dce8a110ba74a02217cf0832a5435d2e9ba244cbe3260955d2d7683",
     "viewportMeta": true,
-    "viewportContent": "width=device-width, initial-scale=1.0",
+    "viewportContent": "width=device-width",
     "zoomBlocked": false,
-    "docW": 390,
-    "innerW": 390,
+    "docW": 1380,
+    "innerW": 1380,
     "overflow": false,
     "text": {
-     "blocks": 3,
-     "ge16": 3,
+     "blocks": 20,
+     "ge16": 19,
      "lt12": 0,
-     "chars": 106,
-     "chars16": 106
+     "chars": 792,
+     "chars16": 752
     },
     "touch": {
-     "total": 1,
-     "ok44": 1,
-     "ok24": 1
+     "total": 28,
+     "ok44": 6,
+     "ok24": 20
     },
     "lang": "ko"
    },
-   "assembled_from": "r3·US"
+   "assembled_from": "r5·US"
   },
   {
    "row": "K15",

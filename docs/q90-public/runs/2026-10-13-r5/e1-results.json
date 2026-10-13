@@ -1,0 +1,173 @@
+{
+ "tool": "measure-e1.cjs",
+ "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_version": "v2.0",
+ "evidence": "E1",
+ "startedAt": "2026-10-13T00:52:57.775Z",
+ "results": [
+  {
+   "row": "K13",
+   "name": "커리어넷 직업가치관검사(성인)",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-13T00:53:11.886Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 86917,
+    "bodySha256": "86897396ed76ef7fc5c059ec81318c53556f0e2dc2dab6004fa29601683802ef"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "진로심리검사 > 대학생∙일반용 > 직업가치관검사 | 진로정보망 커리어넷",
+    "domSha256": "be42a2346106d58a8de62913fffaa0992e8bfbb62290391ae6fad38bdb8a2e1a",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 1380,
+    "innerW": 1380,
+    "overflow": false,
+    "text": {
+     "blocks": 29,
+     "ge16": 28,
+     "lt12": 0,
+     "chars": 2174,
+     "chars16": 2134
+    },
+    "touch": {
+     "total": 24,
+     "ok44": 8,
+     "ok24": 22
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K14",
+   "name": "커리어넷 진로개발준비도검사",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+   "skip": false,
+   "origin": "https://www.career.go.kr",
+   "measuredAt": "2026-10-13T00:53:19.465Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+    "https": true,
+    "hsts": false,
+    "xcto": false,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": "nginx",
+    "bodyBytes": 55399,
+    "bodySha256": "b32b964b277b3edfe5c047d86b8283636c2013efe5fe8de5dcec6c7bd594e996"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 404,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "진로심리검사 > 대학생∙일반용 > 진로개발준비도검사 | 진로정보망 커리어넷",
+    "domSha256": "9d1abc0e2dce8a110ba74a02217cf0832a5435d2e9ba244cbe3260955d2d7683",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 1380,
+    "innerW": 1380,
+    "overflow": false,
+    "text": {
+     "blocks": 20,
+     "ge16": 19,
+     "lt12": 0,
+     "chars": 792,
+     "chars16": 752
+    },
+    "touch": {
+     "total": 28,
+     "ok44": 6,
+     "ok24": 20
+    },
+    "lang": "ko"
+   }
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "version": "v2.0",
+ "frozen_before_results": true,
+ "id_rule": "행 ID는 불변. 대상 교체·추가는 새 ID. 삭제 대신 retired:true.",
+ "rows": [
+  {
+   "id": "K13",
+   "name": "커리어넷 직업가치관검사(성인)",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+   "provider": "한국직업능력연구원(교육부)",
+   "country": "KR",
+   "access": "무료",
+   "time_min": 20,
+   "price_krw_band": 0,
+   "sample_report_url": null,
+   "docs_url": null,
+   "appeal": "",
+   "limits": "",
+   "since": "2026-10-12 G21 §4",
+   "url_note": "명부 v2 URL은 404(사이트 경로 이전). 같은 제품의 현행 공식 소개 페이지로 교정 — §28 결박(팀 대조) 전까지 r5 결과는 표에 올리지 않음"
+  },
+  {
+   "id": "K14",
+   "name": "커리어넷 진로개발준비도검사",
+   "group": "국내",
+   "url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+   "provider": "한국직업능력연구원(교육부)",
+   "country": "KR",
+   "access": "무료",
+   "time_min": 20,
+   "price_krw_band": 0,
+   "sample_report_url": null,
+   "docs_url": null,
+   "appeal": "",
+   "limits": "",
+   "since": "2026-10-12 G21 §4",
+   "url_note": "명부 v2 URL은 404(사이트 경로 이전). 같은 제품의 현행 공식 소개 페이지로 교정 — §28 결박(팀 대조) 전까지 r5 결과는 표에 올리지 않음"
+  }
+ ],
+ "subset_of": "roster-v2.json (K13·K14 URL 교정판, 2026-10-13)"
+}
