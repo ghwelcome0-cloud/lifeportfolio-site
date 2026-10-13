@@ -120,14 +120,125 @@
    "sealed_at": "",
    "msg": "",
    "note": ""
+  },
+  {
+   "surface": "A5.5.independent_replication",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.5.independent_replication.X4.json",
+   "file_sha256": "7526f7a3",
+   "body_sha256": "e6423841",
+   "sealed_at": "2026-10-13T06:1xZ",
+   "msg": "X4b",
+   "note": "게이트까지만 재현(census 부재 사실 공개) + sidecar f51d1786"
+  },
+  {
+   "surface": "A5.7.counterexample_review(contrast20)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.counterexample_review.X1.json",
+   "file_sha256": "6cdcffb3",
+   "body_sha256": "6968a659",
+   "sealed_at": "2026-10-13T06:3xZ",
+   "msg": "X1b",
+   "note": "248행 · 기준 criteria_A57.X1.txt 002c6062(명세 미정의 → X1 자체 정의, 06:32:44Z 사전 고정)"
+  },
+  {
+   "surface": "A5.7.applied_review(contrast20)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.applied_review.X1.json",
+   "file_sha256": "23eb3bc6",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T06:3xZ",
+   "msg": "X1b",
+   "note": "120행"
+  },
+  {
+   "surface": "contrast_set MANIFEST",
+   "actor": "TL agent_f6d6hkjm9p5k",
+   "file": "contrast MANIFEST",
+   "file_sha256": "511218adc5e005b1136e7bef885a0b1329fd3d97b9b94d8271cb5c387653e7da",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T05:2xZ",
+   "msg": "TL DM",
+   "note": "24단위 중 20 완료/4 stuck(실패로 봉인) · 재실행 3 승인 · 33 call 결박"
+  },
+  {
+   "surface": "R2 MANIFEST(valid 24 + contrast)",
+   "actor": "TL agent_f6d6hkjm9p5k",
+   "file": "r2-MANIFEST.json",
+   "file_sha256": "5603caf92df97a5c1701e0fd80ef65e52bba830dd3d5ff60449f503ab9e8bbad",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:00:36Z",
+   "msg": "6164004",
+   "note": "36단위 봉인 · 크레딧 스냅샷 시작 369,504.396 → 끝 348,126.996"
+  },
+  {
+   "surface": "judge bundle A(valid 24)",
+   "actor": "TL",
+   "file": "judge-bundle-A.json",
+   "file_sha256": "7715c2c7cc0d666345871fe54c561c61b69456d8a028a3cc53eef7176fb10c71",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:05:53Z",
+   "msg": "6164842",
+   "note": "stage2 lock 85d5db9d · 대응표 ea683c0c(총괄만 보유) · void-attempt1(case_id·lang 누락, 미전달) 공개"
+  },
+  {
+   "surface": "judge bundle B(contrast 20)",
+   "actor": "TL",
+   "file": "judge-bundle-B.json",
+   "file_sha256": "9affbb0d417f239f4c9d148c26dceb8e046804fc1df34dbf5c9d160fcb4fb050",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:05:54Z",
+   "msg": "6164842",
+   "note": "stage2 lock b2f0a5de · 대응표 b20be82e · case_id·lang 비표시"
+  },
+  {
+   "surface": "A5.8.claim_inventory report/program(owner-filled)",
+   "actor": "총괄 ac00a922 (입력 TL 776976e8)",
+   "file": "CLAIM-INVENTORY.reportprogram.v1.owner-filled.json",
+   "file_sha256": "a4761a1634699c7105bbe4fca2f778eb75f6dce81ba41bdbc2a5cafa7dbbbf40",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:30Z",
+   "msg": "6172513",
+   "note": "1,455행 · g17 960 / exception 495(개발 주석 491·구조 4) · 기계 규칙 · 렌더 텍스트 스크립트 혼입 사실 → G17 §7 한계 + Peer 확인 항목"
+  },
+  {
+   "surface": "A1.restatement(X1)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A1.restatement.X1.json",
+   "file_sha256": "303ced6c878f9123ba8359fcbf2fb9d4ff609146da3eb6cab40d273cef3df7b2",
+   "body_sha256": "8f06656eae773f6793b5adf022c3701809b4ef05e3faf3355bb4609540fe0f5d",
+   "sealed_at": "2026-10-13T07:15:38Z",
+   "msg": "6165857",
+   "note": "24단위 · 인용 부분문자열 불일치 0(총괄 재검) · response_ui 캡처 없음 한계"
+  },
+  {
+   "surface": "A5.7.counterexample_review(final24)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.counterexample_review.X1.final24.json",
+   "file_sha256": "7912229f0b6ebec606dd4009ffa71db3dbf0e0518eccf9c1b893f65522a2503a",
+   "body_sha256": "d19bafbc970a24ec69a80f596c9fc5436adbd61864f16e4db7d93925608229b9",
+   "sealed_at": "2026-10-13T07:17Z",
+   "msg": "6165857",
+   "note": "291행 · 중대 36(C1 유형 라벨 24·C2 언어 혼입 12)/경미 255 · fix_log [] · judge 확인 6행"
+  },
+  {
+   "surface": "A5.7.applied_review(final24)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.applied_review.X1.final24.json",
+   "file_sha256": "f3c747b7e45cad84bfc6ec484847b37d0133994713b3266339d2c18d38a0d060",
+   "body_sha256": "1f587cdf92bf658fbac4a914fbd75b1051801d7e28cd5316328d8dba03abbaed",
+   "sealed_at": "2026-10-13T07:17Z",
+   "msg": "6165857",
+   "note": "144행 · 단정표현 24단위 있음 · 고지 행판정 미사용(기준에 없음)"
   }
  ],
  "pending": [
-  "A1.restatement X1·X2(report 봉인 뒤)",
-  "A5.5.doc_vs_artifact_audit X2(changelog_deps 봉인 뒤)",
-  "A5.5.independent_replication X4(census 봉인본 대기 → §3 실행)",
-  "A5.7.counterexample_review·applied_review X1(출력 봉인 뒤)",
-  "A5.8.counter_reading X4(claim_inventory 봉인 뒤)",
-  "contrast_set 24+3 재실행(TL 생성 중, 사고 1건 공개 문구 결박)"
- ]
+  "A1.restatement X2(p6 투입 6165458, 상태 확인 6172948)",
+  "A5.3.doc_vs_artifact_audit X2(투입 6158348/6158352, 미수령)",
+  "A5.8.counter_reading X4(TL 입력 묶음 대기 6172513)",
+  "judge1·judge2 2회차 판정(묶음 A·B + 계약 + 기준 수령 완료 08:13Z, 판정 시작 대기)",
+  "adjudicator → scorer → own.json",
+  "Peer: X2 audit evidence_cmd 재실행 · 렌더 텍스트 추출 방식 확인 항목"
+ ],
+ "at_updated": "2026-10-13T08:15Z"
 }
