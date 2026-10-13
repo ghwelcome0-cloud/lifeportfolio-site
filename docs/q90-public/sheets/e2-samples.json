@@ -6563,6 +6563,11 @@
      "result": "headers 200 / mobile timeout"
     }
    }
+  },
+  "work24_reachability_2026-10-13T01:05Z": {
+   "fact": "www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do 는 제3의 크롤러 출구에서 200(목록 24건 렌더). 샌드박스(US) curl 15s 타임아웃, 대표 PC(KR home-wifi, r4) ERR_CONNECTION_TIMED_OUT. DNS 210.95.199.204 정상",
+   "reading": "사이트 자체는 살아 있음 — 특정 출구(클라우드 IP·일부 가정망)를 막거나 느리게 응답하는 것으로 보임. 결론 단정 아님(차단 정책 문서 미확인)",
+   "next": "대표 PC에서 다른 망(휴대폰 테더링)으로 r6 재시도 요청(비용 0, 5분). 안 되면 6행 \"시간 초과(두 망에서도)\" 확정"
   }
  },
  "e2_alt_rule": {
