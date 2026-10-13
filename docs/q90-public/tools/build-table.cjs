@@ -32,14 +32,16 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
   const d = Object.fromEntries(Object.entries(d0).map(([k, v]) => [k, k === 'E4' ? (v && v.value) || null : v3(v)]));
   const a6 = x.a6partial ? `${x.a6partial.points}/${x.a6partial.max}` : null;
   const o = r.own && own ? own : null; // OWN: Q90 scorer transcription only
+  // OWN 차단 전사: scorer status=blocked → 모든 축을 '미달성(사유: 코드)'로 표기(op:q90-auto-190 결박; 점수 없음 ≠ 미측정)
+  const oc = (v) => (o && o.status === 'blocked') ? `미달성(사유: ${(o.reasons || []).join(',')})` : cell(v, 'E1');
   const ax = {
-    A1: o ? cell(o.A1, 'E1') : s.A1 != null ? cell(s.A1, 'E2', third(s, 'A1'), e2tag(s)) : e2nm(s),
-    A2: o ? cell(o.A2, 'E1') : s.A2 != null ? cell(s.A2, 'E2', third(s, 'A2'), e2tag(s)) : e2nm(s),
-    A3: o ? cell(o.A3, 'E1') : s.A3 != null ? cell(s.A3, 'E2', third(s, 'A3'), e2tag(s)) : e2nm(s),
-    A4: o ? cell(o.A4, 'E1') : s.A4 != null ? cell(s.A4, 'E2', third(s, 'A4'), e2tag(s)) : e2nm(s),
-    A5: o ? cell(o.A5, 'E1') : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2', third(s, 'A5'), e2tag(s)) : e2nm(s))),
-    A6: o ? cell(o.A6, 'E1') : (a6 ? cell(a6 + ' (3/6지표)', 'E1') + rtag(x) : (x.failure_class ? `미측정(${x.failure_class})` : (x.a6err && /측정 무효/.test(x.a6err) ? x.a6err : (x.partial === 'A7만' ? (/측정 무효/.test(x.partial_why || '') ? x.partial_why : `미측정(${x.partial_why})`) + rtag(x) : NM)))),
-    A7: o ? cell(o.A7grade, 'E1') : (x.a7grade ? cell(x.a7grade, 'E1') + rtag(x) + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : (x.failure_class ? `미측정(${x.failure_class})` : (x.a7err && /측정 무효/.test(x.a7err) ? x.a7err : NM))),
+    A1: o ? oc(o.A1) : s.A1 != null ? cell(s.A1, 'E2', third(s, 'A1'), e2tag(s)) : e2nm(s),
+    A2: o ? oc(o.A2) : s.A2 != null ? cell(s.A2, 'E2', third(s, 'A2'), e2tag(s)) : e2nm(s),
+    A3: o ? oc(o.A3) : s.A3 != null ? cell(s.A3, 'E2', third(s, 'A3'), e2tag(s)) : e2nm(s),
+    A4: o ? oc(o.A4) : s.A4 != null ? cell(s.A4, 'E2', third(s, 'A4'), e2tag(s)) : e2nm(s),
+    A5: o ? oc(o.A5) : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2', third(s, 'A5'), e2tag(s)) : e2nm(s))),
+    A6: o ? oc(o.A6) : (a6 ? cell(a6 + ' (3/6지표)', 'E1') + rtag(x) : (x.failure_class ? `미측정(${x.failure_class})` : (x.a6err && /측정 무효/.test(x.a6err) ? x.a6err : (x.partial === 'A7만' ? (/측정 무효/.test(x.partial_why || '') ? x.partial_why : `미측정(${x.partial_why})`) + rtag(x) : NM)))),
+    A7: o ? oc(o.A7grade) : (x.a7grade ? cell(x.a7grade, 'E1') + rtag(x) + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : (x.failure_class ? `미측정(${x.failure_class})` : (x.a7err && /측정 무효/.test(x.a7err) ? x.a7err : NM))),
     A8: d.A8 != null ? cell(d.A8, 'E3') : NM
   };
   for (const ax of ['A1','A2','A3','A4','A5']) if (third(s, ax)) thirdCells.push(`${r.id} ${ax}=L${s[ax]}`);

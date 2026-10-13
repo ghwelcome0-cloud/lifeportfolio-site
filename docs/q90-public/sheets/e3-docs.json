@@ -4748,6 +4748,12 @@
    "by": "총괄",
    "change": "G03 korean_support 부분→있음(공식 번역 목록 Korean 60/100 명시). 6차 시도 실패: career4u(연결 실패)·16personalities(403)·strengthsprofile FAQ(404)·hogan languages(403)·birkman(분 미기재)·work24·jobkorea(연결 실패) — 미기재/차단 사실만 기록, 값 채우지 않음.",
    "cells": "253→254/278"
+  },
+  {
+   "at": "2026-10-13T11:55Z",
+   "by": "총괄",
+   "change": "정정: 6차 기록의 '253→254/278'은 과대 집계. G03 korean_support는 이전 값 '부분'도 filled()로 이미 셈(source_url+value) → 값 정정이지 칸 추가 아님. progress.cjs 재계산 = 253/278(91%). 결과가 바뀌는 결함으로 대표 보고.",
+   "cells": "254→253/278 (정정)"
   }
  ]
 }

@@ -1,0 +1,11 @@
+{
+  "protocol": "Q90-ALT-v1",
+  "status": "blocked",
+  "reasons": [
+    "R19_execution_scope_required"
+  ],
+  "alt_quality_score": null,
+  "human_quality_score": null,
+  "public_release": false,
+  "production_deployment": false
+}
