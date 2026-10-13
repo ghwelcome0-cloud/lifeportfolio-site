@@ -14,9 +14,9 @@ for k,x_ in enumerate(w):
     elif t_ in('해봤어요의','해봤어요"에'): x_['text']='해 봤어요에'
     elif t_=='"오늘': x_['text']='오늘'
     elif t_=='해봤어요': x_['text']='해 봤어요'
-    elif t_=='비전' and nx in('카드에서는','카드에'): x_['text']='비전'+nx; w[k+1]['text']=''
-    elif t_=='준비' and nx.startswith('중'): x_['text']='준비'+nx; w[k+1]['text']=''
-    elif t_=='고유' and nx.startswith('코드'): x_['text']='고유'+nx; w[k+1]['text']=''
+    elif t_=='비전' and nx in('카드에서는','카드에'): x_['text']='비전'+nx; x_['end']=w[k+1]['end']; w[k+1]['text']=''
+    elif t_=='준비' and nx.startswith('중'): x_['text']='준비'+nx; x_['end']=w[k+1]['end']; w[k+1]['text']=''
+    elif t_=='고유' and nx.startswith('코드'): x_['text']='고유'+nx; x_['end']=w[k+1]['end']; w[k+1]['text']=''
     elif t_=='길찾기' and pv=='자산화' and k>0 and w[k-2]['text'] in('리포트에','11장','11장에'): x_['text']='길 찾기'
 for k,x_ in enumerate(w):
     if x_['text']=='동행' and k+1<len(w) and w[k+1]['text']=='대부분': x_['text']='동행.'

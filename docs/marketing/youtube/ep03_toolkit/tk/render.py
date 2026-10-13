@@ -170,7 +170,11 @@ class LRU(OrderedDict):
         super().__setitem__(k, v); self.move_to_end(k)
         while len(self) > 20: self.popitem(last=False)
 CLIPS = LRU()
-FLOWS = LRU()
+class _LRU6(LRU):
+    def __setitem__(self, k, v):
+        OrderedDict.__setitem__(self, k, v); self.move_to_end(k)
+        while len(self) > 6: self.popitem(last=False)
+FLOWS = _LRU6()
 DIS = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_FAST)
 def _flow(k, fr, a):
     key = (k, a); f = FLOWS.get(key)
@@ -373,6 +377,14 @@ def r_plate(s, t):
     lt = t - s['t0']; d = s['t1'] - s['t0']; f = plate_frame(s['c'], lt, s['sp'], s['st'], d)
     if d * min(s['sp'], 6.0 / d) < d * 0.5: f = push(f, lt, d)
     if s['dark'] < 1: f *= s['dark']
+    # focus pull: while a card / verse / chips are up, the moving plate softens and recedes
+    fa = 0.0
+    for (a, b, L, pos) in s['ov']: fa = max(fa, ease((t - a + .2) / .7) * ease((b - t) / .5))
+    if s['verse']: a, b = s['verse']; fa = max(fa, ease((t - a + .2) / .9) * ease((b - t) / .6))
+    if s['chips']: fa = max(fa, 0.6 * ease((t - s['chips'][0] + .2) / .7) * ease((s['t1'] - .2 - t) / .4))
+    if fa > 0.01:
+        sm = cv2.resize(cv2.GaussianBlur(cv2.resize(f, (W // 4, H // 4)), (0, 0), 2.2), (W, H), interpolation=cv2.INTER_LINEAR)
+        k = 0.85 * fa; f = f * (1 - k) + sm * k; f *= (1 - 0.12 * fa)
     if s['chips']:
         # seven chips: arc in two rows, each appears at its spoken time, then all hold
         pos = [(150, 190), (560, 190), (970, 190), (1380, 190), (355, 400), (765, 400), (1175, 400)]
@@ -501,6 +513,8 @@ def page_turn(fa, fb, p):
     if hl > edge: out[:, edge:hl] = out[:, edge:hl] * 0.85 + 255 * 0.15
     return out
 
+yy, xx = np.mgrid[0:H, 0:W].astype(np.float32); _r = np.sqrt(((xx - W / 2) / (W * .62)) ** 2 + ((yy - H * .47) / (H * .70)) ** 2)
+VIG = (1 - 0.22 * np.clip((_r - 0.55) / 0.6, 0, 1) ** 1.6)[:, :, None].astype(np.float32); del yy, xx, _r
 def compose(t):
     act = [s for s in shots if s['t0'] <= t < s['t1']]
     if not act: act = [shots[-1]]
@@ -513,6 +527,7 @@ def compose(t):
         elif tr == 'cut' and ov < 0.6: f = fb if p > .5 else fa
         else: e = ease(p); f = fa * (1 - e) + fb * e
         isS = sb if p > .5 else sa
+    f *= VIG
     f = grain(f, t)
     over(f, TOP, 0, 0, 1); over(f, BRAND, 70, 34, .95)
     D = DISC_S if isS else DISC_V; over(f, D, W - D.shape[1] - 70, 34, .95)
