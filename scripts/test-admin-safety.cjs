@@ -81,6 +81,12 @@ async function testHelpGuides(page, scope) {
   await button.click();
   await page.waitForFunction(()=>!document.getElementById('action-help-popover').hidden);
   const state=await page.evaluate(()=>{const p=document.getElementById('action-help-popover'),r=p.getBoundingClientRect();return {text:p.textContent,count:document.querySelectorAll('.help-trigger[aria-expanded="true"]').length,fits:r.left>=7&&r.top>=7&&r.right<=innerWidth-7&&r.bottom<=innerHeight-7,overflow:p.scrollWidth>p.clientWidth+1,linked:document.querySelector('.help-trigger[aria-expanded="true"]')?.getAttribute('aria-describedby')===p.id};});
+  const kind=await button.evaluate(e=>e.dataset.helpFor);
+  if(kind==='.btn-cancel'||kind==='.btn-refund'){
+   assert.match(state.text,/담당자에게 .*안내 메일 발송을 시도/);assert.match(state.text,/실제.*송금/);
+   assert.match(state.text,/정리 재시도/);assert.match(state.text,/기존.*기록을 덮어쓰지/);
+   assert.match(state.text,/이미 시도한 안내 메일은 재발송하지/);assert.match(state.text,/아직 시도 전이면.*최초 발송/);
+  }
   assert.equal(state.count,1);assert.equal(state.linked,true);assert.ok(state.fits,JSON.stringify(state));assert.equal(state.overflow,false);assert.match(state.text,/실행: .*확인: .*주의: /);
   const rect=await button.evaluate(e=>{const r=e.getBoundingClientRect();return {width:r.width,height:r.height};});assert.ok(rect.width>=44&&rect.height>=44);
   await page.keyboard.press('Escape');assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),true);
@@ -130,7 +136,7 @@ document.addEventListener('click',async e=>{const a=e.target.closest('a');if(a?.
 </script>`;
   await page.setRequestInterception(true);page.on('request',r=>r.isNavigationRequest()&&r.url().startsWith('https://admin-mail.invalid/')?r.respond({status:200,contentType:'text/html',body:source.replace('<script type="module">',boot+'<script type="module">')}):r.abort());
   await page.goto('https://admin-mail.invalid/b2b-admin',{waitUntil:'domcontentloaded'});await page.waitForSelector('.btn-view');await page.locator('.btn-view').click();await page.waitForFunction(()=>document.getElementById('codesList').textContent.includes('SYNTH-9'));await testHelpGuides(page,'#codesModal');
-  const geometry=await page.evaluate(()=>{const l=document.getElementById('codesList').getBoundingClientRect(),m=document.querySelector('#codesModal .modal').getBoundingClientRect(),a=document.getElementById('sendMailBtn').parentElement.getBoundingClientRect();return {list:l.width,modal:m.width,top:l.top,actionsBottom:a?.bottom,overflow:document.querySelector('#codesModal .modal').scrollWidth>document.querySelector('#codesModal .modal').clientWidth+1};});
+  const geometry=await page.evaluate(()=>{const l=document.getElementById('codesList').getBoundingClientRect(),m=document.querySelector('#codesModal .modal').getBoundingClientRect(),a=document.getElementById('sendMailBtn').closest('.code-modal-actions').getBoundingClientRect();return {list:l.width,modal:m.width,top:l.top,actionsBottom:a?.bottom,overflow:document.querySelector('#codesModal .modal').scrollWidth>document.querySelector('#codesModal .modal').clientWidth+1};});
   assert.ok(geometry.list>=geometry.modal-52&&geometry.top>=geometry.actionsBottom&&!geometry.overflow,JSON.stringify(geometry));
   for(const mode of ['accepted','malformed','unknown','denied']){
    await page.evaluate(m=>{__mail.mode=m;__mail.calls=[];const b=document.getElementById('sendMailBtn');b.click();b.click();},mode);
