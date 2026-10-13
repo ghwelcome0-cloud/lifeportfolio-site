@@ -1651,17 +1651,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 14,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T23:59:56Z",
+    "third_used": [],
+    "aggregate_sha256": "f6e7abee2909338766497ccec263eadbffe41929a622d9944856e52c356d18f6"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 4,
+   "A4": 3,
+   "A5": 2,
    "packet_sha256": "b539a6390874b147470c4d84007cc0407df9013d3e61dc66377ef748957ce87c",
    "denominator_class": {
     "class": "확보(2026-10-12 23:20Z 수집)",
@@ -3351,17 +3373,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 13,
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-12T23:59:56Z",
+    "third_used": [],
+    "aggregate_sha256": "f6e7abee2909338766497ccec263eadbffe41929a622d9944856e52c356d18f6"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 3,
+   "A2": 3,
+   "A3": 1,
+   "A4": 3,
+   "A5": 3,
    "packet_sha256": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
