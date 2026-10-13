@@ -393,14 +393,11 @@
   }
  ],
  "pending": [
-  "judge2 A3 run1·run2",
-  "judgeB2 A3 run1·run2",
-  "TL 2회차 freeze 영수증(0-c) → scorer → own.json → table",
-  "PR #426·#427 머지",
+  "PR #426 머지(#427 완료)",
   "TL freeze 영수증 조립(B5 직렬화·보충 roles sha)",
   "Peer B5 12건 검토·775a0745 대조·X2 audit 재실행",
   "scorer r18 1회 실행(예상 코드 R19_execution_scope_required 1개)",
   "jB1 정지 전 초안 대상 sha 1줄(6193937)"
  ],
- "at_updated": "2026-10-13T10:40Z"
+ "at_updated": "2026-10-13T11:30Z"
 }
