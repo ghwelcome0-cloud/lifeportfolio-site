@@ -83,6 +83,19 @@
     .modal .btn-close{margin-top:14px;width:100%;padding:10px;background:#1a2b4a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit}
     .empty{text-align:center;padding:24px;color:#a3a3a3;font-size:13px}
     .refresh-btn{background:#fff;color:#1a2b4a;border:1px solid #d4d4d8;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;float:right}
+    .help-control{display:inline-flex;align-items:center;gap:2px;max-width:100%;vertical-align:middle;white-space:normal}
+    .help-control > :first-child{min-width:0;overflow-wrap:anywhere}
+    .help-control.help-wide{display:flex;width:100%}
+    .help-wide > :first-child{flex:1}
+    .help-refresh{float:right}
+    .help-refresh .refresh-btn{float:none}
+    .help-trigger{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#475569;font-family:inherit;font-size:14px;font-weight:700;line-height:1;cursor:help;display:inline-flex;align-items:center;justify-content:center}
+    .help-trigger::before{content:'?';display:grid;place-items:center;width:22px;height:22px;border:1px solid #94a3b8;border-radius:50%;background:#f8fafc}
+    .help-trigger:hover,.help-trigger[aria-expanded="true"]{background:#e2e8f0;color:#1a2b4a}
+    .help-trigger:focus-visible{outline:3px solid #2563eb;outline-offset:1px}
+    .modal .help-wide{margin-top:14px}.modal .help-wide .btn-close{margin-top:0}
+    .help-popover{position:fixed;z-index:2000;width:340px;max-width:calc(100vw - 16px);max-height:calc(100dvh - 16px);overflow:auto;overscroll-behavior:contain;padding:16px;border:1px solid #94a3b8;border-radius:12px;background:#fff;color:#1a2b4a;box-shadow:0 8px 28px #0f172a30;font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+    .help-popover[hidden]{display:none}.help-popover p{margin:8px 0 0}.help-popover strong{font-size:14px}.help-popover small{display:block;margin-top:10px;color:#64748b}
   </style>
 </head>
 <body>
@@ -842,6 +855,113 @@
         alert("❌ 재발급 실패: " + (e.message || "알 수 없는 오류"));
       }
     }
+  </script>
+  <script>
+  // Presentation-only guides. No Firebase, customer values, action dispatch or persistence.
+  (() => {
+    const guides = [
+      ['#loginBtn', '관리자 로그인', 'Google 계정으로 로그인합니다. 로그인만으로 관리자 권한이 생기지는 않습니다.', '사전에 권한을 부여받은 운영자 계정인지 확인하세요.', '접근이 거부되면 계정을 확인하고 권한 부여를 요청하세요.'],
+      ['#otherLoginBtn', '다른 계정으로 로그인', '현재 계정 대신 다른 Google 계정으로 로그인을 진행합니다.', '사용할 운영자 계정의 이메일을 확인하세요.', '로그인 팝업이 막히면 브라우저 안내를 확인하세요.'],
+      ['#bootstrapBtn', '최초 운영자 등록', '조건을 충족할 때 최초 관리자 권한을 등록합니다.', '사전 허용된 이메일이며 아직 운영자가 없는 경우에만 사용하세요.', '기존 운영자가 있다면 반복 등록하지 말고 권한 부여를 요청하세요.'],
+      ['#logoutLink', '로그아웃', '현재 계정에서 로그아웃하고 이 화면의 초안·발송 결과 표시를 정리합니다.', '진행 중인 요청의 결과를 먼저 확인하세요.', '이미 서버에 접수된 발송이나 코드 발급은 로그아웃으로 취소되지 않습니다.'],
+      ['#refreshBtn', '새로고침', '주문과 현황을 다시 조회합니다. 메일 발송이나 코드 발급은 하지 않습니다.', '처리 중인 요청이 있다면 결과를 확인한 뒤 조회하세요.', '이 탭의 메일 결과 표시는 영구 이력이 아닙니다. 과거 발송은 Resend 기록에서 확인하세요.'],
+      ['.btn-approve', '입금 확인 후 코드 발급', '구매권 코드를 발급하고 담당자 안내 메일 발송을 시도합니다.', '실제 입금 내역과 주문번호·조직·인원·금액이 일치하는지 확인하세요.', '오류가 나면 먼저 주문·코드·Resend 기록을 확인하세요. 확인 없이 다시 발급하거나 발송하지 마세요.'],
+      ['.btn-view', '코드 보기', '이미 발급된 참여 코드와 사용 상태를 조회합니다. 새 발급이나 발송은 하지 않습니다.', '올바른 조직과 주문인지 확인하고 참여 코드를 안전하게 취급하세요.', '조회 실패만으로 코드가 없다고 판단하거나 재발급하지 마세요.'],
+      ['.btn-cancel', '주문 취소', '미사용 코드의 신규 사용을 중단합니다. 기존 참여자의 이용권·응답·리포트는 보존합니다.', '대상 주문과 취소 사유를 확인하세요. 실제 환불 송금 기능이 아닙니다.', '오류가 나도 일부 처리가 끝났을 수 있습니다. 새로고침으로 상태를 확인한 뒤 안내에 따라 처리하세요.'],
+      ['.btn-refund', '환불 기록', '환불 금액을 기록하고 미사용 코드를 무효화합니다. 기존 참여자 권리는 보존합니다.', '금액·사유·대상 주문을 확인하세요. 이 버튼은 실제 송금을 하지 않습니다.', '송금은 별도 절차입니다. 오류 시 현재 주문 상태를 확인하고 중복 처리하지 마세요.'],
+      ['#copyCsvBtn', '코드 목록 복사', '코드 목록을 클립보드에 복사할 뿐 메일을 보내지는 않습니다.', '참여 코드와 사용 정보가 포함될 수 있으니 필요한 수신자에게만 전달하세요.', '복사가 안 되면 브라우저 권한을 확인하세요. 잘못된 대화창이나 공개 문서에 붙여넣지 마세요.'],
+      ['#manualMailBtn', '수동 발송 준비', '메일 초안과 엑셀 첨부파일을 준비합니다. 실제 메일은 보내지 않습니다.', '자동 발송 결과가 불명확하면 Resend 기록부터 확인해 중복 발송을 피하세요.', '엑셀 다운로드 후 작성 창에서 발신 계정·수신자·본문을 확인하고 파일을 직접 첨부해야 합니다.'],
+      ['#sendMailBtn', '자동 메일 발송', 'Resend를 통해 담당자에게 조직 ID와 코드 엑셀을 실제로 발송 요청합니다.', '대상 주문과 이전 발송 기록을 확인하세요. Gmail 보낸메일함에는 자동 저장되지 않습니다.', '서비스 접수는 수신 완료가 아닙니다. 결과 불명 시 Resend 기록·수신함을 확인하기 전에는 재발송하지 마세요.'],
+      ['a[href="https://resend.com/emails"]', 'Resend 발송 기록', '외부 Resend 서비스의 발송 기록 화면을 엽니다.', '서비스 운영 계정으로 접근하고 메시지 ID·수신자·시각을 대조하세요.', '현재 탭에 결과가 없다고 과거 발송이 실패한 것은 아닙니다. 상태 확인 전 반복 발송하지 마세요.'],
+      ['button[data-action="regen"]', '참여 코드 재발급', '기존 코드를 무효화하고 새 코드 1개를 발급합니다.', '정말 재발급이 필요한 미사용 코드인지 확인하세요. 기존 코드는 다시 사용할 수 없습니다.', '새 코드는 해당 참여자에게 별도로 안내해야 합니다. 오류가 나면 상태부터 확인하세요.'],
+      ['#dlXlsxBtn', '엑셀 다운로드', '코드가 담긴 엑셀 파일을 기기에 저장합니다. 메일에 자동 첨부되지 않습니다.', '조직·주문과 파일명을 확인하고 공용 기기에 파일을 남기지 않도록 주의하세요.', '다운로드가 끝났는지 확인한 뒤 작성 중인 메일에 직접 첨부하세요.'],
+      ['#openGmailBtn', 'Gmail 웹에서 작성', '초안 내용을 Gmail 작성 주소로 전달합니다. 이 버튼만으로 발송되지는 않습니다.', '로그인된 발신 계정·수신자·전체 본문을 확인하고 엑셀을 직접 첨부하세요.', '긴 본문은 자동 입력되지 않을 수 있습니다. 아래 전체 본문을 복사하고 발송 기록은 실제 계정에서 확인하세요.'],
+      ['#openMailtoBtn', '기본 메일 앱 열기', '기기에 연결된 기본 메일 앱으로 작성 요청을 전달합니다. 자동 발송하지 않습니다.', '기본 메일 앱 설정과 발신 계정·수신자를 확인하고 엑셀을 직접 첨부하세요.', '빈 화면이나 무반응이면 Gmail 웹 작성 또는 직접 복사를 사용하세요. 긴 본문은 직접 붙여넣으세요.'],
+      ['[data-copy="to"]', '수신자 복사', '담당자 이메일을 클립보드에 복사합니다. 발송하지 않습니다.', '해당 주문의 담당자가 맞는지 확인하고 받는사람 칸에 붙여넣으세요.', '복사가 차단되면 화면의 이메일을 직접 선택해 복사하세요.'],
+      ['[data-copy="subject"]', '제목 복사', '메일 제목을 클립보드에 복사합니다. 발송하지 않습니다.', '올바른 주문의 제목을 작성 창 제목 칸에 붙여넣으세요.', '복사가 차단되면 화면의 제목을 직접 선택해 복사하세요.'],
+      ['[data-copy="text"]', '본문 복사', '전체 텍스트 본문을 클립보드에 복사합니다. 발송하지 않습니다.', '작성 창의 본문에 붙여넣고 누락 여부를 확인하세요. 엑셀 첨부는 별도입니다.', '복사가 차단되면 전체 본문 입력란을 선택해 직접 복사하세요.'],
+      ['[data-copy="html"]', 'HTML 소스 복사', '서식용 HTML 소스를 복사합니다. 미리보기나 복사만으로 발송하지 않습니다.', 'HTML 입력을 지원하는 도구에서만 사용하세요. 일반 본문 칸에는 텍스트 복사를 권장합니다.', '서식이 깨지면 텍스트 본문을 사용하고 엑셀은 별도로 첨부하세요.'],
+      ['.btn-close', '창 닫기', '현재 안내·코드 창을 닫습니다.', '필요한 결과와 작성 내용을 확인했는지 살펴보세요.', '창을 닫아도 이미 서버에 접수된 발송·발급 요청은 취소되지 않습니다.']
+    ];
+    const bubble = document.createElement('aside');
+    bubble.id = 'action-help-popover'; bubble.className = 'help-popover';
+    bubble.setAttribute('role', 'tooltip'); bubble.hidden = true;
+    document.body.append(bubble);
+    let current = null, pinned = false, timer;
+    const seen = new WeakSet();
+    function close() {
+      clearTimeout(timer);
+      if (current) { current.setAttribute('aria-expanded', 'false'); current.removeAttribute('aria-describedby'); }
+      current = null; pinned = false; bubble.hidden = true;
+    }
+    function position() {
+      if (!current) return;
+      const r = current.getBoundingClientRect(), v = window.visualViewport;
+      const left = v ? v.offsetLeft : 0, top = v ? v.offsetTop : 0;
+      const width = v ? v.width : innerWidth, height = v ? v.height : innerHeight;
+      bubble.style.maxWidth = Math.max(0, width - 16) + 'px';
+      bubble.style.maxHeight = Math.max(0, height - 16) + 'px';
+      const b = bubble.getBoundingClientRect();
+      bubble.style.left = Math.max(left + 8, Math.min(r.right - b.width, left + width - b.width - 8)) + 'px';
+      const y = r.bottom + 8 + b.height <= top + height - 8 ? r.bottom + 8 : r.top - b.height - 8;
+      bubble.style.top = Math.max(top + 8, Math.min(y, top + height - b.height - 8)) + 'px';
+    }
+    function open(button, guide) {
+      clearTimeout(timer);
+      if (current !== button) close();
+      current = button; bubble.replaceChildren();
+      const title = document.createElement('strong'); title.textContent = guide[1]; bubble.append(title);
+      guide.slice(2).forEach((text, i) => {
+        const p = document.createElement('p'); p.textContent = ['실행: ', '확인: ', '주의: '][i] + text; bubble.append(p);
+      });
+      const hint = document.createElement('small'); hint.textContent = '? 다시 누르기 · 바깥 누르기 · Esc로 닫기'; bubble.append(hint);
+      button.setAttribute('aria-describedby', bubble.id); button.setAttribute('aria-expanded', 'true');
+      bubble.hidden = false; position();
+    }
+    function leave() {
+      clearTimeout(timer); timer = setTimeout(() => {
+        if (!pinned && document.activeElement !== current && !bubble.matches(':hover')) close();
+      }, 160);
+    }
+    function decorate() {
+      guides.forEach(guide => document.querySelectorAll(guide[0]).forEach(control => {
+        if (seen.has(control)) return;
+        seen.add(control);
+        const wrap = document.createElement('span'); wrap.className = 'help-control';
+        if (control.matches('.btn-close,.login-card .btn')) wrap.classList.add('help-wide');
+        if (control.id === 'refreshBtn') wrap.classList.add('help-refresh');
+        control.before(wrap); wrap.append(control);
+        const button = document.createElement('button'); button.type = 'button'; button.className = 'help-trigger';
+        button.dataset.helpFor = guide[0]; button.setAttribute('aria-label', guide[1] + ' 도움말');
+        button.setAttribute('aria-controls', bubble.id); button.setAttribute('aria-expanded', 'false');
+        wrap.append(button);
+        button.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse' && !pinned) open(button, guide); });
+        button.addEventListener('pointerleave', leave);
+        button.addEventListener('focus', () => open(button, guide));
+        button.addEventListener('blur', leave);
+        button.addEventListener('click', e => {
+          e.preventDefault(); e.stopPropagation();
+          if (current === button && pinned) close();
+          else { open(button, guide); pinned = true; }
+        });
+      }));
+    }
+    bubble.addEventListener('pointerenter', () => clearTimeout(timer));
+    bubble.addEventListener('pointerleave', leave);
+    document.addEventListener('pointerdown', e => {
+      if (!bubble.contains(e.target) && !e.target.closest('.help-trigger')) close();
+    }, true);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    document.addEventListener('scroll', e => { if (!bubble.contains(e.target)) close(); }, true);
+    window.addEventListener('resize', close);
+    window.visualViewport?.addEventListener('resize', close);
+    const observer = new MutationObserver(records => {
+      // Ignore our own popup/ARIA mutations. Hide if the source was removed or its gate closed.
+      if (current && (!current.isConnected || !current.getClientRects().length)) close();
+      if (records.some(r => r.type === 'childList' && !bubble.contains(r.target))) decorate();
+    });
+    decorate(); observer.observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['style']});
+  })();
   </script>
 </body>
 </html>

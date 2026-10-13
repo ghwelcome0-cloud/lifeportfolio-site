@@ -5,6 +5,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const {createRequire}=require('node:module');
 const deps=process.env.LP_TEST_DEPENDENCIES?createRequire(path.resolve(process.env.LP_TEST_DEPENDENCIES,'package.json')):require;
 const root=path.resolve(__dirname,'..');
+let helpChecks=0;
 (async()=>{
  const browser=await deps('puppeteer').launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});let passed=0;
  try{
@@ -30,7 +31,7 @@ const httpsCallable=(_f,name)=>async()=>{__test.calls.push(name);if(name==='getB
    if(scenario==='admin'){
     await page.waitForFunction(id=>getComputedStyle(document.getElementById(id)).display!=='none',{},surface);
     if(file==='b2b-admin.html'){
-     await page.waitForSelector('.btn-view');assert.equal(await page.$$('.injected').then(a=>a.length),0);
+     await page.waitForSelector('.btn-view');await testHelpGuides(page,'#dashboard');assert.equal(await page.$$('.injected').then(a=>a.length),0);
      assert.equal(await page.evaluate(()=>!!window.__injected),false);
      const activeCancel='.btn-cancel[data-id="synthetic-active"]';
      const rect=await page.$eval(activeCancel,e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,height:r.height};});
@@ -43,7 +44,7 @@ const httpsCallable=(_f,name)=>async()=>{__test.calls.push(name);if(name==='getB
      await page.waitForFunction(()=>__test.alerts.some(m=>m.includes('자동 재발송 안 함')));
      assert.equal(await page.evaluate(()=>__test.calls.filter(n=>n==='cancelB2BOrder').length),1);
      assert.ok(await page.evaluate(()=>__test.alerts.some(m=>m.includes('실제 송금 없음'))));
-     await page.locator('.btn-view').click();await page.waitForFunction(()=>document.getElementById('codesList').textContent.includes('ABCD-EFGH'));
+     await page.locator('.btn-view').click();await page.waitForFunction(()=>document.getElementById('codesList').textContent.includes('ABCD-EFGH'));await testHelpGuides(page,'#codesModal');
      assert.equal(await page.$$('.injected').then(a=>a.length),0);assert.equal(await page.evaluate(()=>!!window.__injected),false);
     }
    }else{
@@ -52,16 +53,54 @@ const httpsCallable=(_f,name)=>async()=>{__test.calls.push(name);if(name==='getB
     await page.waitForFunction(id=>getComputedStyle(document.getElementById(id)).display!=='none',{},gate);
     assert.equal(await page.$eval('#'+surface,e=>getComputedStyle(e).display),'none');
     assert.deepEqual(await page.evaluate(()=>__test.calls),[]);
+    if(file==='b2b-admin.html')await testHelpGuides(page,'#'+gate);
     if(scenario==='claim-error')await page.waitForSelector('#adminAuthError');
     if(scenario==='popup-blocked'){await page.locator('#loginBtn').click();await page.waitForSelector('#adminAuthError');}
    }
    assert.equal(errors.length,0,errors.join('\n'));passed++;console.log('PASS '+file+' '+width+' '+scenario);await page.close();
   }
   passed += await testB2BMailUi(browser);
-  console.log(JSON.stringify({passed,scope:'source HTML with mocked Firebase; all network blocked; no real admin login or customer operations'}));
+  console.log(JSON.stringify({passed,helpChecks,scope:'source HTML with mocked Firebase; all network blocked; no real admin login or customer operations'}));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
 
+
+// Run against visible source controls, including dynamically rebuilt rows and mail drafts.
+async function testHelpGuides(page, scope) {
+ const selector=scope+' .help-trigger';
+ await page.waitForSelector(selector);
+ const before=await page.evaluate(()=>JSON.stringify({calls:window.__test?.calls||window.__mail?.calls,alerts:window.__test?.alerts,alert:window.__mail?.alert,copied:window.__mail?.copied,downloads:window.__mail?.downloads,compose:window.__mail?.compose}));
+ const buttons=await page.$$(selector);let visible=0;
+ for(const button of buttons) {
+  if(!await button.evaluate(e=>!!e.getClientRects().length&&!e.closest('details:not([open])')))continue;
+  visible++;
+  assert.equal(await button.evaluate(e=>e.type),'button');
+  assert.match(await button.evaluate(e=>e.getAttribute('aria-label')),/도움말$/);
+  await button.evaluate(e=>e.scrollIntoView({block:'center'}));
+  await new Promise(r=>setTimeout(r,30));
+  await button.click();
+  await page.waitForFunction(()=>!document.getElementById('action-help-popover').hidden);
+  const state=await page.evaluate(()=>{const p=document.getElementById('action-help-popover'),r=p.getBoundingClientRect();return {text:p.textContent,count:document.querySelectorAll('.help-trigger[aria-expanded="true"]').length,fits:r.left>=7&&r.top>=7&&r.right<=innerWidth-7&&r.bottom<=innerHeight-7,overflow:p.scrollWidth>p.clientWidth+1,linked:document.querySelector('.help-trigger[aria-expanded="true"]')?.getAttribute('aria-describedby')===p.id};});
+  assert.equal(state.count,1);assert.equal(state.linked,true);assert.ok(state.fits,JSON.stringify(state));assert.equal(state.overflow,false);assert.match(state.text,/실행: .*확인: .*주의: /);
+  const rect=await button.evaluate(e=>{const r=e.getBoundingClientRect();return {width:r.width,height:r.height};});assert.ok(rect.width>=44&&rect.height>=44);
+  await page.keyboard.press('Escape');assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),true);
+  // Focus alone opens, keyboard activation pins, a second activation closes.
+  await button.evaluate(e=>{e.blur();e.focus({preventScroll:true});});
+  assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),false);
+  await page.keyboard.press('Enter');await page.keyboard.press('Space');
+  assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),true);
+  await button.evaluate(e=>e.blur());await page.mouse.move(2,2);await button.hover();
+  await page.waitForFunction(()=>!document.getElementById('action-help-popover').hidden);
+  const point=await page.$eval('#action-help-popover',e=>{const r=e.getBoundingClientRect();return {x:r.left+12,y:r.top+12};});
+  await page.mouse.move(point.x,point.y);await new Promise(r=>setTimeout(r,190));
+  assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),false,'pointer can enter and read tooltip');
+  await page.mouse.click(2,2);assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),true);
+  helpChecks++;
+ }
+ assert.ok(visible>0,'visible help coverage '+scope);
+ const after=await page.evaluate(()=>JSON.stringify({calls:window.__test?.calls||window.__mail?.calls,alerts:window.__test?.alerts,alert:window.__mail?.alert,copied:window.__mail?.copied,downloads:window.__mail?.downloads,compose:window.__mail?.compose}));assert.equal(after,before,'help must not perform business actions');
+ console.log('PASS help',scope,visible,'controls: focus/hover/keyboard/click/dismiss/viewport/no side effects');
+}
 
 async function testB2BMailUi(browser) {
  const source=fs.readFileSync(process.env.LP_ADMIN_MAIL_SOURCE||path.join(root,'b2b-admin.html'),'utf8')
@@ -90,7 +129,7 @@ const blobByUrl=new Map(),oldCreate=URL.createObjectURL.bind(URL);URL.createObje
 document.addEventListener('click',async e=>{const a=e.target.closest('a');if(a?.download){e.preventDefault();const b=blobByUrl.get(a.href);__mail.downloads.push({name:a.download,type:b.type,text:await b.text()});}});
 </script>`;
   await page.setRequestInterception(true);page.on('request',r=>r.isNavigationRequest()&&r.url().startsWith('https://admin-mail.invalid/')?r.respond({status:200,contentType:'text/html',body:source.replace('<script type="module">',boot+'<script type="module">')}):r.abort());
-  await page.goto('https://admin-mail.invalid/b2b-admin',{waitUntil:'domcontentloaded'});await page.waitForSelector('.btn-view');await page.locator('.btn-view').click();await page.waitForFunction(()=>document.getElementById('codesList').textContent.includes('SYNTH-9'));
+  await page.goto('https://admin-mail.invalid/b2b-admin',{waitUntil:'domcontentloaded'});await page.waitForSelector('.btn-view');await page.locator('.btn-view').click();await page.waitForFunction(()=>document.getElementById('codesList').textContent.includes('SYNTH-9'));await testHelpGuides(page,'#codesModal');
   const geometry=await page.evaluate(()=>{const l=document.getElementById('codesList').getBoundingClientRect(),m=document.querySelector('#codesModal .modal').getBoundingClientRect(),a=document.getElementById('sendMailBtn').parentElement.getBoundingClientRect();return {list:l.width,modal:m.width,top:l.top,actionsBottom:a?.bottom,overflow:document.querySelector('#codesModal .modal').scrollWidth>document.querySelector('#codesModal .modal').clientWidth+1};});
   assert.ok(geometry.list>=geometry.modal-52&&geometry.top>=geometry.actionsBottom&&!geometry.overflow,JSON.stringify(geometry));
   for(const mode of ['accepted','malformed','unknown','denied']){
@@ -106,6 +145,7 @@ document.addEventListener('click',async e=>{const a=e.target.closest('a');if(a?.
   }
   await page.evaluate(()=>{__mail.confirm=false;__mail.calls=[];document.getElementById('sendMailBtn').click();});assert.equal(await page.evaluate(()=>__mail.calls.length),0);await page.evaluate(()=>__mail.confirm=true);
   await page.locator('#manualMailBtn').click();await page.waitForSelector('#openGmailBtn');
+  await page.$eval('#manualMailContent details',e=>e.open=true);await testHelpGuides(page,'#manualMailModal');
   const draft=await page.evaluate(()=>__mail.draft),gmail=new URL(await page.$eval('#openGmailBtn',e=>e.href));
   assert.equal(gmail.origin,'https://mail.google.com');assert.equal(gmail.searchParams.get('to'),draft.to);assert.equal(gmail.searchParams.get('su'),draft.subject);assert.equal(gmail.searchParams.get('body'),draft.text);
   assert.equal(await page.$eval('#openMailtoBtn',e=>e.target),'','mailto must not create blank tabs');
@@ -131,9 +171,11 @@ document.addEventListener('click',async e=>{const a=e.target.closest('a');if(a?.
   await page.evaluate(()=>{__mail.draft.subject='<img class="injected" src=x onerror="window.__injected=true">';__mail.draft.xlsxFileName=__mail.draft.subject;document.querySelector('#manualMailModal .btn-close').click();document.getElementById('manualMailBtn').click();});
   await page.waitForFunction(()=>document.getElementById('dlXlsxBtn').textContent.includes('<img'));
   assert.equal(await page.$$('.injected').then(a=>a.length),0);assert.equal(await page.evaluate(()=>!!window.__injected),false);
+  await testHelpGuides(page,'#manualMailModal');
+  await page.$eval('#openGmailBtn',e=>e.parentElement.querySelector('.help-trigger').click());
   // Late draft after logout must not re-expose recipient, content or attachment.
   await page.evaluate(()=>{__mail.delay=120;document.querySelector('#manualMailModal .btn-close').click();document.getElementById('manualMailBtn').click();document.getElementById('logoutLink').click();});
-  await new Promise(r=>setTimeout(r,220));assert.equal(await page.$eval('#manualMailModal',e=>e.style.display),'none');assert.equal(await page.$eval('#manualMailContent',e=>e.textContent),'');
+  await new Promise(r=>setTimeout(r,220));assert.equal(await page.$eval('#manualMailModal',e=>e.style.display),'none');assert.equal(await page.$eval('#manualMailContent',e=>e.textContent),'');assert.equal(await page.$eval('#action-help-popover',e=>e.hidden),true);
   assert.equal(errors.length,0,errors.join('\n'));count++;console.log('PASS B2B mail UI',width,'provider acceptance/unknown/errors, no duplicate request, Gmail compose, mailto, XLSX bytes, copy denial, long text, XSS, logout cleanup');await page.close();
  }
  return count;
