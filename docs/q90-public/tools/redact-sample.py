@@ -2,7 +2,8 @@
 """E2 블라인드용 샘플 리포트 가림 도구 (Method 6037069 ②, Peer 6037804).
 
 Usage: python3 redact-sample.py <e2-samples.json> <roster-v2.json> <id> <in.pdf> <outDir>
-         [--extra "문자열1|문자열2"] [--cover N] [--bands top,bottom] [--boxes "p:x0,y0,x1,y1;p:…"]
+         [--extra "문자열1|문자열2"] [--cover N] [--bands top,bottom] [--boxes "p:x0,y0,x1,y1;p:…"] [--keep-images]
+--boxes 의 p 는 **1부터 세는 쪽 번호**(T8 결함: 0부터 세어 엉뚱한 쪽 가림). --keep-images 는 E2-d 문서도판 전용.
  --cover N   앞 N쪽(기본 1, 표지)을 통째로 가림. 표지는 채점 대상 아님.
  --boxes     썸네일 확인 뒤 남은 로고를 비율 좌표로 집어 가림. 결과 시트에 그대로 기록되어 재현 가능.
 
@@ -50,6 +51,10 @@ if '--bands' in args:
     i = args.index('--bands'); bands = tuple(float(x) for x in args[i + 1].split(',')); del args[i:i + 2]
 if '--extra' in args:
     i = args.index('--extra'); extra = [s for s in args[i + 1].split('|') if s]; del args[i:i + 2]
+# E2-d(문서도판) 전용: 샘플 자체가 이미지라 "이미지 전부 제거" 규칙을 쓰면 내용이 통째로 사라진다 → 이미지를 남기고
+# 가림은 --boxes(사람 지정)로, 검증은 OCR 겹이 맡는다. 기본값은 기존대로 제거(E2 샘플 PDF). 2026-10-12 K02 사례.
+keep_images = '--keep-images' in args
+if keep_images: args.remove('--keep-images')
 E2, ROSTER, ID, INPDF, OUTDIR = args[:5]
 # 읽기 확인 rc1 실측(2026-10-12): 170dpi 12pt 한글을 judge 3명이 똑같이 오독('물레방아'→'몰레방아') → 200dpi로 올림(rc2 200dpi 오독 0).
 RENDER_DPI = 200
@@ -100,8 +105,11 @@ for page in doc:
     W, H = page.rect.width, page.rect.height; cover_rects = []
     # 표지(기본 1쪽): 회사 로고·워드마크가 벡터로 들어가 자동 검출이 안 되므로 통째로 가린다. 표지는 채점 대상이 아니다.
     if page.number < cover_pages:
-        page.add_redact_annot(page.rect, fill=(0.85, 0.85, 0.85), text='[표지 — 가림 처리. 채점 대상 아님]', fontsize=14)
+        page.add_redact_annot(page.rect, fill=(0.85, 0.85, 0.85))
         page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_REMOVE, graphics=pymupdf.PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED)
+        # 표지 안내문: redact_annot의 text= 는 한글 글리프가 없어 '?? ??'로 찍혔다(T9, G08·K02 눈 확인에서 발견) → 한글 글꼴로 따로 그린다
+        _f = '/usr/share/fonts/truetype/nanum/NanumSquareRoundB.ttf'
+        page.insert_text((40, page.rect.height / 2), '[표지 — 가림 처리. 채점 대상 아님]', fontsize=14, fontname='nanum', fontfile=_f, color=(0.3, 0.3, 0.3))
         continue
     # 사용자 지정 사각형(썸네일 확인 뒤 남은 로고를 집어서 가림)
     for b in boxes:
@@ -123,10 +131,11 @@ for page in doc:
         if wl in COMMON: continue
         if any(wl == t.lower() or (len(t) >= 5 and t.lower() in wl) for t in terms):
             page.add_redact_annot(pymupdf.Rect(w[:4]) + (-1, -1, 1, 1), fill=(0, 0, 0))
-    # 이미지(로고 포함) 전부
-    for img in page.get_images(full=True):
-        for rect in page.get_image_rects(img[0]):
-            page.add_redact_annot(rect, fill=(0.85, 0.85, 0.85))
+    # 이미지(로고 포함) 전부 — --keep-images(E2-d 문서도판)이면 건너뜀(가림은 --boxes, 검증은 OCR)
+    if not keep_images:
+        for img in page.get_images(full=True):
+            for rect in page.get_image_rects(img[0]):
+                page.add_redact_annot(rect, fill=(0.85, 0.85, 0.85))
     # 상단·하단 띠의 벡터 드로잉(벡터 로고·워드마크)
     top = pymupdf.Rect(0, 0, W, H * bands[0]); bot = pymupdf.Rect(0, H * (1 - bands[1]), W, H)
     # 글자 하나하나가 따로 그려진 벡터 워드마크(CliftonStrengths 사례)는 낱자 상자만 가리면 윤곽이 읽힌다 →
@@ -156,7 +165,7 @@ for page in doc:
     cover_rects = [c + (-2, -2, 2, 2) for c in clusters]
     for c in cover_rects:
         page.add_redact_annot(c, fill=(0.85, 0.85, 0.85))
-    page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_REMOVE, graphics=pymupdf.PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED)
+    page.apply_redactions(images=(pymupdf.PDF_REDACT_IMAGE_PIXELS if keep_images else pymupdf.PDF_REDACT_IMAGE_REMOVE), graphics=pymupdf.PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED)
     # 벡터 글리프가 redaction으로 안 지워지는 경우(실측: CliftonStrengths 워드마크, 경로가 한 객체로 묶임) → 불투명 사각형을 위에 그려 덮는다.
     # 덮기(cover)는 지우기(remove)가 아니므로 OCR 층이 최종 검증을 맡는다. 썸네일에서 사람이 한 번 더 본다.
     for c in cover_rects:

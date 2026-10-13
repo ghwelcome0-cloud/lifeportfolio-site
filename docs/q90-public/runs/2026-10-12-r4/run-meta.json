@@ -1,0 +1,25 @@
+{
+ "bound_commit": "9557e46",
+ "run": "r4",
+ "egress_country": "KR",
+ "machine_kind": "owner-local-pc",
+ "network_kind": "home-wifi",
+ "browser": "puppeteer 24.43.1 bundled chrome 148.0.7778.97",
+ "profile": "fresh (puppeteer new page, no cookies/cache, not logged in)",
+ "rows_requested": 13,
+ "bridge_rows": [
+  "K02",
+  "K05",
+  "K13",
+  "K18"
+ ],
+ "started_utc": "2026-10-12T22:32:54.219Z",
+ "ended_utc": "2026-10-12T22:44:56.582Z",
+ "browser_lang_flag": "en-US",
+ "os_kind": "Windows_NT 10.0.26300",
+ "os_timezone": "Asia/Seoul",
+ "accept_language_sent": "en-US,en;q=0.9 (4/6 단계 출력값 전사)",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_subset_sha256": "c90a9c4fc20afed61727849b0aa41850c608bd17fb30fd170709e65ee917316f",
+ "finish_note": "run-r4.cjs 6단계가 chrome --version 호출로 GUI 창을 띄워(⑲) 중단 → finish-r4.cjs 로 메타·묶기 수행. 측정(5단계)은 그 전에 완료됨"
+}

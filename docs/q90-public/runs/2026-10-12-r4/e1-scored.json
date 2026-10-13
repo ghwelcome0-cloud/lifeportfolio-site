@@ -1,0 +1,424 @@
+[
+ {
+  "row": "K01",
+  "name": "고용24 직업선호도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/",
+  "at": "2026-10-12T22:34:57.969Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/",
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": true,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K02",
+  "name": "커리어넷 직업흥미검사 H형",
+  "group": "국내",
+  "url": "https://www.career.go.kr/cloud/w/guide/counsel",
+  "at": "2026-10-12T22:35:02.677Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 1380,
+   "innerW": 1380
+  },
+  "a63": {
+   "ratio": 0.8888888888888888,
+   "level": 4,
+   "ge16": 8,
+   "blocks": 9,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.425,
+   "level": 2,
+   "ok44": 17,
+   "ok24": 32,
+   "total": 40,
+   "ratio24": 0.8
+  },
+  "a6partial": {
+   "points": 4.05,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K03",
+  "name": "어세스타 STRONG II",
+  "group": "국내",
+  "url": "https://www.assesta.com/",
+  "at": "2026-10-12T22:35:07.692Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.2857142857142857,
+   "level": 2,
+   "ge16": 2,
+   "blocks": 7,
+   "lt12": 3
+  },
+  "a64": {
+   "ratio": 0.42857142857142855,
+   "level": 2,
+   "ok44": 9,
+   "ok24": 13,
+   "total": 21,
+   "ratio24": 0.6190476190476191
+  },
+  "a6partial": {
+   "points": 2.85,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K05",
+  "name": "태니지먼트 강점 리포트",
+  "group": "국내",
+  "url": "https://www.tanagement.co.kr/",
+  "at": "2026-10-12T22:35:13.609Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 1,
+   "level": 5,
+   "ge16": 1,
+   "blocks": 1,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.8181818181818182,
+   "level": 4,
+   "ok44": 9,
+   "ok24": 10,
+   "total": 11,
+   "ratio24": 0.9090909090909091
+  },
+  "a6partial": {
+   "points": 8.55,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K01a",
+  "name": "고용24 직업선호도검사 L형",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-12T22:36:48.410Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K08",
+  "name": "고용24 성인용 직업적성검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-12T22:38:23.172Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K09",
+  "name": "고용24 직업가치관검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-12T22:39:57.935Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K10",
+  "name": "고용24 구직준비도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-12T22:41:33.117Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K11",
+  "name": "고용24 창업적성검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-12T22:43:07.915Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K12",
+  "name": "고용24 대학생 진로준비도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-12T22:44:42.713Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K13",
+  "name": "커리어넷 직업가치관검사(성인)",
+  "group": "국내",
+  "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+  "at": "2026-10-12T22:44:46.549Z",
+  "a6err": "status 404 / blocks 3",
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K17",
+  "name": "어세스타 MBTI Form M(한국판)",
+  "group": "국내",
+  "url": "https://www.career4u.net/",
+  "at": "2026-10-12T22:44:51.321Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0,
+   "level": 1,
+   "ge16": 0,
+   "blocks": 1,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 1,
+   "level": 5,
+   "ok44": 4,
+   "ok24": 4,
+   "total": 4,
+   "ratio24": 1
+  },
+  "a6partial": {
+   "points": 6.6,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K18",
+  "name": "TCI 기질및성격검사(인싸이트)",
+  "group": "국내",
+  "url": "https://inpsyt.co.kr/",
+  "at": "2026-10-12T22:44:56.582Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.40625,
+   "level": 2,
+   "ge16": 13,
+   "blocks": 32,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.7671232876712328,
+   "level": 4,
+   "ok44": 56,
+   "ok24": 67,
+   "total": 73,
+   "ratio24": 0.9178082191780822
+  },
+  "a6partial": {
+   "points": 3.75,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ }
+]
