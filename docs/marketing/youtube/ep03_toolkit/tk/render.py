@@ -170,19 +170,35 @@ class LRU(OrderedDict):
         super().__setitem__(k, v); self.move_to_end(k)
         while len(self) > 20: self.popitem(last=False)
 CLIPS = LRU()
+FLOWS = LRU()
+DIS = cv2.DISOpticalFlow_create(cv2.DISOPTICAL_FLOW_PRESET_FAST)
+def _flow(k, fr, a):
+    key = (k, a); f = FLOWS.get(key)
+    if f is None:
+        g0 = cv2.cvtColor(cv2.resize(fr[a], (640, 360)), cv2.COLOR_BGR2GRAY); g1 = cv2.cvtColor(cv2.resize(fr[a + 1], (640, 360)), cv2.COLOR_BGR2GRAY)
+        f = (DIS.calc(g0, g1, None), DIS.calc(g1, g0, None)); FLOWS[key] = f
+    return f
 def clip_frame(k, u):
-    """u in [0,1] over a ping-pong cycle; returns float32 1920x1080 graded frame"""
+    """u in [0,1] = position along the clip (forward only). Between source frames: optical-flow interpolation."""
     fr = CLIPS.get(k)
     if fr is None: fr = load_clip(k); CLIPS[k] = fr
-    n = len(fr)
-    i = u * (n - 1); a = int(i); b = min(n - 1, a + 1); t = i - a
-    f = cv2.addWeighted(fr[a], 1 - t, fr[b], t, 0) if t > 0.02 else fr[a]
-    return f
-def clip_at(k, local_t, dur, speed=0.85):
-    # forward then gentle reverse (ping-pong) at <1x speed so long holds never loop visibly
-    L = 6.0 / speed; p = (local_t % (2 * L)) / L
-    u = p if p <= 1 else 2 - p
-    return u
+    n = len(fr); u = min(1.0, max(0.0, u))
+    i = u * (n - 1); a = min(n - 2, int(i)); t = i - a
+    if t < 0.04: return fr[a]
+    if t > 0.96: return fr[a + 1]
+    f01, f10 = _flow(k, fr, a)
+    h, w = fr[a].shape[:2]; sx = w / 640.0
+    gx, gy = np.meshgrid(np.arange(w, dtype=np.float32), np.arange(h, dtype=np.float32))
+    F01 = cv2.resize(f01, (w, h)) * sx; F10 = cv2.resize(f10, (w, h)) * sx
+    A = cv2.remap(fr[a], gx - F01[..., 0] * t, gy - F01[..., 1] * t, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+    Bf = cv2.remap(fr[a + 1], gx - F10[..., 0] * (1 - t), gy - F10[..., 1] * (1 - t), cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+    return cv2.addWeighted(A, 1 - t, Bf, t, 0)
+def clip_at(k, local_t, dur, speed=0.85, start=0.0):
+    """FORWARD ONLY. Never reverses (owner 2026-10-13: ping-pong rebound looked unnatural).
+    The clip is stretched so the whole shot fits inside its 6 s; start = seconds into the clip."""
+    CL = 6.0; start = min(start, CL * 0.5)
+    v = speed if dur <= 0 else min(speed, (CL - start) / max(dur, 1e-3))
+    return (start + local_t * v) / CL
 
 # ---------- sources: screens ----------
 def load_screen(name):
@@ -343,13 +359,19 @@ GRAIN = [np.random.default_rng(s).normal(0, 1, (H // 2, W // 2)).astype(np.float
 def grain(f, t, amt=3.2):
     g = cv2.resize(GRAIN[int(t * 24) % 8], (W, H), interpolation=cv2.INTER_LINEAR); f += (g * amt)[:, :, None]; return f
 
-def plate_frame(k, lt, sp, start=0.0):
-    u = clip_at(k, lt + start * sp, 0, sp); f = clip_frame(k, u)
+def plate_frame(k, lt, sp, start=0.0, dur=0.0):
+    u = clip_at(k, lt, dur, sp, start * sp); f = clip_frame(k, u)
     f = cv2.resize(f, (W, H), interpolation=cv2.INTER_LANCZOS4).astype(np.float32)
     return f
+def push(f, lt, dur, amt=0.055):
+    """slow one-way push-in that keeps moving in the same direction as the clip (no return)"""
+    if dur <= 0: return f
+    z = 1 + amt * min(1, lt / dur); M = np.float32([[z, 0, W / 2 * (1 - z)], [0, z, H / 2 * (1 - z)]])
+    return cv2.warpAffine(f, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
 
 def r_plate(s, t):
-    lt = t - s['t0']; f = plate_frame(s['c'], lt, s['sp'], s['st'])
+    lt = t - s['t0']; d = s['t1'] - s['t0']; f = plate_frame(s['c'], lt, s['sp'], s['st'], d)
+    if d * min(s['sp'], 6.0 / d) < d * 0.5: f = push(f, lt, d)
     if s['dark'] < 1: f *= s['dark']
     if s['chips']:
         # seven chips: arc in two rows, each appears at its spoken time, then all hold
@@ -370,9 +392,9 @@ def interp_keys(keys, t):
             e = ease((t - a) / max(.01, b - a)); return tuple(va[i] + (vb[i] - va[i]) * e for i in range(3))
     return keys[-1][1]
 
-def screen_bg(k, t, cx_n, cy_n):
+def screen_bg(k, t, cx_n, cy_n, lt=0.0, dur=0.0):
     # moving real-space clip, blurred and darkened, with a parallax offset that is SLOWER than the card
-    f = plate_frame(k, t, 0.7)
+    f = plate_frame(k, lt, 0.7, 0.0, dur)
     f = cv2.GaussianBlur(cv2.resize(f, (W // 4, H // 4)), (0, 0), 3.2)
     f = cv2.resize(f, (int(W * 1.1), int(H * 1.1)))
     bx = int(96 + (cx_n - .5) * 60); by = int(54 + (cy_n - .5) * 40)
@@ -410,7 +432,7 @@ def r_screen(s, t):
     ch, cw = card.shape[:2]; cx, cy, vw = interp_keys(s['keys'], t)
     vw *= (1 - 0.012 * ((t - s['t0']) / max(1, s['t1'] - s['t0']))) * (1 + 0.006 * math.sin((t - s['t0']) * 0.5))
     sc = W / vw; M = np.float32([[sc, 0, W / 2 - cx * sc], [0, sc, H / 2 - cy * sc]])
-    f = screen_bg(s['bg'], t, cx / cw, cy / ch); place_card(f, card, M, t)
+    f = screen_bg(s['bg'], t, cx / cw, cy / ch, t - s['t0'], s['t1'] - s['t0']); place_card(f, card, M, t)
     act = [(x, y, w, h, ease((t - a) / .4) * ease((b - t) / .35)) for (a, b, (x, y, w, h)) in s['spots'] if a - .1 < t < b + .1]
     act = [r for r in act if r[4] > 0.01]
     if act: spot(f, act, M)

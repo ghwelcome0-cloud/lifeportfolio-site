@@ -29,8 +29,8 @@ def badge(d,x,y,t,size=40,bgc=GOLD,fg=DG,padx=26,pady=12):
 def save(im,n):
     im=im.convert('RGB');im.save(B+f'build/thumb/{n}_3840.jpg',quality=90);im.resize((1280,720),Image.LANCZOS).save(B+f'build/thumb/{n}_1280.jpg',quality=92)
 BF=FD+'Pretendard-Bold.woff2'
-# V1 launch: pathfinding open (cutaway building + diary-path card)
-bg=base('bgA');put(bg,card('diary-path.webp',(0,0,720,820),330,-4,ring=(20,382,650,390)),850,120)
+# V1 launch (owner pick): fork in a hill path at dawn + signpost; diary-path card
+bg=base('bgD',.9,.30);put(bg,card('diary-path.webp',(0,0,720,820),290,-4,ring=(20,382,650,390)),960,170)
 d=ImageDraw.Draw(bg);badge(d,64,66,'NEW 출시',40)
 txt(d,(60,175),'자산화',F(SER,140),(255,255,255));txt(d,(60,330),'길찾기',F(SER,140),GOLD)
 txt(d,(66,530),'고유성 기반 자산화 길찾기 · 이용 가능',F(BF,38),(240,236,225))
