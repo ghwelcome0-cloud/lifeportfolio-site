@@ -1,0 +1,133 @@
+{
+ "schema": "q90-r2-evidence-ledger/1",
+ "written_by": "총괄 ac00a922",
+ "at": "2026-10-13T03:40Z",
+ "spec_sha256": "5df21e7d831c67ea2b76122bb94231769a6b55f4bbe44f1caf494a1efb81786d",
+ "handed_to_TL_msgs": [
+  "6137567-6137584",
+  "6140260",
+  "6140267",
+  "6141377",
+  "6141384"
+ ],
+ "rows": [
+  {
+   "surface": "scenario_facts",
+   "actor": "agent_jzbt3m53wxdc",
+   "file": "scenario_facts.json",
+   "file_sha256": "7fd7cd20a2800f29fc1b39d61c0dced6c95a9d594ac82a55fe948ab62c7ced2b",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T02:15:28Z",
+   "msg": "6134580",
+   "note": "사례12·사실1156 실재"
+  },
+  {
+   "surface": "contrast_prereg",
+   "actor": "agent_jzbt3m53wxdc",
+   "file": "contrast_prereg.json",
+   "file_sha256": "2fe79d47b2bbb6135779c190e531f3f7060df30e444a013280049827ee46302d",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T02:16:44Z",
+   "msg": "6134649",
+   "note": "TL 겹침 0건 ffef2041; 대표 승인; 생성 02:58:43Z 시작"
+  },
+  {
+   "surface": "evidence_pack.A5.3.replication",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.3.replication.X4.json",
+   "file_sha256": "94f5a83a43b822968ed5e0417602c209907dc05b1600ffb64fa999d71c852369",
+   "body_sha256": "b1bd4746054b72c399fbf7df121488c476544b4f9bca2347247f7b497c1659ae",
+   "sealed_at": "2026-10-13T02:37:34Z",
+   "msg": "6137015",
+   "note": "총괄 재현 cd23e14f 일치; exposure_note(T15); Peer (i)유효 조건3 → 조립기 플래그"
+  },
+  {
+   "surface": "A5.3.sidecar",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.3.sidecar.tgz",
+   "file_sha256": "47f48da3811ecf2e453ecea2be1490cfbfcefaf145a3779b898df9f4d00094ee",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "6137015",
+   "note": ""
+  },
+  {
+   "surface": "input.construct-defs",
+   "actor": "총괄",
+   "file": "construct-defs.json",
+   "file_sha256": "4ee30c228e3cb24ab0adc01990e2929774f99c5cd93dad30b7bf9c9c13da70af",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "",
+   "note": "mapping.json 정의부만 기계 추출; MANIFEST 등록 요청"
+  },
+  {
+   "surface": "evidence_pack.A5.3.clarity_review ①",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "clarity_review.X1.json",
+   "file_sha256": "962a1d8e3aa41b04854c0619732885ce0556c8ee5364e87d9ee79741363b3980",
+   "body_sha256": "0b2e67bab7c3b8037e00baa2001b0521041273834ee489e7114cbc085763a047",
+   "sealed_at": "2026-10-13T03:01:54Z",
+   "msg": "6139651",
+   "note": "compact 구분자"
+  },
+  {
+   "surface": "evidence_pack.A5.3.clarity_review ②",
+   "actor": "agent_8qqs1jpre71k",
+   "file": "A5.3.clarity_review.X2.json",
+   "file_sha256": "02a26acecdbedeea5f03f293929d4f5be0b185eac24f5e7c9d816f5cd0b8afe9",
+   "body_sha256": "03fcea814d5df9a02bb8f84d66a5baccfa8366b77d8a099976c803be118b6958",
+   "sealed_at": "2026-10-13T03:01:37Z",
+   "msg": "6139597",
+   "note": "기본 구분자(method 필드 없음 → sidecar 명시)"
+  },
+  {
+   "surface": "clarity_disagreement_machine",
+   "actor": "총괄",
+   "file": "clarity_disagreement_machine.json",
+   "file_sha256": "f86d5ca86ba37ba9b05d88d5ca987bdc097d7d536d8663a6abca6170e0960ef0",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "",
+   "note": "불일치 11행"
+  },
+  {
+   "surface": "evidence_pack.A5.3.dissent_log",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "dissent_log.X1.json",
+   "file_sha256": "47786635a965184f64e8951f2168efe1b40fc38ad7e0b5e9b2656ce9ace09fef",
+   "body_sha256": "4a24f4f82b6c058e1c518444f035496247cbc7f6066f907304e52b110970b13a",
+   "sealed_at": "2026-10-13T03:10:42Z",
+   "msg": "6140442",
+   "note": "11행, 수정2·미수정9"
+  },
+  {
+   "surface": "evidence_pack.A5.3.dissent_log (signed)",
+   "actor": "agent_qee5phsqbk3w + reviewer agent_jnwhjh28tew6",
+   "file": "dissent_log.X1.signed.json",
+   "file_sha256": "70f29955734e7d9ee16e010e505160fc1e7c5ca4d3049135567209221ef0adbf",
+   "body_sha256": "4a24f4f82b6c058e1c518444f035496247cbc7f6066f907304e52b110970b13a",
+   "sealed_at": "",
+   "msg": "6141020",
+   "note": "Peer 서명 03:17:18Z, body 불변"
+  },
+  {
+   "surface": "sidecar_notes_A5.3",
+   "actor": "총괄",
+   "file": "sidecar_notes_A5.3.json",
+   "file_sha256": "6b997d2e1bc6f93638861b1b2126341f7e8863fd8d5b51c2d9de822070a0d31d",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "",
+   "note": ""
+  }
+ ],
+ "pending": [
+  "A1.restatement X1·X2(report 봉인 뒤)",
+  "A5.5.doc_vs_artifact_audit X2(changelog_deps 봉인 뒤)",
+  "A5.5.independent_replication X4(census 봉인본 대기 → §3 실행)",
+  "A5.7.counterexample_review·applied_review X1(출력 봉인 뒤)",
+  "A5.8.counter_reading X4(claim_inventory 봉인 뒤)",
+  "contrast_set 24+3 재실행(TL 생성 중, 사고 1건 공개 문구 결박)"
+ ]
+}
