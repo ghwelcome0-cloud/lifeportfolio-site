@@ -72,6 +72,13 @@
     .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
     .modal{background:#fff;border-radius:16px;padding:24px;max-width:600px;width:90vw;max-height:80vh;overflow:auto}
     .modal h2{margin:0 0 14px;font-size:16px;color:#1a2b4a}
+    .code-modal-header{display:grid;gap:10px;margin-bottom:12px;font-size:13px;color:#595959}
+    .code-modal-actions,.mail-compose-actions{display:flex;flex-wrap:wrap;gap:8px}
+    .code-modal-actions .btn-sm,.mail-compose-actions .btn-sm{min-height:44px;white-space:normal;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+    .mail-delivery-status{padding:12px;margin:12px 0;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .mail-value{flex:1;min-width:0;overflow-wrap:anywhere;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:12.5px}
+    .mail-body{width:100%;min-height:180px;padding:10px;border:1px solid #cbd5e1;border-radius:6px;resize:vertical;font:inherit}
+    #manualMailContent{min-width:0;overflow-wrap:anywhere}
     .code-list{font-family:'SF Mono','Menlo',monospace;font-size:12px;background:#f5f5f0;padding:14px;border-radius:8px;max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all}
     .modal .btn-close{margin-top:14px;width:100%;padding:10px;background:#1a2b4a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit}
     .empty{text-align:center;padding:24px;color:#a3a3a3;font-size:13px}
@@ -177,14 +184,16 @@
   <div id="codesModal" class="modal-bg" style="display:none">
     <div class="modal">
       <h2 id="codesModalTitle">Access Code 목록</h2>
-      <div style="margin-bottom:10px;font-size:13px;color:#595959">
+      <div class="code-modal-header">
         <span id="codesModalInfo">-</span>
-        <span style="float:right;display:inline-flex;gap:6px">
+        <div class="code-modal-actions">
           <button class="btn-sm" id="copyCsvBtn" style="background:#e5e7eb;color:#374151" title="코드 목록을 클립보드에 복사합니다 (보조용).">📋 코드 복사</button>
           <button class="btn-sm" id="manualMailBtn" style="background:#f59e0b;color:#fff" title="자동 발송이 안 될 때, 운영자가 직접 메일로 발송할 수 있도록 동일한 제목·본문·엑셀 첨부를 준비합니다.">📤 수동 발송 준비</button>
           <button class="btn-sm btn-copy" id="sendMailBtn" title="견적 신청한 담당자에게 조직 ID와 전체 Access Code를 엑셀(.xlsx) 첨부로 자동 메일 발송합니다.">✉️ 자동 메일 발송</button>
-        </span>
+        </div>
       </div>
+      <p style="font-size:12px;color:#475569">자동 발송은 Resend 메일 서비스를 사용하므로 Gmail·Outlook의 보낸메일함에는 자동 저장되지 않습니다. 서비스 접수와 수신 완료는 다릅니다. 이전 발송은 <a href="https://resend.com/emails" target="_blank" rel="noopener noreferrer">Resend 발송 기록</a>에서 확인하세요. 확인 없이 반복 발송하지 마세요.</p>
+      <div id="mailDeliveryStatus" class="mail-delivery-status" role="status" aria-live="polite">현재 탭에서 확인한 발송 결과가 없습니다. 과거 발송 실패를 뜻하지 않습니다.</div>
       <div class="code-list" id="codesList">로딩...</div>
       <button class="btn-close" onclick="document.getElementById('codesModal').style.display='none'">닫기</button>
     </div>
@@ -197,8 +206,9 @@
       <div style="padding:10px 12px;margin-bottom:14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;font-size:12.5px;color:#92400e;line-height:1.6">
         자동 발송과 <strong>동일한 제목·본문·엑셀 첨부</strong>를 준비했습니다.<br>
         ① <strong>엑셀 첨부파일을 먼저 다운로드</strong>하세요.
-        ② <strong>메일 앱 열기</strong>로 받는사람·제목·본문이 채워진 메일을 열고,
-        ③ 다운로드한 엑셀을 <strong>첨부</strong>한 뒤 발송하시면 됩니다.
+        ② <strong>Gmail 웹에서 작성</strong>하거나 메일 앱에 받는사람·제목·본문을 복사하세요.
+        ③ 발신 계정과 수신자를 확인하고 다운로드한 엑셀을 <strong>직접 첨부</strong>한 뒤 보내세요.<br>
+        이 화면에서 초안을 만들거나 작성 창을 여는 것만으로 메일이 발송되지는 않습니다.
       </div>
       <div id="manualMailContent" style="font-size:13px">불러오는 중…</div>
       <button class="btn-close" onclick="document.getElementById('manualMailModal').style.display='none'">닫기</button>
@@ -289,10 +299,18 @@
     });
 
     let authEpoch = 0, authorizedUid = null;
+    // UI-only receipts, not a persisted delivery history. Never store access codes in browser storage.
+    const mailReceipts = new Map(), mailInFlight = new Set();
+    let manualMailRequest = 0, _draft = null;
     onAuthStateChanged(auth, async (user) => {
       const epoch = ++authEpoch;
       authorizedUid = null; showGate("login");
       document.getElementById("codesModal").style.display = "none";
+      document.getElementById("manualMailModal").style.display = "none";
+      document.getElementById("manualMailContent").replaceChildren();
+      document.getElementById("codesList").replaceChildren();
+      document.getElementById("mailDeliveryStatus").textContent = "";
+      mailReceipts.clear(); manualMailRequest++; _draft = null;
       document.getElementById("ordersTable").replaceChildren();
       document.getElementById("pendingList").replaceChildren();
       if (!user) return;
@@ -385,7 +403,7 @@
         const fn = httpsCallable(functions, "approveB2BOrder");
         const result = await fn({ orderId: d.id });
         const { orgCode, codesIssued, codes, emailSent } = result.data;
-        alert(`✅ 코드 발급 완료!\n\n조직 ID: ${orgCode}\n발급된 코드: ${codesIssued}개\n\n${emailSent === false ? `⚠️ 자동 메일 발송에 실패했습니다.\n[✉️ 고객에게 코드 메일 발송] 버튼으로 다시 발송해주세요.` : `📨 ${d.email} 로 조직 ID와 전체 코드(엑셀 첨부) 안내 메일이 발송되었습니다.\n필요 시 [✉️ 고객에게 코드 메일 발송] 버튼으로 재발송할 수 있습니다.`}`);
+        alert(`✅ 코드 발급 완료!\n\n조직 ID: ${orgCode}\n발급된 코드: ${codesIssued}개\n\n${emailSent === true ? `Resend 메일 서비스가 안내 메일을 접수했습니다. 수신 완료는 아직 확인되지 않았습니다.` : `메일 서비스 접수를 확인하지 못했습니다. 실제 발송됐을 수 있으므로 Resend 기록과 수신함을 확인한 뒤 재발송 여부를 결정하세요.`}\n자동 발송은 Gmail·Outlook 보낸메일함에 자동 저장되지 않습니다.`);
         showCodesModal(d.no, d.org, orgCode, codes, null, d.id);
         await loadData();
       } catch (e) {
@@ -560,6 +578,18 @@
       }
     }
 
+    function renderMailReceipt(orderId) {
+      if (_modalCtx?.orderId !== orderId) return;
+      const panel = document.getElementById("mailDeliveryStatus");
+      const receipt = mailReceipts.get(orderId);
+      panel.textContent = receipt || "현재 탭에서 확인한 발송 결과가 없습니다. 과거 발송 실패를 뜻하지 않습니다. Resend 발송 기록과 수신함을 확인하세요.";
+      const pending = mailInFlight.has(orderId);
+      const btn = document.getElementById("sendMailBtn");
+      btn.disabled = pending;
+      btn.textContent = pending ? "접수 확인 중…" : "자동 메일 발송";
+      document.getElementById("manualMailBtn").disabled = pending;
+    }
+
     // 현재 모달에 표시 중인 컨텍스트 (재발급용)
     let _modalCtx = null;
 
@@ -575,6 +605,7 @@
 
       // 코드 리스트 UI (재발급 가능 코드에 버튼 표시)
       const listEl = document.getElementById("codesList");
+      listEl.style.fontFamily = "";
       if (codeDetails && orderId) {
         // [진행현황 강화 · 운영자 전용] 가입/완료 요약 집계 (개인 결과 내용 아님, 완료 여부만)
         const usedCnt = codeDetails.filter(d => d && d.status === "used").length;
@@ -628,27 +659,33 @@
       // [메인] 담당자에게 코드 메일 발송 (조직 ID + 전체 코드 엑셀 첨부)
       const sendBtn = document.getElementById("sendMailBtn");
       sendBtn.onclick = async () => {
+        const uid = authorizedUid, epoch = authEpoch;
+        if (!uid || auth.currentUser?.uid !== uid || mailInFlight.has(orderId)) return;
         if (!orderId) { alert("주문 정보를 확인할 수 없습니다."); return; }
-        if (!confirm(`견적 신청한 담당자에게 코드 안내 메일을 발송합니다.\n\n조직: ${orgName}\n주문번호: ${orderNo}\n코드 ${codes.length}개 (엑셀 .xlsx 첨부)\n\n발송하시겠습니까?`)) return;
-        const original = sendBtn.textContent;
-        sendBtn.disabled = true;
-        sendBtn.textContent = "발송 중…";
+        if (!confirm(`Resend를 통해 담당자에게 코드 안내 메일을 발송합니다.\n\n조직: ${orgName}\n주문번호: ${orderNo}\n코드 ${codes.length}개 (엑셀 .xlsx 첨부)\n\nGmail·Outlook 보낸메일함에는 자동 저장되지 않습니다. 이전 발송 기록을 확인하셨나요? 중복 발송이 아닌 경우에만 진행하세요.`)) return;
+        mailInFlight.add(orderId);
+        mailReceipts.set(orderId, "메일 서비스 접수 결과를 확인하고 있습니다. 다른 발송을 시작하지 마세요.");
+        renderMailReceipt(orderId);
         try {
-          const fn = httpsCallable(functions, "resendB2BCodesEmail");
+          const fn = httpsCallable(functions, "resendB2BCodesEmail", { timeout: 70000 });
           const result = await fn({ orderId });
+          if (epoch !== authEpoch || auth.currentUser?.uid !== uid) return;
           const d = result.data || {};
-          sendBtn.textContent = "✓ 발송 완료!";
-          alert(`✅ 코드 안내 메일을 발송했습니다.\n\n받는 사람: ${d.sentTo || "담당자"}\n코드 수: ${d.codesIssued || codes.length}개 (엑셀 첨부)`);
-          setTimeout(() => { sendBtn.textContent = original; sendBtn.disabled = false; }, 2000);
+          const accepted = d.ok === true && d.emailStatus === "provider_accepted" && typeof d.messageId === "string" && d.messageId.trim();
+          mailReceipts.set(orderId, accepted
+            ? `Resend 서비스 접수 확인 · 수신 완료 미확인\n수신자: ${d.sentTo || "담당자"}\n메시지 ID: ${d.messageId}\n확인 시각: ${new Date().toLocaleString("ko-KR")}\nResend 발송 기록에서 이 ID의 배달·반송 상태를 확인하세요. Gmail·Outlook 보낸메일함에는 자동 저장되지 않습니다.\n이 결과 표시는 현재 탭에서만 유지됩니다.`
+            : "접수 결과 미확인: 서버 응답에 유효한 접수 상태와 메시지 ID가 없습니다. 실제 발송됐을 수 있습니다. Resend 기록과 수신함을 확인하기 전에는 자동·수동 재발송하지 마세요.");
         } catch (e) {
-          sendBtn.textContent = original;
-          sendBtn.disabled = false;
-          const msg = e.message || "알 수 없는 오류";
-          if (confirm(`❌ 자동 메일 발송 실패\n\n사유: ${msg}\n\n지금 '수동 발송 준비'를 열어 직접 발송하시겠습니까?\n(자동 발송과 동일한 제목·본문·엑셀 첨부가 준비됩니다)`)) {
-            openManualMail(orderId, orgName, orderNo);
-          }
+          if (epoch !== authEpoch || auth.currentUser?.uid !== uid) return;
+          const code = String(e.code || "").replace(/^functions\//, "");
+          const rejected = ["unauthenticated", "permission-denied", "invalid-argument", "failed-precondition", "not-found"].includes(code);
+          mailReceipts.set(orderId, `${rejected ? "발송 요청이 거부되었습니다." : "발송 결과 미확인: 실제 발송됐을 수 있습니다."}\n오류: ${e.message || "알 수 없는 오류"}\n${rejected ? "권한·주문 상태·발송 설정을 확인하세요." : "Resend 기록과 수신함을 확인하기 전에는 자동·수동 재발송하지 마세요."}\n자동 재시도나 수동 발송 전환은 실행하지 않았습니다.`);
+        } finally {
+          mailInFlight.delete(orderId);
+          if (epoch === authEpoch && auth.currentUser?.uid === uid) renderMailReceipt(orderId);
         }
       };
+      renderMailReceipt(orderId);
 
       // [백업] 수동 발송 준비 — 자동 발송이 안 될 때 운영자가 직접 발송
       const manualBtn = document.getElementById("manualMailBtn");
@@ -659,7 +696,11 @@
 
     // 수동 발송 준비: 자동 발송과 동일한 제목/본문/엑셀 첨부를 생성해 운영자에게 제공
     async function openManualMail(orderId, orgName, orderNo) {
+      const uid = authorizedUid, epoch = authEpoch;
+      if (!uid || auth.currentUser?.uid !== uid || mailInFlight.has(orderId)) return;
       if (!orderId) { alert("주문 정보를 확인할 수 없습니다."); return; }
+      const requestId = ++manualMailRequest;
+      _draft = null;
       const modal = document.getElementById("manualMailModal");
       const content = document.getElementById("manualMailContent");
       content.innerHTML = "불러오는 중… (엑셀 첨부 생성 중)";
@@ -667,11 +708,14 @@
       try {
         const fn = httpsCallable(functions, "getB2BCodesEmailDraft");
         const result = await fn({ orderId });
+        if (requestId !== manualMailRequest || epoch !== authEpoch || auth.currentUser?.uid !== uid) return;
         const d = result.data || {};
+        if (d.ok !== true || typeof d.text !== "string" || typeof d.xlsxBase64 !== "string" || !d.xlsxBase64) throw new Error("완전한 메일 초안과 첨부를 확인하지 못했습니다.");
         renderManualMail(d);
       } catch (e) {
+        if (requestId !== manualMailRequest || epoch !== authEpoch || auth.currentUser?.uid !== uid) return;
         content.innerHTML = `<div style="color:#dc2626;padding:12px;background:#fef2f2;border-radius:8px">
-          초안 생성 실패: ${(e.message || "알 수 없는 오류")}<br>
+          초안 생성 실패: ${esc(e.message || "알 수 없는 오류")}<br>
           <span style="color:#737373;font-size:12px">코드 모달의 '📋 코드 복사'로 코드만 복사해 임시 안내할 수 있습니다.</span>
         </div>`;
       }
@@ -698,103 +742,88 @@
       }
     }
 
-    // 현재 초안 데이터 보관 (다운로드/복사/mailto 핸들러에서 사용)
-    let _draft = null;
-
     function renderManualMail(d) {
+      const uid = authorizedUid, epoch = authEpoch;
       _draft = d;
+      const active = () => epoch === authEpoch && auth.currentUser?.uid === uid && authorizedUid === uid;
       const content = document.getElementById("manualMailContent");
       const XLSX_MIME = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+      const to = String(d.to || ""), subject = String(d.subject || ""), text = String(d.text || "");
+      const validRecipient = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(to);
+      const gmail = new URL("https://mail.google.com/mail/");
+      gmail.search = new URLSearchParams({ view: "cm", fs: "1", to, su: subject, body: text }).toString();
+      // Bounded compose links; the visible full text remains available if a client truncates a URL.
+      const gmailFull = gmail.href.length <= 8000;
+      if (!gmailFull) gmail.searchParams.delete("body");
+      const gmailReady = validRecipient && gmail.href.length <= 8000;
+      let mailto = "mailto:" + encodeURIComponent(to) + "?subject=" + encodeURIComponent(subject);
+      const withBody = mailto + "&body=" + encodeURIComponent(text);
+      const mailtoFull = withBody.length <= 1800;
+      if (mailtoFull) mailto = withBody;
+      const mailtoReady = validRecipient && mailto.length <= 1800;
       content.innerHTML = `
-        <div style="display:grid;gap:10px">
+        <div style="display:grid;gap:10px;min-width:0">
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <span style="font-size:11px;color:#64748b;font-weight:700;width:60px">받는사람</span>
-            <code style="flex:1;min-width:200px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:12.5px">${d.to || "(이메일 없음)"}</code>
-            <button class="btn-sm" data-copy="to" style="background:#e5e7eb;color:#374151">복사</button>
+            <span>받는사람</span><code class="mail-value">${esc(to || "이메일 없음")}</code>
+            <button class="btn-sm" data-copy="to">복사</button>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <span style="font-size:11px;color:#64748b;font-weight:700;width:60px">제목</span>
-            <code style="flex:1;min-width:200px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;font-size:12.5px">${d.subject || ""}</code>
-            <button class="btn-sm" data-copy="subject" style="background:#e5e7eb;color:#374151">복사</button>
+            <span>제목</span><code class="mail-value">${esc(subject)}</code>
+            <button class="btn-sm" data-copy="subject">복사</button>
           </div>
-
-          <div style="margin-top:6px;padding:12px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px">
-            <div style="font-weight:700;color:#065f46;font-size:13px;margin-bottom:6px">1단계 · 엑셀 첨부파일 다운로드</div>
-            <div style="font-size:12px;color:#047857;margin-bottom:8px">코드 ${d.codesIssued || 0}개가 정리된 엑셀 대시보드입니다. 메일에 첨부할 파일이에요.</div>
-            <button class="btn-sm" id="dlXlsxBtn" style="background:#10b981;color:#fff;font-weight:700">⬇ ${d.xlsxFileName || "엑셀"} 다운로드</button>
-          </div>
-
-          <div style="padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px">
-            <div style="font-weight:700;color:#1e3a8a;font-size:13px;margin-bottom:6px">2단계 · 메일 앱 열기 (받는사람·제목·본문 자동 채움)</div>
-            <div style="font-size:12px;color:#2563eb;margin-bottom:8px">버튼을 누르면 기본 메일 앱이 열립니다. <strong>본문은 텍스트 버전</strong>으로 채워지며, 위에서 받은 <strong>엑셀 파일을 직접 첨부</strong>해 발송하세요.</div>
-            <button class="btn-sm" id="openMailtoBtn" style="background:#2563eb;color:#fff;font-weight:700">✉️ 메일 앱 열기</button>
-            <button class="btn-sm" data-copy="text" style="background:#dbeafe;color:#1e40af;margin-left:6px">본문(텍스트) 복사</button>
-          </div>
-
-          <details style="margin-top:4px">
-            <summary style="cursor:pointer;font-size:12px;color:#64748b;font-weight:600">HTML 본문 미리보기 / 복사 (HTML 메일로 보낼 때)</summary>
-            <div style="margin-top:8px;border:1px solid #e2e8f0;border-radius:8px;overflow:hidden">
-              <iframe id="htmlPreview" style="width:100%;height:340px;border:0;background:#fafaf7" sandbox></iframe>
+          <section style="padding:12px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:10px">
+            <h3 style="font-size:13px;margin:0 0 8px">1단계 · 엑셀 첨부파일 다운로드</h3>
+            <p>코드 ${esc(d.codesIssued || 0)}개가 정리된 파일입니다. 메일 작성 화면에 직접 첨부해야 합니다.</p>
+            <button class="btn-sm" id="dlXlsxBtn" style="background:#10b981;color:#fff;max-width:100%;overflow-wrap:anywhere">${esc(d.xlsxFileName || "엑셀")} 다운로드</button>
+          </section>
+          <section style="padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;min-width:0">
+            <h3 style="font-size:13px;margin:0 0 8px">2단계 · 메일 작성 방법 선택</h3>
+            <p>Gmail 웹 작성은 기본 메일 앱 설정 없이 사용할 수 있습니다. 로그인된 <strong>발신 계정과 받는사람을 확인</strong>하세요. 버튼을 누를 때 초안 내용이 Gmail 작성 주소에 전달됩니다. <strong>엑셀은 자동 첨부되지 않습니다.</strong></p>
+            <div class="mail-compose-actions">
+              ${gmailReady ? `<a class="btn-sm" id="openGmailBtn" href="#" target="_blank" rel="noopener noreferrer" style="background:#2563eb;color:#fff">Gmail 웹에서 작성</a>` : `<span>Gmail 자동 채움을 사용할 수 없습니다. 메일함에서 새 메일을 열고 아래 내용을 복사하세요.</span>`}
+              ${mailtoReady ? `<a class="btn-sm" id="openMailtoBtn" href="#" style="background:#e2e8f0;color:#1e293b">기본 메일 앱 열기</a>` : ""}
             </div>
-            <button class="btn-sm" data-copy="html" style="background:#e5e7eb;color:#374151;margin-top:8px">HTML 소스 복사</button>
+            <p>${gmailFull ? "Gmail 작성 창에서 전체 본문이 채워졌는지 확인하세요." : "본문이 길어 Gmail 작성 링크에는 넣지 않았습니다. 아래 전체 본문을 복사해 붙여넣으세요."}</p>
+            <p>${mailtoFull ? "기본 메일 앱이 연결돼 있어야 메일 앱 버튼이 작동합니다." : "긴 본문은 기본 메일 앱에 자동 입력하지 않습니다. 아래 전체 본문을 복사해 붙여넣으세요."} 빈 화면이 나오거나 작성 창이 열리지 않으면 Gmail 웹 작성 또는 직접 복사를 사용하세요. 앱 실행·발송 여부를 이 페이지에서 감지할 수는 없습니다.</p>
+            <label for="manualMailText">전체 본문 — 자동 입력이 빠졌다면 직접 복사</label>
+            <textarea id="manualMailText" class="mail-body" readonly></textarea>
+            <button class="btn-sm" data-copy="text">본문(텍스트) 복사</button>
+            <p id="mailCopyStatus" role="status" aria-live="polite"></p>
+            <p><strong>3단계 · 수신자·전체 본문·엑셀 첨부를 확인하고 메일 서비스에서 직접 보내세요.</strong> 수동 발송 기록은 실제로 보낸 계정의 보낸메일함에서 확인하세요. 이 창은 발송 완료를 표시하지 않습니다.</p>
+          </section>
+          <details>
+            <summary>HTML 본문 미리보기 / 소스 복사</summary>
+            <iframe id="htmlPreview" title="메일 본문 미리보기" style="width:100%;height:340px;border:0" sandbox referrerpolicy="no-referrer"></iframe>
+            <button class="btn-sm" data-copy="html">HTML 소스 복사</button>
           </details>
         </div>`;
-
-      // HTML 미리보기 주입
-      const iframe = document.getElementById("htmlPreview");
-      if (iframe) iframe.srcdoc = d.html || "";
-
-      // 복사 버튼들
-      content.querySelectorAll("button[data-copy]").forEach((btn) => {
-        btn.onclick = () => {
-          const key = btn.getAttribute("data-copy");
-          const val = (key === "to") ? (d.to || "") : (d[key] || "");
-          navigator.clipboard.writeText(val).then(() => {
-            const t = btn.textContent; btn.textContent = "✓ 복사됨"; setTimeout(() => btn.textContent = t, 1200);
-          });
+      if (gmailReady) document.getElementById("openGmailBtn").href = gmail.href;
+      if (mailtoReady) document.getElementById("openMailtoBtn").href = mailto;
+      document.getElementById("manualMailText").value = text;
+      document.getElementById("htmlPreview").srcdoc = d.html || "";
+      content.querySelectorAll("button[data-copy]").forEach(btn => {
+        btn.onclick = async () => {
+          if (!active()) return;
+          const key = btn.getAttribute("data-copy"), value = String(d[key] || "");
+          const status = document.getElementById("mailCopyStatus");
+          try {
+            await navigator.clipboard.writeText(value);
+            if (active() && status.isConnected) status.textContent = "복사했습니다. 작성 중인 메일에 붙여넣으세요.";
+          } catch (_) {
+            if (active() && status.isConnected) {
+              status.textContent = "클립보드 접근이 차단됐습니다. 화면의 해당 내용을 선택해 직접 복사하세요.";
+              if (key === "text") { const field = document.getElementById("manualMailText"); field.focus(); field.select(); }
+            }
+          }
         };
       });
-
-      // 엑셀 다운로드
-      const dlBtn = document.getElementById("dlXlsxBtn");
-      if (dlBtn) dlBtn.onclick = () => {
+      content.querySelectorAll("a").forEach(a => a.addEventListener("click", e => {
+        if (!active()) e.preventDefault();
+      }));
+      document.getElementById("dlXlsxBtn").onclick = () => {
+        if (!active()) return;
         if (!d.xlsxBase64) { alert("첨부 데이터가 없습니다."); return; }
         downloadBase64File(d.xlsxBase64, d.xlsxFileName || "AccessCodes.xlsx", XLSX_MIME);
-      };
-
-      // 메일 앱 열기 (mailto)
-      // ⚠️ mailto는 URL 전체 길이 제한(브라우저/OS ~2,000자)이 있어
-      //    전체 본문(d.text)을 그대로 넣으면 메일 앱이 열리지 않습니다.
-      //    → 본문은 짧은 안내문만 넣고, 전체 본문은 '본문(텍스트) 복사' 버튼으로 채우도록 안내합니다.
-      const mailtoBtn = document.getElementById("openMailtoBtn");
-      if (mailtoBtn) mailtoBtn.onclick = () => {
-        const to = encodeURIComponent(d.to || "");
-        const subject = encodeURIComponent(d.subject || "");
-        const shortBody = encodeURIComponent(
-          "※ 발송 전 확인사항\n" +
-          "1) 아래 '본문(텍스트) 복사' 버튼으로 전체 본문을 복사해 이 메일에 붙여넣어 주세요.\n" +
-          "2) 위에서 다운로드한 엑셀 파일을 첨부한 뒤 발송해주세요.\n"
-        );
-        // mailto 길이 안전을 위해 body는 짧게만 유지
-        let href = `mailto:${to}?subject=${subject}&body=${shortBody}`;
-        // 혹시 모를 길이 초과 방지 — 1,800자 넘으면 body 생략
-        if (href.length > 1800) href = `mailto:${to}?subject=${subject}`;
-
-        // window.location.href는 일부 웹앱 컨텍스트(특히 SPA/iframe)에서
-        // 메일 앱을 트리거하지 못합니다. → 임시 <a> 엘리먼트 클릭 방식 사용.
-        try {
-          const a = document.createElement("a");
-          a.href = href;
-          a.target = "_blank";
-          a.rel = "noopener";
-          a.style.display = "none";
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(() => { try { document.body.removeChild(a); } catch (_) {} }, 1000);
-        } catch (e) {
-          // 최후의 수단
-          window.open(href, "_blank");
-        }
       };
     }
 
