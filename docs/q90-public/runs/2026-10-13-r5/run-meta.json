@@ -1,0 +1,23 @@
+{
+ "run": "r5",
+ "purpose": "K13·K14 명부 URL 404 교정 후 재측정(보류 — 표 미반영, §28 결박 대기)",
+ "egress_country": "US",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh",
+ "rows_requested": 2,
+ "bridge_rows": [],
+ "started_utc": "2026-10-13T00:53:45Z",
+ "ended_utc": "2026-10-13T00:53:45Z",
+ "roster_subset_sha256": "6285eebbd048a3f6377403002355e0c70fe669eb825cbaf109671aeaeea681e0",
+ "roster_sha256_note": "roster-v2.r5-subset.json (K13·K14 URL 교정판)",
+ "os_kind": "Linux (sandbox)",
+ "os_timezone": "UTC",
+ "browser_lang_flag": "en-US",
+ "accept_language_sent": "en-US (r3와 동일 환경)",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "held": false,
+ "held_reason": "명부 v2는 frozen_before_results. URL 교정은 \"대상 교체\"가 아니라 같은 제품의 현행 주소이지만, 결과를 본 뒤 교정했으므로 팀 대조(TL·Peer 1회) 뒤에만 표 반영",
+ "held_release": "TL 6126260 · Peer 6126270 각 \"예(같은 제품)\". 조건 3개 이행: url_before/after+사유(roster v2.1), K13 이름 (대학생·일반용), 공개 수치 \"32/40(그중 2행 K13·K14는 결과 뒤 URL 교정)\""
+}

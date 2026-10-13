@@ -30,7 +30,7 @@ for (const run of runs) for (const r of run.results) {
   const prev = byRow[r.row];
   if (r.skip) { if (!prev) byRow[r.row] = { res: r, run, reason: 'own' }; continue; }
   if (prev && prev.ok) { prev.compare_only_runs = [...(prev.compare_only_runs || []), run.tag]; continue; } // 이미 성공한 행: 값 유지(겹침 포함, 40행 측정도 동일)
-  if (okRow(r)) byRow[r.row] = { res: r, run, ok: true, previously_failed_in: prev && !prev.ok ? prev.run.tag : (prev && prev.previously_failed_in) };
+  if (okRow(r)) byRow[r.row] = { res: r, run, ok: true, previously_failed_in: prev && !prev.ok ? prev.run.tag : (prev && prev.previously_failed_in), prior_failures: (prev && !prev.ok && prev.failures) || (prev && prev.prior_failures) || null };
   else if (!prev || !prev.ok) byRow[r.row] = { res: r, run, ok: false, failures: [...((prev && prev.failures) || []), { run: run.tag, egress: run.egress, status: statusOf(r), error: (r.mobile && r.mobile.error) || (r.headers && r.headers.error) || (statusOf(r) ? `HTTP ${statusOf(r)}` : 'unknown') }] };
 }
 const classify = (e, st) => (st === 404 || st === 410) ? '대상 없음' : (st === 403 || st === 451) ? '접근 차단' : !e ? (st ? `기타 오류(HTTP ${st})` : null) : /timed?[ _]?out|Navigation timeout|fetch failed/i.test(e) ? '시간 초과' : /403|451|captcha|forbidden|blocked/i.test(e) ? '접근 차단' : '기타 오류';
@@ -40,7 +40,10 @@ for (const [row, x] of Object.entries(byRow)) {
   const sc = x.run.scored.find(s => s.row === row) || { row };
   const tagStr = `${x.run.tag}·${x.run.egress}`;
   results.push({ ...x.res, assembled_from: tagStr });
-  const note = x.previously_failed_in ? `해외 접속 시 시간 초과(${x.previously_failed_in})` : null;
+  // T12(2026-10-13): 앞선 실패 사유를 '시간 초과'로 고정해 적던 결함 → 실제 실패 분류(404/403/시간 초과)로 적는다
+  const pf = x.prior_failures && x.prior_failures[x.prior_failures.length - 1];
+  const pfClass = pf ? classify(pf.error, pf.status) : null;
+  const note = x.previously_failed_in ? (pfClass === '대상 없음' ? `명부 URL 404(${x.previously_failed_in}) → URL 교정 뒤 측정(G21 §28)` : pfClass === '접근 차단' ? `접근 차단(${x.previously_failed_in}) 뒤 측정` : `해외 접속 시 시간 초과(${x.previously_failed_in})`) : null;
   const lastF = x.failures && x.failures[x.failures.length - 1];
   const partial = x.ok && !fullRow(x.res) ? (a6ok(x.res) ? 'A6만' : 'A7만') : null;
   const partialWhy = partial === 'A7만' ? ((x.res.mobile && x.res.mobile.status && !is2xx(x.res.mobile.status)) ? `측정 무효(HTTP ${x.res.mobile.status})` : '검사 경로 시간 초과') : null;
@@ -58,5 +61,9 @@ results.sort((a, b) => idx(a.row) - idx(b.row)); scored.sort((a, b) => idx(a.row
 const header = { assembled: true, rule: 'G21 §24-b — 앞선 run 성공 행은 그 값 유지, 앞선 run 실패 행만 뒤 run 값; 뒤 run의 그 밖 값은 §25 비교용', bound_commit: '9557e46 + §24-b', inputs: runs.map(r => ({ run: r.tag, dir: path.basename(r.dir), egress_country: r.egress, tool_sha256: r.tool_sha256, startedAt: r.startedAt, rows: r.results.length, bridge_rows: [...r.bridge] })), tool_sha256: toolShas[0], generatedAt: new Date().toISOString() };
 fs.writeFileSync(path.join(OUT, 'e1-results.json'), JSON.stringify({ tool: 'assemble-latest.cjs', ...header, roster_version: runs[0].results.length && JSON.parse(fs.readFileSync(path.join(runs[0].dir, 'e1-results.json'), 'utf8')).roster_version, evidence: 'E1', startedAt: runs[0].startedAt, results }, null, 1));
 fs.writeFileSync(path.join(OUT, 'e1-scored.json'), JSON.stringify(scored, null, 1));
-fs.writeFileSync(path.join(OUT, 'assembly.json'), JSON.stringify({ ...header, measured: provenance.filter(p => p.ok).length, measured_full: provenance.filter(p => p.full).length, measured_partial: provenance.filter(p => p.ok && !p.full).map(p => `${p.row}(${p.partial})`), rule_2xx: '최종 응답 2xx만 성공(§24-c, TL 6106475·Peer 6106517). 비-2xx 축은 측정 무효로 비움', total_non_own: provenance.filter(p => p.from && !/own/.test(p.from) && byRow[p.row].reason !== 'own').length, provenance }, null, 1));
+// G21 §28: 명부 url_before 가 있는 행(결과 뒤 URL 교정)은 공개 수치에 따로 밝힌다
+const rosterPath = process.env.ROSTER || path.join(__dirname, '..', 'roster', 'roster-v2.json');
+const rosterRows = fs.existsSync(rosterPath) ? JSON.parse(fs.readFileSync(rosterPath, 'utf8')).rows : [];
+const urlCorrected = rosterRows.filter(r => r.url_before).map(r => r.id).filter(id => provenance.some(p => p.row === id && p.ok));
+fs.writeFileSync(path.join(OUT, 'assembly.json'), JSON.stringify({ ...header, url_corrected_rows: urlCorrected.length ? { rows: urlCorrected, note: `명부 url 교정 뒤 측정(G21 §28, 결과 뒤 교정 — 공개 수치에 밝힘)` } : null, measured: provenance.filter(p => p.ok).length, measured_full: provenance.filter(p => p.full).length, measured_partial: provenance.filter(p => p.ok && !p.full).map(p => `${p.row}(${p.partial})`), rule_2xx: '최종 응답 2xx만 성공(§24-c, TL 6106475·Peer 6106517). 비-2xx 축은 측정 무효로 비움', total_non_own: provenance.filter(p => p.from && !/own/.test(p.from) && byRow[p.row].reason !== 'own').length, provenance }, null, 1));
 console.log('assembled', provenance.length, 'rows; measured', provenance.filter(p => p.ok).length, '(full', provenance.filter(p => p.full).length, ')', '; inputs', runs.map(r => r.tag + '·' + r.egress).join(','));

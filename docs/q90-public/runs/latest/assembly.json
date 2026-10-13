@@ -25,12 +25,28 @@
     "K13",
     "K18"
    ]
+  },
+  {
+   "run": "r5",
+   "dir": "2026-10-13-r5",
+   "egress_country": "US",
+   "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+   "startedAt": "2026-10-13T00:52:57.775Z",
+   "rows": 2,
+   "bridge_rows": []
   }
  ],
  "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-12T23:14:45.558Z",
- "measured": 30,
- "measured_full": 27,
+ "generatedAt": "2026-10-13T01:01:29.127Z",
+ "url_corrected_rows": {
+  "rows": [
+   "K13",
+   "K14"
+  ],
+  "note": "명부 url 교정 뒤 측정(G21 §28, 결과 뒤 교정 — 공개 수치에 밝힘)"
+ },
+ "measured": 32,
+ "measured_full": 29,
  "measured_partial": [
   "G08(A6만)",
   "K01(A7만)",
@@ -450,43 +466,23 @@
   },
   {
    "row": "K13",
-   "from": "r4·KR",
-   "ok": false,
-   "full": false,
+   "from": "r5·US",
+   "ok": true,
+   "full": true,
    "partial": null,
-   "prior_failure_note": null,
+   "prior_failure_note": "명부 URL 404(r4) → URL 교정 뒤 측정(G21 §28)",
    "compare_only_runs": null,
-   "failures": [
-    {
-     "run": "r3",
-     "egress": "US",
-     "status": 404,
-     "error": "HTTP 404"
-    },
-    {
-     "run": "r4",
-     "egress": "KR",
-     "status": 404,
-     "error": "HTTP 404"
-    }
-   ]
+   "failures": null
   },
   {
    "row": "K14",
-   "from": "r3·US",
-   "ok": false,
-   "full": false,
+   "from": "r5·US",
+   "ok": true,
+   "full": true,
    "partial": null,
-   "prior_failure_note": null,
+   "prior_failure_note": "명부 URL 404(r3) → URL 교정 뒤 측정(G21 §28)",
    "compare_only_runs": null,
-   "failures": [
-    {
-     "run": "r3",
-     "egress": "US",
-     "status": 404,
-     "error": "HTTP 404"
-    }
-   ]
+   "failures": null
   },
   {
    "row": "K15",

@@ -1,5 +1,5 @@
 {
- "version": "v2.0",
+ "version": "v2.1",
  "frozen_before_results": true,
  "id_rule": "행 ID는 불변. 대상 교체·추가는 새 ID. 삭제 대신 retired:true.",
  "rows": [
@@ -517,9 +517,9 @@
   },
   {
    "id": "K13",
-   "name": "커리어넷 직업가치관검사(성인)",
+   "name": "커리어넷 직업가치관검사(대학생·일반용)",
    "group": "국내",
-   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
    "provider": "한국직업능력연구원(교육부)",
    "country": "KR",
    "access": "무료",
@@ -529,13 +529,18 @@
    "docs_url": null,
    "appeal": "",
    "limits": "",
-   "since": "2026-10-12 G21 §4"
+   "since": "2026-10-12 G21 §4",
+   "url_before": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "url_after": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+   "url_change_reason": "경로 이전(옛 URL 404, r3·r4 모두), 결과 뒤 교정, G21 §28. 옛 URL은 K13·K14가 같이 쓰던 목록 페이지라 제품 식별값이 아니었음",
+   "name_note": "\"(성인)\" = 커리어넷 분류 \"대학생∙일반용\". 중·고등학생용 직업가치관검사(value2)와 다른 제품",
+   "name_before": "커리어넷 직업가치관검사(성인)"
   },
   {
    "id": "K14",
    "name": "커리어넷 진로개발준비도검사",
    "group": "국내",
-   "url": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
    "provider": "한국직업능력연구원(교육부)",
    "country": "KR",
    "access": "무료",
@@ -545,7 +550,10 @@
    "docs_url": null,
    "appeal": "",
    "limits": "",
-   "since": "2026-10-12 G21 §4"
+   "since": "2026-10-12 G21 §4",
+   "url_before": "https://www.career.go.kr/cloud/w/inspect/intro",
+   "url_after": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+   "url_change_reason": "경로 이전(옛 URL 404, r3·r4 모두), 결과 뒤 교정, G21 §28. 옛 URL은 K13·K14가 같이 쓰던 목록 페이지라 제품 식별값이 아니었음"
   },
   {
    "id": "K15",
@@ -660,6 +668,15 @@
    "since": "2026-10-08",
    "own": true,
    "note": "점수 칸은 Q90 2회차(tag q90-r2-candidate=3d3ebb4) judge·scorer 결과를 전사만 함. 공개표용 재측정 금지."
+  }
+ ],
+ "version_history": [
+  {
+   "from": "v2.0",
+   "to": "v2.1",
+   "at": "2026-10-13T01:05Z",
+   "what": "K13·K14 url 교정(경로 이전, 결과 뒤 교정, G21 §28). 대상 교체 아님 — 옛 URL은 두 행이 공유하던 목록 페이지(404). 근거는 명부 이름·제공기관 = 교정 페이지 제목. TL 6126260·Peer 6126270 각 \"예\"",
+   "ids_unchanged": true
   }
  ]
 }
