@@ -2,6 +2,8 @@
 # 금지: 꾸미는 말(관형형·관형사·수) 뒤 / 의존명사(것·수·때·가지) 앞 / 보조용언(해 / 보다) 앞 /
 #       명사+명사 복합어 사이(고유성 / 기반) / '수 / 있다' / '~이 / 되다' / 따옴표·「」 안.
 # 선호: 문장끝 > 쉼표 > 연결어미(-고 -며 -면 -서) > 주제·주어·목적어 조사.
+# v3.1(EP.04): 이어진 동사(받아 적다 · 고쳐 쓰다 · 어떻게 하다) 사이, 명사와 수(사진 / 한 장) 사이도 금지.
+#       좋은 자리가 없고 24자 이하면 한 줄로 둔다.
 # 모양: 한 큐 최대 2줄, 줄당 20자 안팎. 위아래 길이가 비슷하게, 한 줄 7자 미만 금지.
 import re, json, sys
 from kiwipiepy import Kiwi
@@ -26,7 +28,7 @@ def locked(words):
 def boundary_scores(words):
     tg = eojeol_tags(words); sc = []; quote = 0; LK = locked(words)
     for i in range(len(words) - 1):
-        w, n = words[i], words[i + 1]; a = [x for x in tg[i] if not x[1].startswith('S')] or tg[i]; b = [x for x in tg[i + 1] if not x[1].startswith('S')] or tg[i + 1]
+        w, n = words[i], words[i + 1]; PUN = ('SF', 'SP', 'SS', 'SSO', 'SSC', 'SE', 'SO', 'SW'); a = [x for x in tg[i] if x[1] not in PUN] or tg[i]; b = [x for x in tg[i + 1] if x[1] not in PUN] or tg[i + 1]
         quote += w.count('「') + w.count('“') - w.count('」') - w.count('”')
         lt = a[-1][1] if a else ''; ft = b[0][1] if b else ''; ff = b[0][0] if b else ''
         bt = [x[1] for x in b]
@@ -40,7 +42,10 @@ def boundary_scores(words):
         elif lt in ('NNG', 'NNP', 'NNB', 'NR', 'XSN') and ft in ('NNG', 'NNP', 'XSN', 'NR') : s = -7   # 명사+명사
         elif lt in ('JKC',) or (lt == 'JKS' and ff in ('되', '아니')): s = -7
         elif 'ETM' in bt and lt in ('JKS', 'JKO', 'JKB', 'JX', 'MAG', 'NNG'): s = -4                 # 꾸미는 절을 가르지 않게
+        elif lt == 'EC' and a[-1][0] in ('어', '아', '여', '게', '어다', '아다') and ft.startswith('V'): s = -8   # 이어진 동사
+        elif lt in ('NNG', 'NNP', 'NNB') and ft in ('MM', 'SN', 'NR'): s = -7       # 사진 / 한 장
         elif lt == 'EC': s = 6
+        elif lt == 'JKO' and ft.startswith('V'): s = 1
         elif lt in ('JX', 'JKS', 'JKO', 'JKB', 'JC'): s = 3
         elif lt == 'JKG': s = -5
         elif lt == 'MAG': s = -3
@@ -57,6 +62,7 @@ def best_two(words, sc, maxc=20):
         v = (sc[k - 1] - abs(len(a) - len(b)) * 0.3 - (1.5 if len(b) > len(a) + 7 else 0)
              - (8 if min(len(a), len(b)) < 7 else 0) - over * 1.2 - (40 if sc[k - 1] <= -7 else 0))
         if best is None or v > best[0]: best = (v, [a, b])
+    if best and best[0] < 0 and len(txt) <= maxc + 4: return [txt]
     return best[1] if best else [txt]
 def cues_from_words(ww, max_cue=40, maxc=20):
     ww = [w for w in ww if w['t'].strip()]
