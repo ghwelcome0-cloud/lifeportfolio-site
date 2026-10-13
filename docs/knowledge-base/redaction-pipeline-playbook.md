@@ -12,6 +12,12 @@
 - 부수 효과 허용 범위: 일반 단어 안의 짧은 토큰(comPARing, prePARed)이 가려지는 것은 **식별 정보가 아니므로 허용**, 단 시각 확인 기록에 "가독성 소손 n곳"으로 적는다.
 - 170dpi vs 200dpi: 마스크 픽셀 비교 동일, 그러나 judge의 소문자 10pt 오독은 200dpi에서 사라짐.
 
+- **(2026-10-12 G08·K02) 눈 확인 체크리스트 — 자동 2겹이 못 잡는 것 6가지:** ① 인물 이름(John 138회 — 성·이름 따로, 소유격 `'s`) ② 창업자·저자명(바닥글 "originated by Andi and Andy Lothian") ③ 본사 주소·전화·이메일 쪽 ④ 회사 고유 도표(72유형 원형·색 역학 — **모양만으로 회사가 드러나면 쪽 통째 가림**) ⑤ 표지 안내문 글자가 읽히는가(T9 `?? ??`) ⑥ 가림 뒤 **내용이 남아 있는가**(T10 빈 회색 쪽이 "누출 0"으로 통과함).
+- **`--boxes` 쪽 번호는 1부터**(T8). 좌표는 OCR tsv(`tesseract … tsv`)에서 계산하고 눈대중 금지(T11: 상자 x0 눈대중 → "비회원님은" 앞부분 노출). 상자 주변은 150dpi로 다시 본다.
+- **E2-d 문서도판은 `--keep-images`**(샘플이 이미지라 기본 "이미지 전부 제거"가 내용을 지움). 가림은 `--boxes`, 검증은 OCR 겹.
+- **공식 샘플 찾기 절차(G08 성공):** ① `site:<회사도메인> sample report filetype:pdf` ② 회사 소유 서브도메인·CDN(`sample.insights.com` 류) ③ 공식 안내서·활용안내서(국내 공공은 KRIVET 저장소 `krivet.re.kr/repository`) 안의 "결과표" 쪽 → 임베디드 이미지를 **원본 해상도로 추출**(`page.get_images` → `extract_image`), 썸네일(≤300px)은 판독 불가로 세지 않음 ④ 제3자 미러(대학·코치 사이트)는 §21 출처 규칙상 **미채택**(G06 Birkman 사례). 국내 사이트가 US 접속에서 403이면 브라우저 UA+Referer 헤더로 재시도(KRIVET 실측 403→200).
+- **집계→시트 전사는 `tools/e2-finalize.py`**(인라인 스크립트 금지). 표 꼬리표는 build-table `e2tag()`가 `e2_alt.path`로 자동 부여: (샘플)/(문서도판·부분 n/m)/(응시)/(구매).
+
 ## ② 아직 모르는 것
 - 한국어 샘플에서 OCR(kor)의 누출 탐지 재현율 — K05·K17·K03 3건은 0건이었으나 표본 적음.
 - 로고(그림)로만 들어간 회사 표식 — `images_removed:true`로 전부 제거 중이지만, 벡터 로고가 텍스트도 그림도 아닌 경로(path)로 있으면 남을 수 있다(추정). 시각 확인이 유일한 방어.
@@ -25,6 +31,9 @@
 ## ④ 실수 장부(이 영역)
 ⑩ ALLOWLIST에 회사 유래 단어 + 검사 목록 공유 · ⑪ "사람 눈 확인"이라고 불렀으나 AI가 함 → 명칭 정정.
 
+## ④-b 실수 장부 추가(2026-10-12 밤)
+- T8 --boxes 0/1 기준 · T9 표지 한글 `??` · T10 문서도판 내용 삭제 · T11 상자 좌표 눈대중 → 전부 defect-ledger.md 참조. 공통 뿌리: **눈 확인을 '회색이 보이면 통과'로 함** → 체크리스트 6항목으로 교체.
+
 ## ⑤ 바로 시작하는 명령
 ```bash
 cd docs/q90-public
@@ -35,3 +44,11 @@ python3 tools/redact-sample.py sheets/e2-samples.json roster/roster-v2.json <ID>
 node tools/build-packet.cjs sheets/e2-samples.json rubric/rubric-v2.json /home/user/work/e2-packets /home/user/work/e2-judge-packets roster/roster-v2.json
 ```
 주의: build-packet은 `packet_order`를 **이번에 만든 것만으로 덮어쓴다** → 2회차부터는 실행 전 시트 백업, 실행 후 `packet_order`에 이전 목록을 합쳐 복구(2026-10-12 실측).
+
+```bash
+# E2-d 문서도판(이미지 샘플) 전용
+python3 tools/redact-sample.py sheets/e2-samples.json roster/roster-v2.json <ID> <in.pdf> /home/user/work/e2-packets --extra "회사명|사이트|호칭(비회원)" --cover 1 --keep-images --bands 0,0 --boxes "<1-기준 쪽>:x0,y0,x1,y1"
+# 집계 → 시트 전사(레벨은 여기서 처음 봄)
+python3 tools/e2-aggregate.py sheets/e2-samples.json /home/user/work/e2-judge-packets/answers /home/user/work/e2-agg-rN.json
+python3 tools/e2-finalize.py sheets/e2-samples.json /home/user/work/e2-agg-rN.json <blind_id>
+```
