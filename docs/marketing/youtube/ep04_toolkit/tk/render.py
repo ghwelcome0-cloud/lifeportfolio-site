@@ -231,8 +231,8 @@ def pair(a, b, gap=120):
 
 # ---------- shot list ----------
 shots = []
-def plate(clip, t0, t1, speed=0.85, dark=1.0, ov=(), chips=None, start=0.0, verse=None):
-    shots.append(dict(k='plate', c=clip, t0=t0, t1=t1, sp=speed, dark=dark, ov=list(ov), chips=chips, st=start, verse=verse))
+def plate(clip, t0, t1, speed=0.85, dark=1.0, ov=(), chips=None, start=0.0, verse=None, pu=None):
+    shots.append(dict(k='plate', c=clip, t0=t0, t1=t1, sp=speed, dark=dark, ov=list(ov), chips=chips, st=start, verse=verse, pu=pu))
 def screen(name, t0, t1, keys, spots=(), ov=(), tr='page', bg='R5'):
     shots.append(dict(k='screen', n=name, t0=t0, t1=t1, keys=keys, spots=list(spots), ov=list(ov), tr=tr, bg=bg))
 def insert(clip, t0, t1, page, dive_at=None, dive_to=None):
@@ -300,7 +300,7 @@ plate('A11', w[8], E(5) + .4, speed=0.8); tag(w[8] + .2, '8주 차 · 돌아보�
 screen('program-quest-b', S(6), E(6) + .4, [(S(6), view_rect(c, 69, 527, 583, 150, 1.1)), (E(6) + .4, view_rect(c, 69, 527, 583, 150, 1.04))], spots=[(S(6) + .3, E(6), R(69, 527, 583, 150))], bg='A12', tr='dissolve')
 # S7 week 9 solo read (silent observer)
 t1 = at(7, '라벨끝자리')
-plate('A12', S(7), t1 + .4, speed=0.75); tag(S(7) + .3, '9주 차 · 써 보게 하기 · 새벽 4:50 · 교육실')
+plate('A12', S(7), t1 + .4, speed=0.75, pu=0.12); tag(S(7) + .3, '9주 차 · 써 보게 하기 · 새벽 4:50 · 교육실')
 plate('A13', t1, E(7) + .4, speed=0.8)
 # S8 weeks 10-12
 t1 = at(8, '11주차'); t2 = at(8, '12주차'); t3 = at(8, '무엇이남았나'); t4 = at(8, '누가다시썼나칸에는')
@@ -314,7 +314,7 @@ TAGS.append((t2 + .2, t2 + 4.4, tag_layer('12주 차 · 카드 쓰기'), (52, 92
 t1 = at(9, '리포트11장에는')
 plate('A16', S(9), t1 + .4, speed=0.8); tag(S(9) + .4, '12주 차 · 오후 2:00 · 사무실')
 c = scard('report-xi-b')
-screen('report-xi-b', t1, E(9) + .4, [(t1, view_rect(c, 69, 500, 583, 140, 1.15)), (E(9) + .4, view_rect(c, 69, 500, 583, 140, 1.08))], spots=[(t1 + .3, E(9), R(69, 536, 583, 35))], bg='A16', tr='dissolve')
+screen('report-xi-b', t1, E(9) + .4, [(t1, view_rect(c, 69, 470, 583, 160, 1.3)), (t1 + 4.5, view_rect(c, 69, 530, 583, 50, 1.05)), (t1 + 9.0, view_rect(c, 69, 430, 583, 190, 1.2)), (E(9) + .4, view_full(c, .9))], spots=[(t1 + .3, E(9), R(69, 536, 583, 35))], bg='A16', tr='dissolve')
 # S10 same change, other faces (business founder + career changer)
 t1 = at(10, '물류소프트웨어회사를'); t2 = at(10, '콜센터'); t3 = at(10, '세사람모두')
 plate('A13', S(10), t1 + .4, speed=0.7, start=3.0, dark=.85)
@@ -364,7 +364,8 @@ def push(f, lt, dur, amt=0.055):
 
 def r_plate(s, t):
     lt = t - s['t0']; d = s['t1'] - s['t0']; f = plate_frame(s['c'], lt, s['sp'], s['st'], d)
-    if d * min(s['sp'], 6.0 / d) < d * 0.5: f = push(f, lt, d)
+    if s.get('pu'): f = push(f, lt, d, s['pu'])
+    elif d * min(s['sp'], 6.0 / d) < d * 0.5: f = push(f, lt, d)
     if s['dark'] < 1: f *= s['dark']
     # focus pull: while a card / verse / chips are up, the moving plate softens and recedes
     fa = 0.0
