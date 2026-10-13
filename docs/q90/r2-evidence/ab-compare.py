@@ -8,6 +8,19 @@ import json,sys,statistics
 def load_map(p):
     j=json.load(open(p,encoding='utf-8')); m=j.get('map',j)
     return {lab:(v['case_id'],v['lang']) for lab,v in m.items()}
+import re
+def parse_md(path):
+    """새 judge .md 형식: '## [B4 /] LABEL / LANG' 블록 + 'Ax.checks[i]: true|false — ...' 행 → units 구조로 변환"""
+    txt=open(path,encoding='utf-8').read(); units=[]; cur=None
+    for line in txt.split('\n'):
+        m=re.match(r'^##\s+(?:[A-Z0-9]+\s*/\s*)?([A-Z0-9]{6})\s*/\s*(KO|EN)',line)
+        if m: cur={'label':m.group(1),'lang':m.group(2),'indicators':{}}; units.append(cur); continue
+        m=re.match(r'^(A\d(?:\.\d)?)\.checks\[(\d+)\]:?\s*(true|false)',line,re.I)
+        if m and cur is not None:
+            cur['indicators'].setdefault(m.group(1),[]).append({'value':m.group(3).lower()=='true'})
+    return {'units':units}
+def load_judge(path):
+    return parse_md(path) if path.endswith('.md') else json.load(open(path,encoding='utf-8'))
 def iter_units(j):
     # 형식 1: {bundles:[{units:[{label,lang,indicators:{A1:[{value}...]}}]}]}
     # 형식 2: {units:[{label,language,indicators:{A1:{checks:[{value}...]}}}]}
@@ -31,7 +44,7 @@ def levels(u):
     return out
 def main():
     mA,mB=load_map(sys.argv[1]),load_map(sys.argv[2])
-    jA,jB=json.load(open(sys.argv[3],encoding='utf-8')),json.load(open(sys.argv[4],encoding='utf-8'))
+    jA,jB=load_judge(sys.argv[3]),load_judge(sys.argv[4])
     byA={mA[u['label']]:levels(u) for u in iter_units(jA) if u.get('label') in mA}
     byB={mB[u['label']]:levels(u) for u in iter_units(jB) if u.get('label') in mB}
     pairs=[k for k in byB if k in byA]
