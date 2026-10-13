@@ -4914,18 +4914,99 @@
    "id": "K18",
    "name": "TCI 기질및성격검사(인싸이트)",
    "blind_id": "S-3febe0",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://maumsarang.kr/maum/examine/tci_overview.asp",
+   "sample_sha256": "20c6108b210482ef0b632314b1da1c9767b1afb4779422ab2458509867d02821",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Cloninger",
+      "n": 4
+     },
+     {
+      "term": "마음사랑",
+      "n": 3
+     },
+     {
+      "term": "©-line",
+      "n": 2
+     },
+     {
+      "term": "민병배",
+      "n": 2
+     },
+     {
+      "term": "오현숙",
+      "n": 2
+     },
+     {
+      "term": "이주영",
+      "n": 2
+     },
+     {
+      "term": "maumsarang",
+      "n": 2
+     },
+     {
+      "term": "ma*******g",
+      "n": 2
+     },
+     {
+      "term": "Maumsarang",
+      "n": 2
+     },
+     {
+      "term": "홍길동",
+      "n": 2
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 139,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-13T00:13:18Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "d8acf4e4affd5484906f75858082edaf3b4c2f74e8ba2a3001dca3d648dc0075",
+    "final_file": "S-3febe0.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "55cb79a63fe97afdb0fd2d707b533a32c3459b5d1b21da0b0b8f7440cb7831eb",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-3febe0.img.contact.png",
+     "passed": true,
+     "checked_at": "2026-10-13T00:13:48Z",
+     "checked_by": "assistant(75dpi 2쪽 전체 + 바닥글 150dpi)",
+     "rounds": [
+      {
+       "n": 1,
+       "finding": "1차: --extra에 SAMPLE을 넣어 반투명 워터마크 상자(쪽 중앙 1/3)가 통째 검게 칠해져 점수표 가림(T10 계열). 바닥글 id 마스크 \"ma*******g\" 노출"
+      },
+      {
+       "n": 2,
+       "finding": "정상. SAMPLE 워터마크는 가림 대상 아님(내용 판독 가능, 회사 식별 아님). 이름·소속기관·저작권 줄·바닥글 id 상자(1-기준 1·2쪽, OCR 좌표 기반) 가림. 표지 없음(--cover 0). 누출 텍스트 0 OCR 0"
+      }
+     ],
+     "note": "체크리스트 6항목 적용: 인물명 ✓ 저자명 ✓(바닥글 저작권 줄) 주소 해당 없음 고유 도표(TCI 프로파일 표) — 모델명 TCI는 ALLOWLIST 성격(모델명 노출 허용 규칙) 유지 · 표지 안내문 해당 없음 · 내용 남음 ✓"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -4991,7 +5072,7 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
     "evidence_url": "https://inpsyt.co.kr/",
@@ -4999,13 +5080,19 @@
     "checked_at": "2026-10-12T08:35Z"
    },
    "e2_alt": {
-    "path_candidate": "E2 정식(공식 샘플, 국내 IP 필요)",
-    "tos_url": "https://inpsyt.co.kr/customer/terms",
-    "tos_quote": "로그인 벽(약관 본문 미노출)",
-    "tos_verdict": "구매 경로 미실행(대표 결정)",
-    "checked_at": "2026-10-13T00:02Z",
-    "note": "maumsarang.kr/maum/examine/tci_overview.asp — \"TCI 결과지 샘플 다운로드\" 링크. 해외 IP 차단으로 미수령. 대표 PC 다운로드 요청"
-   }
+    "path": "E2 (샘플)",
+    "source": "출판사 마음사랑 공식 \"TCI 결과지 샘플\"(성인용, 2쪽). 해외 IP 차단으로 대표가 국내 PC에서 내려받아 전달(2026-10-13 00:10Z, genspark 파일 mGeLKdhx). 응시·구매 아님 — 회사가 고른 공개 샘플이므로 정식 (샘플) 경로",
+    "collected_at": "2026-10-13T00:12Z",
+    "collector": "owner(국내 IP 다운로드) → 총괄(sha 고정)",
+    "note": "원본 파일명 \"4-1_원장,교사_TCI_성인용_결과보고서_sample.pdf\"(메타데이터). 아동·청소년용은 평가 대상 아님(성인 서비스) — 대표 지시"
+   },
+   "packet_files": {
+    "sample.pdf": "d8acf4e4affd5484906f75858082edaf3b4c2f74e8ba2a3001dca3d648dc0075",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "0d1dcdd78e293e1513687a774ed23282a3d974be8a5eed99d05a331e78c46b1d",
+    "ANSWER.json": "538b0b92089a3a2c25c7c25dedaddca98a41001232567c19386186a9dfba86d5"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K19",
@@ -5205,6 +5292,7 @@
  "packet_order": [
   "S-04d5ce",
   "S-10bfa2",
+  "S-3febe0",
   "S-4e6f48",
   "S-5e149f",
   "S-635567",
@@ -5638,6 +5726,16 @@
       "answer_sha256": "93ad9151acdb9297c0b9640c02381d048c02297d6b929bdc9bf16ba5a48fdf1b",
       "answered_at": "2026-10-12T23:57:09Z",
       "first_line_declaration_ok": true
+     },
+     "S-3febe0": {
+      "sent_msg_id": "6121900",
+      "sent_at": "2026-10-13T00:14:04Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/rNxXH3dD",
+      "attachment_sha256_sent": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
+      "attachment_sha256_received_redownload": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
+      "bytes_match": true,
+      "reply_msg_id": null,
+      "answer_sha256": null
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5858,6 +5956,16 @@
       "answer_sha256": "cf0c1764a3fea742163a329038454c4c099831c1b2e6f0b6a54a4a5f1bf7d60f",
       "answered_at": "2026-10-12T23:57:07Z",
       "first_line_declaration_ok": true
+     },
+     "S-3febe0": {
+      "sent_msg_id": "6121892",
+      "sent_at": "2026-10-13T00:13:56Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/pZFgXz4o",
+      "attachment_sha256_sent": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
+      "attachment_sha256_received_redownload": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
+      "bytes_match": true,
+      "reply_msg_id": null,
+      "answer_sha256": null
      }
     },
     "team_ok": {
@@ -6632,5 +6740,12 @@
   ],
   "built_at": "2026-10-12T23:55Z",
   "note": "4회차 패킷 1건(K02, E2-d 문서도판 — 공식 활용안내서 35쪽 결과표 도판 4구획, 판독 3/4). judge에게 경로는 비공개(blind). 1~3회차 11건 sha 불변."
+ },
+ "packet_round5": {
+  "blind_ids": [
+   "S-3febe0"
+  ],
+  "built_at": "2026-10-13T00:13Z",
+  "note": "5회차 패킷 1건(K18 TCI 성인용 공식 샘플 2쪽, 대표 국내 수령). 1~4회차 12건 sha 불변."
  }
 }

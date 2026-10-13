@@ -4345,16 +4345,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://maumsarang.kr/maum/examine/tci_overview.asp",
+    "source_url": "https://maumsarang.kr/maum/examine/tci_overview.asp",
+    "collected_at": "2026-10-13T00:12Z",
+    "note": "출판사 공식 샘플 다운로드 페이지(해외 IP 차단 — 국내에서 수령)"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "20c6108b210482ef0b632314b1da1c9767b1afb4779422ab2458509867d02821",
+    "source_url": "https://maumsarang.kr/maum/examine/tci_overview.asp",
+    "collected_at": "2026-10-13T00:12Z",
+    "note": "2쪽 PDF, 233,094바이트"
    },
    "privacy_policy_url": {
     "value": null,
