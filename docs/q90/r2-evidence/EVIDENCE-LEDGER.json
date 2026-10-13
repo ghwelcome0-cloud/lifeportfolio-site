@@ -230,15 +230,125 @@
    "sealed_at": "2026-10-13T07:17Z",
    "msg": "6165857",
    "note": "144행 · 단정표현 24단위 있음 · 고지 행판정 미사용(기준에 없음)"
+  },
+  {
+   "surface": "A1.restatement(X2)",
+   "actor": "agent_8qqs1jpre71k",
+   "file": "A1.restatement.X2.json",
+   "file_sha256": "a7def013f8a60fbd7aad35301779968412d3ffa0923434283d565a49b03d6887",
+   "body_sha256": "4db07ab481d28dbaa352fabc0049ef278f0bf407ece355f135f042c96c439839",
+   "sealed_at": "2026-10-13T08:31:11Z",
+   "msg": "6175204",
+   "note": "24단위, 인용 178/178"
+  },
+  {
+   "surface": "A5.5.doc_vs_artifact_audit(X2)",
+   "actor": "agent_8qqs1jpre71k",
+   "file": "A5.5.doc_vs_artifact_audit.X2.json",
+   "file_sha256": "e742f8044bfa24be1a97f03cd7a548848c3d4f593b8324135681d58341b336c1",
+   "body_sha256": "54f953854f606e63cbbfacac3d7ac73c39fc437ee443d042ca3f6b564971a7a4",
+   "sealed_at": "2026-10-13T08:27:50Z",
+   "msg": "6174805",
+   "note": "79행 불일치4/확인불가33/일치42 · 기본 구분자 · 증거 로그 6f447f90"
+  },
+  {
+   "surface": "A5.8.counter_reading(X4)",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.8.counter_reading.X4.json",
+   "file_sha256": "ed41818faac8c8acc70e238138476476d79468070e71c8b66d2211c3580b3c8a",
+   "body_sha256": "a5167644c3fb3ad5aa1b568131a86b17b474fa02be232addf7d30f0df56aaa76",
+   "sealed_at": "2026-10-13T08:22Z",
+   "msg": "6173984",
+   "note": "1,753행 전수, 오인유발 67 · sidecar 1750e9d1"
+  },
+  {
+   "surface": "증거팩 MANIFEST(binding_at)",
+   "actor": "TL",
+   "file": "evidence MANIFEST",
+   "file_sha256": "b3b9ba10e320fe7faa4d66c987ceb3df199aab2ca2caaf31da7540b6a2502d88",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:32:35.950Z",
+   "msg": "6183142",
+   "note": "42항목, 거부 0, TL c4e543a. 40행 시간창 42항목 위반 0(실행 TL, 독립 대조 Peer)"
+  },
+  {
+   "surface": "judge bundle A3",
+   "actor": "TL",
+   "file": "judge-bundle-A3.json",
+   "file_sha256": "4cf258d8f06cb1683b576a5e90e54e0349877240efc3b81b936d1eb38e1d07cf",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:49Z",
+   "msg": "6184601",
+   "note": "24단위+증거 표면, 잠금 384a924e, 대응표 336e909b(총괄만), TL 7492598"
+  },
+  {
+   "surface": "judge bundle B4",
+   "actor": "TL",
+   "file": "judge-bundle-B4.json",
+   "file_sha256": "5a3291c603120bc80841e759eaee236f43d2fa1c44e6b1ea8a512795522749cd",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:49Z",
+   "msg": "6184601",
+   "note": "20단위, `_` 0, contrast 0, 잠금 a428fc63, 대응표 f0876bf7(총괄만)"
+  },
+  {
+   "surface": "ab-compare 도구",
+   "actor": "총괄",
+   "file": "ab-compare.py",
+   "file_sha256": "d3934a7a… (결박본 817c68a8 + .md 파서, 계산식 불변)",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:38Z",
+   "msg": "op:186",
+   "note": "보조 공개용, scorer 무관"
+  },
+  {
+   "surface": "judge1 A3 run1/run2",
+   "actor": "agent_8f71j8qxr0ke",
+   "file": "Q90-R2-judge1-A3-run1/2.json",
+   "file_sha256": "38bfc2eb… / b432e54b…",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:12Z",
+   "msg": "6187190",
+   "note": "공식(A3). 구조만 확인, 점수 열람 0. A5.5c3·A1c2 풀이 전 판정(고치지 않음)"
+  },
+  {
+   "surface": "judgeB1 B4 run1/run2 · A3 run1/run2",
+   "actor": "agent_dyn2znpm778c",
+   "file": "B4-restart-run1/2.md · A3-restart-run1/2.md",
+   "file_sha256": "99e3fe39 / 573cc44f · 62dbdb1f / b0777d82",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:35Z",
+   "msg": "6188607/6188772/6189219/6189420",
+   "note": "B4 공식, A3 비교 전용. .md 형식"
+  },
+  {
+   "surface": "judgeB2 B4 run1/run2",
+   "actor": "agent_vcrae7f9na3a",
+   "file": "B4-run1/2.md",
+   "file_sha256": "33cf2af2 / 13603a93",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:33Z",
+   "msg": "6188586/6189283",
+   "note": "B4 공식. A3 진행 중"
+  },
+  {
+   "surface": "무효 보존(미사용)",
+   "actor": "—",
+   "file": "B1 9affbb0d · B2 3bf0fd5b · A 7715c2c7 · A2 ef6222cb · B3 2c686742 · 원 judge A 판정 4개 · judge B1/B2 run(B1/B2) 제출분",
+   "file_sha256": null,
+   "body_sha256": null,
+   "sealed_at": null,
+   "msg": "B5 §14–§18",
+   "note": "A2·B3는 발송 0건(gsend.log)"
   }
  ],
  "pending": [
-  "A1.restatement X2(p6 투입 6165458, 상태 확인 6172948)",
-  "A5.3.doc_vs_artifact_audit X2(투입 6158348/6158352, 미수령)",
-  "A5.8.counter_reading X4(TL 입력 묶음 대기 6172513)",
-  "judge1·judge2 2회차 판정(묶음 A·B + 계약 + 기준 수령 완료 08:13Z, 판정 시작 대기)",
-  "adjudicator → scorer → own.json",
-  "Peer: X2 audit evidence_cmd 재실행 · 렌더 텍스트 추출 방식 확인 항목"
+  "judge2 A3 run1·run2",
+  "judgeB2 A3 run1·run2",
+  "adjudicator(공식 8개: judge1·2 A3 ×4 + judgeB1·B2 B4 ×4)",
+  "TL 2회차 freeze 영수증(0-c) → scorer → own.json → table",
+  "ab-compare 실행·G17 공개 10줄",
+  "PR #426·#427 머지"
  ],
- "at_updated": "2026-10-13T08:15Z"
+ "at_updated": "2026-10-13T10:40Z"
 }
