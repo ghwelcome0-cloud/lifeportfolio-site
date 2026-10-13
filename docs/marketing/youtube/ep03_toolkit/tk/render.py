@@ -286,15 +286,15 @@ c = scard('diary-path'); screen('diary-path', t3, E(6) + .4, [(t3, view_rect(c, 
 # S07 first door opens (hallway), home-routes CTA
 t1 = at(6, '그가운데'); t2 = at(6, '훈련도')
 plate('R6', S(7), t2 + .4, speed=0.75)
-c = scard('home-routes'); screen('home-routes', t2, E(7) + .4, [(t2, view_full(c, .8)), (t2 + 1.2, view_rect(c, 20, 330, 760, 110, 1.15)), (E(7) + .4, view_rect(c, 20, 330, 760, 110, 1.1))], spots=[(t2 + 1.0, E(7), R(32, 380, 450, 32))], bg='R6', tr='dissolve')
+c = scard('home-routes'); screen('home-routes', t2, E(7) + .4, [(t2, view_full(c, .8)), (t2 + 1.2, view_rect(c, 20, 330, 760, 110, 1.18)), (E(7) + .4, view_rect(c, 60, 336, 760, 110, 1.04))], spots=[(t2 + 1.0, E(7), R(32, 380, 450, 32))], bg='R6', tr='dissolve')
 # S08 pathfinding window
 t1 = at(7, '가장먼저'); t2 = at(7, '그리고어떤'); t3 = at(7, '칠십육|76')
 c = scard('diary-path')
-screen('diary-path', S(8), E(8) + .4, [(S(8), view_rect(c, 0, 30, 720, 300, 1.05)), (t1, view_rect(c, 20, 380, 660, 400, 1.08)), (t2, view_rect(c, 20, 600, 660, 260, 1.15)), (t3, view_rect(c, 10, 1340, 690, 470, 1.05)), (E(8) + .4, view_rect(c, 10, 1340, 690, 470, 1.0))],
+screen('diary-path', S(8), E(8) + .4, [(S(8), view_rect(c, 0, 30, 720, 300, 1.05)), (t1, view_rect(c, 20, 380, 660, 400, 1.08)), (t2, view_rect(c, 20, 600, 660, 260, 1.15)), (t3, view_rect(c, 10, 1300, 690, 470, 1.08)), (E(8) + .4, view_rect(c, 10, 1420, 690, 470, 0.94))],
        spots=[(t1 + .2, t2, R(22, 382, 650, 390)), (t2 + .1, t3, R(40, 700, 600, 44)), (t3 + .3, E(8), R(20, 1342, 660, 200))], bg='R5')
 # S09 pick 0-2 + card
 t1 = at(8, '고른변화를'); t2 = at(8, '길찾기는마이')
-screen('diary-path', S(9), t1 + .4, [(S(9), view_side(c, 'L', .9)), (t1 + .4, view_side(c, 'L', .88))], spots=[(S(9) + .5, t1 + .2, R(20, 2170, 680, 80))], ov=[(S(9) + .5, t1 + .2, C_PICK, CL)], tr='cut', bg='R5')
+screen('diary-path', S(9), t1 + .4, [(S(9), view_side(c, 'L', .9)), (t1 + .4, (lambda v: (v[0], v[1] + 260, v[2] * 0.9))(view_side(c, 'L', .9)))], spots=[(S(9) + .5, t1 + .2, R(20, 2170, 680, 80))], ov=[(S(9) + .5, t1 + .2, C_PICK, CL)], tr='cut', bg='R5')
 plate('R10', t1, E(9) + .4, speed=0.8)
 # S10 program rebuilt: cover -> spine card on cork board footage
 t1 = at(9, '그래서실행'); t2 = at(9, '뼈대는')
@@ -305,7 +305,7 @@ plate('R10', t2, E(10) + .4, speed=0.8, dark=.72, ov=[(t2 + .2, E(10), C_SPINE, 
 # S11 quest: zones
 t1 = at(10, '일주부터|1주부터'); t2 = at(10, '오주부터|5주부터'); t3 = at(10, '구주부터|9주부터'); t4 = at(10, '주마다'); t5 = at(10, '같은변화')
 c = scard('program-quest')
-screen('program-quest', S(11), t5 + .4, [(S(11), view_full(c, .92)), (t1, view_rect(c, 70, 228, 580, 135, 1.1)), (t2, view_rect(c, 70, 388, 580, 140, 1.1)), (t3, view_rect(c, 70, 548, 580, 140, 1.1)), (t4, view_rect(c, 70, 228, 580, 135, 1.12)), (t5 + .4, view_rect(c, 70, 228, 580, 135, 1.08))],
+screen('program-quest', S(11), t5 + .4, [(S(11), view_full(c, .92)), (t1, view_rect(c, 70, 228, 580, 135, 1.1)), (t2, view_rect(c, 70, 388, 580, 140, 1.1)), (t3, view_rect(c, 70, 548, 580, 140, 1.1)), (t4, view_rect(c, 70, 228, 580, 135, 1.25)), (t5 + .4, view_rect(c, 70, 260, 580, 135, 1.0))],
        spots=[(t1 + .2, t2, R(80, 232, 562, 126)), (t2 + .1, t3, R(80, 390, 562, 136)), (t3 + .1, t4, R(80, 550, 562, 136)), (t4 + .1, t5, R(84, 276, 556, 22))], bg='R3')
 plate('R8', t5, E(11) + .4, speed=0.8, dark=.8, ov=[(t5 - .2, E(11), C_ZONE, CL)])
 # S12 three seasons: rooftop garden + IV page
