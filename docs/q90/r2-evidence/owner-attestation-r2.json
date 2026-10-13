@@ -1,0 +1,27 @@
+{
+ "schema": "q90-r2-owner-attestation/1",
+ "round": 2,
+ "recorded_by": "ac00a922-cec9-4138-8f1c-3ee4463c7176 (총괄, owner 역할)",
+ "recorded_at": "2026-10-13T10:56:18Z",
+ "scope": "scorer base line 36 artifact_provenance(lawful_access) · line 116 operational_scope_not_preserved (owner 기록, 판정 아님)",
+ "lawful_access": {
+  "value": true,
+  "release_sha": "3d3ebb476f36bbd24f65fb709ff4123e38609556",
+  "nonpersonal": true,
+  "basis": "평가 대상 산출물은 당사 공개 tag q90-r2-candidate(3d3ebb4) + 합성 시나리오(scenario_facts 7fd7cd20, contrast_prereg 2fe79d47) 입력으로 생성. 실제 개인 응답 0건. 접근 권한은 저장소 소유자(총괄) 보유."
+ },
+ "operational_safeguards": {
+  "no_new_generation_authorized": true,
+  "live_iam_freshness_not_waived": true,
+  "provider_freshness_not_waived": true,
+  "rollback_protection_not_waived": true,
+  "note": "봉인(07:00:36Z MANIFEST 5603caf9) 이후 새 생성 승인 0건(contrast 재생성 20회는 보류 상태, 미승인). 1회차 (c) 수용과 동일하게 어떤 보호장치도 면제하지 않음."
+ },
+ "binding_refs": {
+  "binding_at": "2026-10-13T09:32:35.950Z",
+  "evidence_manifest_sha256": "b3b9ba10e320fe7faa4d66c987ceb3df199aab2ca2caaf31da7540b6a2502d88",
+  "frozen_at": "2026-10-11T20:48:25Z",
+  "roles_sha256_prefix": "933b29a2"
+ },
+ "owner_approval_ref": "op:q90-auto-177(contrast_set 생성 승인 전달) / 6140846(중복 묶음 무효·재실행 승인) / 대표 05:2xZ '권고대로 처리 승인'(B5 §8) / 이 파일 첨부 메시지 op:q90-auto-190"
+}

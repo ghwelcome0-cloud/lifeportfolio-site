@@ -1,0 +1,634 @@
+{
+ "tool": "ab-compare.py d3934a7a + REP post-process (affected 66e452c2: A1#3,A2#1,A2#2,A5.4#4)",
+ "representative": "REP",
+ "exposure_note": {
+  "jB1": "정지 전 초안 1회(대상 묶음 sha 재확인 대기)",
+  "jB2": "B2 20단위 전체 열람(자기선언)"
+ },
+ "judges": {
+  "jB1": {
+   "ALL": {
+    "pairs": 20,
+    "per_indicator": {
+     "A1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.4": {
+      "n": 20,
+      "mean_diff": -1,
+      "share_B_lower": 1.0,
+      "share_equal": 0.0
+     },
+     "A5.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.7": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.8": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.9": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     }
+    }
+   },
+   "REP": {
+    "pairs": 20,
+    "per_indicator": {
+     "A1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.4": {
+      "n": 20,
+      "mean_diff": -2,
+      "share_B_lower": 1.0,
+      "share_equal": 0.0
+     },
+     "A5.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.7": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.8": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.9": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     }
+    }
+   }
+  },
+  "jB2": {
+   "ALL": {
+    "pairs": 20,
+    "per_indicator": {
+     "A1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.1": {
+      "n": 20,
+      "mean_diff": -1,
+      "share_B_lower": 1.0,
+      "share_equal": 0.0
+     },
+     "A5.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.5": {
+      "n": 20,
+      "mean_diff": -1,
+      "share_B_lower": 1.0,
+      "share_equal": 0.0
+     },
+     "A5.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.7": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.8": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.9": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     }
+    }
+   },
+   "REP": {
+    "pairs": 20,
+    "per_indicator": {
+     "A1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.1": {
+      "n": 20,
+      "mean_diff": -1,
+      "share_B_lower": 1.0,
+      "share_equal": 0.0
+     },
+     "A5.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.5": {
+      "n": 20,
+      "mean_diff": -1,
+      "share_B_lower": 1.0,
+      "share_equal": 0.0
+     },
+     "A5.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.7": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.8": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A5.9": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A6.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.1": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.2": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.3": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.4": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.5": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     },
+     "A7.6": {
+      "n": 20,
+      "mean_diff": 0,
+      "share_B_lower": 0.0,
+      "share_equal": 1.0
+     }
+    }
+   }
+  }
+ }
+}
