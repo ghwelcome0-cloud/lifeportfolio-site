@@ -1,0 +1,118 @@
+[
+ {
+  "row": "K13",
+  "name": "커리어넷 직업가치관검사(성인)",
+  "group": "국내",
+  "url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+  "at": "2026-10-13T00:53:11.886Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 1380,
+   "innerW": 1380
+  },
+  "a63": {
+   "ratio": 0.9655172413793104,
+   "level": 4,
+   "ge16": 28,
+   "blocks": 29,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.3333333333333333,
+   "level": 2,
+   "ok44": 8,
+   "ok24": 22,
+   "total": 24,
+   "ratio24": 0.9166666666666666
+  },
+  "a6partial": {
+   "points": 4.05,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K14",
+  "name": "커리어넷 진로개발준비도검사",
+  "group": "국내",
+  "url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+  "at": "2026-10-13T00:53:19.465Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 1380,
+   "innerW": 1380
+  },
+  "a63": {
+   "ratio": 0.95,
+   "level": 4,
+   "ge16": 19,
+   "blocks": 20,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.21428571428571427,
+   "level": 1,
+   "ok44": 6,
+   "ok24": 20,
+   "total": 28,
+   "ratio24": 0.7142857142857143
+  },
+  "a6partial": {
+   "points": 3.6,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ }
+]

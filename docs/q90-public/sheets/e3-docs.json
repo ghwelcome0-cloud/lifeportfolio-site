@@ -3732,9 +3732,9 @@
    },
    "time_min": {
     "value": 10,
-    "source_url": "https://www.career.go.kr/cloud/m/inspect/student",
-    "collected_at": "2026-10-12",
-    "note": "공식 표기 10분, 28문항"
+    "source_url": "https://www.career.go.kr/cloud/w/inspect/value/intro",
+    "collected_at": "2026-10-13",
+    "note": "공식 표기 10분, 28문항 | 4차 2026-10-13: 현행 소개 페이지 \"10분 · 28문항\""
    },
    "price_krw": {
     "value": 0,
@@ -3844,9 +3844,9 @@
    },
    "time_min": {
     "value": 30,
-    "source_url": "https://www.career.go.kr/cloud/m/inspect/student",
-    "collected_at": "2026-10-12",
-    "note": "공식 표기 25~30분, 35문항 — 상한값 기재"
+    "source_url": "https://www.career.go.kr/cloud/w/inspect/ready/intro",
+    "collected_at": "2026-10-13",
+    "note": "공식 표기 25~30분, 35문항 — 상한값 기재 | 4차 2026-10-13: 현행 소개 페이지 \"30분 · 35문항\""
    },
    "price_krw": {
     "value": 0,
@@ -4067,40 +4067,40 @@
     "note": "FAQ: \"회원 자격에 따라 구매 가능한 검사 및 가격이 상이\" · 기관/전문가 회원 승인 1일"
    },
    "time_min": {
-    "value": 40,
-    "source_url": "https://www.guidance.co.kr/",
-    "collected_at": "2026-10-12 G21 §4",
-    "note": "명부 v2 이관 — 재확인 필요"
+    "value": 45,
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "명부 v2 이관 — 재확인 필요 | 4차 2026-10-13: 적성탐색검사(대학·성인용, Holland SDS) 상품 페이지 \"45 분\" — 명부 이관값 40은 미확인이었음 → 공식값으로 정정 (이전 값 40)"
    },
    "price_krw": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": 30000,
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "4차 2026-10-13: \"전산용Set : 30,000원 / 온라인카운트 : 30,000원\" 로그인 없이 표시(기관 구매 단가, 개인 1회 비용 근사)"
    },
    "price_band": {
-    "value": "비공개",
-    "source_url": "https://www.guidance.co.kr/",
-    "collected_at": "2026-10-12",
-    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"숨김(로그인 후)\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only)."
+    "value": "1~5만원",
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "가격은 로그인 후 스토어에서만 표시 → 구간 미측정 | 2026-10-12 표기 규약: 공식 출처에 가격이 없음(A8.1 \"숨김(로그인 후)\")이 확인된 행은 구간 칸에 \"비공개\"(미측정=근거 없음과 구분; 비공개=회사가 가격을 공개하지 않음이 근거). 점수 아님(A8.2 display_only). | 4차 2026-10-13: 공식 상품 페이지에 가격 공개 확인 → \"비공개\"는 2차 때 스토어 로그인 화면만 본 오판(제품 소개 페이지는 공개). 정정 (이전 값 '비공개')"
    },
    "price_transparency": {
-    "value": "숨김(로그인 후)",
-    "source_url": "https://www.guidance.co.kr/",
-    "collected_at": "2026-10-12",
-    "note": "\"상품명과 가격이 안보여요 → 로그인 후 확인\""
+    "value": "공개",
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "\"상품명과 가격이 안보여요 → 로그인 후 확인\" | 4차 2026-10-13: 상품 페이지에 가격 명시 (이전 값 '숨김(로그인 후)')"
    },
    "reuse_price_krw": {
     "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "4차 2026-10-13: 재응시 가격 미기재(온라인카운트 1건=1회)"
    },
    "docs_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "collected_at": "2026-10-13",
+    "note": "4차 2026-10-13: \"검사요강(진로탐색·전공탐색·적성탐색 공통요강)\" 매뉴얼은 유료 상품으로만 존재 — 공개 기술문서 없음. 상품 소개 페이지를 문서 URL로 기록, 신뢰도·규준 수치 미기재"
    },
    "reliability_coef": {
     "value": null,
