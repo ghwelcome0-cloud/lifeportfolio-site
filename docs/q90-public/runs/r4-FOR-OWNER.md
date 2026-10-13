@@ -13,13 +13,14 @@
 
 **Windows** — 시작 메뉴에서 `PowerShell` 열고, 아래를 그대로 붙여넣고 Enter:
 ```powershell
-cd $HOME\Desktop\q90-kit; powershell -ExecutionPolicy Bypass -File runs\run-r4.ps1
+cd "$HOME\Desktop\q90-kit"; node runs\run-r4.cjs
 ```
 
 **Mac** — `터미널` 열고:
 ```bash
-cd ~/Desktop/q90-kit && bash runs/run-r4.sh
+cd ~/Desktop/q90-kit && node runs/run-r4.cjs
 ```
+(실행기는 Node 스크립트 하나입니다 — PowerShell 인코딩 문제를 피하기 위해.)
 
 화면에 `== 1/6` … `== 6/6` 이 차례로 나옵니다. **5/6 단계는 3~10분 걸립니다** — 그냥 두세요.
 중간에 한 번 `네트워크 종류`를 물으면 `home-wifi` / `office-wired` / `mobile-tether` 중 하나를 치고 Enter.
