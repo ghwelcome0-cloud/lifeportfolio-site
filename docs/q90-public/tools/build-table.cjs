@@ -21,6 +21,9 @@ const cell = (v, grade, mark = '', tag = '(샘플)') => v == null ? NM : grade =
 // ‡ = judge 간 차이≥2 → 제3자 선택 축(시트 final.third_used). 각주는 표 아래.
 const third = (s, ax) => (s.final && Array.isArray(s.final.third_used) && s.final.third_used.includes(ax)) ? '‡' : '';
 let thirdCells = [];
+// Method 6130169: E2 대안이 구조적으로 없는 행(본인인증 필수·약관 금지)은 '미측정' 대신 사유 문구(시트 e2_alt.table_cell). 0점 아님, 우리가 안 한 게 아니라 할 수 없음.
+const e2nm = s => (s && s.e2_alt && s.e2_alt.table_cell) ? `미측정 · ${s.e2_alt.table_cell}` : NM;
+let noAlt = {};
 // G21 §24: 조립 run(assemble-latest.cjs)이면 E1 칸에 run·출구 국가 태그(예: r4·KR), r3 해외 시간초과 후 r4 측정 행은 각주
 const rtag = x => x.run_tag ? ` <sub>${x.run_tag}</sub>` : '';
 let priorFail = [];
@@ -30,17 +33,18 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
   const a6 = x.a6partial ? `${x.a6partial.points}/${x.a6partial.max}` : null;
   const o = r.own && own ? own : null; // OWN: Q90 scorer transcription only
   const ax = {
-    A1: o ? cell(o.A1, 'E1') : s.A1 != null ? cell(s.A1, 'E2', third(s, 'A1'), e2tag(s)) : NM,
-    A2: o ? cell(o.A2, 'E1') : s.A2 != null ? cell(s.A2, 'E2', third(s, 'A2'), e2tag(s)) : NM,
-    A3: o ? cell(o.A3, 'E1') : s.A3 != null ? cell(s.A3, 'E2', third(s, 'A3'), e2tag(s)) : NM,
-    A4: o ? cell(o.A4, 'E1') : s.A4 != null ? cell(s.A4, 'E2', third(s, 'A4'), e2tag(s)) : NM,
-    A5: o ? cell(o.A5, 'E1') : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2', third(s, 'A5'), e2tag(s)) : NM)),
+    A1: o ? cell(o.A1, 'E1') : s.A1 != null ? cell(s.A1, 'E2', third(s, 'A1'), e2tag(s)) : e2nm(s),
+    A2: o ? cell(o.A2, 'E1') : s.A2 != null ? cell(s.A2, 'E2', third(s, 'A2'), e2tag(s)) : e2nm(s),
+    A3: o ? cell(o.A3, 'E1') : s.A3 != null ? cell(s.A3, 'E2', third(s, 'A3'), e2tag(s)) : e2nm(s),
+    A4: o ? cell(o.A4, 'E1') : s.A4 != null ? cell(s.A4, 'E2', third(s, 'A4'), e2tag(s)) : e2nm(s),
+    A5: o ? cell(o.A5, 'E1') : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2', third(s, 'A5'), e2tag(s)) : e2nm(s))),
     A6: o ? cell(o.A6, 'E1') : (a6 ? cell(a6 + ' (3/6지표)', 'E1') + rtag(x) : (x.failure_class ? `미측정(${x.failure_class})` : (x.a6err && /측정 무효/.test(x.a6err) ? x.a6err : (x.partial === 'A7만' ? (/측정 무효/.test(x.partial_why || '') ? x.partial_why : `미측정(${x.partial_why})`) + rtag(x) : NM)))),
     A7: o ? cell(o.A7grade, 'E1') : (x.a7grade ? cell(x.a7grade, 'E1') + rtag(x) + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : (x.failure_class ? `미측정(${x.failure_class})` : (x.a7err && /측정 무효/.test(x.a7err) ? x.a7err : NM))),
     A8: d.A8 != null ? cell(d.A8, 'E3') : NM
   };
   for (const ax of ['A1','A2','A3','A4','A5']) if (third(s, ax)) thirdCells.push(`${r.id} ${ax}=L${s[ax]}`);
   if (x.prior_failure_note) priorFail.push(`${r.id}: ${x.prior_failure_note}`);
+  if (s.e2_alt && s.e2_alt.table_cell && s.A1 == null) (noAlt[s.e2_alt.table_cell] = noAlt[s.e2_alt.table_cell] || []).push(r.id);
   return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: d.appeal || r.appeal || '', limits: d.limits || r.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: d.time_min != null ? d.time_min : (r.time_min || null), docs_url: d.docs_url || null, ...ax, e4: d.E4 || null };
 });
 const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A3 ★', 'A4 ★', 'A5', 'A6', 'A7(등급)', 'A8', '비용 구간', '소요(분)', '한계(공개 문서 기준)'];
@@ -57,6 +61,7 @@ if (priorFail.length) { // 사유별로 묶어 각주(T12: 사유를 한 문장�
   const groups = {}; for (const p of priorFail) { const [id, why] = p.split(/: (.+)/); const k = why.replace(/\(r\d+\)/, '(rN)'); (groups[k] = groups[k] || []).push(id); }
   for (const [why, ids] of Object.entries(groups)) md += `\n※ ${why.replace('(rN)', '')} — 해당 행(${ids.length}): ${ids.join(' · ')}.\n`;
 }
+for (const [k, ids] of Object.entries(noAlt)) md += `\n※ "미측정 · ${k}" (${ids.length}행: ${ids.join(' · ')}) — ${/본인인증/.test(k) ? '응시에 실명 본인인증이 필요해 공개 샘플·AI 응시 경로가 성립하지 않음(이해관계자 명의 응시 금지, G21 §27·§30).' : '약관이 자동화·제3자 응시를 금지해 E2 경로가 성립하지 않음(G21 §27·§30).'} 0점 아님.\n`;
 md += `\n주장 범위: 자사 점수는 tag q90-r2-candidate(3d3ebb4) 시점 제품에 한함. 공공 무료 검사는 세금으로 운영됨. 보안(A7)은 등급만 공개(대표 결정 D2).\n`;
 fs.writeFileSync(path.join(RUN, 'table-v2.md'), md);
 fs.writeFileSync(path.join(RUN, 'table-v2.json'), JSON.stringify({ rubric: rubric.version, rubric_sha256: sha(RUBRIC), roster: roster.version, roster_sha256: sha(ROSTER), generatedAt: new Date().toISOString(), third_cells: thirdCells, rows }, null, 1));
@@ -66,7 +71,7 @@ const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>
 <h1>자기진단 도구 비교표 — 같은 자로, 각 도구의 자리에서</h1>
 <p class="lead">점수는 "좋다/나쁘다"가 아니라 "이 축에서 이렇게 설계됐다"를 뜻합니다. ★ A2·A3·A4는 고객 가치의 실체라 어떤 개정에서도 빠지지 않습니다. <b>굵게</b>=직접 잼 · (샘플)=회사 공개 샘플 리포트 채점 · (문서도판)=공식 문서 안 리포트 도판 채점(샘플과 직접 비교 금지) · (문서)=공개 문서 · 미측정=근거 없음(0점 아님).</p>
 <table><thead><tr>${h.map(x => `<th>${esc(x)}</th>`).join('')}</tr></thead><tbody>
-${rows.map(r => `<tr${r.own ? ' class="own"' : ''}>${[r.id, (r.own ? '**' + r.name + '** (자사)' : r.name), r.group, r.appeal || '_(채움 예정)_', r.A1, r.A2, r.A3, r.A4, r.A5, r.A6, r.A7, r.A8, r.price_band, r.time_min ?? '—', r.limits || '_(채움 예정)_'].map(v => `<td${v === NM ? ' class="nm"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('\n')}
+${rows.map(r => `<tr${r.own ? ' class="own"' : ''}>${[r.id, (r.own ? '**' + r.name + '** (자사)' : r.name), r.group, r.appeal || '_(채움 예정)_', r.A1, r.A2, r.A3, r.A4, r.A5, r.A6, r.A7, r.A8, r.price_band, r.time_min ?? '—', r.limits || '_(채움 예정)_'].map(v => `<td${String(v).startsWith(NM) ? ' class="nm"' : ''}>${esc(v)}</td>`).join('')}</tr>`).join('\n')}
 </tbody></table>
 <p class="lead">E1 실측 분모 ${e1n}/${nonOwn}행. <b>자사 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.</b></p>
 <p class="lead">자: rubric ${rubric.version} · 명부 ${roster.version} · 자사 점수는 tag q90-r2-candidate(3d3ebb4) 시점 제품에 한함 · 공공 무료 검사는 세금으로 운영됨 · 보안은 등급만 공개.</p></body></html>`;
