@@ -390,14 +390,45 @@
    "sealed_at": "2026-10-13T11:00Z",
    "msg": "6193954 (op:191)",
    "note": "보조·공식 점수 무관; 도구 d3934a7a(817c68a8+md 파서); REP 대표"
+  },
+  {
+   "surface": "receipts.stage1+freeze",
+   "actor": "agent_f6d6hkjm9p5k (TL)",
+   "file": "r2-evidence/receipts-r2.json",
+   "file_sha256": "5957cf8342315b5fd522b4d1e697724907bd0c530200cd5422a29b8f94fd35f5",
+   "body_sha256": "stage1 a8b7b7dd98159e4fa6763fba8ba926ad4992eff351fa654aad4557845359c1d3 / freeze edce3bcd91bde4b86138ad21d6478cb58641bdc66472564cbf6525fbb6eda424 (canonical, 총괄 재계산 일치)",
+   "sealed_at": "2026-10-13T11:32Z",
+   "msg": "6194754 → 결박 6195072(op:192)",
+   "note": "frozen_at 2026-10-11T20:48:25.000Z, binding_at 09:32:35.950Z, blinding de93878e"
+  },
+  {
+   "surface": "scorer.output",
+   "actor": "agent_f6d6hkjm9p5k (TL, DM 세션 1회 실행)",
+   "file": "r2-evidence/scorer-output-r2.json",
+   "file_sha256": "3a37f94406ddc40748004dd9a4c716417a2e5984c079a18500f856d3f882edd7",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:47:56.896Z",
+   "msg": "6196380/6196389 · 6196584(파일)",
+   "note": "blocked [R19_execution_scope_required], 점수 null; pkg 7b73d4cb; evaluated_at 11:47:37.212Z"
+  },
+  {
+   "surface": "own.transcription",
+   "actor": "ac00a922 (총괄)",
+   "file": "r2-evidence/own.json",
+   "file_sha256": "b160c64ddb1408e269984e3d2827e7a90180fd9bf89f3ca1ecfa84cfb5631411",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:52:23Z",
+   "msg": "6196941(op:193) · PR #428",
+   "note": "A1~A7 null → 표 \"미달성(사유: R19_execution_scope_required)\"; 진행률 83%"
   }
  ],
  "pending": [
-  "PR #426 머지(#427 완료)",
-  "TL freeze 영수증 조립(B5 직렬화·보충 roles sha)",
-  "Peer B5 12건 검토·775a0745 대조·X2 audit 재실행",
-  "scorer r18 1회 실행(예상 코드 R19_execution_scope_required 1개)",
-  "jB1 정지 전 초안 대상 sha 1줄(6193937)"
+  "attestation v3(op:177 id·대표 직접 게시 id)",
+  "Peer 775a0745 대조 + X2 audit 재실행(6f447f90)",
+  "Method B5 독립 대조",
+  "PR #428 머지",
+  "1회차+2회차 G14·G17 통합 공개 문서",
+  "85%까지 +2%p(E1 2행·E3 10칸)"
  ],
- "at_updated": "2026-10-13T11:30Z"
+ "at_updated": "2026-10-13T11:56Z"
 }
