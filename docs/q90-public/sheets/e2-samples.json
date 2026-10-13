@@ -5006,7 +5006,7 @@
      "note": "체크리스트 6항목 적용: 인물명 ✓ 저자명 ✓(바닥글 저작권 줄) 주소 해당 없음 고유 도표(TCI 프로파일 표) — 모델명 TCI는 ALLOWLIST 성격(모델명 노출 허용 규칙) 유지 · 표지 안내문 해당 없음 · 내용 남음 ✓"
     }
    },
-   "status": "redacted",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -5061,17 +5061,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 9,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-13T00:16:45Z",
+    "third_used": [],
+    "aggregate_sha256": "18d7ad9ef4b4f09a53e249e8d501da26459697d2686c1d239c4cf60829d619c5"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 2,
+   "A3": 1,
+   "A4": 1,
+   "A5": 3,
    "packet_sha256": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -5092,7 +5114,11 @@
     "README.md": "0d1dcdd78e293e1513687a774ed23282a3d974be8a5eed99d05a331e78c46b1d",
     "ANSWER.json": "538b0b92089a3a2c25c7c25dedaddca98a41001232567c19386186a9dfba86d5"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "aggregate_sha256": "18d7ad9ef4b4f09a53e249e8d501da26459697d2686c1d239c4cf60829d619c5",
+   "resolved_at": "2026-10-13T00:16Z",
+   "e2_round": 5,
+   "resolve_note": "judge1 6121964 · judge2 6121967 · 차이≥2 축 0 → 제3자 불필요. 두 judge 모두 guess thinks_knows=True(모델명 TCI 노출은 허용 규칙) — 점수 미반영 선언"
   },
   {
    "id": "K19",
@@ -5734,8 +5760,10 @@
       "attachment_sha256_sent": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
       "attachment_sha256_received_redownload": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6121967",
+      "answer_sha256": "d820ca6950f83496f1c32f5d343bee8e7bef267820e5f2717c92e54cc22a3cf3",
+      "answered_at": "2026-10-13T00:15:12Z",
+      "first_line_declaration_ok": true
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5964,8 +5992,10 @@
       "attachment_sha256_sent": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
       "attachment_sha256_received_redownload": "acfc1fcce80f76cdce2d157caf0c47b046d0be4776cdc3dba6bce1fe387253ee",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null
+      "reply_msg_id": "6121964",
+      "answer_sha256": "85b92400d6bbc0d6e41e5cb86ef6a8f59b7e899bdd4a19cbbaa6b6789ab51ff9",
+      "answered_at": "2026-10-13T00:15:11Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
@@ -6724,7 +6754,8 @@
    "K13·K14(2차)": "KRIVET 길라잡이 2종(학생용 118쪽·교사용 140쪽) 수신. 직업가치관검사 결과는 조회 방법 캡처·작은 썸네일만 — 결과표 전체 도판 없음 → 불가",
    "G06": "공식 샘플 이메일 게이트, 미러 미채택 → 대표 메일 요청 안 제시",
    "K18": "출판사(마음사랑) 공식 페이지에 \"TCI 결과지 샘플 홈페이지 다운로드\" 문구 확인(검색 요약). 그러나 maumsarang.kr 이 해외 IP 전면 차단(사설·크롤러 모두 \"해외 접속IP 차단 안내\"). **대표 PC(국내 IP)에서 다운로드 가능** → 요청 항목으로 올림(응시 아님, 공개 샘플 수령만). 수령 시 E2 정식 (샘플)",
-   "K19": "assessment.jobkorea.co.kr/JAT/Overview 에 \"인적성검사 결과보고서 샘플이미지\"(이미지 1장) — 쪽 전체 여부·판독성 미확인(다음 턴 확인). 참고: 잡코리아 JAT 유료 6,600원/153문항 20분(E3 가격·시간 후보)"
+   "K19": "assessment.jobkorea.co.kr/JAT/Overview 에 \"인적성검사 결과보고서 샘플이미지\"(이미지 1장) — 쪽 전체 여부·판독성 미확인(다음 턴 확인). 참고: 잡코리아 JAT 유료 6,600원/153문항 20분(E3 가격·시간 후보)",
+   "K19(2차)": "assessment.jobkorea.co.kr/JAT/Overview 크롤 결과: 기업용 B2B 검사(인성역량 293문항 60분·능력적성) 소개 이미지만, 결과보고서 전체 쪽 도판 없음. 명부 K19(개인용 성향·역량 검사)와 제품도 다름 → 불가. 사설 US 접속은 jobkorea 응답 없음(타임아웃)"
   }
  },
  "packet_round3": {
