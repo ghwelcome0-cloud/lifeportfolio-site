@@ -721,10 +721,10 @@
     "note": "공개 문서 기준"
    },
    "korean_support": {
-    "value": "부분",
+    "value": "있음",
     "source_url": "https://hexaco.org/hexaco-inventory",
-    "collected_at": "2026-10-12",
-    "note": "번역 페이지에 한국어 미표기 → 지필 양식 한국어판 유무 재확인 필요(온라인은 영어)"
+    "collected_at": "2026-10-13",
+    "note": "6차 2026-10-13: 공식 HEXACO-PI-R Materials 페이지 번역 목록에 Korean 60-Item·100-Item Version 명시(지필 양식 다운로드). 온라인 응시(hexaco-online)는 영어 — 이전 값 \"부분\"(재확인 필요)은 공식 원문으로 정정."
    },
    "E4": {
     "value": null,
@@ -4742,6 +4742,12 @@
    "by": "총괄",
    "what": "5차-b: M01 time_min=30(Gallup 공식 how-it-works 원문)",
    "cells": 1
+  },
+  {
+   "at": "2026-10-13T10:30Z",
+   "by": "총괄",
+   "change": "G03 korean_support 부분→있음(공식 번역 목록 Korean 60/100 명시). 6차 시도 실패: career4u(연결 실패)·16personalities(403)·strengthsprofile FAQ(404)·hogan languages(403)·birkman(분 미기재)·work24·jobkorea(연결 실패) — 미기재/차단 사실만 기록, 값 채우지 않음.",
+   "cells": "253→254/278"
   }
  ]
 }
