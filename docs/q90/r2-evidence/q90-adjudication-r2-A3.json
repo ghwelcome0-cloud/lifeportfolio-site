@@ -1,0 +1,1895 @@
+{
+ "protocol": "Q90-ALT-v1",
+ "round": 2,
+ "bundle": "A3",
+ "role": "adjudicator",
+ "actor_id": "agent_9akn3657bq2s",
+ "started_at": "2026-10-13T10:45:27Z",
+ "ended_at": "2026-10-13T10:50:57Z",
+ "input_diff_sha256": "22ea6cf74da0a0e2e011dc2bd714eff4dcee65c2d83e9c232b6e475a7206c4aa",
+ "input_tgz_sha256": "fb7542cf0316d21395bf82c3c08d41d11023731d54d3387a093a6750ab151cd0",
+ "judge_inputs_sha256": {
+  "j1r1": "38bfc2eb739490b9a972dff07e40c0d92ec2d7b7afaf328946fbc4d29296ae2f",
+  "j1r2": "b432e54bda1773acc50a6ace0a1b770c3f50b663f66c68939d40720e3c24956f",
+  "j2r1": "994ef7074f698ebd2a9d9fdabb735c7c3b54c3bddbd4bf6243e86574ea1e96e4",
+  "j2r2": "02b771e3452a533cb2ed802da21c6f86c65e4a66b08ffa2652be9282d39933f6"
+ },
+ "disagree_in_diff": 234,
+ "processed": 234,
+ "unresolved": 0,
+ "isolation": "1회차 산출물·판정·점수 미열람, 메시지 검색 미사용, 이 방 밖 참조 0. 세션 시작 시 MEMORY.md 앞부분(Q90 1회차 내용 없음) 열람, notes/channels.md에 방 규칙 1줄 추가(기존 내용 미열람).",
+ "items": [
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "0UNR9N",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "16CIFM",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "2WEX26",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "3ARIO8",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "4OMJGR",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "7NTEA5",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "A2GJXG",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "ATKDOX",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "DIEQSH",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "F2Y1LP",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "GDZHBU",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "GP0RCU",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "HIYNMI",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "HYTVSD",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "JG2Y2M",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "LUSBGC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "LWBAVS",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "NQOJUZ",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "P2K8J9",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "QE61CJ",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "T5L7YJ",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "TKJNCL",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1 evidence shared_evidence.site_notice report-guide.html 'This guide is currently available in Korean only', EN report_meta.autoNotice는 방향성 문구뿐 → EN 금지표현·용도제한 고지 표면 없음"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.7",
+   "check": 1,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 용도제한·이의제기 안내(report-guide.html IX장)가 한국어 전용, EN 안내 없음"
+  },
+  {
+   "label": "XW7EWJ",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 0,
+   "chosen": "false",
+   "reason": "EN 단위: j1r1·j1r2 evidence 방법·한계 고지는 한국어 해설서에만 있고 EN은 'available in Korean only' → EN 고객이 찾을 수 있는 표면 없음"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j2r1·j2r2가 인용한 저장/재개 문구는 response_ui.shell.text(suvey.html 셸)이며, j1r1·j1r2 evidence(shared_evidence.intro.pages)대로 고정 안내면 자체에는 저장·재개 문구가 없음"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A1",
+   "check": 3,
+   "chosen": "true",
+   "reason": "j1r2 evidence: KO 사슬(intro index.html·suvey.html '총 56문항'·report·program) 같은 사실 모순 미발견, j1r1 coreOneLine 일치; j2r1의 76문항은 EN면(index-en.html), j2r2 인용 '확정하는 이름표는 아니에요'는 diagBadge를 같은 사실의 부정으로 보기 어려움"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A2",
+   "check": 0,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence: report.sections[0] 첫 요약에 응답 근거 연결·사전등록 5주장 목록 없음; j2 evidence는 signatureVars·4축 evidenceRefs 추적뿐이고 첫요약 5주장 각각의 추적을 인용하지 않음"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A3",
+   "check": 1,
+   "chosen": "true",
+   "reason": "j1r1·j1r2 evidence: report.sections[5].content.firstActionsLabel('3 first actions to start now'/'지금 10분 안에 할 첫 행동')가 세 과제 전체의 시작시점을 명시; 체크는 시작시점 또는 시간범위 중 하나"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A5.1",
+   "check": 1,
+   "chosen": "false",
+   "reason": "j1r1·j2r2 evidence: run_description §4는 1회 실행, independent_replication은 입력 게이트 직전 중단(compare 확인불가) → 결과 반복일치 기록 없음; j2r1의 빌드 manifest 일치는 빌드 단계이지 결과 반복일치가 아님"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j1r1 evidence: report._responseEvidence.relations[].evidenceRefs(응답→출력 연결) + evidence_pack.A5.7.banned_term_check bt-strategy '[13] 원응답 Program 반영' 시험 기록(FAIL이라도 기록 존재); '한 변수 변경' 요건은 체크 문구에 없음"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A5.3",
+   "check": 3,
+   "chosen": "false",
+   "reason": "j1r1·j1r2 evidence(j2r1도 인정): evidence_pack.A5.3.replication diff 65/76행 불일치 → '같은 전수 매핑' 재현이 이루어지지 않음"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "네 출력 모두 evidence_pack.A5.5.doc_vs_artifact_audit(별도 actor, 79개 주장 tag 체크아웃 실물 대조) 사실은 일치; j2r1·j2r2가 인용한 총괄 6189233 기준(불일치·확인불가가 있어도 분리 전수 실물 대조 수행이면 충족) 적용"
+  },
+  {
+   "label": "ZWLF15",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "j2r1 evidence: scoring.report_rules.qualityChecklist(17항목, passingThreshold 17)+banned_term_check.plan_sha256 표면이 실제 존재; j1 method_note '실제로 없는 표면만 false' 기준상 결측 아님"
+  }
+ ]
+}

@@ -340,15 +340,67 @@
    "sealed_at": null,
    "msg": "B5 §14–§18",
    "note": "A2·B3는 발송 0건(gsend.log)"
+  },
+  {
+   "surface": "adjudication.A3",
+   "actor": "agent_9akn3657bq2s (adjudicator)",
+   "file": "r2-evidence/q90-adjudication-r2-A3.json",
+   "file_sha256": "b355a0d045118bbd954aae7549c24bd89a9c17a704e22d2410edd39a8b7143cd",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:50:57Z",
+   "msg": "6191093",
+   "note": "처리 234 미해결 0; 단위집합=diff_A3 22ea6cf7 일치; chosen∉관측 0"
+  },
+  {
+   "surface": "adjudication.B4",
+   "actor": "agent_9akn3657bq2s (adjudicator)",
+   "file": "r2-evidence/q90-adjudication-r2-B4.json",
+   "file_sha256": "ca8737913d2b230a2062e9e6eee1a7b110d8aa86f319c266f7151b9561833aac",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:50:57Z",
+   "msg": "6191093",
+   "note": "처리 100 미해결 0; 단위집합=diff_B4 294317c3 일치; 보조 공개 전용(scorer 입력 아님, op:190 ②)"
+  },
+  {
+   "surface": "owner.attestation",
+   "actor": "ac00a922 (owner)",
+   "file": "r2-evidence/owner-attestation-r2.json",
+   "file_sha256": "02ec934d032319142be202a8d821fc6a6a2ed10b0778c6431b15f8c4418d21a0",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:20Z",
+   "msg": "6193954 (op:191); v1 42103da6 @6191604",
+   "note": "lawful_access·operational_safeguards 4항·owner_approval_ref(6154224 등); v2가 v1 대체"
+  },
+  {
+   "surface": "ab.affected_checks",
+   "actor": "agent_f6d6hkjm9p5k (TL)",
+   "file": "r2-evidence/ab-affected-checks.json",
+   "file_sha256": "66e452c21ad8c75814b06640a9c825a7554099d6bf89c28bfefb8466e1122f5d",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:42:42Z",
+   "msg": "6190224",
+   "note": "A1#3·A2#1·A2#2·A5.4#4; 표면 의존만; Peer 형식 확인·완전성 미대조"
+  },
+  {
+   "surface": "ab.compare_result",
+   "actor": "ac00a922 (총괄, 보조 도구)",
+   "file": "r2-evidence/ab-compare-r2.json",
+   "file_sha256": "50ed98b3bac87c671bf3725dbf09bd208ac02d434eef572db8ebb49f8986b254",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:00Z",
+   "msg": "6193954 (op:191)",
+   "note": "보조·공식 점수 무관; 도구 d3934a7a(817c68a8+md 파서); REP 대표"
   }
  ],
  "pending": [
   "judge2 A3 run1·run2",
   "judgeB2 A3 run1·run2",
-  "adjudicator(공식 8개: judge1·2 A3 ×4 + judgeB1·B2 B4 ×4)",
   "TL 2회차 freeze 영수증(0-c) → scorer → own.json → table",
-  "ab-compare 실행·G17 공개 10줄",
-  "PR #426·#427 머지"
+  "PR #426·#427 머지",
+  "TL freeze 영수증 조립(B5 직렬화·보충 roles sha)",
+  "Peer B5 12건 검토·775a0745 대조·X2 audit 재실행",
+  "scorer r18 1회 실행(예상 코드 R19_execution_scope_required 1개)",
+  "jB1 정지 전 초안 대상 sha 1줄(6193937)"
  ],
  "at_updated": "2026-10-13T10:40Z"
 }

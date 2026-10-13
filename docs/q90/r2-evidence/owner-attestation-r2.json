@@ -23,5 +23,8 @@
   "frozen_at": "2026-10-11T20:48:25Z",
   "roles_sha256_prefix": "933b29a2"
  },
- "owner_approval_ref": "op:q90-auto-177(contrast_set 생성 승인 전달) / 6140846(중복 묶음 무효·재실행 승인) / 대표 05:2xZ '권고대로 처리 승인'(B5 §8) / 이 파일 첨부 메시지 op:q90-auto-190"
+ "owner_approval_ref": "6154224 · op:q90-auto-180 §0(대표 05:2xZ '권고대로 처리 승인' 원문 전달) / op:q90-auto-177(contrast_set 생성 승인 전달) / 6140846(중복 묶음 무효·재실행 승인) / 6191604 · op:q90-auto-190(이 파일 v1 첨부)",
+ "revision": 2,
+ "supersedes_sha256": "42103da60ff4c6dd2bee70a5bc9a41c4efb5cbcf209538468c0b288a7a9bfbc7",
+ "revision_reason": "Peer 6191644: owner_approval_ref 메시지 id 보완(내용 변경 없음)"
 }
