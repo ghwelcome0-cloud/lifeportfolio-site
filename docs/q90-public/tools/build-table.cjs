@@ -32,14 +32,17 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
   const d = Object.fromEntries(Object.entries(d0).map(([k, v]) => [k, k === 'E4' ? (v && v.value) || null : v3(v)]));
   const a6 = x.a6partial ? `${x.a6partial.points}/${x.a6partial.max}` : null;
   const o = r.own && own ? own : null; // OWN: Q90 scorer transcription only
+  // OWN 차단 전사: scorer status=blocked → 모든 축을 '미달성(사유: 코드)'로 표기(op:q90-auto-190 결박; 점수 없음 ≠ 미측정)
+  // Method 6196974: 축 칸은 '채점 안 됨'(어느 축도 채점되지 않음), G14 '미달성(사유: 코드)'는 행 각주 한 줄에만
+  const oc = (v) => (o && o.status === 'blocked') ? `채점 안 됨(2회차 scorer 차단: ${(o.reasons || []).map(r => r.replace(/_.*$/, '')).join(',')})` : cell(v, 'E1');
   const ax = {
-    A1: o ? cell(o.A1, 'E1') : s.A1 != null ? cell(s.A1, 'E2', third(s, 'A1'), e2tag(s)) : e2nm(s),
-    A2: o ? cell(o.A2, 'E1') : s.A2 != null ? cell(s.A2, 'E2', third(s, 'A2'), e2tag(s)) : e2nm(s),
-    A3: o ? cell(o.A3, 'E1') : s.A3 != null ? cell(s.A3, 'E2', third(s, 'A3'), e2tag(s)) : e2nm(s),
-    A4: o ? cell(o.A4, 'E1') : s.A4 != null ? cell(s.A4, 'E2', third(s, 'A4'), e2tag(s)) : e2nm(s),
-    A5: o ? cell(o.A5, 'E1') : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2', third(s, 'A5'), e2tag(s)) : e2nm(s))),
-    A6: o ? cell(o.A6, 'E1') : (a6 ? cell(a6 + ' (3/6지표)', 'E1') + rtag(x) : (x.failure_class ? `미측정(${x.failure_class})` : (x.a6err && /측정 무효/.test(x.a6err) ? x.a6err : (x.partial === 'A7만' ? (/측정 무효/.test(x.partial_why || '') ? x.partial_why : `미측정(${x.partial_why})`) + rtag(x) : NM)))),
-    A7: o ? cell(o.A7grade, 'E1') : (x.a7grade ? cell(x.a7grade, 'E1') + rtag(x) + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : (x.failure_class ? `미측정(${x.failure_class})` : (x.a7err && /측정 무효/.test(x.a7err) ? x.a7err : NM))),
+    A1: o ? oc(o.A1) : s.A1 != null ? cell(s.A1, 'E2', third(s, 'A1'), e2tag(s)) : e2nm(s),
+    A2: o ? oc(o.A2) : s.A2 != null ? cell(s.A2, 'E2', third(s, 'A2'), e2tag(s)) : e2nm(s),
+    A3: o ? oc(o.A3) : s.A3 != null ? cell(s.A3, 'E2', third(s, 'A3'), e2tag(s)) : e2nm(s),
+    A4: o ? oc(o.A4) : s.A4 != null ? cell(s.A4, 'E2', third(s, 'A4'), e2tag(s)) : e2nm(s),
+    A5: o ? oc(o.A5) : (d.A5 != null ? cell(d.A5, 'E3') : (s.A5 != null ? cell(s.A5, 'E2', third(s, 'A5'), e2tag(s)) : e2nm(s))),
+    A6: o ? oc(o.A6) : (a6 ? cell(a6 + ' (3/6지표)', 'E1') + rtag(x) : (x.failure_class ? `미측정(${x.failure_class})` : (x.a6err && /측정 무효/.test(x.a6err) ? x.a6err : (x.partial === 'A7만' ? (/측정 무효/.test(x.partial_why || '') ? x.partial_why : `미측정(${x.partial_why})`) + rtag(x) : NM)))),
+    A7: o ? oc(o.A7grade) : (x.a7grade ? cell(x.a7grade, 'E1') + rtag(x) + (e1raw[r.id] && e1raw[r.id].carried_from_round1 ? ' (1판 값 이월 2026-10-09)' : '') : (x.failure_class ? `미측정(${x.failure_class})` : (x.a7err && /측정 무효/.test(x.a7err) ? x.a7err : NM))),
     A8: d.A8 != null ? cell(d.A8, 'E3') : NM
   };
   for (const ax of ['A1','A2','A3','A4','A5']) if (third(s, ax)) thirdCells.push(`${r.id} ${ax}=L${s[ax]}`);
@@ -63,6 +66,7 @@ if (priorFail.length) { // 사유별로 묶어 각주(T12: 사유를 한 문장�
 }
 for (const [k, ids] of Object.entries(noAlt)) md += `\n※ "미측정 · ${k}" (${ids.length}행: ${ids.join(' · ')}) — ${/본인인증/.test(k) ? '응시에 실명 본인인증이 필요해 공개 샘플·AI 응시 경로가 성립하지 않음(이해관계자 명의 응시 금지, G21 §27·§30).' : '약관이 자동화·제3자 응시를 금지해 E2 경로가 성립하지 않음(G21 §27·§30).'} 0점 아님.\n`;
 md += `\n주장 범위: 자사 점수는 tag q90-r2-candidate(3d3ebb4) 시점 제품에 한함. 공공 무료 검사는 세금으로 운영됨. 보안(A7)은 등급만 공개(대표 결정 D2).\n`;
+if (own && own.status === 'blocked') md += `\n자사 행 G14(Q90 2회차): **${own.g14 || `미달성(사유: ${(own.reasons || []).join(',')})`}** — 2회차 scorer는 37행 R19_execution_scope_required(실행계획 필드 누락, TL 설계 결함)에서 멈추도록 사전에 알고 제출함. 따라서 scorer로 확인된 것은 roles·실행계획·freeze 영수증·사전등록까지이며, 판정 데이터·38~67행 검사·기반 채점은 scorer로 평가되지 않음(어느 축도 채점되지 않음 ≠ 축별 미달). 평가 대상 = tag 3d3ebb4 한정, 현재 운영 사이트와 다름. 출력 sha ${(own.source && own.source.sha256 || '').slice(0, 8)}.\n`;
 fs.writeFileSync(path.join(RUN, 'table-v2.md'), md);
 fs.writeFileSync(path.join(RUN, 'table-v2.json'), JSON.stringify({ rubric: rubric.version, rubric_sha256: sha(RUBRIC), roster: roster.version, roster_sha256: sha(ROSTER), generatedAt: new Date().toISOString(), third_cells: thirdCells, rows }, null, 1));
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/_\((.+?)\)_/g, '<i class=t>($1)</i>');
