@@ -14,6 +14,7 @@ echo ALLDONE
 ls build/chunks/c_*.mp4 | sort | sed "s#^#file '$PWD/#;s#\$#'#" > build/concat.txt
 ffmpeg -v error -y -f concat -safe 0 -i build/concat.txt -i build/mix.wav -map 0:v -map 1:a -c:v copy -af alimiter=limit=0.78:level=false:attack=2:release=60 -c:a aac -b:a 192k -t $TOT -movflags +faststart build/EP${E}_longform.mp4
 [ -s build/EP${E}_longform.mp4 ] || { echo MUXFAIL; exit 1; }
+rm -rf build/chunks
 ffprobe -v error -show_entries format=duration:stream=codec_name,width,height,r_frame_rate -of compact build/EP${E}_longform.mp4 > qa/probe.txt
 ffmpeg -v error -i build/EP${E}_longform.mp4 -f null - 2> qa/decode_err.txt
 ffmpeg -nostats -i build/EP${E}_longform.mp4 -vf "freezedetect=n=0.003:d=1.5" -map 0:v -f null - 2>&1 | grep freeze_ > qa/freeze.txt

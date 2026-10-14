@@ -335,11 +335,11 @@ t1 = sn(10, 1); t2 = sn(10, 4); t3 = sn(10, 6)
 plate('A13', S(10), t1 + .4, speed=0.7, start=3.0, dark=.85)
 plate('A17', t1, t2 + .4, speed=0.8); name(max(t1 + .6, S(10) + 5.5), *CFG['p1'])
 plate('A18', t2, t3 + .4, speed=0.8); name(t2 + .6, *CFG['p2'])
-plate('A15', t3, E(10) + .4, speed=0.7, start=2.5, dark=.72, ov=[(t3 + .1, E(10), C_THREE, CL)])
+plate('A15', t3, E(10) + .4, speed=0.7, start=2.5, dark=.72, ov=[(t3 + .1, E(10), C_THREE, CL)], pu=0.10)
 # S11 what remained
 t1 = at(11, '첫째')
 screen('report-xi-b', S(11), t1 + .4, [(S(11), view_rect(c, 69, 455, 583, 90, 1.15)), (t1 + .4, view_rect(c, 69, 455, 583, 90, 1.1))], spots=[(S(11) + .4, t1 + .2, R(69, 465, 583, 71))], bg='A14', tr='dissolve')
-plate('A14', t1, E(11) + .4, speed=0.7, start=1.5, dark=.7, ov=[(t1 + .1, E(11), C_ASSETS, CL2)])
+plate('A14', t1, E(11) + .4, speed=0.7, start=1.5, dark=.7, ov=[(t1 + .1, E(11), C_ASSETS, CL2)], pu=0.10)
 # S12 CTA
 t1 = sn(12, 2)
 plate('A13', S(12), t1 + .4, speed=0.75, start=1.0)
