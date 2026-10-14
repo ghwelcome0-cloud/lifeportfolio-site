@@ -1,0 +1,360 @@
+{
+ "total": 50,
+ "passed": 50,
+ "unclassified": [],
+ "real": 23,
+ "synthetic": 27,
+ "synthetic_not_covered": [],
+ "rows": [
+  {
+   "test": "fixture_injection",
+   "pass": true,
+   "input": "실제",
+   "note": "pipeline.cjs 실제 실행(입력 관문)",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "final_input_without_approval",
+   "pass": true,
+   "input": "실제",
+   "note": "pipeline.cjs 실제 실행",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "seal_tamper_real_read",
+   "pass": true,
+   "input": "합성",
+   "note": "seal 단위=합성 폴더, 읽기=실제 scorer-input",
+   "covered_by_real_path": "리허설 seal→read_valid"
+  },
+  {
+   "test": "seal_unlisted_file",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 seal→read"
+  },
+  {
+   "test": "seal_manifest_tamper",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 seal(MANIFEST.sha256)"
+  },
+  {
+   "test": "seal_refuses_egress_stop",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 egress.json 3건 실제 판정"
+  },
+  {
+   "test": "read_before_seal",
+   "pass": true,
+   "input": "실제",
+   "note": "scorer-input 실제 코드, 빈 폴더",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "judge_bundle_before_seal",
+   "pass": true,
+   "input": "실제",
+   "note": "judge-bundle 실제 코드, 빈 폴더",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "judge_bundle_ok_then_stage2_relock_refused",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 relock=STAGE2_ALREADY_LOCKED"
+  },
+  {
+   "test": "judge_bundle_rejects_tampered_sealed",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 judge(봉인본 재해시)"
+  },
+  {
+   "test": "judge_bundle_seed_independent_rounds",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 stage2 lock seed 기록"
+  },
+  {
+   "test": "map_handoff_deletes_executor_copy",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 handoff exists_after=false"
+  },
+  {
+   "test": "gate_final_env_alone_opens_nothing",
+   "pass": true,
+   "input": "실제",
+   "note": "input-gate 실제 코드",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "gate_final_input_not_in_census",
+   "pass": true,
+   "input": "합성(승인 기록)",
+   "note": "잠금 census 실제",
+   "covered_by_real_path": "본 실행 0단계(approval.json 실제)"
+  },
+  {
+   "test": "gate_final_locked_input_ok",
+   "pass": true,
+   "input": "합성(승인 기록)",
+   "note": "잠금 입력 실제 bytes",
+   "covered_by_real_path": "본 실행 0단계"
+  },
+  {
+   "test": "gate_final_negative_as_valid_refused",
+   "pass": true,
+   "input": "합성(승인 기록)",
+   "note": "",
+   "covered_by_real_path": "본 실행 0단계"
+  },
+  {
+   "test": "gate_plan_hash_mismatch",
+   "pass": true,
+   "input": "합성(승인 기록)",
+   "note": "",
+   "covered_by_real_path": "본 실행 0단계"
+  },
+  {
+   "test": "gate_locked_input_without_approval",
+   "pass": true,
+   "input": "실제",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "exact_boundary_float_vs_bigint_differ",
+   "pass": true,
+   "input": "합성(경계 fixture)",
+   "note": "계약 실제",
+   "covered_by_real_path": "본 실행 7단계(진단 재계산)"
+  },
+  {
+   "test": "exact_null_indicator_nulls_total",
+   "pass": true,
+   "input": "합성",
+   "note": "계약 실제",
+   "covered_by_real_path": "본 실행 7단계"
+  },
+  {
+   "test": "vendor_tamper",
+   "pass": true,
+   "input": "합성(변조 사본)",
+   "note": "net-policy 실제",
+   "covered_by_real_path": "리허설 vendor 로드(실제)"
+  },
+  {
+   "test": "egress_counterexamples",
+   "pass": true,
+   "input": "합성(레코드)",
+   "note": "classifier 실제",
+   "covered_by_real_path": "리허설 egress 실측"
+  },
+  {
+   "test": "xcheck_mismatch_injected",
+   "pass": true,
+   "input": "실제 DEV 실행 산출물 변조",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "xcheck_control_match",
+   "pass": true,
+   "input": "실제",
+   "note": "DEV 실행 산출물",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "xcheck_blob_tamper",
+   "pass": true,
+   "input": "합성(manifest 변조)",
+   "note": "git blob 실제",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "xcheck_answers_precheck",
+   "pass": true,
+   "input": "실제",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "o14b_diff_format",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "본 실행 5단계"
+  },
+  {
+   "test": "diagnostic_to_scorer_blocked",
+   "pass": true,
+   "input": "실제(경로 규칙)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "scorer_allowlist_control",
+   "pass": true,
+   "input": "실제(경로 규칙)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "judge_scan_detects_release_strings",
+   "pass": true,
+   "input": "합성 문자열",
+   "note": "",
+   "covered_by_real_path": "리허설 judge_scan=CLEAN(실제 묶음)"
+  },
+  {
+   "test": "judge_scan_control_clean",
+   "pass": true,
+   "input": "합성 문자열",
+   "note": "",
+   "covered_by_real_path": "리허설 judge_scan"
+  },
+  {
+   "test": "selftest_with_final_approval_stops",
+   "pass": true,
+   "input": "실제 코드",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "selftest_with_final_approval_stops_gate",
+   "pass": true,
+   "input": "실제 코드",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "scorer_input_no_raw_bypass",
+   "pass": true,
+   "input": "실제(소스 검사)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "seal_refuses_null_during_run",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 b-null(실제 null 경로)"
+  },
+  {
+   "test": "seal_refuses_negative_dev_gate",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 c-neg gate 기록(실제)"
+  },
+  {
+   "test": "seal_null_unit_ok_and_inconsistent_refused",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 b-null 봉인(실제)"
+  },
+  {
+   "test": "judge_bundle_candidate_only_when_other_release_null",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 judge entries=1, label A(실제)"
+  },
+  {
+   "test": "judge_bundle_keeps_rendered_internal_fields",
+   "pass": true,
+   "input": "합성(실제 렌더 텍스트 사용)",
+   "note": "",
+   "covered_by_real_path": "리허설 judge internal kept/dropped(실제)"
+  },
+  {
+   "test": "scorer_cannot_read_null_unit",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 read_null_by_scorer(실제)"
+  },
+  {
+   "test": "null_reader_cannot_read_valid_unit",
+   "pass": true,
+   "input": "합성",
+   "note": "",
+   "covered_by_real_path": "리허설 read_null_by_null_reader(실제)"
+  },
+  {
+   "test": "a6_members_from_contract",
+   "pass": true,
+   "input": "실제 DEV 실행 산출물",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "a66_extract_deterministic",
+   "pass": true,
+   "input": "실제(git blob)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "a66_same_rule_both_releases",
+   "pass": true,
+   "input": "실제",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "a66_sealed_rules_match_extractor",
+   "pass": true,
+   "input": "실제",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "a6_cell_a66_without_rules_null",
+   "pass": true,
+   "input": "실제 DEV 실행 산출물",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "real_null_record_written_by_harness",
+   "pass": true,
+   "input": "실제(리허설)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "real_chain_seal_score_judge_handoff",
+   "pass": true,
+   "input": "실제(리허설)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "real_egress_record_kernel_crosscheck",
+   "pass": true,
+   "input": "실제(리허설)",
+   "note": "",
+   "covered_by_real_path": "-"
+  },
+  {
+   "test": "judge_bundle_per_case_labels_independent",
+   "pass": true,
+   "input": "실제(소스 검사)",
+   "note": "",
+   "covered_by_real_path": "-"
+  }
+ ]
+}

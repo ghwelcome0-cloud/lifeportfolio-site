@@ -1,0 +1,434 @@
+{
+ "schema": "q90-r2-evidence-ledger/1",
+ "written_by": "총괄 ac00a922",
+ "at": "2026-10-13T03:40Z",
+ "spec_sha256": "5df21e7d831c67ea2b76122bb94231769a6b55f4bbe44f1caf494a1efb81786d",
+ "handed_to_TL_msgs": [
+  "6137567-6137584",
+  "6140260",
+  "6140267",
+  "6141377",
+  "6141384"
+ ],
+ "rows": [
+  {
+   "surface": "scenario_facts",
+   "actor": "agent_jzbt3m53wxdc",
+   "file": "scenario_facts.json",
+   "file_sha256": "7fd7cd20a2800f29fc1b39d61c0dced6c95a9d594ac82a55fe948ab62c7ced2b",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T02:15:28Z",
+   "msg": "6134580",
+   "note": "사례12·사실1156 실재"
+  },
+  {
+   "surface": "contrast_prereg",
+   "actor": "agent_jzbt3m53wxdc",
+   "file": "contrast_prereg.json",
+   "file_sha256": "2fe79d47b2bbb6135779c190e531f3f7060df30e444a013280049827ee46302d",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T02:16:44Z",
+   "msg": "6134649",
+   "note": "TL 겹침 0건 ffef2041; 대표 승인; 생성 02:58:43Z 시작"
+  },
+  {
+   "surface": "evidence_pack.A5.3.replication",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.3.replication.X4.json",
+   "file_sha256": "94f5a83a43b822968ed5e0417602c209907dc05b1600ffb64fa999d71c852369",
+   "body_sha256": "b1bd4746054b72c399fbf7df121488c476544b4f9bca2347247f7b497c1659ae",
+   "sealed_at": "2026-10-13T02:37:34Z",
+   "msg": "6137015",
+   "note": "총괄 재현 cd23e14f 일치; exposure_note(T15); Peer (i)유효 조건3 → 조립기 플래그"
+  },
+  {
+   "surface": "A5.3.sidecar",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.3.sidecar.tgz",
+   "file_sha256": "47f48da3811ecf2e453ecea2be1490cfbfcefaf145a3779b898df9f4d00094ee",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "6137015",
+   "note": ""
+  },
+  {
+   "surface": "input.construct-defs",
+   "actor": "총괄",
+   "file": "construct-defs.json",
+   "file_sha256": "4ee30c228e3cb24ab0adc01990e2929774f99c5cd93dad30b7bf9c9c13da70af",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "",
+   "note": "mapping.json 정의부만 기계 추출; MANIFEST 등록 요청"
+  },
+  {
+   "surface": "evidence_pack.A5.3.clarity_review ①",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "clarity_review.X1.json",
+   "file_sha256": "962a1d8e3aa41b04854c0619732885ce0556c8ee5364e87d9ee79741363b3980",
+   "body_sha256": "0b2e67bab7c3b8037e00baa2001b0521041273834ee489e7114cbc085763a047",
+   "sealed_at": "2026-10-13T03:01:54Z",
+   "msg": "6139651",
+   "note": "compact 구분자"
+  },
+  {
+   "surface": "evidence_pack.A5.3.clarity_review ②",
+   "actor": "agent_8qqs1jpre71k",
+   "file": "A5.3.clarity_review.X2.json",
+   "file_sha256": "02a26acecdbedeea5f03f293929d4f5be0b185eac24f5e7c9d816f5cd0b8afe9",
+   "body_sha256": "03fcea814d5df9a02bb8f84d66a5baccfa8366b77d8a099976c803be118b6958",
+   "sealed_at": "2026-10-13T03:01:37Z",
+   "msg": "6139597",
+   "note": "기본 구분자(method 필드 없음 → sidecar 명시)"
+  },
+  {
+   "surface": "clarity_disagreement_machine",
+   "actor": "총괄",
+   "file": "clarity_disagreement_machine.json",
+   "file_sha256": "f86d5ca86ba37ba9b05d88d5ca987bdc097d7d536d8663a6abca6170e0960ef0",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "",
+   "note": "불일치 11행"
+  },
+  {
+   "surface": "evidence_pack.A5.3.dissent_log",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "dissent_log.X1.json",
+   "file_sha256": "47786635a965184f64e8951f2168efe1b40fc38ad7e0b5e9b2656ce9ace09fef",
+   "body_sha256": "4a24f4f82b6c058e1c518444f035496247cbc7f6066f907304e52b110970b13a",
+   "sealed_at": "2026-10-13T03:10:42Z",
+   "msg": "6140442",
+   "note": "11행, 수정2·미수정9"
+  },
+  {
+   "surface": "evidence_pack.A5.3.dissent_log (signed)",
+   "actor": "agent_qee5phsqbk3w + reviewer agent_jnwhjh28tew6",
+   "file": "dissent_log.X1.signed.json",
+   "file_sha256": "70f29955734e7d9ee16e010e505160fc1e7c5ca4d3049135567209221ef0adbf",
+   "body_sha256": "4a24f4f82b6c058e1c518444f035496247cbc7f6066f907304e52b110970b13a",
+   "sealed_at": "",
+   "msg": "6141020",
+   "note": "Peer 서명 03:17:18Z, body 불변"
+  },
+  {
+   "surface": "sidecar_notes_A5.3",
+   "actor": "총괄",
+   "file": "sidecar_notes_A5.3.json",
+   "file_sha256": "6b997d2e1bc6f93638861b1b2126341f7e8863fd8d5b51c2d9de822070a0d31d",
+   "body_sha256": null,
+   "sealed_at": "",
+   "msg": "",
+   "note": ""
+  },
+  {
+   "surface": "A5.5.independent_replication",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.5.independent_replication.X4.json",
+   "file_sha256": "7526f7a3",
+   "body_sha256": "e6423841",
+   "sealed_at": "2026-10-13T06:1xZ",
+   "msg": "X4b",
+   "note": "게이트까지만 재현(census 부재 사실 공개) + sidecar f51d1786"
+  },
+  {
+   "surface": "A5.7.counterexample_review(contrast20)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.counterexample_review.X1.json",
+   "file_sha256": "6cdcffb3",
+   "body_sha256": "6968a659",
+   "sealed_at": "2026-10-13T06:3xZ",
+   "msg": "X1b",
+   "note": "248행 · 기준 criteria_A57.X1.txt 002c6062(명세 미정의 → X1 자체 정의, 06:32:44Z 사전 고정)"
+  },
+  {
+   "surface": "A5.7.applied_review(contrast20)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.applied_review.X1.json",
+   "file_sha256": "23eb3bc6",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T06:3xZ",
+   "msg": "X1b",
+   "note": "120행"
+  },
+  {
+   "surface": "contrast_set MANIFEST",
+   "actor": "TL agent_f6d6hkjm9p5k",
+   "file": "contrast MANIFEST",
+   "file_sha256": "511218adc5e005b1136e7bef885a0b1329fd3d97b9b94d8271cb5c387653e7da",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T05:2xZ",
+   "msg": "TL DM",
+   "note": "24단위 중 20 완료/4 stuck(실패로 봉인) · 재실행 3 승인 · 33 call 결박"
+  },
+  {
+   "surface": "R2 MANIFEST(valid 24 + contrast)",
+   "actor": "TL agent_f6d6hkjm9p5k",
+   "file": "r2-MANIFEST.json",
+   "file_sha256": "5603caf92df97a5c1701e0fd80ef65e52bba830dd3d5ff60449f503ab9e8bbad",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:00:36Z",
+   "msg": "6164004",
+   "note": "36단위 봉인 · 크레딧 스냅샷 시작 369,504.396 → 끝 348,126.996"
+  },
+  {
+   "surface": "judge bundle A(valid 24)",
+   "actor": "TL",
+   "file": "judge-bundle-A.json",
+   "file_sha256": "7715c2c7cc0d666345871fe54c561c61b69456d8a028a3cc53eef7176fb10c71",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:05:53Z",
+   "msg": "6164842",
+   "note": "stage2 lock 85d5db9d · 대응표 ea683c0c(총괄만 보유) · void-attempt1(case_id·lang 누락, 미전달) 공개"
+  },
+  {
+   "surface": "judge bundle B(contrast 20)",
+   "actor": "TL",
+   "file": "judge-bundle-B.json",
+   "file_sha256": "9affbb0d417f239f4c9d148c26dceb8e046804fc1df34dbf5c9d160fcb4fb050",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:05:54Z",
+   "msg": "6164842",
+   "note": "stage2 lock b2f0a5de · 대응표 b20be82e · case_id·lang 비표시"
+  },
+  {
+   "surface": "A5.8.claim_inventory report/program(owner-filled)",
+   "actor": "총괄 ac00a922 (입력 TL 776976e8)",
+   "file": "CLAIM-INVENTORY.reportprogram.v1.owner-filled.json",
+   "file_sha256": "a4761a1634699c7105bbe4fca2f778eb75f6dce81ba41bdbc2a5cafa7dbbbf40",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T07:30Z",
+   "msg": "6172513",
+   "note": "1,455행 · g17 960 / exception 495(개발 주석 491·구조 4) · 기계 규칙 · 렌더 텍스트 스크립트 혼입 사실 → G17 §7 한계 + Peer 확인 항목"
+  },
+  {
+   "surface": "A1.restatement(X1)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A1.restatement.X1.json",
+   "file_sha256": "303ced6c878f9123ba8359fcbf2fb9d4ff609146da3eb6cab40d273cef3df7b2",
+   "body_sha256": "8f06656eae773f6793b5adf022c3701809b4ef05e3faf3355bb4609540fe0f5d",
+   "sealed_at": "2026-10-13T07:15:38Z",
+   "msg": "6165857",
+   "note": "24단위 · 인용 부분문자열 불일치 0(총괄 재검) · response_ui 캡처 없음 한계"
+  },
+  {
+   "surface": "A5.7.counterexample_review(final24)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.counterexample_review.X1.final24.json",
+   "file_sha256": "7912229f0b6ebec606dd4009ffa71db3dbf0e0518eccf9c1b893f65522a2503a",
+   "body_sha256": "d19bafbc970a24ec69a80f596c9fc5436adbd61864f16e4db7d93925608229b9",
+   "sealed_at": "2026-10-13T07:17Z",
+   "msg": "6165857",
+   "note": "291행 · 중대 36(C1 유형 라벨 24·C2 언어 혼입 12)/경미 255 · fix_log [] · judge 확인 6행"
+  },
+  {
+   "surface": "A5.7.applied_review(final24)",
+   "actor": "agent_qee5phsqbk3w",
+   "file": "A5.7.applied_review.X1.final24.json",
+   "file_sha256": "f3c747b7e45cad84bfc6ec484847b37d0133994713b3266339d2c18d38a0d060",
+   "body_sha256": "1f587cdf92bf658fbac4a914fbd75b1051801d7e28cd5316328d8dba03abbaed",
+   "sealed_at": "2026-10-13T07:17Z",
+   "msg": "6165857",
+   "note": "144행 · 단정표현 24단위 있음 · 고지 행판정 미사용(기준에 없음)"
+  },
+  {
+   "surface": "A1.restatement(X2)",
+   "actor": "agent_8qqs1jpre71k",
+   "file": "A1.restatement.X2.json",
+   "file_sha256": "a7def013f8a60fbd7aad35301779968412d3ffa0923434283d565a49b03d6887",
+   "body_sha256": "4db07ab481d28dbaa352fabc0049ef278f0bf407ece355f135f042c96c439839",
+   "sealed_at": "2026-10-13T08:31:11Z",
+   "msg": "6175204",
+   "note": "24단위, 인용 178/178"
+  },
+  {
+   "surface": "A5.5.doc_vs_artifact_audit(X2)",
+   "actor": "agent_8qqs1jpre71k",
+   "file": "A5.5.doc_vs_artifact_audit.X2.json",
+   "file_sha256": "e742f8044bfa24be1a97f03cd7a548848c3d4f593b8324135681d58341b336c1",
+   "body_sha256": "54f953854f606e63cbbfacac3d7ac73c39fc437ee443d042ca3f6b564971a7a4",
+   "sealed_at": "2026-10-13T08:27:50Z",
+   "msg": "6174805",
+   "note": "79행 불일치4/확인불가33/일치42 · 기본 구분자 · 증거 로그 6f447f90"
+  },
+  {
+   "surface": "A5.8.counter_reading(X4)",
+   "actor": "agent_66d3en7fte9n",
+   "file": "A5.8.counter_reading.X4.json",
+   "file_sha256": "ed41818faac8c8acc70e238138476476d79468070e71c8b66d2211c3580b3c8a",
+   "body_sha256": "a5167644c3fb3ad5aa1b568131a86b17b474fa02be232addf7d30f0df56aaa76",
+   "sealed_at": "2026-10-13T08:22Z",
+   "msg": "6173984",
+   "note": "1,753행 전수, 오인유발 67 · sidecar 1750e9d1"
+  },
+  {
+   "surface": "증거팩 MANIFEST(binding_at)",
+   "actor": "TL",
+   "file": "evidence MANIFEST",
+   "file_sha256": "b3b9ba10e320fe7faa4d66c987ceb3df199aab2ca2caaf31da7540b6a2502d88",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:32:35.950Z",
+   "msg": "6183142",
+   "note": "42항목, 거부 0, TL c4e543a. 40행 시간창 42항목 위반 0(실행 TL, 독립 대조 Peer)"
+  },
+  {
+   "surface": "judge bundle A3",
+   "actor": "TL",
+   "file": "judge-bundle-A3.json",
+   "file_sha256": "4cf258d8f06cb1683b576a5e90e54e0349877240efc3b81b936d1eb38e1d07cf",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:49Z",
+   "msg": "6184601",
+   "note": "24단위+증거 표면, 잠금 384a924e, 대응표 336e909b(총괄만), TL 7492598"
+  },
+  {
+   "surface": "judge bundle B4",
+   "actor": "TL",
+   "file": "judge-bundle-B4.json",
+   "file_sha256": "5a3291c603120bc80841e759eaee236f43d2fa1c44e6b1ea8a512795522749cd",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:49Z",
+   "msg": "6184601",
+   "note": "20단위, `_` 0, contrast 0, 잠금 a428fc63, 대응표 f0876bf7(총괄만)"
+  },
+  {
+   "surface": "ab-compare 도구",
+   "actor": "총괄",
+   "file": "ab-compare.py",
+   "file_sha256": "d3934a7a… (결박본 817c68a8 + .md 파서, 계산식 불변)",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T09:38Z",
+   "msg": "op:186",
+   "note": "보조 공개용, scorer 무관"
+  },
+  {
+   "surface": "judge1 A3 run1/run2",
+   "actor": "agent_8f71j8qxr0ke",
+   "file": "Q90-R2-judge1-A3-run1/2.json",
+   "file_sha256": "38bfc2eb… / b432e54b…",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:12Z",
+   "msg": "6187190",
+   "note": "공식(A3). 구조만 확인, 점수 열람 0. A5.5c3·A1c2 풀이 전 판정(고치지 않음)"
+  },
+  {
+   "surface": "judgeB1 B4 run1/run2 · A3 run1/run2",
+   "actor": "agent_dyn2znpm778c",
+   "file": "B4-restart-run1/2.md · A3-restart-run1/2.md",
+   "file_sha256": "99e3fe39 / 573cc44f · 62dbdb1f / b0777d82",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:35Z",
+   "msg": "6188607/6188772/6189219/6189420",
+   "note": "B4 공식, A3 비교 전용. .md 형식"
+  },
+  {
+   "surface": "judgeB2 B4 run1/run2",
+   "actor": "agent_vcrae7f9na3a",
+   "file": "B4-run1/2.md",
+   "file_sha256": "33cf2af2 / 13603a93",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:33Z",
+   "msg": "6188586/6189283",
+   "note": "B4 공식. A3 진행 중"
+  },
+  {
+   "surface": "무효 보존(미사용)",
+   "actor": "—",
+   "file": "B1 9affbb0d · B2 3bf0fd5b · A 7715c2c7 · A2 ef6222cb · B3 2c686742 · 원 judge A 판정 4개 · judge B1/B2 run(B1/B2) 제출분",
+   "file_sha256": null,
+   "body_sha256": null,
+   "sealed_at": null,
+   "msg": "B5 §14–§18",
+   "note": "A2·B3는 발송 0건(gsend.log)"
+  },
+  {
+   "surface": "adjudication.A3",
+   "actor": "agent_9akn3657bq2s (adjudicator)",
+   "file": "r2-evidence/q90-adjudication-r2-A3.json",
+   "file_sha256": "b355a0d045118bbd954aae7549c24bd89a9c17a704e22d2410edd39a8b7143cd",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:50:57Z",
+   "msg": "6191093",
+   "note": "처리 234 미해결 0; 단위집합=diff_A3 22ea6cf7 일치; chosen∉관측 0"
+  },
+  {
+   "surface": "adjudication.B4",
+   "actor": "agent_9akn3657bq2s (adjudicator)",
+   "file": "r2-evidence/q90-adjudication-r2-B4.json",
+   "file_sha256": "ca8737913d2b230a2062e9e6eee1a7b110d8aa86f319c266f7151b9561833aac",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:50:57Z",
+   "msg": "6191093",
+   "note": "처리 100 미해결 0; 단위집합=diff_B4 294317c3 일치; 보조 공개 전용(scorer 입력 아님, op:190 ②)"
+  },
+  {
+   "surface": "owner.attestation",
+   "actor": "ac00a922 (owner)",
+   "file": "r2-evidence/owner-attestation-r2.json",
+   "file_sha256": "bf5d3be0a58e041d11d5f66cfc73a923fa880f31b3b2db203caf2e9bdd78eb8e",
+   "body_sha256": null,
+   "sealed_at": "2026-10-14T05:52:43Z",
+   "msg": "6283337 (op:195); v2 02ec934d @6193954 → r2-evidence/owner-attestation-r2.v2.json; v1 42103da6 @6191604",
+   "note": "v3: op:177=6137916 보완 + owner_identity_limit(같은 계정, 발신자 기준 독립 대조 불가). 값 변경 0. TL freeze commit 8dd94cb"
+  },
+  {
+   "surface": "ab.affected_checks",
+   "actor": "agent_f6d6hkjm9p5k (TL)",
+   "file": "r2-evidence/ab-affected-checks.json",
+   "file_sha256": "66e452c21ad8c75814b06640a9c825a7554099d6bf89c28bfefb8466e1122f5d",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T10:42:42Z",
+   "msg": "6190224",
+   "note": "A1#3·A2#1·A2#2·A5.4#4; 표면 의존만; Peer 형식 확인·완전성 미대조"
+  },
+  {
+   "surface": "ab.compare_result",
+   "actor": "ac00a922 (총괄, 보조 도구)",
+   "file": "r2-evidence/ab-compare-r2.json",
+   "file_sha256": "50ed98b3bac87c671bf3725dbf09bd208ac02d434eef572db8ebb49f8986b254",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:00Z",
+   "msg": "6193954 (op:191)",
+   "note": "보조·공식 점수 무관; 도구 d3934a7a(817c68a8+md 파서); REP 대표"
+  },
+  {
+   "surface": "receipts.stage1+freeze",
+   "actor": "agent_f6d6hkjm9p5k (TL)",
+   "file": "r2-evidence/receipts-r2.json",
+   "file_sha256": "5957cf8342315b5fd522b4d1e697724907bd0c530200cd5422a29b8f94fd35f5",
+   "body_sha256": "stage1 a8b7b7dd98159e4fa6763fba8ba926ad4992eff351fa654aad4557845359c1d3 / freeze edce3bcd91bde4b86138ad21d6478cb58641bdc66472564cbf6525fbb6eda424 (canonical, 총괄 재계산 일치)",
+   "sealed_at": "2026-10-13T11:32Z",
+   "msg": "6194754 → 결박 6195072(op:192)",
+   "note": "frozen_at 2026-10-11T20:48:25.000Z, binding_at 09:32:35.950Z, blinding de93878e"
+  },
+  {
+   "surface": "scorer.output",
+   "actor": "agent_f6d6hkjm9p5k (TL, DM 세션 1회 실행)",
+   "file": "r2-evidence/scorer-output-r2.json",
+   "file_sha256": "3a37f94406ddc40748004dd9a4c716417a2e5984c079a18500f856d3f882edd7",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:47:56.896Z",
+   "msg": "6196380/6196389 · 6196584(파일)",
+   "note": "blocked [R19_execution_scope_required], 점수 null; pkg 7b73d4cb; evaluated_at 11:47:37.212Z"
+  },
+  {
+   "surface": "own.transcription",
+   "actor": "ac00a922 (총괄)",
+   "file": "r2-evidence/own.json",
+   "file_sha256": "b160c64ddb1408e269984e3d2827e7a90180fd9bf89f3ca1ecfa84cfb5631411",
+   "body_sha256": null,
+   "sealed_at": "2026-10-13T11:52:23Z",
+   "msg": "6196941(op:193) · PR #428",
+   "note": "A1~A7 null → 표 \"미달성(사유: R19_execution_scope_required)\"; 진행률 83%"
+  }
+ ],
+ "pending": [
+  "attestation v3(op:177 id·대표 직접 게시 id)",
+  "Peer 775a0745 대조 + X2 audit 재실행(6f447f90)",
+  "Method B5 독립 대조",
+  "PR #428 머지",
+  "1회차+2회차 G14·G17 통합 공개 문서",
+  "85%까지 +2%p(E1 2행·E3 10칸)"
+ ],
+ "at_updated": "2026-10-14T06:30Z"
+}

@@ -1,0 +1,25 @@
+{
+ "schema": "q90-r2-ab-affected-checks/1",
+ "source": "judge-surface-matrix.json sha256 775a0745 (surface dependency only; no judge output read)",
+ "builder_ref": "judge-bundle-r2-v3b.cjs lines 46-48",
+ "affected": [
+  {
+   "check": "A1#3",
+   "reason": "A1.restatement: A3 per-unit only, B4 absent"
+  },
+  {
+   "check": "A2#1",
+   "reason": "response_evidence content differs: A3 {case_input, report/program responseEvidence} vs B4 {case_input, generic_statements}"
+  },
+  {
+   "check": "A2#2",
+   "reason": "response_evidence content differs: A3 {case_input, report/program responseEvidence} vs B4 {case_input, generic_statements}"
+  },
+  {
+   "check": "A5.4#4",
+   "reason": "response_evidence content differs: A3 {case_input, report/program responseEvidence} vs B4 {case_input, generic_statements}"
+  }
+ ],
+ "rule": "ab-compare: column REP = metrics recomputed with affected checks removed (representative, Peer 6188374); column ALL = reference. If all checks of a metric are affected -> REP = 'not comparable' (blank). Same list used for adjudicator rule scope (Peer 6188345 #2).",
+ "created_before_judgments_read": true
+}

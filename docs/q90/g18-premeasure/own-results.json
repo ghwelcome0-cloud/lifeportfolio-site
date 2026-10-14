@@ -1,0 +1,236 @@
+[
+ {
+  "row": "OWN-home",
+  "name": "lifeportfolio.co.kr /",
+  "url": "https://lifeportfolio.co.kr/",
+  "group": "자사",
+  "origin": "https://lifeportfolio.co.kr",
+  "measuredAt": "2026-10-09T06:55:35.789Z",
+  "headers": {
+   "ok": true,
+   "status": 200,
+   "finalUrl": "https://lifeportfolio.co.kr/",
+   "https": true,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "csp": true,
+   "cspReporting": true,
+   "server": null
+  },
+  "publicSurface": [
+   {
+    "path": "/.env",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/.git/HEAD",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/wp-config.php",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/package.json",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/server-status",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/.DS_Store",
+    "status": 404,
+    "exposed": false
+   }
+  ],
+  "mobile": {
+   "ok": true,
+   "status": 200,
+   "title": "표지 — 인생포트폴리오",
+   "viewportMeta": true,
+   "viewportContent": "width=device-width,initial-scale=1",
+   "zoomBlocked": false,
+   "docW": 390,
+   "innerW": 390,
+   "overflow": false,
+   "text": {
+    "blocks": 64,
+    "ge16": 2,
+    "lt12": 1,
+    "chars": 2592,
+    "chars16": 53
+   },
+   "touch": {
+    "total": 19,
+    "ok44": 18,
+    "ok24": 18
+   },
+   "lang": "ko"
+  }
+ },
+ {
+  "row": "OWN-survey",
+  "name": "/suvey (비로그인 화면)",
+  "url": "https://lifeportfolio.co.kr/suvey",
+  "group": "자사",
+  "origin": "https://lifeportfolio.co.kr",
+  "measuredAt": "2026-10-09T06:55:42.291Z",
+  "headers": {
+   "ok": true,
+   "status": 200,
+   "finalUrl": "https://lifeportfolio.co.kr/suvey",
+   "https": true,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "csp": true,
+   "cspReporting": true,
+   "server": null
+  },
+  "publicSurface": [
+   {
+    "path": "/.env",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/.git/HEAD",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/wp-config.php",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/package.json",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/server-status",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/.DS_Store",
+    "status": 404,
+    "exposed": false
+   }
+  ],
+  "mobile": {
+   "ok": true,
+   "status": 200,
+   "title": "로그인 — 인생포트폴리오 | 사명·비전·강점을 잇는, 삶이 자산이 되는 인생 포트폴리오",
+   "viewportMeta": true,
+   "viewportContent": "width=device-width, initial-scale=1, viewport-fit=cover",
+   "zoomBlocked": false,
+   "docW": 390,
+   "innerW": 390,
+   "overflow": false,
+   "text": {
+    "blocks": 8,
+    "ge16": 0,
+    "lt12": 0,
+    "chars": 351,
+    "chars16": 0
+   },
+   "touch": {
+    "total": 20,
+    "ok44": 9,
+    "ok24": 18
+   },
+   "lang": "ko"
+  }
+ },
+ {
+  "row": "OWN-guide",
+  "name": "/report-guide",
+  "url": "https://lifeportfolio.co.kr/report-guide",
+  "group": "자사",
+  "origin": "https://lifeportfolio.co.kr",
+  "measuredAt": "2026-10-09T06:55:47.161Z",
+  "headers": {
+   "ok": true,
+   "status": 200,
+   "finalUrl": "https://lifeportfolio.co.kr/report-guide",
+   "https": true,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "csp": true,
+   "cspReporting": true,
+   "server": null
+  },
+  "publicSurface": [
+   {
+    "path": "/.env",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/.git/HEAD",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/wp-config.php",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/package.json",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/server-status",
+    "status": 404,
+    "exposed": false
+   },
+   {
+    "path": "/.DS_Store",
+    "status": 404,
+    "exposed": false
+   }
+  ],
+  "mobile": {
+   "ok": true,
+   "status": 200,
+   "title": "리포트 해설서 | 인생포트폴리오",
+   "viewportMeta": true,
+   "viewportContent": "width=device-width, initial-scale=1.0",
+   "zoomBlocked": false,
+   "docW": 390,
+   "innerW": 390,
+   "overflow": false,
+   "text": {
+    "blocks": 105,
+    "ge16": 7,
+    "lt12": 0,
+    "chars": 5455,
+    "chars16": 303
+   },
+   "touch": {
+    "total": 15,
+    "ok44": 0,
+    "ok24": 2
+   },
+   "lang": "ko"
+  }
+ }
+]
