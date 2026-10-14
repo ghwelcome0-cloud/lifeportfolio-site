@@ -607,8 +607,11 @@
     "source_url": "https://ipip.ori.org/newTranslations.htm",
     "collected_at": "2026-10-14",
     "note": "번역 안내 페이지 존재, 한국어판 유무 재확인 필요 | 7차 2026-10-14T06:02Z: 공식 번역 목록(newTranslations.htm) KOREAN 항목 — Big-Five factor markers 100문항 한국어 역번역(Oh·Lee·Lee) 명시. 50문항판 한국어 별도 표기 없음 → \"부분\" 유지, 출처 URL을 번역 목록으로 교체",
-    "verified_at": "2026-10-14T06:02Z",
-    "verified_url": "https://ipip.ori.org/newTranslations.htm"
+    "verified_at": "2026-10-14T06:08Z",
+    "verified_url": "https://ipip.ori.org/newTranslations.htm",
+    "verified_http": 200,
+    "verified_snapshot_sha256": "272ea73311c6a1bf07164eaf32b3006ebdefa690af4194c564080f01b1cbf687",
+    "verified_quote": "KOREAN. Dr. In-Sue Oh (…) has back-translated into Korean the 100 items included in the IPIP Big-Five factor markers"
    },
    "E4": {
     "value": null,
@@ -727,8 +730,11 @@
     "source_url": "https://hexaco.org/hexaco-inventory",
     "collected_at": "2026-10-13",
     "note": "6차 2026-10-13: 공식 HEXACO-PI-R Materials 페이지 번역 목록에 Korean 60-Item·100-Item Version 명시(지필 양식 다운로드). 온라인 응시(hexaco-online)는 영어 — 이전 값 \"부분\"(재확인 필요)은 공식 원문으로 정정. | 7차 2026-10-14T06:02Z: 공식 페이지 재확인(Korean_self60.doc·Korean_self100.doc 링크 존재) — 기계 필드 verified_at 기록",
-    "verified_at": "2026-10-14T06:02Z",
-    "verified_url": "https://hexaco.org/hexaco-inventory"
+    "verified_at": "2026-10-14T06:08Z",
+    "verified_url": "https://hexaco.org/hexaco-inventory",
+    "verified_http": 200,
+    "verified_snapshot_sha256": "023b65ca916b1b67e73e72c3225aed51d96c62bc9a69a9df93345afa149a48a5",
+    "verified_quote": "<td>Korean</td> … <a href=\"/downloads/Korean_self60.doc\">60-Item Version</a> … Korean_self100.doc"
    },
    "E4": {
     "value": null,
@@ -4077,8 +4083,11 @@
     "source_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
     "collected_at": "2026-10-13",
     "note": "명부 v2 이관 — 재확인 필요 | 4차 2026-10-13: 적성탐색검사(대학·성인용, Holland SDS) 상품 페이지 \"45 분\" — 명부 이관값 40은 미확인이었음 → 공식값으로 정정 (이전 값 40) | 7차 2026-10-14T06:02Z: 공식 상품 페이지 재확인 \"45 분\" — 기계 필드 verified_at 기록",
-    "verified_at": "2026-10-14T06:02Z",
-    "verified_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02"
+    "verified_at": "2026-10-14T06:08Z",
+    "verified_url": "https://www.guidance.co.kr/agMain/examgoods/intro_newGoodsDetail.asp?examCode=S3&hight_partCode=H02",
+    "verified_http": 200,
+    "verified_snapshot_sha256": "3055722ba2984c21b3f103cb5c9567c1bd8fcb3d9bc59680a7a04da807ee98ab",
+    "verified_quote": "45 분"
    },
    "price_krw": {
     "value": 30000,
@@ -4764,8 +4773,8 @@
   {
    "at": "2026-10-14T06:02Z",
    "by": "총괄",
-   "change": "7차 + 결함 T21: progress.cjs filled()가 note 전체에서 \"재확인 필요\"를 찾아, 공식 출처로 이미 정정된 값(G03 korean_support·K16 time_min)도 이력 문구 때문에 미집계. 11:55Z 정정의 숫자 253은 그때 도구 출력과 맞았으나 이유 문장(\"이전 값도 이미 셈\")은 틀림 — 이전 값 note에 \"재확인 필요\"가 있어 이전에도 미집계였고, 정정 뒤에도 같은 이유로 미집계였음. 수정: 기계 필드 verified_at+verified_url이 있으면 집계(문장 판정 대신). 7차에 공식 페이지를 다시 열어 확인한 3칸(G03·K16·G02a)에만 기록.",
-   "cells": "progress.cjs 출력 참조"
+   "change": "7차 + 결함 T21: progress.cjs filled()가 note 전체에서 \"재확인 필요\"를 찾아, 공식 출처로 이미 정정된 값(G03 korean_support·K16 time_min)도 이력 문구 때문에 미집계. 11:55Z 정정의 숫자 253은 그때 도구 출력과 맞았으나 이유 문장(\"이전 값도 이미 셈\")은 틀림 — 이전 값 note에 \"재확인 필요\"가 있어 이전에도 미집계였고, 정정 뒤에도 같은 이유로 미집계였음. 수정: 기계 필드 verified_at+verified_url이 있으면 집계(문장 판정 대신). 7차에 공식 페이지를 다시 열어 확인한 3칸(G03·K16·G02a)에만 기록. | 06:08Z 조건 반영(TL 6284653 · Method 6284654 · Peer 6284661): verified_quote·verified_http(2xx)·verified_snapshot_sha256 추가, 도메인=명부 공식 도메인 기계 검사, \"재확인 필요\" 날짜가 verified_at보다 늦으면 미집계(더 늦은 기록이 이김). 효과 분리: 도구 수정만으로 늘어난 칸 0(verified 필드 없으면 옛 규칙 그대로) · 7차 공식 재확인으로 집계된 칸 3(G03 korean_support·K16 time_min 집계 전환 2 + G02a는 원래 미집계→집계 1).",
+   "cells": "253→256/278 = 도구 수정 효과 0 + 7차 재확인 효과 +3"
   }
  ]
 }
