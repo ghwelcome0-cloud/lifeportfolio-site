@@ -4,3 +4,6 @@
 남음: screens(build.cjs LOG·카드 문구) ×6 → render.py ×6 → mix/finalize/qa ×6 → 순차 렌더 EP05→10(편당 약 55분) → QA → 업로드·썸네일·METADATA
 주의: Kiwi(자막 분할) 메모리 큼. vo_prep 는 동시에 2개까지(6개 동시 실행 시 OOM).
 파일: /home/user/ax-work/yt-ep0N/{clips,build(bgm,sfx_*,vo_proc.wav,timing.json,cues.json,EP0N_ko_vo.srt),track/A06.json}
+
+## 다음 작업 반영 (오너 2026-10-14)
+- 목소리(t5GCyTeNPnB65ZgYuIhE) 발음을 더 한국 사람답게. EP.05~10 은 지금 녹음 그대로 완성하고, 다음 제작부터 반영.
