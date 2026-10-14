@@ -9,7 +9,10 @@ const rows = roster.rows.filter(r => !r.retired), nonOwn = rows.filter(r => !r.o
 // E3: 표에 올리는 핵심 7칸(가격구간·가격투명성·소요·문서URL·매력·한계·한국어) 중 source_url 있는 값의 수
 const E3_KEYS = ['price_band', 'price_transparency', 'time_min', 'docs_url', 'appeal', 'limits', 'korean_support'];
 // 명부에서 이관된 값(note '재확인 필요')은 아직 확인 안 된 값이므로 세지 않는다
-const filled = v => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && !/재확인 필요/.test(v.note || '');
+// 결함 수정(2026-10-14, KB T21): note는 이력을 덧붙이는 칸이라, 공식 출처로 정정된 값에도 옛 '재확인 필요' 문구가 남아
+// 확인된 값이 미집계됐다(G03 korean_support · K16 time_min). 문장 추측 대신 기계 필드로 판정:
+// verified_at + verified_url(공식 출처 재확인 기록)이 있으면 확인된 값으로 센다. 없으면 기존 규칙(note에 '재확인 필요' 있으면 미집계).
+const filled = v => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && ((v.verified_at && v.verified_url) || !/재확인 필요/.test(v.note || ''));
 // E3 '해당 없음' 칸(value null + note '해당 없음' + 근거 URL)은 분모에서 뺀다(E3 rule 3차-b). 두 분모 병기.
 const na = v => v && typeof v === 'object' && v.value == null && v.source_url && /^해당 없음/.test(v.note || '');
 let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0;
