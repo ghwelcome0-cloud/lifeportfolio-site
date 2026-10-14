@@ -9,11 +9,20 @@ const rows = roster.rows.filter(r => !r.retired), nonOwn = rows.filter(r => !r.o
 // E3: 표에 올리는 핵심 7칸(가격구간·가격투명성·소요·문서URL·매력·한계·한국어) 중 source_url 있는 값의 수
 const E3_KEYS = ['price_band', 'price_transparency', 'time_min', 'docs_url', 'appeal', 'limits', 'korean_support'];
 // 명부에서 이관된 값(note '재확인 필요')은 아직 확인 안 된 값이므로 세지 않는다
-const filled = v => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && !/재확인 필요/.test(v.note || '');
+// 결함 수정(2026-10-14, KB T21): note는 이력을 덧붙이는 칸이라, 공식 출처로 정정된 값에도 옛 '재확인 필요' 문구가 남아
+// 확인된 값이 미집계됐다(G03 korean_support · K16 time_min). 문장 대신 기계 필드로 판정한다(Peer 6284661 · Method 6284654 · TL 6284653 조건):
+//  verifiedOk = verified_at·verified_url·verified_quote·verified_http(2xx)가 모두 있고, verified_url 도메인 = 명부 공식 URL 도메인
+//  latestDoubt = note 안 '재확인 필요'가 붙은 구간의 날짜(YYYY-MM-DD) 중 가장 늦은 것(날짜 없으면 null)
+//  → verifiedOk 이고 (latestDoubt 없음 또는 latestDoubt <= verified_at 날짜)면 집계 = "더 늦은 기록이 이김".
+const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch { return null; } };
+const rosterHost = Object.fromEntries(roster.rows.map(r => [r.id, host(r.url)]));
+const latestDoubt = v => { let d = null; for (const seg of String(v.note || '').split(' | ')) if (/재확인 필요/.test(seg)) { const m = seg.match(/\d{4}-\d{2}-\d{2}/g); if (m) for (const x of m) if (!d || x > d) d = x; } return d; };
+const verifiedOk = (v, id) => v.verified_at && v.verified_url && v.verified_quote && /^2\d\d$/.test(String(v.verified_http || '')) && host(v.verified_url) === rosterHost[id] && (() => { const d = latestDoubt(v); return !d || d <= String(v.verified_at).slice(0, 10); })();
+const filled = (v, id) => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && (verifiedOk(v, id) || !/재확인 필요/.test(v.note || ''));
 // E3 '해당 없음' 칸(value null + note '해당 없음' + 근거 URL)은 분모에서 뺀다(E3 rule 3차-b). 두 분모 병기.
 const na = v => v && typeof v === 'object' && v.value == null && v.source_url && /^해당 없음/.test(v.note || '');
 let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0;
-for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k])).length, m = E3_KEYS.filter(k => na(r[k])).length; e3cells += n; e3na += m; if (n > 0) e3rowsTouched++; if (n + m === E3_KEYS.length) e3rowsComplete++; }
+for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k], r.id)).length, m = E3_KEYS.filter(k => na(r[k])).length; e3cells += n; e3na += m; if (n > 0) e3rowsTouched++; if (n + m === E3_KEYS.length) e3rowsComplete++; }
 // E2: 샘플 확보(ready 이상) / 채점 완료(final)
 const st = s => e2.rows.filter(r => r.status === s).length;
 // 결함 수정(2026-10-12): 'redacted_pending_visual'(자동 가림 완료, 사람 눈 확인 대기)이 빠져 9건이 0으로 집계됐었다 → 포함
