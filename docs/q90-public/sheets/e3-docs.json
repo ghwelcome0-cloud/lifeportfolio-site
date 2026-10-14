@@ -4132,16 +4132,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "https://www.guidance.co.kr/agMain/eTest/Sample/SDA/SDS%EC%A0%81%EC%84%B1%ED%83%90%EC%83%89%EA%B2%80%EC%82%AC.pdf",
+    "source_url": "https://www.guidance.co.kr/agMain/eTest/Sample/SDA/SDS%EC%A0%81%EC%84%B1%ED%83%90%EC%83%89%EA%B2%80%EC%82%AC.pdf",
+    "collected_at": "2026-10-14",
+    "note": "공식 결과샘플(korea.guidance.co.kr 학교표준화 대학 탭 '적성탐색검사(Holland's SDS)' 결과샘플 버튼 → www.guidance.co.kr/agMain/eTest/Sample/SDA/), 로그인·결제·본인인증 없음, 가상 인물 홍길동 | 7801992 bytes, 7p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "bca9073845a76248e6d0acc3415eb78bba16d63f0454d285a912e5cde2622a87",
+    "source_url": "https://www.guidance.co.kr/agMain/eTest/Sample/SDA/SDS%EC%A0%81%EC%84%B1%ED%83%90%EC%83%89%EA%B2%80%EC%82%AC.pdf",
+    "collected_at": "2026-10-14",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
