@@ -53,5 +53,5 @@ pm2 start <script>.sh --name <x> --interpreter bash --no-autorestart         # 1
 
 ## 판정자 재사용 규칙 (2026-10-14 추가)
 - 다음 회차에 같은 judge/adjudicator를 쓰려면 먼저 "지속 메모리·notes에 이전 회차 판정 방향이 있는가" + "**임시 작업 폴더에 이전 판정 스크립트·결과 파일이 남아 있는가**"를 둘 다 묻는다. 하나라도 "예"면 재사용 금지, 새 빈 agent로 교체(Peer 6194014 ④).
-- 적용: 2회차 adjudicator 회계사(agent_9akn3657bq2s)는 메모리 "아니오"였지만 임시 폴더에 판정 스크립트·결과 파일이 남아 있음(6284696) → 3회차 재사용 금지(op:q90-auto-197).
+- 적용: 2회차 adjudicator 회계사(agent_9akn3657bq2s)는 메모리 "아니오"였지만 임시 폴더에 판정 스크립트·결과 파일이 남아 있음(6284696) → 3회차 재사용 금지(op:q90-auto-197). **확장(TL 6285098): 3회차가 열리면 2회차 judge 4명(8f71j8qxr0ke·h9xzc27hk6ey·dyn2znpm778c·vcrae7f9na3a)·adjudicator 전원 재사용 금지, 새 빈 agent로 교체.**
 - 같은 계정 한계: 대표와 총괄이 GenTeam·GitHub 계정을 함께 쓰면 "대표 직접 게시"는 발신자 기준 독립 근거가 되지 못한다(op:195). 대표 승인 근거는 계정 밖 경로가 생길 때까지 "총괄 전달, 독립 대조 불가"로 적는다.
