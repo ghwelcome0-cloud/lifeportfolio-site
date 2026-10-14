@@ -365,11 +365,11 @@
    "surface": "owner.attestation",
    "actor": "ac00a922 (owner)",
    "file": "r2-evidence/owner-attestation-r2.json",
-   "file_sha256": "02ec934d032319142be202a8d821fc6a6a2ed10b0778c6431b15f8c4418d21a0",
+   "file_sha256": "bf5d3be0a58e041d11d5f66cfc73a923fa880f31b3b2db203caf2e9bdd78eb8e",
    "body_sha256": null,
-   "sealed_at": "2026-10-13T11:20Z",
-   "msg": "6193954 (op:191); v1 42103da6 @6191604",
-   "note": "lawful_access·operational_safeguards 4항·owner_approval_ref(6154224 등); v2가 v1 대체"
+   "sealed_at": "2026-10-14T05:52:43Z",
+   "msg": "6283337 (op:195); v2 02ec934d @6193954 → r2-evidence/owner-attestation-r2.v2.json; v1 42103da6 @6191604",
+   "note": "v3: op:177=6137916 보완 + owner_identity_limit(같은 계정, 발신자 기준 독립 대조 불가). 값 변경 0. TL freeze commit 8dd94cb"
   },
   {
    "surface": "ab.affected_checks",
@@ -430,5 +430,5 @@
   "1회차+2회차 G14·G17 통합 공개 문서",
   "85%까지 +2%p(E1 2행·E3 10칸)"
  ],
- "at_updated": "2026-10-13T11:56Z"
+ "at_updated": "2026-10-14T06:30Z"
 }
