@@ -59,9 +59,10 @@ function usdOk(s) { return /^\d{1,4}\.\d{2}$/.test(String(s)) && Number(s) >= 1;
 /** 공개 화면이 읽어도 되는 값만 */
 function publicView(p, seatsLeft) {
   return {
-    slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", priceKrw: p.priceKrw, priceUsd: p.priceUsd,
+    slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", logoData: p.logoData || "", priceKrw: p.priceKrw, priceUsd: p.priceUsd,
     regularKrw: REGULAR_KRW, regularUsd: REGULAR_USD, startAt: ms(p.startAt), endAt: ms(p.endAt),
     seatsLeft, maxSeats: p.maxSeats, verify: p.verify, note: p.note || "", domesticPaused: p.domesticPaused === true,
+    test: p.testMode === true,
   };
 }
 
@@ -111,7 +112,8 @@ async function startPartnerCheckout(req, deps) {
   if (st !== "open") fail("failed-precondition", st === "notstarted" ? "아직 혜택 기간이 아니에요." : st === "paused" ? "잠시 혜택 접수를 멈췄어요." : "혜택 기간이 끝났어요.");
   const method = d.method === "paypal" ? "paypal" : "payple";
   if (method === "payple" && p.domesticPaused === true) fail("failed-precondition", "지금은 국내 결제를 잠시 쉬고 있어요. PayPal로 이어서 결제해 주세요.");
-  if ((await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "이미 결제한 계정이에요. 마이페이지에서 이어서 이용해 주세요.");
+  const TEST = p.testMode === true; // 시험용 제휴: 실제 돈이 빠지지 않는 시험 서버만 쓴다. 회원 결제 상태는 바꾸지 않는다.
+  if (!TEST && (await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "이미 결제한 계정이에요. 마이페이지에서 이어서 이용해 주세요.");
 
   // 공통 코드 / 1인 1코드 확인 (틀린 입력 횟수 제한: 계정당 1시간 5회)
   const code = normCode(d.code);
@@ -149,15 +151,15 @@ async function startPartnerCheckout(req, deps) {
     if (!fresh || fresh.status !== "active") fail("failed-precondition", "잠시 혜택 접수를 멈췄어요.");
     const seat = await tx.get(seatRef);
     const cdoc = codeRef ? await tx.get(codeRef) : null;
-    if (seat.exists && seat.get("status") === "used") fail("already-exists", "이미 이 제휴 혜택으로 결제했어요.");
+    if (!TEST && seat.exists && seat.get("status") === "used") fail("already-exists", "이미 이 제휴 혜택으로 결제했어요.");
     if (cdoc) {
       const c = cdoc.data();
       if (c.status === "void") fail("permission-denied", "사용할 수 없는 코드예요. 제휴사에 문의해 주세요.");
-      if (c.status === "used") fail("permission-denied", "이미 사용된 코드예요. 제휴사에 문의해 주세요.");
+      if (c.status === "used" && !(TEST && c.usedUid === uid)) fail("permission-denied", "이미 사용된 코드예요. 제휴사에 문의해 주세요.");
       if (c.boundUid && c.boundUid !== uid) fail("permission-denied", "다른 계정에서 이미 쓰고 있는 코드예요.");
       if (c.status === "held" && c.heldUid !== uid && ms(c.heldUntil) > now) fail("permission-denied", "다른 계정에서 이미 쓰고 있는 코드예요.");
     }
-    const already = seat.exists && seat.get("status") === "held" && ms(seat.get("expiresAt")) > now;
+    const already = (seat.exists && seat.get("status") === "held" && ms(seat.get("expiresAt")) > now) || (TEST && seat.exists && seat.get("status") === "used");
     if (!already) {
       // 자리 수는 트랜잭션 안의 카운터로 센다 (used + 유효한 held)
       const cnt = fresh.seatCount || { used: 0 };
@@ -170,14 +172,20 @@ async function startPartnerCheckout(req, deps) {
     tx.set(seatRef, { uid, status: "held", heldAt: new Date(now), expiresAt: new Date(exp), quoteId, method }, { merge: true });
     if (codeRef) tx.update(codeRef, { status: "held", heldUid: uid, heldUntil: new Date(exp), boundUid: uid });
     tx.set(fs().collection("partner_quotes").doc(quoteId), {
-      uid, slug: p.slug, name: p.name, method, priceKrw: fresh.priceKrw, priceUsd: fresh.priceUsd, verify: fresh.verify,
+      uid, slug: p.slug, name: p.name, method, priceKrw: fresh.priceKrw, priceUsd: fresh.priceUsd, verify: fresh.verify, test: fresh.testMode === true,
       codeId: codeRef ? codeRef.id : null, commonCodeHash: fresh.verify === "common" ? sha(p.slug + "|" + code) : null,
       status: "open", createdAt: new Date(now), expiresAt: new Date(exp),
     });
   });
-  return { ok: true, quoteId, expiresAt: exp, priceKrw: p.priceKrw, priceUsd: p.priceUsd, name: p.name };
+  return { ok: true, quoteId, expiresAt: exp, priceKrw: p.priceKrw, priceUsd: p.priceUsd, name: p.name, test: TEST };
 }
 
+/** 확인표가 시험용인지 (없거나 잘못된 번호면 false → 아래 checkQuote 가 막는다) */
+async function isTestQuote(quoteId) {
+  if (!quoteId || String(quoteId).length > 40) return false;
+  const qs = await fs().collection("partner_quotes").doc(String(quoteId)).get();
+  return qs.exists && qs.get("test") === true;
+}
 /** 결제 승인 직전 확인표 재검사 */
 async function checkQuote(uid, quoteId, method, now) {
   if (!quoteId || String(quoteId).length > 40) fail("invalid-argument", "확인표가 필요합니다.");
@@ -190,6 +198,7 @@ async function checkQuote(uid, quoteId, method, now) {
   if (q.method !== method) fail("failed-precondition", "결제 방법이 바뀌었어요. 다시 진행해 주세요.");
   const p = (await fs().collection("partners").doc(q.slug).get()).data();
   if (!p || windowState(p, now) !== "open") fail("failed-precondition", "잠시 혜택 접수를 멈췄어요. 결제는 되지 않았어요.");
+  if ((p.testMode === true) !== (q.test === true)) fail("failed-precondition", "제휴 설정이 바뀌었어요. 다시 진행해 주세요.");
   if (p.priceKrw !== q.priceKrw || p.priceUsd !== q.priceUsd) fail("failed-precondition", "혜택가가 바뀌었어요. 다시 진행해 주세요.");
   if (q.verify === "common" && (!p.commonCodeHash || !safeEq(p.commonCodeHash, q.commonCodeHash || ""))) fail("failed-precondition", "제휴 코드가 바뀌었어요. 새 코드로 다시 진행해 주세요.");
   if (q.codeId) { const c = (await fs().collection("partner_codes").doc(q.codeId).get()).data(); if (!c || c.status !== "held" || c.heldUid !== uid) fail("failed-precondition", "코드 확인이 풀렸어요. 다시 진행해 주세요."); }
@@ -201,6 +210,17 @@ async function settle(uid, quoteId, rec, now) {
   const qRef = fs().collection("partner_quotes").doc(quoteId);
   await fs().runTransaction(async (tx) => {
     const q = (await tx.get(qRef)).data();
+    if (q.test === true) {
+      // 시험 결제: 확인표만 닫고 시험 기록을 남긴다. 자리·판매 숫자·코드·회원 결제 상태는 그대로.
+      const tRef = fs().collection("partners").doc(q.slug); const tp = (await tx.get(tRef)).data() || {};
+      tx.update(tRef, { holds: (tp.holds || []).filter((h) => h.uid !== uid && h.until > now) });
+      tx.update(qRef, { status: "used", usedAt: new Date(now), provider: rec.provider, ref: rec.ref });
+      tx.set(fs().collection("partner_payments").doc("test-" + quoteId), {
+        uid, slug: q.slug, partnerName: q.name, quoteId, provider: rec.provider, env: rec.env, test: true, amount: rec.amount, currency: rec.currency,
+        ref: rec.ref, captureID: rec.captureID || null, oid: rec.oid || null, codeId: q.codeId || null, createdAt: new Date(now), refund: null,
+      });
+      return;
+    }
     const pRef = fs().collection("partners").doc(q.slug);
     const p = (await tx.get(pRef)).data();
     const cRef = q.codeId ? fs().collection("partner_codes").doc(q.codeId) : null;
@@ -240,18 +260,21 @@ async function confirmPartnerPayple(req, deps) {
   const injected = String(auth.PCD_USER_DEFINE1 || "");
   if (injected && injected !== uid) fail("permission-denied", "결제자와 로그인 회원이 일치하지 않습니다.");
   if (String(auth.PCD_USER_DEFINE2 || quoteId) !== quoteId) fail("permission-denied", "확인표가 일치하지 않습니다.");
-  if ((await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "이미 결제가 완료된 계정입니다.");
+  const TEST = await isTestQuote(quoteId); // 시험 여부는 서버가 저장한 확인표로 정한다 (화면이 보낸 isTest 는 믿지 않는다)
+  if (!TEST && (await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "이미 결제가 완료된 계정입니다.");
   const { q } = await checkQuote(uid, quoteId, "payple", now); // ← 승인 전에 검사. 실패하면 승인 요청을 보내지 않는다.
+  if ((q.test === true) !== TEST) fail("failed-precondition", "확인표를 다시 확인해 주세요.");
   const claimed = parseInt(String(auth.PCD_PAY_TOTAL || "").replace(/[^0-9]/g, ""), 10);
   if (claimed && claimed !== q.priceKrw) fail("failed-precondition", "결제 금액이 일치하지 않습니다.");
-  const r = await deps.paypleConfirm({ auth, payType, isTest: d.isTest === true });
+  const r = await deps.paypleConfirm({ auth, payType, isTest: TEST });
   if (String(r.PCD_PAY_RST || "").toLowerCase() !== "success") { await logFail(uid, quoteId, "confirm", r.PCD_PAY_CODE, r.PCD_PAY_MSG, "payple"); fail("failed-precondition", "국내 결제 승인이 되지 않았어요. 결제는 되지 않았어요."); }
   const total = parseInt(String(r.PCD_PAY_TOTAL || auth.PCD_PAY_TOTAL || "").replace(/[^0-9]/g, ""), 10);
   if (total !== q.priceKrw) { logger.error("[partner] payple amount mismatch", { uid, total, expected: q.priceKrw }); fail("failed-precondition", "결제 금액이 일치하지 않습니다. 고객지원으로 알려 주세요."); }
   const respUid = String(r.PCD_USER_DEFINE1 || injected || "");
   if (respUid && respUid !== uid) fail("permission-denied", "결제자와 회원이 일치하지 않습니다.");
-  const rec = { provider: "payple", env: d.isTest === true ? "test" : "live", amount: total, amountNum: total, currency: "KRW", ref: String(auth.PCD_PAY_OID || r.PCD_PAY_OID || ""), oid: String(auth.PCD_PAY_OID || r.PCD_PAY_OID || "") };
+  const rec = { provider: "payple", env: TEST ? "test" : "live", amount: total, amountNum: total, currency: "KRW", ref: String(auth.PCD_PAY_OID || r.PCD_PAY_OID || ""), oid: String(auth.PCD_PAY_OID || r.PCD_PAY_OID || "") };
   await settle(uid, quoteId, rec, now);
+  if (TEST) return { ok: true, paid: true, test: true, amount: total, slug: q.slug, ref: rec.ref };
   await writePaid(uid, rec, new Date(now).toISOString());
   return { ok: true, paid: true, amount: total, slug: q.slug };
 }
@@ -259,9 +282,10 @@ async function confirmPartnerPayple(req, deps) {
 // ── 회원: 페이팔 제휴 주문·캡처 ─────────────────────────────────────
 async function createPartnerPaypalOrder(req, deps) {
   const uid = requireUid(req); const d = req.data || {}; const now = deps.now();
-  if ((await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "Payment already completed for this account.");
+  const TEST = await isTestQuote(String(d.quoteId || ""));
+  if (!TEST && (await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "Payment already completed for this account.");
   const { q } = await checkQuote(uid, String(d.quoteId || ""), "paypal", now);
-  const orderID = await deps.paypalCreate({ uid, amount: q.priceUsd, description: "LifePortfolio - Partner (" + q.slug + ")", customId: uid, referenceId: "lpp_" + q.slug + "_" + String(d.quoteId).slice(0, 12) });
+  const orderID = await deps.paypalCreate({ sandbox: q.test === true, uid, amount: q.priceUsd, description: "LifePortfolio - Partner (" + q.slug + ")", customId: uid, referenceId: "lpp_" + q.slug + "_" + String(d.quoteId).slice(0, 12) });
   await fs().collection("partner_quotes").doc(String(d.quoteId)).update({ orderID });
   return { orderID };
 }
@@ -269,16 +293,19 @@ async function capturePartnerPaypalOrder(req, deps) {
   const uid = requireUid(req); const d = req.data || {}; const now = deps.now();
   const quoteId = String(d.quoteId || ""), orderID = String(d.orderID || "");
   if (!orderID || orderID.length > 80) fail("invalid-argument", "Valid orderID is required.");
-  if ((await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "Payment already completed.");
+  const TEST = await isTestQuote(quoteId);
+  if (!TEST && (await admin.database().ref(`payments/${uid}/paid`).once("value")).val() === true) fail("already-exists", "Payment already completed.");
   const { q } = await checkQuote(uid, quoteId, "paypal", now);
+  if ((q.test === true) !== TEST) fail("failed-precondition", "Quote changed.");
   const qd = (await fs().collection("partner_quotes").doc(quoteId).get()).data();
   if (qd.orderID !== orderID) fail("permission-denied", "Order does not match this quote.");
-  const cap = await deps.paypalCapture({ orderID });
+  const cap = await deps.paypalCapture({ orderID, sandbox: TEST });
   if (cap.status !== "COMPLETED") fail("failed-precondition", "Payment not completed.");
   if (cap.customId && cap.customId !== uid) fail("permission-denied", "Order owner mismatch.");
   if (cap.currency !== "USD" || cap.amount !== q.priceUsd) { logger.error("[partner] paypal amount mismatch", { uid, cap, expected: q.priceUsd }); fail("failed-precondition", "Payment amount mismatch."); }
-  const rec = { provider: "paypal", env: cap.env, amount: cap.amount, amountNum: Number(cap.amount), currency: "USD", ref: orderID, captureID: cap.captureID };
+  const rec = { provider: "paypal", env: TEST ? "sandbox" : cap.env, amount: cap.amount, amountNum: Number(cap.amount), currency: "USD", ref: orderID, captureID: cap.captureID };
   await settle(uid, quoteId, rec, now);
+  if (TEST) return { ok: true, paid: true, test: true, slug: q.slug, ref: orderID, captureID: cap.captureID };
   await writePaid(uid, rec, new Date(now).toISOString());
   return { ok: true, paid: true, slug: q.slug };
 }
@@ -294,11 +321,28 @@ async function reportDomesticFail(req) {
 }
 
 // ── 운영자 ─────────────────────────────────────────────────────────
+/** 로고 이미지 파일(data URL). PNG·JPEG·WebP만, 파일 머리(매직 바이트)까지 확인. 빈 문자열이면 지움. */
+const LOGO_MAX_BYTES = 150 * 1024;
+function readLogoData(v) {
+  const s = String(v || "").trim();
+  if (!s) return "";
+  const m = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/.exec(s);
+  if (!m) fail("invalid-argument", "로고 파일은 PNG · JPG · WebP 그림만 올릴 수 있어요.");
+  const buf = Buffer.from(m[2], "base64");
+  if (!buf.length || buf.length > LOGO_MAX_BYTES) fail("invalid-argument", "로고 파일은 150KB 이하로 올려 주세요.");
+  const head = buf.subarray(0, 12);
+  const ok = (m[1] === "png" && head[0] === 0x89 && head[1] === 0x50 && head[2] === 0x4e && head[3] === 0x47)
+    || (m[1] === "jpeg" && head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff)
+    || (m[1] === "webp" && head.subarray(0, 4).toString("latin1") === "RIFF" && head.subarray(8, 12).toString("latin1") === "WEBP");
+  if (!ok) fail("invalid-argument", "그림 파일이 아니거나 형식이 맞지 않아요.");
+  return s;
+}
 function readPartnerInput(d, isNew) {
   const out = {};
   if (isNew) { const slug = String(d.slug || "").toLowerCase(); if (!SLUG_RE.test(slug)) fail("invalid-argument", "기업 주소는 영문 소문자·숫자·하이픈 2~40자입니다."); out.slug = slug; }
   if (d.name != null) { out.name = cleanText(d.name, 60); if (!out.name) fail("invalid-argument", "제휴사 이름을 적어 주세요."); }
   if (d.logoUrl != null) { const u = String(d.logoUrl).trim(); if (u && !/^https:\/\/[^\s"'<>]{4,400}$/.test(u)) fail("invalid-argument", "로고 주소는 https:// 로 시작해야 합니다."); out.logoUrl = u; }
+  if (d.logoData != null) out.logoData = readLogoData(d.logoData);
   if (d.priceKrw != null) { const n = parseInt(d.priceKrw, 10); if (!(n >= 1000 && n <= REGULAR_KRW)) fail("invalid-argument", "제휴가는 1,000원 ~ 19,900원(부가세 포함)입니다."); out.priceKrw = n; }
   if (d.priceUsd != null) { if (!usdOk(d.priceUsd) || Number(d.priceUsd) > Number(REGULAR_USD)) fail("invalid-argument", "해외가는 1.00 ~ 14.99 달러, 소수 둘째 자리까지입니다."); out.priceUsd = String(d.priceUsd); }
   if (d.fx != null) out.fx = { rate: Number(d.fx.rate) || null, date: cleanText(d.fx.date, 10), source: cleanText(d.fx.source, 40) };
@@ -312,6 +356,7 @@ function readPartnerInput(d, isNew) {
   if (d.velocityHour != null) out.velocityHour = Math.max(0, Math.min(10000, parseInt(d.velocityHour, 10) || 0));
   if (d.velocityDay != null) out.velocityDay = Math.max(0, Math.min(100000, parseInt(d.velocityDay, 10) || 0));
   if (d.domesticPaused != null) out.domesticPaused = d.domesticPaused === true;
+  if (isNew) out.testMode = d.testMode === true; // 시험용 여부는 만들 때만 정한다 (나중에 바꾸면 실제 결제와 섞일 수 있음)
   return out;
 }
 const linkFor = (slug, key) => `https://lifeportfolio.co.kr/partner?p=${slug}&k=${key}`;
@@ -399,15 +444,15 @@ async function adminPartnerList(req) {
   assertAdmin(req); const now = Date.now();
   const snap = await fs().collection("partners").get();
   const partners = []; snap.forEach((x) => { const p = x.data(); const holds = (p.holds || []).filter((h) => h.until > now).length; partners.push({
-    slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", status: p.status, pausedReason: p.pausedReason || null, verify: p.verify, priceKrw: p.priceKrw, priceUsd: p.priceUsd, fx: p.fx || null,
+    slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", logoData: p.logoData || "", status: p.status, pausedReason: p.pausedReason || null, verify: p.verify, priceKrw: p.priceKrw, priceUsd: p.priceUsd, fx: p.fx || null,
     startAt: ms(p.startAt), endAt: ms(p.endAt), maxSeats: p.maxSeats, used: (p.seatCount || {}).used || 0, holding: holds, sales: p.seatCount || {}, velocityHour: p.velocityHour || 0, velocityDay: p.velocityDay || 0,
-    domesticPaused: p.domesticPaused === true, note: p.note || "", hasCommonCode: !!p.commonCodeHash }); });
+    domesticPaused: p.domesticPaused === true, note: p.note || "", hasCommonCode: !!p.commonCodeHash, test: p.testMode === true }); });
   const codeStats = {};
   const cs = await fs().collection("partner_codes").get();
   cs.forEach((x) => { const s = x.get("slug"); const st = x.get("status"); codeStats[s] = codeStats[s] || { unused: 0, held: 0, used: 0, void: 0 }; codeStats[s][st] = (codeStats[s][st] || 0) + 1; });
   const fails = []; (await fs().collection("partner_fails").where("resolved", "==", false).get()).forEach((x) => { const f = x.data(); fails.push({ id: x.id, at: ms(f.at), provider: f.provider, stage: f.stage, code: f.code, msg: f.msg }); });
   fails.sort((a, b) => (b.at || 0) - (a.at || 0));
-  const pays = []; (await fs().collection("partner_payments").orderBy("createdAt", "desc").limit(200).get()).forEach((x) => { const v = x.data(); pays.push({ uid: v.uid, slug: v.slug, provider: v.provider, amount: v.amount, currency: v.currency, ref: v.ref, captureID: v.captureID, at: ms(v.createdAt), refund: v.refund ? { at: ms(v.refund.at), how: v.refund.how } : null }); });
+  const pays = []; (await fs().collection("partner_payments").orderBy("createdAt", "desc").limit(200).get()).forEach((x) => { const v = x.data(); pays.push({ id: x.id, test: v.test === true, env: v.env || "", uid: v.uid, slug: v.slug, provider: v.provider, amount: v.amount, currency: v.currency, ref: v.ref, captureID: v.captureID, at: ms(v.createdAt), refund: v.refund ? { at: ms(v.refund.at), how: v.refund.how } : null }); });
   const audit = []; (await fs().collection("partner_audit").orderBy("at", "desc").limit(40).get()).forEach((x) => { const a = x.data(); audit.push({ slug: a.slug, at: ms(a.at), by: a.by, action: a.action }); });
   return { ok: true, partners, codeStats, fails: fails.slice(0, 50), payments: pays, audit };
 }
@@ -431,5 +476,5 @@ function makeExports(realDeps) {
 
 module.exports = {
   makeExports,
-  _internals: { getPartnerPage, startPartnerCheckout, confirmPartnerPayple, createPartnerPaypalOrder, capturePartnerPaypalOrder, reportDomesticFail, adminPartnerSave, adminPartnerAction, adminPartnerList, randCode, normCode, codeId, sha, CODE_ALPHABET, CODE_LEN, QUOTE_MS },
+  _internals: { getPartnerPage, startPartnerCheckout, confirmPartnerPayple, createPartnerPaypalOrder, capturePartnerPaypalOrder, reportDomesticFail, adminPartnerSave, adminPartnerAction, adminPartnerList, readLogoData, LOGO_MAX_BYTES, randCode, normCode, codeId, sha, CODE_ALPHABET, CODE_LEN, QUOTE_MS },
 };

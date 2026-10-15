@@ -4737,6 +4737,12 @@ exports.getPaypleClientConfig = onCall(
 // =====================================================================
 const partnerModule = require("./_partner_module.js");
 const { checkCallableRateLimit: _partnerRL } = require("./_rate_limit");
+// 시험용 제휴(testMode) 전용: 페이플 공식 문서의 공개 테스트 계정 (democpay, 실제 돈이 빠지지 않음)
+const PAYPLE_PUBLIC_TEST = { cstId: "test", custKey: "abcd1234567890" };
+function _paypalCfgFor(sandbox) {
+  if (!sandbox) return getPaypalConfig();
+  return { env: "sandbox", apiBase: PAYPAL_API.sandbox, clientId: safeSecretValue(PAYPAL_CLIENT_ID_SANDBOX), secret: safeSecretValue(PAYPAL_SECRET_SANDBOX), currency: "USD" };
+}
 function _partnerDeps() {
   return {
     now: () => Date.now(),
@@ -4753,21 +4759,21 @@ function _partnerDeps() {
       const url = payType === "card" ? (String(auth.PCD_PAY_COFURL || "") || ep.cardConfirmFallback) : ep.bankConfirm;
       if (payType === "card" && !/^https:\/\/([a-z0-9-]+\.)*payple\.(kr|co\.kr)\//.test(url)) throw new HttpsError("invalid-argument", "승인 주소가 올바르지 않습니다.");
       const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "Referer": "https://lifeportfolio.co.kr" },
-        body: JSON.stringify({ PCD_CST_ID: PAYPLE_CST_ID.value(), PCD_CUST_KEY: PAYPLE_CUST_KEY.value(), PCD_AUTH_KEY: String(auth.PCD_AUTH_KEY || ""), PCD_PAY_REQKEY: String(auth.PCD_PAY_REQKEY || ""), PCD_PAYER_ID: String(auth.PCD_PAYER_ID || "") }) });
+        body: JSON.stringify({ PCD_CST_ID: isTest ? PAYPLE_PUBLIC_TEST.cstId : PAYPLE_CST_ID.value(), PCD_CUST_KEY: isTest ? PAYPLE_PUBLIC_TEST.custKey : PAYPLE_CUST_KEY.value(), PCD_AUTH_KEY: String(auth.PCD_AUTH_KEY || ""), PCD_PAY_REQKEY: String(auth.PCD_PAY_REQKEY || ""), PCD_PAYER_ID: String(auth.PCD_PAYER_ID || "") }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new HttpsError("internal", "페이플 승인 응답 오류.");
       return data;
     },
-    paypalCreate: async ({ amount, description, customId, referenceId, uid }) => {
-      const cfg = getPaypalConfig(); const token = await getPaypalAccessToken(cfg);
+    paypalCreate: async ({ amount, description, customId, referenceId, uid, sandbox }) => {
+      const cfg = _paypalCfgFor(sandbox === true); const token = await getPaypalAccessToken(cfg);
       const res = await fetch(`${cfg.apiBase}/v2/checkout/orders`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "PayPal-Request-Id": `lpp_create_${uid}_${Date.now()}` },
         body: JSON.stringify({ intent: "CAPTURE", purchase_units: [{ reference_id: referenceId, description, custom_id: customId, amount: { currency_code: "USD", value: amount } }],
           application_context: { brand_name: "LifePortfolio", landing_page: "NO_PREFERENCE", shipping_preference: "NO_SHIPPING", user_action: "PAY_NOW" } }) });
       if (!res.ok) { logger.error("[partner] paypal create", { status: res.status, body: await res.text() }); throw new HttpsError("internal", "Failed to create PayPal order."); }
       return (await res.json()).id;
     },
-    paypalCapture: async ({ orderID }) => {
-      const cfg = getPaypalConfig(); const token = await getPaypalAccessToken(cfg);
+    paypalCapture: async ({ orderID, sandbox }) => {
+      const cfg = _paypalCfgFor(sandbox === true); const token = await getPaypalAccessToken(cfg);
       const res = await fetch(`${cfg.apiBase}/v2/checkout/orders/${encodeURIComponent(orderID)}/capture`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "PayPal-Request-Id": `lpp_capture_${orderID}` } });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) { logger.error("[partner] paypal capture", { status: res.status, body: d }); throw new HttpsError("internal", "Failed to capture PayPal order."); }
