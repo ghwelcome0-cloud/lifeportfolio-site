@@ -9,6 +9,8 @@ const results = []; const ok = (n, c, d) => { results.push({ n, c: !!c }); conso
 // ---- 1) offline: one source for dates and wording -----------------------------------------
 const pop = fs.readFileSync(path.join(root, 'assets/js/policy-update-popup.js'), 'utf8');
 ok('popup-dates-match-campaign', pop.includes('Date.parse("' + C.NOTICE_START_KST + '")') && pop.includes('Date.parse("' + C.POPUP_END_KST + '")'));
+
+
 const ms = (s) => Date.parse(s);
 ok('notice-at-least-7-days-before-effective', ms(C.EFFECTIVE_KST) - ms(C.NOTICE_START_KST) >= 7 * 864e5 && ms(C.NOTICE_START_KST) === ms('2026-10-09T00:00:00+09:00'));
 ok('popup-shown-until-day-before-effective', ms(C.POPUP_END_KST) + 1000 === ms(C.EFFECTIVE_KST) && Math.round((ms(C.POPUP_END_KST) + 1000 - ms(C.NOTICE_START_KST)) / 864e5) === 8);
@@ -43,6 +45,40 @@ const oldT = fs.readFileSync(path.join(root, 'terms-2026-05-14.html'), 'utf8');
 ok('previous-terms-frozen', !/data-i18n/.test(oldT) && !/assets\/i18n\/i18n\.js/.test(oldT) && oldT.includes('리포트 및 제공 자료의 저작권은 회사에 귀속됩니다.') && /noindex/.test(oldT));
 ok('email-has-legal-parts', ['변경 전', '변경 후', '시행일', '이의제기', '광고성 정보가 아닙니다', '656-12-02589'].every((s) => mail.html.includes(s) && mail.text.includes(s.replace(/ · /g, ' · '))));
 ok('email-every-change-row', C.CHANGES.every((c) => mail.text.includes(c.after)));
+// ---- 1b) 2026-10-25 캠페인 (제휴가 · 동의 기록): 10-18 자동 공지 → 10-25 시행 (대표 결정 2026-10-15)
+const N = require('../functions/emails/policy-update-2026-10-25.js');
+{
+  const day = 864e5, P = (x) => Date.parse(x);
+  ok('n25-dates-owner-decision', N.NOTICE_START_KST === '2026-10-18T00:00:00+09:00' && N.POPUP_END_KST === '2026-10-24T23:59:59+09:00' && N.EFFECTIVE_KST === '2026-10-25T00:00:00+09:00' && N.EFFECTIVE_KO === '2026년 10월 25일' && N.PRIVACY_EFFECTIVE_KO === '2026년 10월 18일');
+  ok('n25-seven-days-before-effective', P(N.EFFECTIVE_KST) - P(N.NOTICE_START_KST) === 7 * day && P(N.POPUP_END_KST) + 1000 === P(N.EFFECTIVE_KST));
+  ok('n25-starts-after-previous-popup', P(N.NOTICE_START_KST) > P(C.POPUP_END_KST));
+  ok('n25-popup-dates-match', pop.includes('Date.parse("' + N.NOTICE_START_KST + '")') && pop.includes('Date.parse("' + N.POPUP_END_KST + '")') && pop.includes('lp_policy_notice_2026_10_25') && pop.includes(N.EFFECTIVE_KO + ' 전까지') && pop.includes('2026년 10월 18일 적용'));
+  // 팝업을 시각별로 실제 실행해 본다(가짜 DOM): 17일 밤 없음, 18일 0시 새 공지, 24일 밤까지, 25일 0시 사라짐
+  const vm = require('node:vm');
+  const run = (iso, search) => { let drawn = null; const store = {}; const body = { appendChild: (n) => { drawn = n; } };
+    const doc = { readyState: 'complete', documentElement: { lang: 'ko' }, head: { appendChild() {} }, body, getElementById: (id) => (id === 'lp-policy-notice' ? drawn : null), createElement: () => { const n = { setAttribute() {}, querySelector: () => ({ addEventListener() {} }), set innerHTML(v) { this.html = v; }, get innerHTML() { return this.html; } }; return n; }, addEventListener() {}, removeEventListener() {} };
+    const ctx = { window: {}, document: doc, location: { search: search || '' }, localStorage: { getItem: (k) => store[k] || null, setItem: (k, v) => { store[k] = v; } }, sessionStorage: { getItem: () => null, setItem() {} }, Date: class extends Date { static now() { return P(iso); } }, setTimeout: (f) => f(), MutationObserver: class { observe() {} disconnect() {} } };
+    vm.runInNewContext(pop, ctx); return drawn ? drawn.html : ''; };
+  ok('n25-popup-none-on-oct17', run('2026-10-17T12:00:00+09:00') === '');
+  ok('n25-popup-auto-start-oct18', run('2026-10-18T00:00:00+09:00').includes('2026년 10월 25일 시행'));
+  ok('n25-popup-still-on-oct24-night', run('2026-10-24T23:59:00+09:00').includes('제휴'));
+  ok('n25-popup-gone-on-oct25', run('2026-10-25T00:00:00+09:00') === '');
+  ok('n25-old-popup-still-correct', run('2026-10-12T12:00:00+09:00').includes('다이어리') && run('2026-10-16T23:59:00+09:00').includes('2026년 10월 17일'));
+  ok('n25-preview-shows-latest', run('2026-10-15T12:00:00+09:00', '?policy_notice=preview').includes('제휴'));
+  // 약관·처리방침 페이지: 새 조문이 캠페인 파일과 글자 그대로 같고, 날짜 장치로 18일부터 보임
+  ok('n25-terms-art4-4-matches', terms.includes('data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden>' + N.ART4_4_KO) && N.CHANGES[0].after === '④ ' + N.ART4_4_KO && terms.includes(N.ART4_4_EN));
+  ok('n25-terms-effective-switches-oct25', terms.includes('data-lp-until="2026-10-25T00:00:00+09:00" data-i18n="terms.effective"') && terms.includes('data-lp-from="2026-10-25T00:00:00+09:00" data-lp-lang="ko" hidden>본 약관은 2026년 10월 25일부터 시행됩니다.'));
+  ok('n25-privacy-items-match', privacy.includes(N.S3_7_KO) && privacy.includes(N.S10_4_KO) && privacy.includes(N.S3_7_EN) && N.CHANGES[1].after === N.S3_7_KO && N.CHANGES[2].after === N.S10_4_KO);
+  ok('n25-date-gate-loaded', ['terms.html', 'privacy.html'].every((f) => fs.readFileSync(path.join(root, f), 'utf8').includes('/assets/js/policy-date-gate.js')));
+  const gate = fs.readFileSync(path.join(root, 'assets/js/policy-date-gate.js'), 'utf8');
+  ok('n25-date-gate-logic', gate.includes('data-lp-from') && gate.includes('data-lp-until') && gate.includes('policy_notice='));
+  ok('n25-archives-frozen', ['terms-2026-10-17.html', 'privacy-2026-10-09.html'].every((f) => { const x = fs.readFileSync(path.join(root, f), 'utf8'); return /noindex/.test(x) && !/assets\/i18n\/i18n\.js/.test(x) && !/data-i18n(-html)?="/.test(x) && x.includes('이전 '); }) && fs.readFileSync(path.join(root, 'terms-2026-10-17.html'), 'utf8').includes('2026년 10월 17일부터 시행'));
+  const m2 = N.buildPolicyUpdateEmail();
+  ok('n25-mail-legal-parts', ['변경 전', '변경 후', '시행일', '이의제기', '광고성 정보가 아닙니다', '656-12-02589', '2026년 10월 25일', '2026년 10월 18일'].every((x) => m2.text.includes(x)) && N.CHANGES.every((c) => m2.text.includes(c.after) && m2.text.includes(c.en.after)));
+  ok('n25-mail-links-safe', [...m2.html.matchAll(/<a href="([^"]+)"/g)].every((m) => /^(mailto:faise@|https:\/\/lifeportfolio\.co\.kr\/(terms|privacy)(-2026-10-(17|09))?(\?lang=en)?$)/.test(m[1])) && !/써 보세요|지금 바로|무료로|try it|get started/i.test(m2.text));
+  ok('n25-module-latest', fs.readFileSync(path.join(root, 'functions/_policy_notice_module.js'), 'utf8').includes('const LATEST = "policy-update-2026-10-25"'));
+  ok('n25-no-dash-char-in-new-copy', ![N.ART4_4_KO, N.S3_7_KO, N.S10_4_KO, N.REASON_KO, ...N.SUMMARY_KO].some((x) => x.includes('—')));
+}
 for (const f of ['index.html', 'login.html', 'mypage.html']) ok('popup-loaded-on-' + f, fs.readFileSync(path.join(root, f), 'utf8').includes('/assets/js/policy-update-popup.js'));
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 ok('dashboard-hub-card-links-panel', adminHtml.includes('href="#policyNoticeCard" id="pnHubCard"') && fs.readFileSync(path.join(root, 'checkin-admin.html'), 'utf8').includes('/admin#policyNoticeCard'));
@@ -95,25 +131,35 @@ ok('dashboard-has-notice-panel', ['policyNoticeCard', 'getPolicyNoticeStatus', '
   ok('non-admin-send-denied', (await err(M.send(userReq({ mode: 'send' }), deps2))) === 'permission-denied');
   ok('anonymous-denied', (await err(M.send({ auth: null, data: { mode: 'send' } }, deps2))) === 'permission-denied');
   ok('unknown-campaign-rejected', (await err(M.send(adminReq({ mode: 'dryRun', campaign: 'x' }), deps2))) === 'invalid-argument');
-  const dry = await M.send(adminReq({ mode: 'dryRun' }), deps2);
+  const dry = await M.send(adminReq({ mode: 'dryRun', campaign: C.CAMPAIGN }), deps2);
   ok('dryrun-counts-only-real-members', dry.counts.recipients === 6 && dry.counts.willSend === 6 && sentTo.length === 0 && dry.samples.every((s) => s.includes('***@')), dry);
-  const test = await M.send(adminReq({ mode: 'test' }), deps2);
+  const test = await M.send(adminReq({ mode: 'test', campaign: C.CAMPAIGN }), deps2);
   ok('test-goes-only-to-operator', test.ok && sentTo.length === 1 && sentTo[0].to === 'operator@example.test' && sentTo[0].subject.startsWith('[시험 발송]'));
   sentTo.length = 0;
-  const s1 = await M.send(adminReq({ mode: 'send', maxSend: 4 }), deps2);
+  const s1 = await M.send(adminReq({ mode: 'send', maxSend: 4, campaign: C.CAMPAIGN }), deps2);
   ok('send-respects-batch-and-reports-remaining', s1.attempted === 4 && s1.sent === 3 && s1.failed === 1 && s1.remaining === 2, s1);
-  const s2 = await M.send(adminReq({ mode: 'send' }), deps2);
+  const s2 = await M.send(adminReq({ mode: 'send', campaign: C.CAMPAIGN }), deps2);
   ok('second-click-continues-without-duplicates', s2.sent === 2 && s2.failed === 0 && s2.remaining === 0 && new Set(sentTo.map((x) => x.to)).size === sentTo.length && sentTo.length === 5, { s2, n: sentTo.length });
-  const st1 = await M.status(adminReq({}), deps2);
+  const st1 = await M.status(adminReq({ campaign: C.CAMPAIGN }), deps2);
   ok('status-shows-failure', st1.counts.recipients === 6 && st1.counts.sent === 5 && st1.counts.failed === 1 && st1.counts.pending === 0 && st1.failures[0].email.includes('***@'), st1.counts);
-  const r = await M.send(adminReq({ mode: 'retryFailed' }), deps2);
+  const r = await M.send(adminReq({ mode: 'retryFailed', campaign: C.CAMPAIGN }), deps2);
   ok('retry-sends-only-failed', r.sent === 1 && sentTo.length === 6 && sentTo[5].to === 'member2@example.test', r);
-  const s3 = await M.send(adminReq({ mode: 'send' }), deps2);
+  const s3 = await M.send(adminReq({ mode: 'send', campaign: C.CAMPAIGN }), deps2);
   ok('nothing-left-no-resend', s3.attempted === 0 && sentTo.length === 6);
-  const st2 = await M.status(adminReq({}), deps2);
+  const st2 = await M.status(adminReq({ campaign: C.CAMPAIGN }), deps2);
   ok('runs-recorded-with-operator', st2.counts.sent === 6 && st2.counts.pending === 0 && st2.runs.length === 5 && st2.runs.every((x) => x.by === 'operator@example.test'), st2.runs);
   ok('disabled-and-phone-excluded', !sentTo.some((x) => x.to === 'disabled@example.test') && off.disabled);
   ok('preview-is-the-real-mail', st2.preview.subject === C.buildPolicyUpdateEmail().subject && st2.preview.html === C.buildPolicyUpdateEmail().html);
+  // 새 캠페인: 공지 시작 전 실제 발송 잠김, 시험·대상 확인은 가능, 시작 뒤 발송
+  const before = Object.assign({}, deps2, { now: () => Date.parse('2026-10-17T23:59:00+09:00') });
+  const after18 = Object.assign({}, deps2, { now: () => Date.parse('2026-10-18T09:00:00+09:00') });
+  ok('n25-send-locked-before-oct18', (await err(M.send(adminReq({ mode: 'send', campaign: 'policy-update-2026-10-25' }), before))) === 'failed-precondition');
+  ok('n25-dryrun-and-test-allowed-before', (await M.send(adminReq({ mode: 'dryRun', campaign: 'policy-update-2026-10-25' }), before)).ok && (await M.send(adminReq({ mode: 'test', campaign: 'policy-update-2026-10-25' }), before)).ok);
+  const n1 = sentTo.length;
+  const ns = await M.send(adminReq({ mode: 'send', campaign: 'policy-update-2026-10-25' }), after18);
+  ok('n25-send-works-from-oct18-separately-logged', ns.sent === 6 && sentTo.length === n1 + 6 && sentTo.slice(-1)[0].subject.includes('2026년 10월 25일'), ns);
+  const def = await M.status(adminReq({}), deps2);
+  ok('n25-dashboard-default-is-new-campaign', def.campaign.id === 'policy-update-2026-10-25' && def.campaigns.length === 2);
   finish();
 })().catch((e) => { console.error(e); process.exit(1); });
 function finish() { const f = results.filter((x) => !x.c); console.log(JSON.stringify({ passed: results.length - f.length, failed: f.length, scope: 'offline source checks + local Auth/Firestore emulators, synthetic accounts, fake mail sender' })); process.exit(f.length ? 1 : 0); }

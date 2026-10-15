@@ -1631,6 +1631,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, _T.auth); // PR#37: 모바일 22s / PC 15s 차등화
 
     onAuthStateChanged(auth, async (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
       _renderPendingReports.cache = null;
       _renderPendingReports.showDismissed = false;
       document.getElementById("pendingReportSection").style.display = "none";
@@ -2912,6 +2913,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="/assets/js/mypage-curation.js" defer></script>
   <script src="/assets/js/ask-widget.js" defer></script>
 <footer role="contentinfo"><!-- lp-a11y-core -->
+  <p style="text-align:center;margin:24px 0;font-size:14px"><button type="button" onclick="window.LP_CONSENT&&window.LP_CONSENT.reset()" style="font:inherit;min-height:44px;padding:8px 14px;border:1px solid #c9c2b0;border-radius:8px;background:#fff;color:#384e40;cursor:pointer">방문 통계 동의 선택 바꾸기</button></p>
   <p class="lp-sr-only">인생포트폴리오 · 문의 faise@lifeportfolio.co.kr</p>
 </footer>
 </body>

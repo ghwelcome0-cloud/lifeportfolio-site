@@ -1705,7 +1705,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) { return path; }
     }
 
-    const REDIRECT_AFTER_SIGNUP = _withLang("product.html");
+    // 제휴 페이지에서 온 가입은 같은 제휴 페이지로 돌아간다(2026-10-15). 같은 사이트의 partner 경로만 허용.
+    const REDIRECT_AFTER_SIGNUP = (function () {
+      try {
+        var rt = new URL(window.location.href).searchParams.get("returnTo") || "";
+        if (rt && /^partner(\.html)?\?p=[a-z0-9-]{1,40}&k=[A-Za-z0-9_-]{8,80}$/.test(rt)) return rt;
+      } catch (_) {}
+      return _withLang("product.html");
+    })();
     const SIGNUP_INTENT_KEY = "lp_signup_in_progress";
 
     const ua = (navigator.userAgent || "").toLowerCase();
@@ -2324,6 +2331,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       stopAuthObserver();
 
       authObserverOff = onAuthStateChanged(auth, async (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
         hideBootOverlay(); // [2026-06-26 UX] 세션 확정 시점에 초기 오버레이 해제
         if (!user) return;
         if (finished || isFinalizing) return;

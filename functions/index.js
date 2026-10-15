@@ -4729,3 +4729,69 @@ exports.getPaypleClientConfig = onCall(
     };
   }
 );
+
+// =====================================================================
+// 🤝 제휴 기업 전용 결제 (2026-10-15 대표 승인, docs/partner/00_제휴결제_최종기획안_v3.md)
+//   화면 /partner?p=<기업주소>&k=<링크키> · 운영 대시보드 admin.html 「제휴 관리」
+//   기존 일반 결제 함수(confirmPayplePayment·createPaypalOrder·capturePaypalOrder)는 건드리지 않는다.
+// =====================================================================
+const partnerModule = require("./_partner_module.js");
+const { checkCallableRateLimit: _partnerRL } = require("./_rate_limit");
+function _partnerDeps() {
+  return {
+    now: () => Date.now(),
+    rateLimit: _partnerRL,
+    alert: async ({ slug, name, lastHour, lastDay }) => {
+      const key = (() => { try { return RESEND_API_KEY.value(); } catch (_) { return ""; } })();
+      if (!key) return;
+      await sendViaResend({ apiKey: key, from: "Life Portfolio <faise@lifeportfolio.co.kr>", to: "faise@lifeportfolio.co.kr", replyTo: "faise@lifeportfolio.co.kr",
+        subject: `[제휴 자동 멈춤] ${name} (${slug})`, html: `<p>${name} 제휴 결제가 짧은 시간에 몰려 자동으로 멈췄습니다.</p><p>최근 1시간 ${lastHour}건 · 최근 24시간 ${lastDay}건</p><p>운영 대시보드 「제휴 관리」에서 확인 후 진행 또는 코드 바꾸기를 눌러 주세요.</p>`,
+        text: `${name} 제휴 결제 자동 멈춤. 최근 1시간 ${lastHour}건, 24시간 ${lastDay}건. 운영 대시보드에서 확인하세요.`, tag: "partner-auto-pause" });
+    },
+    paypleConfirm: async ({ auth, payType, isTest }) => {
+      const ep = _getPaypleEndpoints(isTest);
+      const url = payType === "card" ? (String(auth.PCD_PAY_COFURL || "") || ep.cardConfirmFallback) : ep.bankConfirm;
+      if (payType === "card" && !/^https:\/\/([a-z0-9-]+\.)*payple\.(kr|co\.kr)\//.test(url)) throw new HttpsError("invalid-argument", "승인 주소가 올바르지 않습니다.");
+      const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "Referer": "https://lifeportfolio.co.kr" },
+        body: JSON.stringify({ PCD_CST_ID: PAYPLE_CST_ID.value(), PCD_CUST_KEY: PAYPLE_CUST_KEY.value(), PCD_AUTH_KEY: String(auth.PCD_AUTH_KEY || ""), PCD_PAY_REQKEY: String(auth.PCD_PAY_REQKEY || ""), PCD_PAYER_ID: String(auth.PCD_PAYER_ID || "") }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new HttpsError("internal", "페이플 승인 응답 오류.");
+      return data;
+    },
+    paypalCreate: async ({ amount, description, customId, referenceId, uid }) => {
+      const cfg = getPaypalConfig(); const token = await getPaypalAccessToken(cfg);
+      const res = await fetch(`${cfg.apiBase}/v2/checkout/orders`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "PayPal-Request-Id": `lpp_create_${uid}_${Date.now()}` },
+        body: JSON.stringify({ intent: "CAPTURE", purchase_units: [{ reference_id: referenceId, description, custom_id: customId, amount: { currency_code: "USD", value: amount } }],
+          application_context: { brand_name: "LifePortfolio", landing_page: "NO_PREFERENCE", shipping_preference: "NO_SHIPPING", user_action: "PAY_NOW" } }) });
+      if (!res.ok) { logger.error("[partner] paypal create", { status: res.status, body: await res.text() }); throw new HttpsError("internal", "Failed to create PayPal order."); }
+      return (await res.json()).id;
+    },
+    paypalCapture: async ({ orderID }) => {
+      const cfg = getPaypalConfig(); const token = await getPaypalAccessToken(cfg);
+      const res = await fetch(`${cfg.apiBase}/v2/checkout/orders/${encodeURIComponent(orderID)}/capture`, { method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "PayPal-Request-Id": `lpp_capture_${orderID}` } });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { logger.error("[partner] paypal capture", { status: res.status, body: d }); throw new HttpsError("internal", "Failed to capture PayPal order."); }
+      const pu = (d.purchase_units && d.purchase_units[0]) || {}; const cap = (pu.payments && pu.payments.captures && pu.payments.captures[0]) || {};
+      return { status: d.status, customId: pu.custom_id || "", captureID: cap.id || "", amount: (cap.amount && cap.amount.value) || "", currency: (cap.amount && cap.amount.currency_code) || "", env: cfg.env };
+    },
+  };
+}
+_partnerDeps.alertSecrets = [RESEND_API_KEY];
+_partnerDeps.paypleSecrets = [PAYPLE_CST_ID, PAYPLE_CUST_KEY, PAYPLE_CLIENT_KEY];
+_partnerDeps.paypalSecrets = [PAYPAL_CLIENT_ID_SANDBOX, PAYPAL_SECRET_SANDBOX, PAYPAL_CLIENT_ID_LIVE, PAYPAL_SECRET_LIVE];
+const _partnerExports = partnerModule.makeExports(_partnerDeps);
+exports.getPartnerPage = _partnerExports.getPartnerPage;
+exports.startPartnerCheckout = _partnerExports.startPartnerCheckout;
+exports.confirmPartnerPayple = _partnerExports.confirmPartnerPayple;
+exports.createPartnerPaypalOrder = _partnerExports.createPartnerPaypalOrder;
+exports.capturePartnerPaypalOrder = _partnerExports.capturePartnerPaypalOrder;
+exports.reportDomesticFail = _partnerExports.reportDomesticFail;   // 제휴·일반 결제 화면 공통: 국내 결제 실패(돈 안 빠짐) 기록
+exports.adminPartnerList = _partnerExports.adminPartnerList;       // 운영자 전용
+exports.adminPartnerSave = _partnerExports.adminPartnerSave;       // 운영자 전용
+exports.adminPartnerAction = _partnerExports.adminPartnerAction;   // 운영자 전용
+
+// 📊 서비스 통계 · 방문 통계 동의 (2026-10-15 대표 승인)
+const statsModule = require("./_stats_module.js");
+exports.recordConsentChoice = statsModule.recordConsentChoice;     // 공개: 동의·거부 "개수"만 +1 (+ 로그인 회원은 본인 선택 저장)
+exports.getMyConsent = statsModule.getMyConsent;                   // 회원 본인: 다른 기기에서 고른 선택 불러오기
+exports.adminServiceStats = statsModule.adminServiceStats;         // 운영자 전용: 동의 현황 + 서비스 흐름 숫자

@@ -181,12 +181,13 @@
       ul{margin-left:16px}
       .foot{font-size:12px}
     }
-  </style>
+  .lp-revision{background:#f2f7f6;border:1px solid #cfe0dc;border-left:4px solid #2F5B54;border-radius:10px;padding:12px 14px;margin:12px 0 18px;font-size:14px;line-height:1.7}.lp-revision p{margin:0}.lp-new-tag{color:#2F5B54;font-weight:700}.lp-consent-change{font:inherit;font-size:14px;min-height:44px;padding:8px 14px;border:1px solid #2F5B54;border-radius:8px;background:#fff;color:#2F5B54;cursor:pointer}[hidden]{display:none!important}</style>
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
   <link rel="stylesheet" href="/assets/css/lp-consent.css"><!-- 분석 동의 배너(승인 ⑪) -->
   <script src="/assets/js/lp-consent.js" defer></script>
+  <script src="/assets/js/policy-date-gate.js" defer></script>
 </head>
 <body>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -196,7 +197,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <main class="wrap">
     <!-- PR#37: KO/EN 토글 제거 — 페이지 언어는 ?lang= 쿼리로만 전환 -->
     <h1 data-i18n="privacy.h1">개인정보처리방침</h1>
-    <p class="muted" data-i18n-html="privacy.effective">본 방침은 <b>2026년 10월 9일</b>부터 시행됩니다. (다이어리 출시에 따른 개정 — 1·2·3·5·6·7·13항 다이어리 기록 반영, 16항 다이어리 기록의 처리 신설. 개인정보 처리 현황을 알리는 공개 사항으로 게시와 함께 적용합니다.) <a href="/privacy-2026-06-19">이전 방침 보기</a><br><span style="font-size:.92em">이전 이력: 본 방침은 <b>2026년 6월 19일</b>부터 시행됩니다. (2026년 9월 8일 정정: §10-2 분석 도구를 선택 동의(Opt-in)로 전환, §13 탈퇴 데이터 파기 범위를 실제 처리(즉시 삭제 + 익명 통계 기록 30일 후 파기)에 맞게 명시, §15 'ask' 위젯이 실제로는 서버 수집을 하지 않음을 명시 — 사실 정정으로 즉시 반영. 이전 개정: §15 ask 로그의 익명 수집·보관 신설 — 'ask' 위젯 문의 로그를 uid 마스킹·IP/UA 미수집·90일 순차 삭제 원칙으로 익명 처리함을 명시. 이전 개정: §2·§5·§6 처리위탁·국외이전 현행화(웹 호스팅 Firebase Hosting 정정, Google Forms 긴급 한정 보조 수단 명시, 미사용 광고 추적 도메인 정리), §5.6 Microsoft Clarity 동의 조건부 처리, §6.4 국외이전 고지 강화, §10 전면 개정(3-tier 동의 구조), §14 만 14세 미만 아동 보호 신설)</span></p>
+    <p class="muted" data-lp-until="2026-10-18T00:00:00+09:00" data-i18n-html="privacy.effective">본 방침은 <b>2026년 10월 9일</b>부터 시행됩니다. (다이어리 출시에 따른 개정 — 1·2·3·5·6·7·13항 다이어리 기록 반영, 16항 다이어리 기록의 처리 신설. 개인정보 처리 현황을 알리는 공개 사항으로 게시와 함께 적용합니다.) <a href="/privacy-2026-06-19">이전 방침 보기</a><br><span style="font-size:.92em">이전 이력: 본 방침은 <b>2026년 6월 19일</b>부터 시행됩니다. (2026년 9월 8일 정정: §10-2 분석 도구를 선택 동의(Opt-in)로 전환, §13 탈퇴 데이터 파기 범위를 실제 처리(즉시 삭제 + 익명 통계 기록 30일 후 파기)에 맞게 명시, §15 'ask' 위젯이 실제로는 서버 수집을 하지 않음을 명시 — 사실 정정으로 즉시 반영. 이전 개정: §15 ask 로그의 익명 수집·보관 신설 — 'ask' 위젯 문의 로그를 uid 마스킹·IP/UA 미수집·90일 순차 삭제 원칙으로 익명 처리함을 명시. 이전 개정: §2·§5·§6 처리위탁·국외이전 현행화(웹 호스팅 Firebase Hosting 정정, Google Forms 긴급 한정 보조 수단 명시, 미사용 광고 추적 도메인 정리), §5.6 Microsoft Clarity 동의 조건부 처리, §6.4 국외이전 고지 강화, §10 전면 개정(3-tier 동의 구조), §14 만 14세 미만 아동 보호 신설)</span></p>
+    <p class="muted" data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden>본 방침은 <b>2026년 10월 18일</b>부터 시행됩니다. (제휴 결제 도입에 따른 개정: 3항 제휴 결제 기록·환불 계좌 정보, 10-4항 분석 도구 동의 선택의 저장 방식 추가) <a href="/privacy-2026-10-09">이전 개인정보처리방침(2026년 10월 9일 시행) 보기</a></p><p class="muted" data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="en" hidden>This Policy applies from <b>October 18, 2026</b>. (Added for partner payments: §3 partner payment records and refund account details, §10-4 how your analytics choice is stored.) <a href="/privacy-2026-10-09">View the previous Privacy Policy (October 9, 2026)</a></p>
 
     <!-- EN-only legal binding notice (Korean e-commerce / privacy law) -->
     <div class="legal-notice" data-lang-only="en" data-i18n-html="privacy.legal_notice" style="display:none"></div>
@@ -219,6 +221,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n="privacy.s3_3">소비자 불만·분쟁처리 기록: 3년</li>
       <li data-i18n="privacy.s3_4">표시·광고 기록: 6개월</li>
       <li data-i18n="privacy.s3_5">그 외 항목은 목적 달성 시 지체 없이 파기(관계 법령에 따라 별도 보관 가능)</li>
+      <li data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden>제휴 결제 기록(제휴사 이름, 결제 금액, 사용한 제휴 코드를 알아볼 수 없게 바꾼 값): 대금결제 기록과 같이 5년 보관합니다. 제휴사에는 개인을 알 수 있는 정보를 제공하지 않습니다. 환불 계좌 정보(은행명, 계좌번호, 예금주): 결제 취소로 환불할 수 없는 경우에 한해 이용자가 직접 입력하며, 환불 송금 목적으로만 이용하고 송금을 마치면 바로 파기합니다.</li><li data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="en" hidden>Partner payment records (partner name, amount paid, and an unreadable transformed value of the partner code used): kept for 5 years, like other payment records. No personally identifiable information is given to the partner. Refund account details (bank, account number, holder): entered by the user only when a refund cannot be made by cancelling the payment, used only to send the refund, and destroyed as soon as the transfer is done.</li>
       <li data-i18n-html="privacy.s3_6"><b>검사 응답 · 리포트 · 실행 프로그램 · 다이어리 기록</b>: 회원 가입 시점부터 <u>회원 탈퇴 시까지 보관</u>합니다. 이용자는 마이페이지에서 리포트를, 다이어리 안 「다이어리 비우기」로 다이어리 기록을 언제든 직접 삭제할 수 있으며, 회원 탈퇴 시 모든 데이터는 30일 이내에 복구 불가 방식으로 완전 파기됩니다(법령상 별도 보관 의무가 있는 결제·세무 기록은 해당 법정 기간 동안 분리 보관).</li>
     </ul>
 
@@ -300,6 +303,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </ul>
 
     <p data-i18n-html="privacy.s10_notice"><b>중요 안내</b>: Microsoft Clarity는 이용자가 명시적으로 동의한 경우에만 활성화됩니다. 동의하지 않으셔도 서비스 이용에 어떠한 제한도 없습니다. 수집되는 데이터는 익명화 처리되며, 비밀번호·결제 정보 등 텍스트 입력 영역은 자동 마스킹 처리됩니다. 수집된 데이터는 미국 Microsoft 서버에 저장되며, 자세한 내용은 §6 국외 이전을 참조하세요.</p>
+    <h3 data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden>10-4. 분석 도구 동의 선택의 저장</h3><h3 data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="en" hidden>10-4. How your analytics choice is stored</h3>
+    <p data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden>분석 도구 동의 선택 기록: 같은 브라우저에서 다시 묻지 않도록 선택(동의·거부)과 날짜를 브라우저에 저장하고, 로그인한 회원은 다른 기기에서도 다시 묻지 않도록 회원 정보에 함께 저장합니다. 선택은 1년 동안 유지되며 그 뒤 한 번 다시 여쭙니다. 운영자는 날짜별 동의·거부 합계 숫자만 보며, 누가 선택했는지는 보지 않습니다. 선택은 마이페이지 또는 이 항목의 [선택 바꾸기]로 언제든 바꿀 수 있습니다.</p><p data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="en" hidden>Record of your analytics choice: so we do not ask again in the same browser, your choice (allow or decline) and its date are stored in the browser, and for signed-in members also in the member profile so other devices do not ask again. The choice lasts one year, after which we ask once more. Operators see only daily totals of allow/decline, never who chose what. You can change it anytime in My Page or with [Change choice] in this section.</p>
+    <p><button type="button" class="lp-consent-change" onclick="window.LP_CONSENT&&window.LP_CONSENT.reset()" data-i18n="privacy.consent_change">분석 도구 동의 선택 바꾸기</button></p>
 
     <h2 data-i18n="privacy.s11_h">11. 고충처리/문의</h2>
     <p data-i18n-html="privacy.s11_p">고객센터: 010-5179-9206 / <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>

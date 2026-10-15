@@ -1674,7 +1674,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             dec = ext.pathname.split("/").pop() + (ext.search || "") + (ext.hash || "");
           }
           // Explicit same-site destinations only; checkout performs its own server ownership check.
-          if (/^(suvey|mypage|b2b-checkout|diary)(\.html)?(\?|#|$)/.test(dec)) {
+          if (/^(suvey|mypage|b2b-checkout|diary|partner)(\.html)?(\?|#|$)/.test(dec)) {
             return dec;
           }
         }
@@ -2283,6 +2283,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     onAuthStateChanged(auth, (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
       // [2026-06-26 UX] 세션 확정 시점 = 초기 로딩 오버레이 해제 시점.
       // 로그인 사용자는 routeAfterLogin 으로 이동, 비로그인 사용자는 폼 노출.
       hideBootOverlay();

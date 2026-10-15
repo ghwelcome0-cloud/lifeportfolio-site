@@ -2155,6 +2155,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, 8000);
 
     onAuthStateChanged(auth, (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
       authResolved = true;
       clearTimeout(softTimer);
 
