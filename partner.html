@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>인생포트폴리오 제휴 혜택</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <!--
+    partner.html : 제휴 기업 전용 결제 (2026-10-15 대표 승인, docs/partner/00_제휴결제_최종기획안_v3.md, 시안 v3)
+    주소: /partner?p=<기업주소>&k=<링크키>   (운영 대시보드에서 만든 링크만 작동)
+    흐름: 서버가 링크키 확인(getPartnerPage) → 로그인 → 제휴 회원 확인(startPartnerCheckout: 30분 확인표 + 자리 잡기)
+          → 페이플(confirmPartnerPayple) 또는 PayPal(create/capturePartnerPaypalOrder) → 지금과 같은 결제 완료 → 검사 시작
+    금액은 서버가 정한다. 이 화면의 숫자는 보여 주기만 한다.
+  -->
+  <script>window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});</script>
+  <link rel="stylesheet" href="/assets/css/lp-consent.css">
+  <script src="/assets/js/lp-consent.js" defer></script>
+  <script src="/assets/js/pay-fallback.js" defer></script>
+  <!-- 페이플 payment.js 는 jQuery 가 먼저 있어야 한다 -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <style>
+    :root{--teal1:#2F5B54;--teal2:#468D84;--teal3:#3A7A72;--gold:#E0A458;--ink:#22302d;--muted:#5b6b67;--line:#e3e8e6;--bg:#f6f7f4;--card:#fff;--blue:#4A6984}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:break-word;line-height:1.6}
+    a{color:var(--teal1)}
+    .pt-top{display:flex;align-items:center;gap:12px;padding:14px 20px;background:#fff;border-bottom:1px solid var(--line)}
+    .pt-top img.lp{width:30px;height:30px;border-radius:8px}
+    .pt-top b{font-size:15px}
+    .pt-x{color:#9aa6a3;font-weight:700}
+    .pt-top img.pl{height:24px;max-width:150px;object-fit:contain}
+    .pt-top .pn{font-weight:800}
+    .pt-wrap{max-width:1080px;margin:0 auto;padding:24px 16px 48px;display:grid;grid-template-columns:1.05fr 1fr;gap:22px;align-items:start}
+    @media(max-width:860px){.pt-wrap{grid-template-columns:1fr;padding:14px 12px 40px}}
+    .pt-hero{background:linear-gradient(150deg,var(--teal1),var(--teal2) 60%,var(--teal3));color:#fff;border-radius:20px;padding:36px 32px;min-height:440px;display:flex;flex-direction:column;justify-content:space-between}
+    @media(max-width:860px){.pt-hero{min-height:0;padding:26px 22px}}
+    .pt-tile{width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.14);display:grid;place-items:center}
+    .pt-tile img{width:44px;height:44px;border-radius:10px}
+    .pt-kick{margin:22px 0 4px;font-size:12px;letter-spacing:.22em;font-weight:700;opacity:.85}
+    .pt-h1{margin:0;font-size:32px;font-weight:900;line-height:1.3}
+    @media(max-width:860px){.pt-h1{font-size:25px}}
+    .pt-gold{width:46px;height:3px;background:var(--gold);border-radius:3px;margin:16px 0}
+    .pt-sub{margin:0;font-size:15px;opacity:.92}
+    .pt-inc{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:8px}
+    .pt-inc li{display:flex;gap:10px;align-items:center;font-size:15px;font-weight:700}
+    .pt-inc li::before{content:"✓";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.18);font-size:13px}
+    .pt-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 2px 10px rgba(20,40,36,.04)}
+    .pt-badge{display:inline-block;font-size:12px;font-weight:800;color:var(--teal1);background:#e8f1ef;border-radius:99px;padding:4px 10px}
+    .pt-price{margin:12px 0 2px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+    .pt-price s{color:#98a3a0;font-size:16px}
+    .pt-price b{font-size:34px;font-weight:900;color:var(--teal1)}
+    .pt-meta{margin:0 0 14px;font-size:13px;color:var(--muted)}
+    .pt-row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:9px 0;border-top:1px solid var(--line)}
+    .pt-row span:first-child{color:var(--muted)}
+    .pt-sec{margin-top:16px}
+    .pt-sec h2{font-size:14px;margin:0 0 8px}
+    .pt-in{width:100%;min-height:48px;border:1px solid #cfd8d5;border-radius:12px;padding:10px 14px;font:inherit;font-size:17px;letter-spacing:.08em;text-transform:uppercase}
+    .pt-in:focus{outline:3px solid #b9d8d2;border-color:var(--teal2)}
+    .pt-btn{width:100%;min-height:52px;border:0;border-radius:12px;font:inherit;font-weight:800;font-size:16px;cursor:pointer;margin-top:10px}
+    .pt-btn:disabled{opacity:.5;cursor:not-allowed}
+    .pt-btn.p{background:var(--blue);color:#fff}.pt-btn.t{background:var(--teal2);color:#fff}.pt-btn.g{background:#fff;color:var(--teal1);border:1px solid #bcd3ce}
+    .pt-pp{margin-top:12px;min-height:46px}
+    .pt-msg{min-height:1.4em;font-size:14px;margin:10px 0 0}
+    .pt-msg.err{color:#b4462f}.pt-msg.ok{color:#2b7a55}
+    .pt-legal{font-size:12.5px;color:#5f6a67;background:#fffbea;border:1px solid #f1e3b0;border-radius:12px;padding:12px 14px;margin-top:14px}
+    .pt-agree{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px;cursor:pointer}
+    .pt-agree input{width:18px;height:18px;margin-top:3px}
+    .pt-state{text-align:center;padding:34px 18px}
+    .pt-state h1{font-size:22px;margin:0 0 8px}
+    .pt-foot{max-width:1080px;margin:0 auto;padding:0 16px 40px;font-size:12.5px;color:#7a8683;text-align:center}
+    [hidden]{display:none!important}
+    .pt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  </style>
+</head>
+<body>
+  <header class="pt-top" id="ptTop">
+    <img class="lp" src="/assets/logo-trademark.png" alt="" width="30" height="30">
+    <b>인생포트폴리오</b><span class="pt-x" aria-hidden="true">×</span>
+    <span id="ptPartnerMark"></span>
+  </header>
+
+  <main>
+    <section class="pt-state" id="ptLoading"><p>제휴 정보를 확인하고 있어요…</p></section>
+
+    <section class="pt-state" id="ptNotFound" hidden>
+      <h1>찾을 수 없는 페이지예요</h1>
+      <p>주소가 바뀌었거나 사용할 수 없는 링크예요. 제휴사에서 받은 링크를 다시 확인해 주세요.</p>
+      <p><a href="/product">인생포트폴리오 일반 결제 보기</a></p>
+    </section>
+
+    <section class="pt-state" id="ptClosed" hidden>
+      <h1 id="ptClosedT">혜택 접수를 잠시 멈췄어요</h1>
+      <p id="ptClosedB">제휴사 안내를 확인해 주세요. 일반 결제로는 언제든 시작하실 수 있어요.</p>
+      <p><a href="/product">일반 결제로 시작하기</a></p>
+    </section>
+
+    <div class="pt-wrap" id="ptMain" hidden>
+      <section class="pt-hero" aria-labelledby="ptH1">
+        <div>
+          <div class="pt-tile"><img src="/assets/logo-trademark.png" alt="" width="44" height="44"></div>
+          <p class="pt-kick">ONLY ONE REPORT</p>
+          <h1 class="pt-h1" id="ptH1"><span id="ptHeroName">제휴사</span> 회원을 위한<br>인생포트폴리오</h1>
+          <div class="pt-gold" aria-hidden="true"></div>
+          <p class="pt-sub">나의 고유함을 발견하고, 살아내고, 남기는 한 권.</p>
+          <ul class="pt-inc">
+            <li>인생포트폴리오 리포트</li>
+            <li>자산화 맞춤 실행 프로그램</li>
+            <li>내 다이어리</li>
+          </ul>
+        </div>
+        <p class="pt-sub" style="font-size:13px;opacity:.8;margin-top:22px">결제 후에는 일반 결제와 똑같이 이용해요.</p>
+      </section>
+
+      <section class="pt-card" aria-labelledby="ptPriceT">
+        <span class="pt-badge" id="ptBadge">제휴 혜택가</span>
+        <h2 class="pt-sr" id="ptPriceT">제휴 혜택가</h2>
+        <p class="pt-price"><s id="ptRegular">19,900원</s><b id="ptPrice">-</b></p>
+        <p class="pt-meta">부가세 포함 · 1인 1회 · 첫 결제에만 적용</p>
+        <div class="pt-row"><span>남은 혜택</span><b id="ptSeats">-</b></div>
+        <div class="pt-row"><span>혜택 기간</span><b id="ptPeriod">-</b></div>
+        <div class="pt-row"><span>결제 계정</span><b id="ptAccount">로그인 전</b></div>
+        <p class="pt-meta" id="ptNote" style="margin-top:8px" hidden></p>
+
+        <div class="pt-sec" id="ptLogin" hidden>
+          <a class="pt-btn t" id="ptSignup" style="display:grid;place-items:center;text-decoration:none" href="#">회원가입하고 혜택 받기</a>
+          <a class="pt-btn g" id="ptSignin" style="display:grid;place-items:center;text-decoration:none" href="#">이미 회원이에요 · 로그인</a>
+        </div>
+
+        <div class="pt-sec" id="ptPaid" hidden>
+          <p class="pt-msg ok">이미 결제한 계정이에요. 마이페이지에서 이어서 이용해 주세요.</p>
+          <a class="pt-btn t" style="display:grid;place-items:center;text-decoration:none" href="/mypage">마이페이지로 가기</a>
+        </div>
+
+        <div class="pt-sec" id="ptPay" hidden>
+          <div id="ptCodeBox" hidden>
+            <h2><label for="ptCode">제휴 회원 확인</label></h2>
+            <input class="pt-in" id="ptCode" inputmode="text" autocomplete="one-time-code" maxlength="24" placeholder="제휴 코드 입력" aria-describedby="ptCodeHelp">
+            <p class="pt-meta" id="ptCodeHelp" style="margin-top:6px">제휴사에서 받은 코드를 입력해 주세요.</p>
+          </div>
+          <button type="button" class="pt-btn p" id="ptCard">💳 카드로 결제하기</button>
+          <button type="button" class="pt-btn t" id="ptBank">🏦 계좌로 결제하기</button>
+          <p class="pt-meta" style="text-align:center;margin-top:6px">카드 결제창에서 네이버페이·카카오페이도 고를 수 있어요.</p>
+          <p class="pt-meta" style="text-align:center;margin:12px 0 0">해외 카드 · PayPal <b id="ptUsd">-</b></p>
+          <div class="pt-pp" id="ptPaypal"></div>
+          <div id="ptFallback" hidden></div>
+          <div class="pt-legal" role="region" aria-label="청약철회 제한 사전 고지">
+            <b>청약철회 제한 사전 고지</b><br>
+            디지털 콘텐츠로, 검사를 시작한 뒤에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있어요. 검사 시작 전·중복 결제·회사 귀책 미제공은 전액 환불돼요. 자세한 내용은 <a href="/terms#section7" target="_blank" rel="noopener">이용약관 제7조</a>를 확인해 주세요.
+          </div>
+          <label class="pt-agree" for="ptAgree"><input type="checkbox" id="ptAgree"><span><b style="color:#b4462f">[필수]</b> 위 내용을 확인했고 동의합니다.</span></label>
+        </div>
+        <p class="pt-msg" id="ptMsg" role="status" aria-live="polite"></p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="pt-foot">
+    결제는 페이플(Payple)·PayPal 보안 시스템으로 처리되고, 서버가 금액과 회원 정보를 한 번 더 확인해요.<br>
+    <a href="/privacy#s11" id="ptSupport">문의하기</a> · <a href="/terms" target="_blank" rel="noopener">이용약관</a> · <a href="/privacy" target="_blank" rel="noopener">개인정보처리방침</a>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+    const USE_TEST = false; // 페이플 테스트(democpay)로 바꿀 때만 true
+    const PAYPLE_SDK = USE_TEST ? "https://democpay.payple.kr/js/v1/payment.js" : "https://cpay.payple.kr/js/v1/payment.js";
+    const app = initializeApp({
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4", authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app", messagingSenderId: "1090689178284", appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    });
+    const auth = getAuth(app);
+    const fns = getFunctions(app, "asia-northeast3");
+    const call = (n) => httpsCallable(fns, n);
+    const fnPage = call("getPartnerPage"), fnStart = call("startPartnerCheckout"), fnConfirm = call("confirmPartnerPayple");
+    const fnPpCreate = call("createPartnerPaypalOrder"), fnPpCapture = call("capturePartnerPaypalOrder"), fnFail = call("reportDomesticFail"), fnCfg = call("getPaypleClientConfig");
+    const $ = (id) => document.getElementById(id);
+    const qs = new URLSearchParams(location.search);
+    const SLUG = (qs.get("p") || "").toLowerCase(), KEY = qs.get("k") || "";
+    const SELF = "partner?p=" + encodeURIComponent(SLUG) + "&k=" + encodeURIComponent(KEY);
+    const STORE = "lp_partner_quote";
+    let P = null, USER = null, BUSY = false, CFG = null;
+
+    const show = (id) => { ["ptLoading", "ptNotFound", "ptClosed", "ptMain"].forEach((x) => { $(x).hidden = x !== id; }); };
+    const msg = (t, k) => { const m = $("ptMsg"); m.textContent = t || ""; m.className = "pt-msg" + (k ? " " + k : ""); };
+    const won = (n) => Number(n).toLocaleString("ko-KR") + "원";
+    const day = (t) => new Date(t).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "long", day: "numeric" });
+    const errText = (e) => (e && e.message ? String(e.message).replace(/^.*?:\s*/, "") : "") || "잠시 뒤 다시 시도해 주세요.";
+
+    function partnerMark(p) {
+      const box = $("ptPartnerMark"); box.textContent = "";
+      const local = "/assets/img/partners/" + p.slug + ".png";
+      const img = new Image(); img.className = "pl"; img.alt = p.name; img.src = local;
+      img.onerror = () => { if (p.logoUrl && img.src.indexOf(p.logoUrl) < 0) { img.src = p.logoUrl; } else { box.innerHTML = ""; const s = document.createElement("span"); s.className = "pn"; s.textContent = p.name; box.appendChild(s); } };
+      box.appendChild(img);
+    }
+
+    function render(r) {
+      if (!r || r.state === "notfound") { show("ptNotFound"); return; }
+      P = r.partner; partnerMark(P);
+      document.title = "인생포트폴리오 × " + P.name + " 제휴 혜택";
+      if (r.state !== "open" && r.state !== "soldout") {
+        $("ptClosedT").textContent = r.state === "notstarted" ? "아직 혜택 기간이 아니에요" : r.state === "ended" ? "혜택 기간이 끝났어요" : "혜택 접수를 잠시 멈췄어요";
+        $("ptClosedB").textContent = r.state === "notstarted" ? day(P.startAt) + "부터 시작해요. 일반 결제로는 언제든 시작하실 수 있어요." : "제휴사 안내를 확인해 주세요. 일반 결제로는 언제든 시작하실 수 있어요.";
+        show("ptClosed"); return;
+      }
+      show("ptMain");
+      $("ptHeroName").textContent = P.name;
+      $("ptRegular").textContent = won(P.regularKrw);
+      $("ptPrice").textContent = won(P.priceKrw);
+      $("ptUsd").textContent = "$" + P.priceUsd;
+      $("ptSeats").textContent = r.state === "soldout" ? "모두 소진" : P.seatsLeft.toLocaleString("ko-KR") + "명";
+      $("ptPeriod").textContent = day(P.startAt) + " ~ " + day(P.endAt);
+      if (P.note) { $("ptNote").hidden = false; $("ptNote").textContent = P.note; }
+      $("ptCodeBox").hidden = !(P.verify === "common" || P.verify === "personal");
+      if (P.verify === "personal") $("ptCodeHelp").textContent = "제휴사에서 받은 나만의 코드를 입력해 주세요. 코드는 처음 쓴 계정에만 쓸 수 있어요.";
+      if (r.state === "soldout") { $("ptPay").hidden = true; $("ptLogin").hidden = true; msg("준비된 혜택이 모두 소진되었어요. 일반 결제로 시작하실 수 있어요.", "err"); return; }
+      if (!USER) { $("ptLogin").hidden = false; $("ptPay").hidden = true; $("ptPaid").hidden = true; $("ptAccount").textContent = "로그인 전"; return; }
+      $("ptLogin").hidden = true;
+      $("ptAccount").textContent = USER.email || "로그인됨";
+      if (r.mine && r.mine.paid) { $("ptPaid").hidden = false; $("ptPay").hidden = true; return; }
+      $("ptPaid").hidden = true; $("ptPay").hidden = false;
+      if (P.domesticPaused) { $("ptCard").hidden = true; $("ptBank").hidden = true; msg("지금은 국내 결제를 잠시 쉬고 있어요. PayPal로 같은 혜택가로 결제하실 수 있어요."); }
+      renderPaypal();
+    }
+
+    async function load() {
+      if (!/^[a-z0-9-]{1,40}$/.test(SLUG) || !KEY) { show("ptNotFound"); return; }
+      try { render((await fnPage({ slug: SLUG, k: KEY })).data); }
+      catch (_) { show("ptNotFound"); }
+    }
+
+    function needAgree() {
+      if ($("ptAgree").checked) return true;
+      msg("결제하려면 청약철회 고지에 먼저 동의해 주세요.", "err");
+      try { $("ptAgree").focus(); } catch (_) {}
+      return false;
+    }
+    async function quote(method) {
+      const code = $("ptCode").value;
+      if (!$("ptCodeBox").hidden && !code.trim()) { msg("제휴 코드를 입력해 주세요.", "err"); $("ptCode").focus(); throw new Error("no-code"); }
+      const r = (await fnStart({ slug: SLUG, k: KEY, code, method })).data;
+      try { sessionStorage.setItem(STORE, JSON.stringify({ quoteId: r.quoteId, uid: USER.uid, slug: SLUG, k: KEY, at: Date.now() })); } catch (_) {}
+      return r;
+    }
+    function done() {
+      try { sessionStorage.removeItem(STORE); } catch (_) {}
+      try { const ts = Date.now(); localStorage.setItem("lp_paid_until", String(ts + 365 * 864e5)); sessionStorage.setItem("lp_paid", JSON.stringify({ uid: USER.uid, paid: true, issuedAt: ts, sig: btoa(unescape(encodeURIComponent(USER.uid + ":" + ts + ":lifeporfolio"))) })); } catch (_) {}
+      msg("결제가 완료되었어요! 검사 페이지로 이동합니다…", "ok");
+      const ts = Date.now(), u = new URL("suvey", location.origin);
+      u.searchParams.set("lp_paid_at", String(ts)); u.searchParams.set("lp_paid_uid", USER.uid); u.searchParams.set("lp_paid_sig", btoa(unescape(encodeURIComponent(USER.uid + ":" + ts + ":paid:lifeporfolio"))));
+      setTimeout(() => { location.href = u.pathname.split("/").pop() + u.search; }, 1100);
+    }
+
+    // ── PayPal (처음부터 보이는 버튼 + 국내 결제 실패 안내 공통) ──────────
+    let PP_QUOTE = null;
+    const ppCreate = async () => { const q = await quote("paypal"); PP_QUOTE = q.quoteId; return (await fnPpCreate({ quoteId: PP_QUOTE })).data.orderID; };
+    const ppApprove = async (orderID) => { const r = (await fnPpCapture({ quoteId: PP_QUOTE, orderID })).data; if (!r || !r.ok) throw new Error("결제 확인에 실패했어요."); done(); };
+    let ppDrawn = false;
+    function renderPaypal() {
+      if (ppDrawn || !window.LP_PAY_FALLBACK) { if (!window.LP_PAY_FALLBACK) setTimeout(renderPaypal, 300); return; }
+      ppDrawn = true;
+      window.LP_PAY_FALLBACK.loadSdk().then(() => {
+        window.paypal.Buttons({
+          style: { layout: "horizontal", color: "gold", shape: "rect", label: "paypal", height: 45, tagline: false },
+          onClick: (d, a) => (needAgree() ? a.resolve() : a.reject()),
+          createOrder: () => ppCreate().catch((e) => { if (e.message !== "no-code") msg(errText(e), "err"); throw e; }),
+          onApprove: (d) => ppApprove(d.orderID).catch((e) => msg(errText(e) + " 결제가 되었다면 고객지원으로 알려 주세요.", "err")),
+          onCancel: () => msg("PayPal 결제를 취소했어요."),
+          onError: () => msg("PayPal 연결 중 문제가 생겼어요. 잠시 뒤 다시 시도해 주세요.", "err"),
+        }).render("#ptPaypal");
+      }, () => { $("ptPaypal").textContent = ""; });
+    }
+    function fallback() {
+      window.LP_PAY_FALLBACK.show({
+        mount: $("ptFallback"), supportHref: "/privacy#s11", usdLabel: "$" + P.priceUsd, partner: true, beforeClick: needAgree,
+        createOrder: ppCreate, onApprove: ppApprove, onRetry: () => msg(""),
+      });
+    }
+
+    // ── 페이플 ──────────────────────────────────────────────────────
+    function loadPayple() {
+      return new Promise((res, rej) => { if (window.PaypleCpayAuthCheck) return res(); const s = document.createElement("script"); s.src = PAYPLE_SDK + "?v=" + Date.now(); s.onload = res; s.onerror = () => rej(new Error("국내 결제 모듈을 불러오지 못했어요.")); document.head.appendChild(s); });
+    }
+    async function payResult(a) {
+      let st = null; try { st = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (_) {}
+      const quoteId = (a && a.PCD_USER_DEFINE2) || (st && st.quoteId);
+      const rst = String((a && (a.PCD_PAY_RST || a.PCD_PAY_RESULT)) || "").toLowerCase();
+      if (rst !== "success") {
+        if (window.LP_PAY_FALLBACK && window.LP_PAY_FALLBACK.isUserCancel(a)) { msg("결제창을 닫았어요. 다시 시도하실 수 있어요."); BUSY = false; return; }
+        try { fnFail({ quoteId, stage: "auth", code: a && a.PCD_PAY_CODE, msg: a && a.PCD_PAY_MSG }).catch(() => {}); } catch (_) {}
+        msg(""); fallback(); BUSY = false; return;
+      }
+      msg("결제 승인 중이에요… 잠시만 기다려 주세요.");
+      try { const r = (await fnConfirm({ quoteId, auth: a, isTest: USE_TEST })).data; if (r && r.paid) return done(); throw new Error("결제 확인에 실패했어요."); }
+      catch (e) {
+        if (e && e.code === "functions/failed-precondition" && /국내 결제/.test(e.message || "")) { msg(""); fallback(); }
+        else msg(errText(e), "err");
+        BUSY = false;
+      }
+    }
+    async function payple(type) {
+      if (BUSY || !needAgree()) return;
+      BUSY = true; msg("");
+      try {
+        if (!CFG) CFG = (await fnCfg({})).data;
+        const q = await quote("payple");
+        await loadPayple();
+        const oid = "lpp-" + new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 14) + "-" + USER.uid.slice(0, 8) + "-" + Math.random().toString(36).slice(2, 7);
+        const base = { clientKey: CFG.clientKey, PCD_PAY_TYPE: type, PCD_PAY_WORK: "CERT", PCD_PAY_GOODS: "인생포트폴리오 (" + P.name + " 제휴)", PCD_PAY_TOTAL: q.priceKrw, PCD_PAY_OID: oid,
+          PCD_USER_DEFINE1: USER.uid, PCD_USER_DEFINE2: q.quoteId, PCD_RST_URL: "/" + SELF, callbackFunction: payResult };
+        window.PaypleCpayAuthCheck(type === "card" ? Object.assign(base, { PCD_CARD_VER: "02" }) : Object.assign(base, { PCD_SIMPLE_FLAG: "Y", PCD_PAYER_AUTHTYPE: "pwd" }));
+        setTimeout(() => { BUSY = false; }, 1500);
+      } catch (e) {
+        BUSY = false;
+        if (e.message === "no-code") return;
+        const c = e && e.code;
+        if (c && /functions\/(permission-denied|resource-exhausted|already-exists|invalid-argument|deadline-exceeded|not-found)/.test(c)) { msg(errText(e), "err"); if (/already-exists/.test(c)) load(); return; }
+        if (c === "functions/failed-precondition") { msg(errText(e), "err"); load(); return; }
+        try { fnFail({ stage: "open", msg: errText(e) }).catch(() => {}); } catch (_) {}
+        fallback();
+      }
+    }
+    $("ptCard").addEventListener("click", () => payple("card"));
+    $("ptBank").addEventListener("click", () => payple("transfer"));
+    $("ptCode").addEventListener("input", () => msg(""));
+
+    $("ptSignup").href = "signup?returnTo=" + encodeURIComponent(SELF);
+    $("ptSignin").href = "login?returnTo=" + encodeURIComponent(SELF);
+
+    const inApp = /kakaotalk|fb_iab|fban|fbav|instagram|naver|line\/|daumapps|everytimeapp|wechat|micromessenger/i.test(navigator.userAgent || "");
+    onAuthStateChanged(auth, (u) => {
+      USER = u;
+      try { if (u && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => u.getIdToken(), u.uid); } catch (_) {}
+      load().then(() => { if (inApp && USER) msg("카카오톡 등 앱 안 브라우저에서는 결제창이 막힐 수 있어요. 오른쪽 위 메뉴에서 ‘다른 브라우저로 열기’를 눌러 주세요."); });
+    });
+    // 모바일: 결제창이 같은 주소를 새로 열며 결과를 넘긴다. 페이플이 callbackFunction 을 부른다.
+    window.payResult = payResult;
+  </script>
+</body>
+</html>

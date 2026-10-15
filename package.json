@@ -60,6 +60,7 @@
     "test:cwv:selftest": "node scripts/gates/cwv_gate.mjs --self-test",
     "test:b2b:emulator": "node scripts/prepare-b2b-test.cjs && firebase emulators:exec --project demo-lp-b2b-stability --config firebase.b2b-test.json --only auth,firestore,database 'node scripts/test-b2b-server.cjs'",
     "test:hosting:headers": "node scripts/test-hosting-headers-coverage.mjs",
+    "test:partner:emulator": "node scripts/prepare-b2b-test.cjs && firebase emulators:exec --project demo-lp-b2b-stability --config firebase.b2b-test.json --only auth,firestore,database 'node scripts/test-partner-server.cjs'",
     "test:answer-validation:emulator": "node scripts/prepare-b2b-test.cjs && firebase emulators:exec --project demo-lp-b2b-stability --config firebase.b2b-test.json --only auth,database 'node scripts/test-answer-validation-gate.cjs'",
     "gen:answer-validation": "node scripts/gen-answer-validation.cjs --write",
     "test:a63": "node scripts/test-a63-mobile-readability.cjs"

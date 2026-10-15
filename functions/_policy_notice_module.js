@@ -22,8 +22,9 @@ const REPLY_TO = "faise@lifeportfolio.co.kr";
 // 등록된 캠페인. 새 개정 때는 템플릿 파일을 만들고 여기에 한 줄 추가한다.
 const CAMPAIGNS = {
   "policy-update-2026-10-17": () => require("./emails/policy-update-2026-10-17.js"),
+  "policy-update-2026-10-25": () => require("./emails/policy-update-2026-10-25.js"), // 제휴가 · 동의 기록 (10-18 공지 → 10-25 시행)
 };
-const LATEST = "policy-update-2026-10-17";
+const LATEST = "policy-update-2026-10-25";
 
 function assertAdmin(request) {
   if (!(request.auth && request.auth.token && request.auth.token.admin === true)) {
@@ -118,6 +119,11 @@ async function send(request, deps) {
   const by = (request.auth.token.email || request.auth.uid || "").toString();
   const apiKey = deps.apiKey();
   if (mode !== "dryRun" && !apiKey) throw new HttpsError("failed-precondition", "RESEND_API_KEY가 설정되지 않았습니다.");
+  // 공지 시작 전에는 회원에게 실제로 보내지 않는다(시험 발송·대상 확인은 가능). 대표 결정 2026-10-15: 10-18에 직접 발송.
+  const nowMs = deps.now ? deps.now() : Date.now();
+  if ((mode === "send" || mode === "retryFailed") && nowMs < Date.parse(c.NOTICE_START_KST)) {
+    throw new HttpsError("failed-precondition", "공지 시작(" + c.NOTICE_START_KST.slice(0, 10) + " 00:00) 전에는 회원에게 보낼 수 없습니다. 시험 발송과 대상 확인은 지금 할 수 있습니다.");
+  }
 
   if (mode === "test") {
     const to = (request.auth.token.email || "").toLowerCase();
