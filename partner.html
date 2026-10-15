@@ -156,7 +156,7 @@
 
   <footer class="pt-foot">
     결제는 페이플(Payple)·PayPal 보안 시스템으로 처리되고, 서버가 금액과 회원 정보를 한 번 더 확인해요.<br>
-    <a href="mailto:faise@lifeportfolio.co.kr">문의하기</a> · <a href="/terms" target="_blank" rel="noopener">이용약관</a> · <a href="/privacy" target="_blank" rel="noopener">개인정보처리방침</a>
+    <a href="/privacy#s11" id="ptSupport">문의하기</a> · <a href="/terms" target="_blank" rel="noopener">이용약관</a> · <a href="/privacy" target="_blank" rel="noopener">개인정보처리방침</a>
   </footer>
 
   <script type="module">
@@ -275,7 +275,7 @@
     }
     function fallback() {
       window.LP_PAY_FALLBACK.show({
-        mount: $("ptFallback"), usdLabel: "$" + P.priceUsd, partner: true, beforeClick: needAgree,
+        mount: $("ptFallback"), supportHref: "/privacy#s11", usdLabel: "$" + P.priceUsd, partner: true, beforeClick: needAgree,
         createOrder: ppCreate, onApprove: ppApprove, onRetry: () => msg(""),
       });
     }

@@ -7,6 +7,7 @@
  *     - usdLabel   : "$9.66" 처럼 버튼에 보일 금액
  *     - createOrder: () => Promise<orderID>  (서버가 금액을 정한다)
  *     - onApprove  : (orderID) => Promise<void>
+ *     - supportHref: 고객지원 링크 (각 화면의 mailto 링크를 넘긴다. 이 파일에는 주소를 적지 않는다: DLP)
  *   LP_PAY_FALLBACK.isUserCancel(authResult) : 고객이 스스로 닫은 경우인지 (이때는 안내를 띄우지 않는다)
  */
 (function (w, d) {
@@ -52,7 +53,7 @@
       '<div class="lp-fb-pp" id="lpFbPaypal"></div>' +
       '<p class="lp-fb-small">달러로 결제되며 카드사 환율과 해외 결제 수수료에 따라 청구액이 조금 다를 수 있어요.</p>' +
       '<p class="lp-fb-msg" id="lpFbMsg"></p>' +
-      '<p class="lp-fb-links"><button type="button" id="lpFbRetry">국내 결제 다시 시도</button><a href="' + (o.supportHref || "mailto:faise@lifeportfolio.co.kr") + '">도움이 필요하면 고객지원</a></p></section>';
+      '<p class="lp-fb-links"><button type="button" id="lpFbRetry">국내 결제 다시 시도</button><a href="' + (o.supportHref || "#") + '">도움이 필요하면 고객지원</a></p></section>';
     var msg = d.getElementById("lpFbMsg");
     d.getElementById("lpFbRetry").addEventListener("click", function () { m.hidden = true; if (o.onRetry) o.onRetry(); });
     loadSdk().then(function () {

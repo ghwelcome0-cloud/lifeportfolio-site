@@ -321,7 +321,7 @@
     const fnPpCapture = httpsCallable(functions, "capturePaypalOrder");
     function showRegularFallback() {
       window.LP_PAY_FALLBACK.show({
-        mount: document.getElementById("payFallback"), usdLabel: "$14.99", partner: false,
+        mount: document.getElementById("payFallback"), supportHref: (document.querySelector('a[href^="mailto:"]') || {}).href || "#", usdLabel: "$14.99", partner: false,
         beforeClick: () => { if ($legalAgree && !$legalAgree.checked) { setStatus("결제를 진행하려면 아래 청약철회 제한 사항에 먼저 동의해주세요.", "err"); return false; } return true; },
         createOrder: async () => (await fnPpCreate({})).data.orderID,
         onApprove: async (orderID) => { const r = await fnPpCapture({ orderID }); if (!(r && r.data && r.data.ok)) throw new Error("결제 확인에 실패했어요."); window.location.replace("payment-success.html?" + new URLSearchParams({ provider: "paypal", orderID, lang: "ko" }).toString()); },
