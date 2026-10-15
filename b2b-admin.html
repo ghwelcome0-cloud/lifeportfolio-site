@@ -443,14 +443,14 @@
         }
         // 환불 가능: 입금신고 or active
         if (["payment_reported", "active"].includes(o.status) || (o.status === "cancelled" && o.cancelCleanupStatus === "complete" && ["payment_reported", "active"].includes(o.cancelPreviousStatus)) || (o.status === "refunded" && o.refundCleanupStatus === "pending")) {
-          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-unit="${o.unitPrice || 0}" data-status="${o.status === "cancelled" ? o.cancelPreviousStatus : o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">${o.status === "refunded" ? "환불 정리 재시도" : "환불 기록"}</button>`);
+          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-unit="${o.unitPrice || 0}" data-seats="${o.seats || 0}" data-diag="${o.diagnosisAmount || 0}" data-status="${o.status === "cancelled" ? o.cancelPreviousStatus : o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">${o.status === "refunded" ? "환불 정리 재시도" : "환불 기록"}</button>`);
         }
         return `
         <tr>
           <td data-label="주문번호"><code style="font-size:11px">${o.orderNumber}</code></td>
           <td data-label="조직"><strong>${o.orgName}</strong></td>
           <td data-label="담당자">${o.contactName}<br><small style="color:#737373">${o.contactEmail}</small></td>
-          <td data-label="인원">${o.seats}명${o.diaryCount?` (+${o.diaryCount}권)`:""}</td>
+          <td data-label="인원">${o.seats}명${o.diaryCount?` (+${o.diaryCount}권)`:""}${o.pricingModel==="graduated_v1"?`<br><small style="color:#64748b">구간별 · 평균 ${won(o.unitPrice)}</small>`:(o.unitPrice?`<br><small style="color:#64748b">${won(o.unitPrice)}/인</small>`:"")}</td>
           <td data-label="견적금액">${won(o.totalAmount)}</td>
           <td data-label="상태">${fmtStatus(o.status)}</td>
           <td data-label="사용/발급">${o.codesIssued ? `${o.codesUsed}/${o.codesIssued} (${Math.round(o.codesUsed/o.codesIssued*100)}%)` : "-"}</td>
@@ -526,11 +526,17 @@
         };
       }
       // 일부 사용: 미사용 코드수 × 단가 × 1.1 × 80%
-      const supply = unused * unit;
+      // 구간별 계산 주문은 평균 단가(진단 공급가 ÷ 인원) 기준, 기존 주문은 단가 그대로(서버와 동일)
+      const seats = parseInt(d.seats, 10) || 0;
+      const diag = parseInt(d.diag, 10) || 0;
+      const graduated = diag > 0 && seats > 0;
+      const supply = graduated ? Math.round(diag * unused / seats) : unused * unit;
       const withVat = Math.round(supply * 1.1);
       return {
         suggested: Math.round(withVat * 0.8),
-        basis: `미사용 ${unused}/${issued}코드 × ₩${unit.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
+        basis: graduated
+          ? `미사용 ${unused}/${issued}코드 × 평균 단가(₩${diag.toLocaleString("ko-KR")}÷${seats}명) × 1.1(VAT) × 80%`
+          : `미사용 ${unused}/${issued}코드 × ₩${unit.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
       };
     }
 

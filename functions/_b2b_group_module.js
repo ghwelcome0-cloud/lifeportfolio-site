@@ -319,30 +319,75 @@ ${b2bMailScopeHtml()}`);
 // ─────────────────────────────────────────────────────────────────────────────
 // 가격 계산 (서버 사이드 — 클라이언트가 가격 조작 불가)
 // ─────────────────────────────────────────────────────────────────────────────
+// 2026-10-15 대표 결정 R: 구간별 누진(계단식). 각 구간에 속한 인원만 그 구간 단가를 낸다.
+// 근거: docs/pricing/00_결정기록.md · 01_B2B_VOLUME_PRICING_v1.md · 검산기 b2b_volume_model.py
+// 화면(b2b-quote.html)의 PRICE_TIERS와 반드시 같아야 한다.
+const PRICING_MODEL = "graduated_v1";
+const PRICE_TIERS = [
+  { from: 1, to: 29, unit: 18000 },
+  { from: 30, to: 99, unit: 15000 },
+  { from: 100, to: 299, unit: 12000 },
+  { from: 300, to: 999, unit: 10000 },
+  { from: 1000, to: Infinity, unit: 8000 },
+];
+const MIN_SEATS = 10;
+const MAX_SEATS = 10000;
+
+function calcTierBreakdown(seats) {
+  const rows = [];
+  for (const t of PRICE_TIERS) {
+    if (seats < t.from) break;
+    const to = Math.min(seats, t.to);
+    const count = to - t.from + 1;
+    rows.push({ from: t.from, to, count, unit: t.unit, amount: count * t.unit });
+  }
+  return rows;
+}
+
+// 진단 공급가(부가세 별도). 10명 미만은 0(거부).
+function calcDiagnosisAmount(seats) {
+  if (!Number.isSafeInteger(seats) || seats < MIN_SEATS) return 0;
+  return calcTierBreakdown(seats).reduce((sum, r) => sum + r.amount, 0);
+}
+
+// 1인 평균 단가(표시·기존 필드 호환용, 원 단위 반올림). 실제 청구는 diagnosisAmount 기준.
 function calcUnitPrice(seats) {
-  if (seats >= 500) return 10000;
-  if (seats >= 200) return 11000;
-  if (seats >= 100) return 12000;
-  if (seats >= 50)  return 14000;
-  if (seats >= 30)  return 16000;
-  if (seats >= 10)  return 18000;
-  return 0; // 10명 미만 거부
+  const amount = calcDiagnosisAmount(seats);
+  return amount ? Math.round(amount / seats) : 0;
 }
 const DIARY_UNIT_PRICE = 45000;
 
 function calcOrderAmount(seats, diaryCount) {
-  const unit = calcUnitPrice(seats);
-  if (unit === 0) return null;
+  const diagnosisAmount = calcDiagnosisAmount(seats);
+  if (diagnosisAmount === 0) return null;
   const dCount = Math.max(0, Math.min(seats, parseInt(diaryCount || 0, 10) || 0));
-  const supply = (seats * unit) + (dCount * DIARY_UNIT_PRICE);
+  const supply = diagnosisAmount + (dCount * DIARY_UNIT_PRICE);
   const vat = Math.round(supply * 0.1);
   return {
-    unitPrice: unit,
+    pricingModel: PRICING_MODEL,
+    tierBreakdown: calcTierBreakdown(seats),
+    diagnosisAmount,
+    unitPrice: calcUnitPrice(seats),
     diaryUnitPrice: DIARY_UNIT_PRICE,
     diaryCount: dCount,
     supplyAmount: supply,
     vatAmount: vat,
     totalAmount: supply + vat,
+  };
+}
+
+// 진단 금액 설명(메일·관리 화면용). 기존 주문(tierBreakdown 없음)은 인원 × 단가로 표시.
+function describeDiagnosis(order) {
+  const seats = parseInt(order && order.seats, 10) || 0;
+  const rows = Array.isArray(order && order.tierBreakdown) ? order.tierBreakdown : null;
+  if (!rows || !rows.length) {
+    const unit = parseInt(order && order.unitPrice, 10) || 0;
+    return { summary: `${seats}명 × ${formatWon(unit)}`, lines: [] };
+  }
+  const amount = rows.reduce((sum, r) => sum + r.amount, 0);
+  return {
+    summary: `${seats}명 (구간별 계산 · 1인 평균 ${formatWon(Math.round(amount / seats))})`,
+    lines: rows.map(r => `${r.from}~${r.to}번째 ${r.count}명 × ${formatWon(r.unit)} = ${formatWon(r.amount)}`),
   };
 }
 
@@ -385,13 +430,19 @@ function calcRefundSuggestion(order) {
   }
 
   // 일부 사용: 미사용 코드수 × 인당 단가 × 1.1 × 80%
-  const unusedSupply = unusedCodes * unitPrice;
+  // 구간별 계산 주문은 진단 공급가를 인원으로 나눈 평균 단가 기준(약관 제9조). 기존 주문은 unitPrice 그대로.
+  const diagnosisAmount = parseInt(order && order.diagnosisAmount, 10) || 0;
+  const unusedSupply = diagnosisAmount > 0 && seats > 0
+    ? Math.round(diagnosisAmount * unusedCodes / seats)
+    : unusedCodes * unitPrice;
   const unusedWithVat = Math.round(unusedSupply * 1.1);
   const suggested = Math.round(unusedWithVat * 0.8);
   return {
     suggested,
     rate: 0.8,
-    basis: `미사용 ${unusedCodes}/${codesIssued}코드 × ₩${unitPrice.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
+    basis: diagnosisAmount > 0 && seats > 0
+      ? `미사용 ${unusedCodes}/${codesIssued}코드 × 평균 단가(₩${diagnosisAmount.toLocaleString("ko-KR")}÷${seats}명) × 1.1(VAT) × 80%`
+      : `미사용 ${unusedCodes}/${codesIssued}코드 × ₩${unitPrice.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
     unusedCodes,
   };
 }
@@ -484,7 +535,7 @@ const submitB2BQuote = onCall(
     if (!contactEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) {
       throw new HttpsError("invalid-argument", "올바른 이메일 형식이 아닙니다.");
     }
-    if (!Number.isSafeInteger(seats) || seats < 10 || seats > 10000) {
+    if (!Number.isSafeInteger(seats) || seats < MIN_SEATS || seats > MAX_SEATS) {
       throw new HttpsError("invalid-argument", "단체 신청 인원은 10명~10,000명입니다. 더 큰 규모는 고객지원에 문의해주세요.");
     }
     if (diaryCount !== 0) {
@@ -537,6 +588,9 @@ const submitB2BQuote = onCall(
       contactUid: request.auth ? request.auth.uid : null,
       seats,
       diaryCount: price.diaryCount,
+      pricingModel: price.pricingModel,
+      tierBreakdown: price.tierBreakdown,
+      diagnosisAmount: price.diagnosisAmount,
       unitPrice: price.unitPrice,
       diaryUnitPrice: DIARY_UNIT_PRICE,
       supplyAmount: price.supplyAmount,
@@ -563,6 +617,8 @@ const submitB2BQuote = onCall(
     // 6) 이메일 발송 (운영자 + 고객사 담당자) — 실패해도 주문은 정상 처리
     const apiKey = getResendApiKey();
     const orgTypeLabel = orgType === "company" ? "기업(사업자)" : "단체";
+    const diag = describeDiagnosis({ seats, tierBreakdown: price.tierBreakdown, unitPrice: price.unitPrice });
+    const diagLinesHtml = diag.lines.map(l => `<tr><td colspan="2" style="padding:2px 0 2px 10px;font-size:12px;color:#94a3b8">${escHtml(l)}</td></tr>`).join("");
     const diaryLine = price.diaryCount > 0
       ? `<tr><td style="padding:4px 0;color:#94a3b8">다이어리</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${price.diaryCount}권 × ${formatWon(DIARY_UNIT_PRICE)}</td></tr>`
       : "";
@@ -593,7 +649,8 @@ const submitB2BQuote = onCall(
         <div style="margin-top:18px;padding:16px 18px;background:#1a2b4a;border-radius:8px;color:#fff">
           <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:.5px;margin-bottom:10px">견적 내역</div>
           <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:13.5px;color:#e2e8f0">
-            <tr><td style="padding:4px 0;color:#94a3b8">진단</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${seats}명 × ${formatWon(price.unitPrice)}</td></tr>
+            <tr><td style="padding:4px 0;color:#94a3b8">진단</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${escHtml(diag.summary)}</td></tr>
+            ${diagLinesHtml}
             ${diaryLine}
             <tr><td style="padding:8px 0 4px;color:#94a3b8;border-top:1px solid rgba(255,255,255,.15)">공급가액</td><td style="padding:8px 0 4px;text-align:right;color:#e2e8f0;border-top:1px solid rgba(255,255,255,.15)">${formatWon(price.supplyAmount)}</td></tr>
             <tr><td style="padding:4px 0;color:#94a3b8">VAT (10%)</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${formatWon(price.vatAmount)}</td></tr>
@@ -631,7 +688,8 @@ const submitB2BQuote = onCall(
       `이메일: ${contactEmail}`,
       contactPhone ? `연락처: ${contactPhone}` : null,
       ``,
-      `진단: ${seats}명 × ${formatWon(price.unitPrice)}`,
+      `진단: ${diag.summary}`,
+      ...diag.lines.map(l => `  · ${l}`),
       price.diaryCount > 0 ? `다이어리: ${price.diaryCount}권 × ${formatWon(DIARY_UNIT_PRICE)}` : null,
       `공급가액: ${formatWon(price.supplyAmount)}`,
       `VAT(10%): ${formatWon(price.vatAmount)}`,
@@ -663,7 +721,7 @@ const submitB2BQuote = onCall(
     const userHtml = b2bMailLayout("단체 견적 요청을 접수했습니다", `
 <p>${escHtml(contactName)} 담당자님, ${escHtml(orgName)}의 견적 요청을 접수했습니다.</p>
 <p><strong>현재 단계: 견적 접수</strong><br>아직 입금 확인이나 참여 코드 발급이 완료된 상태는 아닙니다.</p>
-<p><strong>주문번호:</strong> ${escHtml(orderNumber)}<br><strong>진단 인원:</strong> ${seats}명<br><strong>1인 단가:</strong> ${formatWon(price.unitPrice)} (VAT 별도)</p>
+<p><strong>주문번호:</strong> ${escHtml(orderNumber)}<br><strong>진단 인원:</strong> ${seats}명<br><strong>진단 금액:</strong> ${escHtml(diag.summary)} (VAT 별도)${diag.lines.map(l => `<br>&nbsp;· ${escHtml(l)}`).join("")}</p>
 <table role="presentation" width="100%" cellpadding="8" cellspacing="0" style="background:#f1f4eb;border-radius:8px"><tr><td>공급가액</td><td align="right">${formatWon(price.supplyAmount)}</td></tr><tr><td>부가세 (10%)</td><td align="right">${formatWon(price.vatAmount)}</td></tr><tr><td><strong>입금하실 총액</strong></td><td align="right"><strong>${formatWon(price.totalAmount)}</strong></td></tr></table>
 <p>총액에는 부가세가 포함되어 있습니다. 부가세를 별도로 한 번 더 입금하지 마세요.</p>
 <h2 style="font-size:18px">다음 단계</h2><ol style="padding-left:22px"><li>신청 인원·금액·제공 범위를 확인해주세요. 수정이 필요하면 다시 견적을 반복 신청하지 말고 주문번호를 적어 이 메일에 답장해주세요.</li><li>진행을 결정하셨다면 아래 계좌에 총액을 입금하고, 입금자명에 주문번호를 포함해주세요.</li><li>결제 안내 페이지에서 입금 완료를 신고해주세요. 입금 신고만으로 코드가 자동 발급되지는 않습니다.</li><li>운영자가 입금을 확인한 뒤 조직 ID와 인원별 참여 코드를 이 이메일로 안내합니다. 입금 확인은 기존 안내대로 영업일 기준 1일 이내 처리합니다.</li></ol>
@@ -674,7 +732,7 @@ ${b2bMailScopeHtml()}`);
     const userText = [
       `${contactName} 담당자님, ${orgName}의 단체 견적 요청을 접수했습니다.`,
       "현재 단계: 견적 접수. 입금 확인·참여 코드 발급은 아직 완료되지 않았습니다.",
-      `주문번호: ${orderNumber}`, `진단 인원: ${seats}명 / 1인 단가: ${formatWon(price.unitPrice)} (VAT 별도)`,
+      `주문번호: ${orderNumber}`, `진단 금액: ${diag.summary} (VAT 별도)`, ...diag.lines.map(l => `  · ${l}`),
       `공급가액: ${formatWon(price.supplyAmount)}`, `부가세(10%): ${formatWon(price.vatAmount)}`,
       `입금 총액: ${formatWon(price.totalAmount)} (부가세 포함; 부가세를 한 번 더 입금하지 마세요.)`,
       "신청 인원·금액·제공 범위를 확인해주세요. 수정은 주문번호를 적어 이 메일에 답장해주세요. 반복 견적 신청이나 중복 입금은 하지 마세요.",
@@ -769,7 +827,7 @@ const getB2BCheckoutOrder = onCall(
     const snap = await admin.firestore().collection("b2b_orders").doc(checkoutOrderId(request)).get();
     if (!snap.exists) throw new HttpsError("not-found", "주문을 확인할 수 없습니다.");
     const order = snap.data(); requireOrderOwner(request, order);
-    const fields = ["orderNumber", "orgName", "seats", "diaryCount", "unitPrice", "diaryUnitPrice", "supplyAmount", "vatAmount", "totalAmount", "status"];
+    const fields = ["orderNumber", "orgName", "seats", "diaryCount", "pricingModel", "tierBreakdown", "diagnosisAmount", "unitPrice", "diaryUnitPrice", "supplyAmount", "vatAmount", "totalAmount", "status"];
     const safe = {};
     for (const field of fields) if (order[field] !== undefined) safe[field] = order[field];
     return { ok: true, order: safe };
@@ -1450,6 +1508,9 @@ const getB2BAdminData = onCall(
         seats: o.seats,
         diaryCount: o.diaryCount,
         unitPrice: o.unitPrice || 0,
+        pricingModel: o.pricingModel || null,
+        diagnosisAmount: o.diagnosisAmount || 0,
+        tierBreakdown: Array.isArray(o.tierBreakdown) ? o.tierBreakdown : null,
         cancelPreviousStatus: o.cancelPreviousStatus || null,
         cancelCleanupStatus: o.cancelCleanupStatus || null,
         refundCleanupStatus: o.refundCleanupStatus || null,
@@ -1716,7 +1777,7 @@ const getB2BPriceQuote = onCall(
 
     const seats = parseInt(request.data && request.data.seats, 10) || 0;
     const diaryCount = parseInt(request.data && request.data.diaryCount, 10) || 0;
-    if (seats < 10 || seats > 10000) {
+    if (seats < MIN_SEATS || seats > MAX_SEATS) {
       return { ok: false, error: "인원은 10명 이상 10,000명 이하로 입력해주세요." };
     }
     const price = calcOrderAmount(seats, diaryCount);
@@ -2266,6 +2327,10 @@ module.exports = {
   _internals: {
     calcUnitPrice,
     calcOrderAmount,
+    calcDiagnosisAmount,
+    calcTierBreakdown,
+    calcRefundSuggestion,
+    PRICE_TIERS,
     generateOrderNumber,
     generateOrgCode,
     generateAccessCode,
