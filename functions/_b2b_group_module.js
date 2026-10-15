@@ -41,7 +41,7 @@ const ADMIN_EMAIL = "faise@lifeportfolio.co.kr";
 const REPLY_TO = "faise@lifeportfolio.co.kr";
 const B2B_PUBLIC_URL = "https://lifeportfolio.co.kr";
 const B2B_ADMIN_URL = "https://lifeporfolio-admin.web.app/admin";
-const B2B_SCOPE_TEXT = "현재 단체 PoC의 기본 제공 범위는 조직 ID·인원별 참여 코드, 핵심 56문항과 응답 조건에 따른 최대 20개 추가 입력, 개인별 진단 1회와 리포트 1부(본인 열람)입니다.";
+const B2B_SCOPE_TEXT = "현재 단체 이용의 기본 제공 범위는 조직 ID·인원별 참여 코드, 핵심 56문항과 응답 조건에 따른 최대 20개 추가 입력, 개인별 진단 1회와 리포트 1부(본인 열람)입니다.";
 const B2B_BOUNDARY_TEXT = "팀 종합 리포트, 담당자의 개인 결과 열람, 워크숍·코칭·연간 운영과 준비 중인 AI·확장 서비스는 이번 기본 제공 범위에 포함되지 않습니다.";
 const B2B_TERMS_TEXT = "단체 이용약관 제5조에 따른 참여 코드 유효기간은 발급일로부터 12개월이며, 환불은 제9조의 조건을 따릅니다. 재발송으로 유효기간이 연장되지는 않습니다.";
 const B2B_PARTICIPATION_TEXT = "참여자가 직접 가입·동의한 후 자율적으로 참여하도록 안내해주세요. 참여 여부나 결과 공유 여부를 인사평가 등 불이익과 연결하지 마세요.";
@@ -484,8 +484,8 @@ const submitB2BQuote = onCall(
     if (!contactEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) {
       throw new HttpsError("invalid-argument", "올바른 이메일 형식이 아닙니다.");
     }
-    if (!Number.isSafeInteger(seats) || seats < 10 || seats > 29) {
-      throw new HttpsError("invalid-argument", "현재 신규 단체 신청은 10~29명만 가능합니다. 더 큰 규모는 고객지원에 문의해주세요.");
+    if (!Number.isSafeInteger(seats) || seats < 10 || seats > 10000) {
+      throw new HttpsError("invalid-argument", "단체 신청 인원은 10명~10,000명입니다. 더 큰 규모는 고객지원에 문의해주세요.");
     }
     if (diaryCount !== 0) {
       throw new HttpsError("invalid-argument", "현재 신규 견적에서는 다이어리 옵션을 판매하지 않습니다. 기존 계약의 옵션은 그대로 유지됩니다.");

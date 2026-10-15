@@ -3354,7 +3354,7 @@ exports.submitB2BInquiry = onCall(
       ``,
       `─────────────────────────────────`,
       `참고 자료:`,
-      `· B2B 도입 안내(10~29명 PoC): https://lifeportfolio.co.kr/b2b`,
+      `· B2B 도입 안내(10명 이상 단체): https://lifeportfolio.co.kr/b2b`,
             `· 무료 워크북: https://lifeportfolio.co.kr/lead`,
       ``,
       `회신이 늦어지면 faise@lifeportfolio.co.kr 로 직접 답장 주세요.`,
@@ -3388,7 +3388,7 @@ exports.submitB2BInquiry = onCall(
         <div style="border-top:1px solid #E2E8F0;padding-top:18px;">
           <p style="margin:0 0 10px;font-size:13px;color:#0F172A;font-weight:700;">참고 자료</p>
           <ul style="margin:0;padding-left:18px;font-size:13.5px;color:#475569;line-height:1.85;">
-            <li><a href="https://lifeportfolio.co.kr/b2b" style="color:#2563EB;text-decoration:none;font-weight:600;">B2B 도입 안내 (10~29명 PoC · 제공 범위 명시)</a></li>
+            <li><a href="https://lifeportfolio.co.kr/b2b" style="color:#2563EB;text-decoration:none;font-weight:600;">B2B 도입 안내 (10명 이상 · 제공 범위 명시)</a></li>
             <li><a href="https://lifeportfolio.co.kr/lead" style="color:#2563EB;text-decoration:none;font-weight:600;">무료 21일 사명선언문 워크북</a></li>
           </ul>
         </div>

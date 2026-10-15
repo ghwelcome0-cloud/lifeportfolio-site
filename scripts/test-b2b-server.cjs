@@ -155,6 +155,17 @@ async function main() {
     const saved = (await db.collection('b2b_orders').doc(response.orderId).get()).data();
     result('quote-survives-'+name, response.ok && response.emailSent.customer === false && response.emailStatus.customer === expected && saved.userEmailStatus === expected && saved.status === 'quote_requested', {status:response.emailStatus.customer, orders:(await db.collection('b2b_orders').get()).size});
   }
+  // 2026-10-15 결정 A: 30명 이상 재개. 구간 단가는 서버가 다시 계산하고, 10,000명 초과·10명 미만은 거절한다.
+  for (const [seats, unit] of [[29,18000],[30,16000],[50,14000],[100,12000],[200,11000],[500,10000],[10000,10000]]) {
+    await reset();
+    const r = await api.submitB2BQuote(request({orgType:'group',orgName:'Tier Test',contactName:'Test',contactEmail:`tier-${seats}@example.invalid`,seats,diaryCount:0,agreedContract:true,agreedPrivacy:true,unitPrice:1}));
+    result('quote-tier-accepted-'+seats, r.ok && r.price.unitPrice === unit && r.price.totalAmount === seats*unit + Math.round(seats*unit*0.1), {unit:r.price&&r.price.unitPrice,total:r.price&&r.price.totalAmount});
+  }
+  for (const seats of [9, 10001]) {
+    await reset();
+    const r = await api.submitB2BQuote(request({orgType:'group',orgName:'Tier Test',contactName:'Test',contactEmail:`tier-${seats}@example.invalid`,seats,diaryCount:0,agreedContract:true,agreedPrivacy:true})).catch(e=>({error:e.code}));
+    result('quote-seats-rejected-'+seats, r.error === 'invalid-argument' && sent.length === 0, r);
+  }
   await reset(); await seedOrder();
   const approved = await api.approveB2BOrder(request({orderId:'test-order'}, operator));
   const codes = await db.collection('b2b_codes').get();
