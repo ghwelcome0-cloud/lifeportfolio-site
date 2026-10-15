@@ -155,6 +155,31 @@ async function main() {
     const saved = (await db.collection('b2b_orders').doc(response.orderId).get()).data();
     result('quote-survives-'+name, response.ok && response.emailSent.customer === false && response.emailStatus.customer === expected && saved.userEmailStatus === expected && saved.status === 'quote_requested', {status:response.emailStatus.customer, orders:(await db.collection('b2b_orders').get()).size});
   }
+  // 2026-10-15 결정 A: 30명 이상 재개. 구간 단가는 서버가 다시 계산하고, 10,000명 초과·10명 미만은 거절한다.
+  // 결정 R: 구간별 누진. 화면이 보낸 unitPrice는 무시하고 서버가 다시 계산한다.
+  for (const [seats, diag] of [[10,180000],[29,522000],[30,537000],[50,837000],[100,1584000],[300,3982000],[1000,10980000],[10000,82980000]]) {
+    await reset();
+    const r = await api.submitB2BQuote(request({orgType:'group',orgName:'Tier Test',contactName:'Test',contactEmail:`tier-${seats}@example.invalid`,seats,diaryCount:0,agreedContract:true,agreedPrivacy:true,unitPrice:1,totalAmount:1}));
+    const saved = (await db.collection('b2b_orders').doc(r.orderId).get()).data();
+    const okBreak = Array.isArray(saved.tierBreakdown) && saved.tierBreakdown.reduce((a,t)=>a+t.amount,0) === diag && saved.pricingModel === 'graduated_v1';
+    result('quote-graduated-'+seats, r.ok && r.price.diagnosisAmount === diag && r.price.totalAmount === diag + Math.round(diag*0.1) && saved.diagnosisAmount === diag && okBreak, {diag:r.price&&r.price.diagnosisAmount,total:r.price&&r.price.totalAmount});
+  }
+  {
+    const I = api._internals; let bad = 0;
+    for (let n = 10; n < 10000; n++) if (I.calcDiagnosisAmount(n + 1) <= I.calcDiagnosisAmount(n)) bad++;
+    result('graduated-total-always-increases', bad === 0, {nonIncreasing: bad});
+    const ui = fs.readFileSync(path.join(root,'b2b-quote.html'),'utf8');
+    const tiersInUi = I.PRICE_TIERS.every(t => ui.includes(`{ from: ${t.from}, to: ${t.to === Infinity ? 'Infinity' : t.to}, unit: ${t.unit} }`));
+    result('quote-ui-tiers-match-server', tiersInUi, {tiers: I.PRICE_TIERS.length});
+    const g = I.calcRefundSuggestion({status:'active',totalAmount:920700,seats:50,diagnosisAmount:837000,unitPrice:16740,codesUsed:20,codesIssued:50});
+    const legacy = I.calcRefundSuggestion({status:'active',totalAmount:198000,seats:10,unitPrice:18000,codesUsed:4,codesIssued:10});
+    result('refund-uses-average-unit-for-graduated-and-legacy-unit-for-old', g.suggested === Math.round(Math.round(Math.round(837000*30/50)*1.1)*0.8) && legacy.suggested === Math.round(Math.round(6*18000*1.1)*0.8), {graduated:g.suggested, legacy:legacy.suggested});
+  }
+  for (const seats of [9, 10001]) {
+    await reset();
+    const r = await api.submitB2BQuote(request({orgType:'group',orgName:'Tier Test',contactName:'Test',contactEmail:`tier-${seats}@example.invalid`,seats,diaryCount:0,agreedContract:true,agreedPrivacy:true})).catch(e=>({error:e.code}));
+    result('quote-seats-rejected-'+seats, r.error === 'invalid-argument' && sent.length === 0, r);
+  }
   await reset(); await seedOrder();
   const approved = await api.approveB2BOrder(request({orderId:'test-order'}, operator));
   const codes = await db.collection('b2b_codes').get();
