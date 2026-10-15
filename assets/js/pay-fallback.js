@@ -14,14 +14,15 @@
   "use strict";
   var LIVE = "Aemkoc7ad-iB2AaUpeG_LfC4k-5tGyFbh9wsjwU5ZcezRL4sszFpr2dYlYSdFVQNRGrjTK_ysmFf7y7p";
   var SANDBOX = "AZdLWi-wTbZ_-Ji82KKgSJA6_rQpidRX01RVxBnjvxw5HoHE7FTnswIApVOLmnf0XuwRKJLPpBePszOA";
-  function clientId() { return location.hostname === "lifeportfolio.co.kr" ? LIVE : SANDBOX; }
+  // sandbox=true 는 서버가 "시험용 제휴"라고 알려 준 경우에만 (실제 돈이 빠지지 않는 PayPal 시험 서버)
+  function clientId(sandbox) { return !sandbox && location.hostname === "lifeportfolio.co.kr" ? LIVE : SANDBOX; }
   var sdk = null;
-  function loadSdk() {
+  function loadSdk(sandbox) {
     if (w.paypal && w.paypal.Buttons) return Promise.resolve();
     if (sdk) return sdk;
     sdk = new Promise(function (res, rej) {
       var s = d.createElement("script");
-      s.src = "https://www.paypal.com/sdk/js?" + new URLSearchParams({ "client-id": clientId(), currency: "USD", intent: "capture", components: "buttons", "disable-funding": "credit,paylater", locale: "ko_KR" }).toString();
+      s.src = "https://www.paypal.com/sdk/js?" + new URLSearchParams({ "client-id": clientId(sandbox === true), currency: "USD", intent: "capture", components: "buttons", "disable-funding": "credit,paylater", locale: "ko_KR" }).toString();
       s.async = true; s.onload = function () { res(); }; s.onerror = function () { sdk = null; rej(new Error("PayPal")); };
       d.head.appendChild(s);
     });
@@ -56,7 +57,7 @@
       '<p class="lp-fb-links"><button type="button" id="lpFbRetry">국내 결제 다시 시도</button><a href="' + (o.supportHref || "#") + '">도움이 필요하면 고객지원</a></p></section>';
     var msg = d.getElementById("lpFbMsg");
     d.getElementById("lpFbRetry").addEventListener("click", function () { m.hidden = true; if (o.onRetry) o.onRetry(); });
-    loadSdk().then(function () {
+    loadSdk(o.sandbox === true).then(function () {
       w.paypal.Buttons({
         style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal", height: 45 },
         onClick: function (data, actions) { if (o.beforeClick && o.beforeClick() === false) return actions.reject(); return actions.resolve(); },

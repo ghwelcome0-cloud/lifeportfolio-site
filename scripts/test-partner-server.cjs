@@ -41,6 +41,53 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   ok('price-above-regular-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'sportsjobalio', priceKrw: 25000 })))) === 'invalid-argument');
   ok('bad-slug-rejected', (await err(M.adminPartnerSave(ADM({ create: true, slug: '../x', name: 'x', priceKrw: 1000, priceUsd: '1.00', startAt: start, endAt: end, maxSeats: 1, verify: 'link' })))) === 'invalid-argument');
 
+  // ── 로고 이미지 파일 (logoData) ────────────────────────────────
+  const PNG = 'data:image/png;base64,' + Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 13]).toString('base64');
+  const lg = await M.adminPartnerSave(ADM({ create: true, slug: 'hanbit-sports', name: '한빛스포츠클럽', logoData: PNG, priceKrw: 13000, priceUsd: '9.66', startAt: start, endAt: end, maxSeats: 10, verify: 'link' }));
+  ok('logo-file-saved', (await db.collection('partners').doc('hanbit-sports').get()).get('logoData') === PNG && !!lg.link);
+  ok('logo-file-not-image-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'hanbit-sports', logoData: 'data:image/png;base64,' + Buffer.from('hello world!').toString('base64') })))) === 'invalid-argument');
+  ok('logo-file-svg-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'hanbit-sports', logoData: 'data:image/svg+xml;base64,PHN2Zz4=' })))) === 'invalid-argument');
+  ok('logo-file-too-big-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'hanbit-sports', logoData: 'data:image/png;base64,' + Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47]), Buffer.alloc(M.LOGO_MAX_BYTES)]).toString('base64') })))) === 'invalid-argument');
+  ok('logo-file-script-payload-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'hanbit-sports', logoData: PNG + '"><script>' })))) === 'invalid-argument');
+  await M.adminPartnerAction(ADM({ slug: 'hanbit-sports', action: 'setStatus', status: 'active' }));
+  const lgPage = await M.getPartnerPage({ auth: null, data: { slug: 'hanbit-sports', k: keyOf(lg.link) } }, D());
+  ok('logo-file-in-public-page', lgPage.state === 'open' && lgPage.partner.logoData === PNG);
+  ok('logo-file-in-admin-list', (await M.adminPartnerList(ADM({}))).partners.some((p) => p.slug === 'hanbit-sports' && p.logoData === PNG));
+  await M.adminPartnerSave(ADM({ slug: 'hanbit-sports', logoData: '' }));
+  ok('logo-file-can-be-cleared', (await db.collection('partners').doc('hanbit-sports').get()).get('logoData') === '');
+  await M.adminPartnerAction(ADM({ slug: 'hanbit-sports', action: 'setStatus', status: 'ended' }));
+
+  // ── 시험용 제휴 (testMode): 시험 서버만, 회원 결제 상태·자리·판매 숫자 그대로 ───────
+  const tm = await M.adminPartnerSave(ADM({ create: true, slug: 'test-hanbit', name: '한빛스포츠클럽 (시험)', testMode: true, priceKrw: 1000, priceUsd: '1.00', startAt: start, endAt: end, maxSeats: 3, verify: 'common' }));
+  await M.adminPartnerAction(ADM({ slug: 'test-hanbit', action: 'setStatus', status: 'active' }));
+  ok('testmode-fixed-after-create', (await M.adminPartnerSave(ADM({ slug: 'test-hanbit', testMode: false })), (await db.collection('partners').doc('test-hanbit').get()).get('testMode') === true));
+  const tPage = await M.getPartnerPage({ auth: null, data: { slug: 'test-hanbit', k: keyOf(tm.link) } }, D());
+  ok('testmode-flag-public', tPage.partner.test === true);
+  await rtdb.ref('payments/tpaid').set({ paid: true });
+  const tStart = (uid, method) => M.startPartnerCheckout(U(uid, { slug: 'test-hanbit', k: keyOf(tm.link), code: tm.commonCode, method }), D());
+  const tq = await tStart('tpaid', 'payple');
+  ok('testmode-allows-already-paid-member', tq.test === true && !!tq.quoteId);
+  const pc0 = payple.calls; let seenTest = null;
+  const Dt = () => Object.assign(D(), { paypleConfirm: async (o) => { seenTest = o.isTest; payple.calls++; return { PCD_PAY_RST: 'success', PCD_PAY_TOTAL: '1000', PCD_USER_DEFINE1: 'tpaid', PCD_PAY_OID: 'oid-t' }; } });
+  const tr = await M.confirmPartnerPayple(U('tpaid', { quoteId: tq.quoteId, isTest: false, auth: auth('tpaid', 1000, tq.quoteId) }), Dt());
+  ok('testmode-server-forces-test-endpoint', seenTest === true && payple.calls === pc0 + 1 && tr.test === true);
+  const tpd = (await db.collection('partners').doc('test-hanbit').get()).data();
+  ok('testmode-no-seat-or-sales-count', (tpd.seatCount.used || 0) === 0 && (tpd.seatCount.krw || 0) === 0 && (tpd.holds || []).length === 0);
+  ok('testmode-member-payment-untouched', JSON.stringify((await rtdb.ref('payments/tpaid').get()).val()) === JSON.stringify({ paid: true }));
+  ok('testmode-recorded-as-test', (await db.collection('partner_payments').doc('test-' + tq.quoteId).get()).get('test') === true && !(await db.collection('partner_payments').doc('tpaid').get()).exists);
+  const tq2 = await tStart('tpaid', 'paypal'); let ppSandbox = null;
+  const Dp = () => Object.assign(D(), { paypalCreate: async (o) => { ppSandbox = o.sandbox; paypal.created.push(o); return 'ORDER-' + paypal.created.length; } });
+  const tord = (await M.createPartnerPaypalOrder(U('tpaid', { quoteId: tq2.quoteId }), Dp())).orderID;
+  let capSandbox = null;
+  const Dc = () => Object.assign(D(), { paypalCapture: async (o) => { capSandbox = o.sandbox; const c = paypal.created[Number(o.orderID.split('-')[1]) - 1]; return { status: 'COMPLETED', customId: c.customId, captureID: 'CAP-T', amount: c.amount, currency: 'USD', env: 'sandbox' }; } });
+  const tcap = await M.capturePartnerPaypalOrder(U('tpaid', { quoteId: tq2.quoteId, orderID: tord }), Dc());
+  ok('testmode-paypal-uses-sandbox', ppSandbox === true && capSandbox === true && tcap.test === true && tcap.captureID === 'CAP-T');
+  ok('testmode-paypal-member-untouched', JSON.stringify((await rtdb.ref('payments/tpaid').get()).val()) === JSON.stringify({ paid: true }));
+  const tl = await M.adminPartnerList(ADM({}));
+  ok('testmode-shown-in-admin-list', tl.partners.some((p) => p.slug === 'test-hanbit' && p.test === true) && tl.payments.filter((x) => x.test && x.slug === 'test-hanbit').length === 2);
+  await M.adminPartnerAction(ADM({ slug: 'test-hanbit', action: 'setStatus', status: 'ended' }));
+  await rtdb.ref('payments/tpaid').remove();
+
   // ── 공개 페이지: 모방 링크 차단 ─────────────────────────────────
   const page = (slug, k, uid) => M.getPartnerPage(uid ? U(uid, { slug, k }) : { auth: null, data: { slug, k } }, D());
   ok('draft-is-notfound', (await page('sportsjobalio', K)).state === 'notfound');
@@ -75,7 +122,9 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   payple.next = { PCD_PAY_RST: 'error', PCD_PAY_CODE: 'X1', PCD_PAY_MSG: '한도 초과' };
   ok('payple-decline-logged-as-domestic-fail', (await err(confirm('u1', q1.quoteId, 13000))) === 'failed-precondition' && (await db.collection('partner_fails').where('resolved', '==', false).get()).size >= 1);
   payple.next = null;
-  const c1 = await confirm('u1', q1.quoteId, 13000);
+  let liveSeen = null; const Dl = () => Object.assign(D(), { paypleConfirm: async (o) => { liveSeen = o.isTest; return { PCD_PAY_RST: 'success', PCD_PAY_TOTAL: '13000', PCD_USER_DEFINE1: 'u1', PCD_PAY_OID: 'oid-u1' }; } });
+  const c1 = await M.confirmPartnerPayple(U('u1', { quoteId: q1.quoteId, isTest: true, auth: auth('u1', 13000, q1.quoteId) }), Dl());
+  ok('real-partner-ignores-client-isTest', liveSeen === false && c1.test !== true);
   const pay1 = (await rtdb.ref('payments/u1').once('value')).val();
   ok('payple-success-unlocks-like-normal', c1.ok && pay1.paid === true && pay1.source === 'partner-payple' && pay1.amount === '13000' && pay1.currency === 'KRW', pay1);
   const rec1 = (await db.collection('partner_payments').doc('u1').get()).data();

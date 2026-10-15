@@ -95,6 +95,7 @@
     </section>
 
     <div class="pt-wrap" id="ptMain" hidden>
+      <p id="ptTestBanner" role="note" hidden style="margin:0 0 12px;padding:10px 14px;border-radius:10px;background:#fff4d6;border:1px solid #f0c75e;color:#6b4e00;font-weight:700;font-size:14px;word-break:keep-all">🧪 시험용 제휴 화면이에요. 결제 시험 서버로 연결되어 실제 돈은 빠지지 않아요.</p>
       <section class="pt-hero" aria-labelledby="ptH1">
         <div>
           <div class="pt-tile"><img src="/assets/logo-trademark.png" alt="" width="44" height="44"></div>
@@ -164,8 +165,10 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
-    const USE_TEST = false; // 페이플 테스트(democpay)로 바꿀 때만 true
-    const PAYPLE_SDK = USE_TEST ? "https://democpay.payple.kr/js/v1/payment.js" : "https://cpay.payple.kr/js/v1/payment.js";
+    // 시험용 제휴(운영 대시보드에서 "시험용"으로 만든 제휴)일 때만 시험 서버를 쓴다. 시험 여부는 서버가 정한다.
+    let TEST = false;
+    const PAYPLE_TEST_CLIENT_KEY = "test_DF55F29DA654A8CBC0F0A9DD4B556486"; // 페이플 공식 문서의 공개 테스트 키
+    const paypleSdk = () => (TEST ? "https://democpay.payple.kr/js/v1/payment.js" : "https://cpay.payple.kr/js/v1/payment.js");
     const app = initializeApp({
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4", authDomain: "lifeporfolio.firebaseapp.com",
       databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "lifeporfolio",
@@ -191,15 +194,25 @@
 
     function partnerMark(p) {
       const box = $("ptPartnerMark"); box.textContent = "";
-      const local = "/assets/img/partners/" + p.slug + ".png";
-      const img = new Image(); img.className = "pl"; img.alt = p.name; img.src = local;
-      img.onerror = () => { if (p.logoUrl && img.src.indexOf(p.logoUrl) < 0) { img.src = p.logoUrl; } else { box.innerHTML = ""; const s = document.createElement("span"); s.className = "pn"; s.textContent = p.name; box.appendChild(s); } };
+      // 순서: 운영자가 올린 로고 파일 → 사이트에 둔 로고 → 로고 주소 → 이름 글자
+      const list = [];
+      if (/^data:image\/(png|jpeg|webp);base64,/.test(p.logoData || "")) list.push(p.logoData);
+      list.push("/assets/img/partners/" + p.slug + ".png");
+      if (/^https:\/\//.test(p.logoUrl || "")) list.push(p.logoUrl);
+      const img = new Image(); img.className = "pl"; img.alt = p.name;
+      const next = () => {
+        const src = list.shift();
+        if (src) { img.src = src; return; }
+        box.innerHTML = ""; const s = document.createElement("span"); s.className = "pn"; s.textContent = p.name; box.appendChild(s);
+      };
+      img.onerror = next; next();
       box.appendChild(img);
     }
 
     function render(r) {
       if (!r || r.state === "notfound") { show("ptNotFound"); return; }
-      P = r.partner; partnerMark(P);
+      P = r.partner; TEST = P.test === true; partnerMark(P);
+      $("ptTestBanner").hidden = !TEST;
       document.title = "인생포트폴리오 × " + P.name + " 제휴 혜택";
       if (r.state !== "open" && r.state !== "soldout") {
         $("ptClosedT").textContent = r.state === "notstarted" ? "아직 혜택 기간이 아니에요" : r.state === "ended" ? "혜택 기간이 끝났어요" : "혜택 접수를 잠시 멈췄어요";
@@ -245,6 +258,11 @@
       try { sessionStorage.setItem(STORE, JSON.stringify({ quoteId: r.quoteId, uid: USER.uid, slug: SLUG, k: KEY, at: Date.now() })); } catch (_) {}
       return r;
     }
+    function testDone(r) {
+      try { sessionStorage.removeItem(STORE); } catch (_) {}
+      BUSY = false;
+      msg("✅ 시험 결제가 끝났어요. 실제 돈은 빠지지 않았고, 회원 결제 상태도 바뀌지 않았어요. (기록 번호: " + String(r.captureID || r.ref || "-").slice(0, 40) + ")", "ok");
+    }
     function done() {
       try { sessionStorage.removeItem(STORE); } catch (_) {}
       try { const ts = Date.now(); localStorage.setItem("lp_paid_until", String(ts + 365 * 864e5)); sessionStorage.setItem("lp_paid", JSON.stringify({ uid: USER.uid, paid: true, issuedAt: ts, sig: btoa(unescape(encodeURIComponent(USER.uid + ":" + ts + ":lifeporfolio"))) })); } catch (_) {}
@@ -257,12 +275,12 @@
     // ── PayPal (처음부터 보이는 버튼 + 국내 결제 실패 안내 공통) ──────────
     let PP_QUOTE = null;
     const ppCreate = async () => { const q = await quote("paypal"); PP_QUOTE = q.quoteId; return (await fnPpCreate({ quoteId: PP_QUOTE })).data.orderID; };
-    const ppApprove = async (orderID) => { const r = (await fnPpCapture({ quoteId: PP_QUOTE, orderID })).data; if (!r || !r.ok) throw new Error("결제 확인에 실패했어요."); done(); };
+    const ppApprove = async (orderID) => { const r = (await fnPpCapture({ quoteId: PP_QUOTE, orderID })).data; if (!r || !r.ok) throw new Error("결제 확인에 실패했어요."); if (r.test) return testDone(r); done(); };
     let ppDrawn = false;
     function renderPaypal() {
       if (ppDrawn || !window.LP_PAY_FALLBACK) { if (!window.LP_PAY_FALLBACK) setTimeout(renderPaypal, 300); return; }
       ppDrawn = true;
-      window.LP_PAY_FALLBACK.loadSdk().then(() => {
+      window.LP_PAY_FALLBACK.loadSdk(TEST).then(() => {
         window.paypal.Buttons({
           style: { layout: "horizontal", color: "gold", shape: "rect", label: "paypal", height: 45, tagline: false },
           onClick: (d, a) => (needAgree() ? a.resolve() : a.reject()),
@@ -275,14 +293,14 @@
     }
     function fallback() {
       window.LP_PAY_FALLBACK.show({
-        mount: $("ptFallback"), supportHref: "/privacy#s11", usdLabel: "$" + P.priceUsd, partner: true, beforeClick: needAgree,
+        mount: $("ptFallback"), supportHref: "/privacy#s11", usdLabel: "$" + P.priceUsd, partner: true, beforeClick: needAgree, sandbox: TEST,
         createOrder: ppCreate, onApprove: ppApprove, onRetry: () => msg(""),
       });
     }
 
     // ── 페이플 ──────────────────────────────────────────────────────
     function loadPayple() {
-      return new Promise((res, rej) => { if (window.PaypleCpayAuthCheck) return res(); const s = document.createElement("script"); s.src = PAYPLE_SDK + "?v=" + Date.now(); s.onload = res; s.onerror = () => rej(new Error("국내 결제 모듈을 불러오지 못했어요.")); document.head.appendChild(s); });
+      return new Promise((res, rej) => { if (window.PaypleCpayAuthCheck) return res(); const s = document.createElement("script"); s.src = paypleSdk() + "?v=" + Date.now(); s.onload = res; s.onerror = () => rej(new Error("국내 결제 모듈을 불러오지 못했어요.")); document.head.appendChild(s); });
     }
     async function payResult(a) {
       let st = null; try { st = JSON.parse(sessionStorage.getItem(STORE) || "null"); } catch (_) {}
@@ -294,7 +312,7 @@
         msg(""); fallback(); BUSY = false; return;
       }
       msg("결제 승인 중이에요… 잠시만 기다려 주세요.");
-      try { const r = (await fnConfirm({ quoteId, auth: a, isTest: USE_TEST })).data; if (r && r.paid) return done(); throw new Error("결제 확인에 실패했어요."); }
+      try { const r = (await fnConfirm({ quoteId, auth: a })).data; if (r && r.test) return testDone(r); if (r && r.paid) return done(); throw new Error("결제 확인에 실패했어요."); }
       catch (e) {
         if (e && e.code === "functions/failed-precondition" && /국내 결제/.test(e.message || "")) { msg(""); fallback(); }
         else msg(errText(e), "err");
@@ -305,7 +323,7 @@
       if (BUSY || !needAgree()) return;
       BUSY = true; msg("");
       try {
-        if (!CFG) CFG = (await fnCfg({})).data;
+        if (!CFG) CFG = TEST ? { clientKey: PAYPLE_TEST_CLIENT_KEY } : (await fnCfg({})).data;
         const q = await quote("payple");
         await loadPayple();
         const oid = "lpp-" + new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 14) + "-" + USER.uid.slice(0, 8) + "-" + Math.random().toString(36).slice(2, 7);
