@@ -237,7 +237,8 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   ok('regular-fail-logged-sanitized', rf.msg === ' b 한도 /b '.trim() || !/[<>]/.test(rf.msg));
 
   // ── 통계·동의 ──────────────────────────────────────────────────
-  const SD = { now: () => NOW, rateLimit: async () => {}, shallowCount: async (p) => ({ reports: 2, diary: 1, responses: 2 }[p]), listUserTimes: async () => [NOW - 3600000, NOW - 86400000 * 2, NOW - 86400000 * 400] };
+  const GAREP = [{ rows: [{ metricValues: [{ value: '120' }, { value: '80' }, { value: '300' }] }] }, { rows: [{ dimensionValues: [{ value: 'Organic Search' }], metricValues: [{ value: '70' }] }] }, { rows: [{ dimensionValues: [{ value: 'google' }], metricValues: [{ value: '60' }] }] }, { rows: [{ dimensionValues: [{ value: '/partner' }], metricValues: [{ value: '40' }] }] }, { rows: [{ dimensionValues: [{ value: '20261016' }], metricValues: [{ value: '5' }, { value: '4' }] }] }];
+  const SD = { gaReport: async () => GAREP, gaAccount: async () => 'runtime@example.test', now: () => NOW, rateLimit: async () => {}, shallowCount: async (p) => ({ reports: 2, diary: 1, responses: 2 }[p]), listUserTimes: async () => [NOW - 3600000, NOW - 86400000 * 2, NOW - 86400000 * 400] };
   await S.recordConsent({ auth: null, data: { choice: 'granted' } }, SD);
   await S.recordConsent({ auth: null, data: { choice: 'denied' } }, SD);
   await S.recordConsent(U('m1', { choice: 'granted' }), SD);
@@ -250,6 +251,9 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   const st = await S.adminStats(ADM({ days: 30 }), SD);
   ok('stats-consent-counts-only', st.consent.granted === 2 && st.consent.denied === 1 && st.consent.rate === 66.7 && !JSON.stringify(st).includes('m1'));
   ok('stats-funnel', st.totals.members === 3 && st.totals.paid >= 3 && st.totals.paidPartner >= 3 && st.funnel.length === 5 && st.funnel[3].n === 2);
+  ok('stats-ga-shaped', st.ga.ok === true && st.ga.sessions === 120 && st.ga.users === 80 && st.ga.channels[0].name === 'Organic Search' && st.ga.pages[0].name === '/partner' && st.ga.daily[0].day === '2026-10-16', st.ga);
+  const stDenied = await S.adminStats(ADM({ days: 30 }), Object.assign({}, SD, { gaReport: async () => { const e = new Error('User does not have sufficient permissions'); e.status = 403; throw e; } }));
+  ok('stats-ga-permission-shows-account', stDenied.ok === true && stDenied.ga.ok === false && stDenied.ga.reason === 'permission' && stDenied.ga.account === 'runtime@example.test' && stDenied.totals.members === 3);
   ok('stats-admin-only', (await err(S.adminStats(U('m1', {}), SD))) === 'permission-denied');
 
   const f = results.filter((x) => !x.c);
