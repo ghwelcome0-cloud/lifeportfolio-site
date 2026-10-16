@@ -95,7 +95,7 @@
     </section>
 
     <div class="pt-wrap" id="ptMain" hidden>
-      <p id="ptTestBanner" role="note" hidden style="margin:0 0 12px;padding:10px 14px;border-radius:10px;background:#fff4d6;border:1px solid #f0c75e;color:#6b4e00;font-weight:700;font-size:14px;word-break:keep-all">🧪 시험용 제휴 화면이에요. 결제 시험 서버로 연결되어 실제 돈은 빠지지 않아요.</p>
+      <p id="ptTestBanner" role="note" hidden style="grid-column:1/-1;margin:0;padding:10px 14px;border-radius:10px;background:#fff4d6;border:1px solid #f0c75e;color:#6b4e00;font-weight:700;font-size:14px;word-break:keep-all">🧪 시험용 제휴 화면이에요. 결제 시험 서버로 연결되어 실제 돈은 빠지지 않아요.</p>
       <section class="pt-hero" aria-labelledby="ptH1">
         <div>
           <div class="pt-tile"><img src="/assets/logo-trademark.png" alt="" width="44" height="44"></div>
@@ -233,7 +233,7 @@
       if (!USER) { $("ptLogin").hidden = false; $("ptPay").hidden = true; $("ptPaid").hidden = true; $("ptAccount").textContent = "로그인 전"; return; }
       $("ptLogin").hidden = true;
       $("ptAccount").textContent = USER.email || "로그인됨";
-      if (r.mine && r.mine.paid) { $("ptPaid").hidden = false; $("ptPay").hidden = true; return; }
+      if (r.mine && r.mine.paid && !TEST) { $("ptPaid").hidden = false; $("ptPay").hidden = true; return; }
       $("ptPaid").hidden = true; $("ptPay").hidden = false;
       if (P.domesticPaused) { $("ptCard").hidden = true; $("ptBank").hidden = true; msg("지금은 국내 결제를 잠시 쉬고 있어요. PayPal로 같은 혜택가로 결제하실 수 있어요."); }
       renderPaypal();
