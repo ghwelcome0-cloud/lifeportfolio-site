@@ -21,6 +21,12 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <style>
     :root{--teal1:#2F5B54;--teal2:#468D84;--teal3:#3A7A72;--gold:#E0A458;--ink:#22302d;--muted:#5b6b67;--line:#e3e8e6;--bg:#f6f7f4;--card:#fff;--blue:#4A6984}
+    body[data-theme="navy"]{--teal1:#22385a;--teal2:#3a5c8c;--teal3:#2c4a74}
+    body[data-theme="forest"]{--teal1:#2f4f2f;--teal2:#4f7a4a;--teal3:#3e6a3a}
+    body[data-theme="plum"]{--teal1:#4a2f52;--teal2:#7a4f86;--teal3:#633f6e}
+    body[data-theme="charcoal"]{--teal1:#2b2f33;--teal2:#4c535a;--teal3:#3b4146}
+    .pt-intro{margin:14px 0 0;font-size:14.5px;line-height:1.7;opacity:.95}
+    .pt-emo{margin:0;font-size:15px;font-weight:700;color:#f6e3c4;line-height:1.6}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:break-word;line-height:1.6}
     a{color:var(--teal1)}
@@ -105,13 +111,17 @@
           <h1 class="pt-h1" id="ptH1"><span id="ptHeroName">제휴사</span> 회원을 위한<br>인생포트폴리오</h1>
           <div class="pt-gold" aria-hidden="true"></div>
           <p class="pt-sub">나의 고유함을 발견하고, 살아내고, 남기는 한 권.</p>
+          <p class="pt-intro" id="ptIntro">76문항 진단으로 나의 사명·비전·강점을 찾고, 이번 주 첫 행동 3가지와 3주 실행 루틴까지 한 권의 리포트로 받아요.</p>
           <ul class="pt-inc">
             <li>인생포트폴리오 리포트</li>
             <li>자산화 맞춤 실행 프로그램</li>
             <li>내 다이어리</li>
           </ul>
         </div>
-        <p class="pt-sub" style="font-size:13px;opacity:.8;margin-top:22px">결제 후에는 일반 결제와 똑같이 이용해요.</p>
+        <div style="margin-top:22px">
+          <p class="pt-emo" id="ptEmo">나다운 내일을 위한 첫 번째 한 권.</p>
+          <p class="pt-sub" style="font-size:13px;opacity:.8;margin-top:10px">결제 후에는 일반 결제와 똑같이 이용해요.</p>
+        </div>
       </section>
 
       <section class="pt-card" aria-labelledby="ptPriceT">
@@ -228,6 +238,12 @@
       }
       show("ptMain");
       $("ptHeroName").textContent = P.name;
+      // 대시보드에서 정한 화면 색·문구 (비우면 기본 문구)
+      const C = P.copy || {};
+      document.body.dataset.theme = P.theme || "teal";
+      if (C.headline) $("ptH1").textContent = C.headline;
+      if (C.intro) $("ptIntro").textContent = C.intro;
+      if (C.emotion) $("ptEmo").textContent = C.emotion;
       const REG = P.priceMode === "regular"; // 정상가 제휴: 할인·남은 혜택·기간을 보여 주지 않는다
       $("ptBadge").textContent = REG ? P.name + " 회원 전용" : "제휴 혜택가";
       $("ptPriceT").textContent = REG ? "이용 금액" : "제휴 혜택가";

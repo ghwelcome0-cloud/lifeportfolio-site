@@ -286,6 +286,10 @@
         <label>기간 (일)<input id="pfDays" type="number" min="1" max="3650" value="90"></label>
         <label>최대 인원<input id="pfSeats" type="number" min="1" max="100000" value="500"></label>
         <label>안내 문구 (선택)<input id="pfNote" maxlength="200" placeholder="예: 한빛스포츠클럽 회원 전용 혜택이에요."></label>
+        <label>화면 색<select id="pfTheme"><option value="teal">청록 (기본)</option><option value="navy">남색</option><option value="forest">숲 초록</option><option value="plum">자두</option><option value="charcoal">짙은 회색</option></select></label>
+        <label>큰 제목 (선택 · 60자)<input id="pfHead" maxlength="60" placeholder="비우면: ○○ 회원을 위한 인생포트폴리오"></label>
+        <label style="grid-column:1/-1">검사 소개 (선택 · 300자)<textarea id="pfIntro" maxlength="300" rows="2" placeholder="비우면: 76문항 진단으로 나의 사명·비전·강점을 찾고, 이번 주 첫 행동 3가지와 3주 실행 루틴까지 한 권의 리포트로 받아요."></textarea></label>
+        <label style="grid-column:1/-1">감성 문구 (선택 · 120자)<input id="pfEmo" maxlength="120" placeholder="비우면: 나다운 내일을 위한 첫 번째 한 권."></label>
       </div>
       <p class="desc" style="margin:12px 0 0"><b>가격 방식</b> · 제휴사가 고를 수 있어요.</p>
       <div class="pt-verify" role="radiogroup" aria-label="가격 방식">
@@ -569,12 +573,13 @@
       const st = Date.parse($p("pfStart").value + "T00:00:00+09:00"), days = parseInt($p("pfDays").value, 10) || 90;
       return { name: $p("pfName").value, slug: $p("pfSlug").value.trim().toLowerCase(), logoUrl: $p("pfLogo").value.trim(), logoData: PT.logoData || "", priceKrw: Number($p("pfKrw").value), priceUsd: $p("pfUsd").value.trim(),
         fx: { rate: Number($p("pfFx").value) || null, date: $p("pfFx").dataset.date || today, source: "ECB(frankfurter)" }, startAt: st, endAt: st + days * 864e5 - 1000, maxSeats: Number($p("pfSeats").value),
-        verify: document.querySelector('input[name="pfVerify"]:checked').value, note: $p("pfNote").value, velocityHour: Number($p("pfVh").value), velocityDay: Number($p("pfVd").value), testMode: !PT.editing && $p("pfTest").checked, priceMode: priceMode() };
+        verify: document.querySelector('input[name="pfVerify"]:checked').value, note: $p("pfNote").value, velocityHour: Number($p("pfVh").value), velocityDay: Number($p("pfVd").value), testMode: !PT.editing && $p("pfTest").checked, priceMode: priceMode(),
+        theme: $p("pfTheme").value, copy: { headline: $p("pfHead").value, intro: $p("pfIntro").value, emotion: $p("pfEmo").value } };
     }
     function outBox(html) { $p("pfOut").innerHTML = '<div class="pt-out">' + html + "</div>"; }
     function copyBtn(text, label) { const id = "cp" + Math.random().toString(36).slice(2, 8); setTimeout(() => { const b = $p(id); if (b) b.onclick = () => navigator.clipboard.writeText(text).then(() => { b.textContent = "복사됨 ✓"; }); }, 0); return ' <button type="button" class="btn" id="' + id + '">' + (label || "복사") + "</button>"; }
     function downloadCsv(name, csv) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" })); a.download = name; a.click(); }
-    $p("pfClear").addEventListener("click", () => { PT.editing = null; $p("pfSlug").disabled = false; $p("pfSave").textContent = "저장하고 링크 만들기"; ["pfName", "pfSlug", "pfLogo", "pfNote"].forEach((i) => { $p(i).value = ""; }); setLogo(""); $p("pfTest").checked = false; $p("pfTest").disabled = false; document.querySelector('input[name="pfPrice"][value="discount"]').checked = true; applyPriceMode(); $p("pfOut").innerHTML = ""; });
+    $p("pfClear").addEventListener("click", () => { PT.editing = null; $p("pfSlug").disabled = false; $p("pfSave").textContent = "저장하고 링크 만들기"; ["pfName", "pfSlug", "pfLogo", "pfNote"].forEach((i) => { $p(i).value = ""; }); setLogo(""); ["pfHead", "pfIntro", "pfEmo"].forEach((i) => { $p(i).value = ""; }); $p("pfTheme").value = "teal"; $p("pfTest").checked = false; $p("pfTest").disabled = false; document.querySelector('input[name="pfPrice"][value="discount"]').checked = true; applyPriceMode(); $p("pfOut").innerHTML = ""; });
     $p("pfSave").addEventListener("click", async () => {
       const d = formData(); $p("pfSave").disabled = true; ptMsg("저장하는 중…");
       try {
@@ -594,7 +599,7 @@
       catch (e) { ptMsg("❌ " + escapeHtml(e.message || ""), "#c0392b"); return null; }
     }
     function edit(p) {
-      PT.editing = p.slug; $p("pfSlug").value = p.slug; $p("pfSlug").disabled = true; $p("pfName").value = p.name; $p("pfLogo").value = p.logoUrl; setLogo(p.logoData || ""); $p("pfTest").checked = p.test === true; $p("pfTest").disabled = true; document.querySelector('input[name="pfPrice"][value="' + (p.priceMode === "regular" ? "regular" : "discount") + '"]').checked = true; applyPriceMode(); $p("pfKrw").value = p.priceKrw; $p("pfUsd").value = p.priceUsd;
+      PT.editing = p.slug; $p("pfSlug").value = p.slug; $p("pfSlug").disabled = true; $p("pfName").value = p.name; $p("pfLogo").value = p.logoUrl; setLogo(p.logoData || ""); $p("pfTest").checked = p.test === true; $p("pfTest").disabled = true; $p("pfTheme").value = p.theme || "teal"; $p("pfHead").value = (p.copy && p.copy.headline) || ""; $p("pfIntro").value = (p.copy && p.copy.intro) || ""; $p("pfEmo").value = (p.copy && p.copy.emotion) || ""; document.querySelector('input[name="pfPrice"][value="' + (p.priceMode === "regular" ? "regular" : "discount") + '"]').checked = true; applyPriceMode(); $p("pfKrw").value = p.priceKrw; $p("pfUsd").value = p.priceUsd;
       if (p.fx && p.fx.rate) $p("pfFx").value = p.fx.rate; $p("pfStart").value = new Date(p.startAt + 9 * 3600e3).toISOString().slice(0, 10); $p("pfDays").value = Math.round((p.endAt - p.startAt + 1000) / 864e5);
       $p("pfSeats").value = p.maxSeats; $p("pfNote").value = p.note; $p("pfVh").value = p.velocityHour; $p("pfVd").value = p.velocityDay;
       document.querySelector('input[name="pfVerify"][value="' + p.verify + '"]').checked = true; $p("pfVelBox").hidden = p.verify !== "common";

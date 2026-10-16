@@ -98,6 +98,16 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   ok('bad-price-mode-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'hanbit-regular', priceMode: 'free' })))) === 'invalid-argument');
   await M.adminPartnerAction(ADM({ slug: 'hanbit-regular', action: 'setStatus', status: 'ended' }));
 
+  // ── 화면 색·문구 ───────────────────────────────────────────────
+  const th = await M.adminPartnerSave(ADM({ create: true, slug: 'theme-co', name: '색회사', theme: 'navy', copy: { headline: '<b>우리</b> 한 권', intro: '소개', emotion: '감성' }, priceKrw: 13000, priceUsd: '9.66', startAt: start, endAt: end, maxSeats: 5, verify: 'link' }));
+  const thd = (await db.collection('partners').doc('theme-co').get()).data();
+  ok('theme-copy-saved-sanitized', thd.theme === 'navy' && !/[<>]/.test(thd.copy.headline) && thd.copy.emotion === '감성');
+  ok('bad-theme-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'theme-co', theme: 'red' })))) === 'invalid-argument');
+  await M.adminPartnerAction(ADM({ slug: 'theme-co', action: 'setStatus', status: 'active' }));
+  const thp = await M.getPartnerPage({ auth: null, data: { slug: 'theme-co', k: keyOf(th.link) } }, D());
+  ok('theme-copy-public', thp.partner.theme === 'navy' && thp.partner.copy.intro === '소개');
+  await M.adminPartnerAction(ADM({ slug: 'theme-co', action: 'setStatus', status: 'ended' }));
+
   // ── 공개 페이지: 모방 링크 차단 ─────────────────────────────────
   const page = (slug, k, uid) => M.getPartnerPage(uid ? U(uid, { slug, k }) : { auth: null, data: { slug, k } }, D());
   ok('draft-is-notfound', (await page('sportsjobalio', K)).state === 'notfound');
