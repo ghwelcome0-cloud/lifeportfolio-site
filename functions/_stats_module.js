@@ -44,6 +44,51 @@ async function getMine(req, deps) {
   return { ok: true, choice: s.get("choice"), at };
 }
 
+// ── C. 방문·유입: 구글 애널리틱스(GA4) 데이터 API (읽기 전용, 운영자 화면에서만) ─────
+//   GA 관리 → 속성 액세스 관리에서 서버 계정에 "뷰어" 권한이 있어야 한다 (2026-10-16 대표 추가).
+const GA_PROPERTY = "536112267"; // GA4 속성 ID (비밀 아님)
+const META = "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/";
+async function gaAccount() {
+  try { const r = await fetch(META + "email", { headers: { "Metadata-Flavor": "Google" } }); return r.ok ? (await r.text()).trim() : ""; } catch (_) { return ""; }
+}
+async function gaToken() {
+  const r = await fetch(META + "token?scopes=" + encodeURIComponent("https://www.googleapis.com/auth/analytics.readonly"), { headers: { "Metadata-Flavor": "Google" } });
+  if (!r.ok) throw new Error("token " + r.status);
+  return (await r.json()).access_token;
+}
+async function gaReport(days) {
+  const tok = await gaToken();
+  const range = [{ startDate: days + "daysAgo", endDate: "today" }];
+  const body = { requests: [
+    { dateRanges: range, metrics: [{ name: "sessions" }, { name: "activeUsers" }, { name: "screenPageViews" }] },
+    { dateRanges: range, dimensions: [{ name: "sessionDefaultChannelGroup" }], metrics: [{ name: "sessions" }], orderBys: [{ metric: { metricName: "sessions" }, desc: true }], limit: 10 },
+    { dateRanges: range, dimensions: [{ name: "sessionSource" }], metrics: [{ name: "sessions" }], orderBys: [{ metric: { metricName: "sessions" }, desc: true }], limit: 10 },
+    { dateRanges: range, dimensions: [{ name: "pagePath" }], metrics: [{ name: "screenPageViews" }], orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }], limit: 10 },
+    { dateRanges: range, dimensions: [{ name: "date" }], metrics: [{ name: "sessions" }, { name: "activeUsers" }], orderBys: [{ dimension: { dimensionName: "date" } }], limit: 200 },
+  ] };
+  const r = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${GA_PROPERTY}:batchRunReports`, { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error((j.error && j.error.message) || ("GA " + r.status)); e.status = r.status; throw e; }
+  return j.reports || [];
+}
+const gaRows = (rep) => ((rep && rep.rows) || []).map((x) => ({ k: (x.dimensionValues || []).map((d) => d.value).join(" / "), v: (x.metricValues || []).map((m) => Number(m.value) || 0) }));
+function shapeGa(reports) {
+  const t = gaRows(reports[0])[0] || { v: [0, 0, 0] };
+  return { ok: true, sessions: t.v[0], users: t.v[1], pageViews: t.v[2],
+    channels: gaRows(reports[1]).map((r) => ({ name: r.k || "(없음)", n: r.v[0] })),
+    sources: gaRows(reports[2]).map((r) => ({ name: r.k || "(없음)", n: r.v[0] })),
+    pages: gaRows(reports[3]).map((r) => ({ name: r.k, n: r.v[0] })),
+    daily: gaRows(reports[4]).map((r) => ({ day: r.k.slice(0, 4) + "-" + r.k.slice(4, 6) + "-" + r.k.slice(6, 8), sessions: r.v[0], users: r.v[1] })) };
+}
+async function loadGa(days, deps) {
+  try { return shapeGa(await deps.gaReport(days)); }
+  catch (e) {
+    const acct = await deps.gaAccount();
+    const denied = e.status === 403 || /permission|PERMISSION/.test(e.message || "");
+    return { ok: false, reason: denied ? "permission" : "error", account: acct, message: String(e.message || "").slice(0, 200) };
+  }
+}
+
 async function shallowCount(path) {
   // RTDB 큰 가지(reports·diary)는 전체를 내려받지 않고 키 개수만 센다(REST shallow).
   const cred = admin.app().options.credential || admin.credential.applicationDefault();
@@ -73,6 +118,7 @@ async function adminStats(req, deps) {
     const k = p.createdAt ? kstDay(ms(p.createdAt)) : null; if (k && byDay[k]) { byDay[k][partner ? "paidPartner" : "paidRegular"]++; if (p.currency === "USD") byDay[k].paidUsd++; else byDay[k].paidKrw++; } });
   const [reportsUsers, diaryUsers, responsesUsers] = await Promise.all([deps.shallowCount("reports"), deps.shallowCount("diary"), deps.shallowCount("responses")]);
   const totals = { members: members.length, paid: paidTotal, paidPartner, responsesUsers, reportsUsers, diaryUsers };
+  const ga = await loadGa(days, deps);
   const rate = (a, b) => (a != null && b ? Math.round((1000 * a) / b) / 10 : null);
   return {
     ok: true, days, rows: list.map((k) => Object.assign({ day: k }, byDay[k])),
@@ -84,12 +130,13 @@ async function adminStats(req, deps) {
       { step: "리포트", n: reportsUsers, rate: rate(reportsUsers, totals.paid) },
       { step: "다이어리 사용", n: diaryUsers, rate: rate(diaryUsers, reportsUsers) },
     ],
-    note: "A·B는 우리 서버 기록의 숫자입니다. 방문·유입 경로(C)는 구글 애널리틱스 연결 후 추가됩니다.",
+    ga,
+    note: "A·B는 우리 서버 기록의 숫자입니다. C는 구글 애널리틱스 숫자이며, 방문 통계에 동의한 사람만 잡힙니다.",
   };
 }
 
 const realDeps = () => ({
-  now: () => Date.now(), rateLimit: checkCallableRateLimit, shallowCount,
+  now: () => Date.now(), rateLimit: checkCallableRateLimit, shallowCount, gaReport, gaAccount,
   listUserTimes: async () => { const out = []; let t; do { const r = await admin.auth().listUsers(1000, t); r.users.forEach((u) => out.push(Date.parse(u.metadata.creationTime))); t = r.pageToken; } while (t); return out; },
 });
 const OPTS = { region: REGION, cors: true, memory: "256MiB", timeoutSeconds: 60 };
@@ -97,5 +144,5 @@ module.exports = {
   recordConsentChoice: onCall(OPTS, (r) => recordConsent(r, realDeps())),
   getMyConsent: onCall(OPTS, (r) => getMine(r, realDeps())),
   adminServiceStats: onCall(Object.assign({}, OPTS, { memory: "512MiB", timeoutSeconds: 120 }), (r) => adminStats(r, realDeps())),
-  _internals: { recordConsent, getMine, adminStats, kstDay, YEAR_MS },
+  _internals: { recordConsent, getMine, adminStats, kstDay, YEAR_MS, shapeGa, GA_PROPERTY },
 };

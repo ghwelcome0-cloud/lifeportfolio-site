@@ -650,6 +650,20 @@
 
     // ── 📈 서비스 통계 ───────────────────────────────────────────
     const stFn = httpsCallable(functions, "adminServiceStats", { timeout: 120000 });
+    // C. 방문·유입 (구글 애널리틱스)
+    function gaHtml(g) {
+      if (!g) return "";
+      if (!g.ok) {
+        if (g.reason === "permission") return '<p class="pn-sub">C. 방문·유입 (구글 애널리틱스)</p><p class="desc">🔒 아직 읽기 권한이 없어요. 구글 애널리틱스 → 관리 → 속성 액세스 관리 → [＋ 사용자 추가]에 아래 서버 계정을 <b>뷰어</b>로 넣어 주세요.<br><code>' + escapeHtml(g.account || "(계정 확인 실패)") + "</code></p>";
+        return '<p class="pn-sub">C. 방문·유입 (구글 애널리틱스)</p><p class="desc">⚠️ 지금은 불러오지 못했어요. 잠시 뒤 다시 눌러 주세요. <small>' + escapeHtml(g.message || "") + "</small></p>";
+      }
+      const tbl = (title, list) => '<div><b style="font-size:13px">' + title + '</b><table class="pt-tbl">' + (list.length ? list.map((x) => "<tr><td>" + escapeHtml(x.name) + '</td><td style="text-align:right">' + x.n.toLocaleString("ko-KR") + "</td></tr>").join("") : "<tr><td>없음</td></tr>") + "</table></div>";
+      const CH = { "Organic Search": "검색(무료)", "Direct": "직접 방문", "Referral": "다른 사이트 링크", "Organic Social": "SNS", "Paid Search": "검색 광고", "Paid Social": "SNS 광고", "Email": "이메일", "Unassigned": "분류 안 됨", "Display": "배너 광고" };
+      return '<p class="pn-sub">C. 방문·유입 (구글 애널리틱스 · 동의한 방문만)</p>' +
+        '<div class="st-kpi"><div><b>' + g.sessions.toLocaleString("ko-KR") + '</b><span>방문(세션)</span></div><div><b>' + g.users.toLocaleString("ko-KR") + '</b><span>방문자</span></div><div><b>' + g.pageViews.toLocaleString("ko-KR") + "</b><span>페이지 보기</span></div></div>" +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">' +
+        tbl("들어온 길", g.channels.map((x) => ({ name: CH[x.name] || x.name, n: x.n }))) + tbl("들어온 곳", g.sources) + tbl("많이 본 화면", g.pages) + "</div>";
+    }
     $p("stLoad").addEventListener("click", async () => {
       $p("stOut").innerHTML = '<p class="desc">불러오는 중…</p>';
       try {
@@ -664,6 +678,7 @@
           '<p class="desc">결제 중 제휴 결제 ' + d.totals.paidPartner + "건. 검사 응답·리포트·다이어리는 사람 수(계정 수)입니다.</p>" +
           '<p class="pn-sub">날짜별</p><div style="overflow-x:auto"><table class="pt-tbl"><tr><th>날짜</th><th>동의</th><th>거부</th><th>가입</th><th>일반 결제</th><th>제휴 결제</th><th>국내(원)</th><th>해외($)</th></tr>' +
           rows.map((r) => "<tr><td>" + r.day + "</td><td>" + r.granted + "</td><td>" + r.denied + "</td><td>" + r.signups + "</td><td>" + r.paidRegular + "</td><td>" + r.paidPartner + "</td><td>" + r.paidKrw + "</td><td>" + r.paidUsd + "</td></tr>").join("") + "</table></div>" +
+          gaHtml(d.ga) +
           '<p class="desc">' + escapeHtml(d.note) + "</p>";
       } catch (e) { $p("stOut").innerHTML = '<p class="pn-msg" style="color:#c0392b">❌ ' + escapeHtml(e.message || "") + "</p>"; }
     });
