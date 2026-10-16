@@ -3,7 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>인생포트폴리오 제휴 혜택</title>
+  <title>인생포트폴리오 기업 전용 페이지</title>
+  <meta name="description" content="소속 기업 회원을 위해 준비한 인생포트폴리오 전용 페이지예요. 고유함을 발견하고, 살아내고, 남기는 한 권.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="인생포트폴리오">
+  <meta property="og:title" content="인생포트폴리오 기업 전용 페이지">
+  <meta property="og:description" content="소속 기업 회원을 위해 준비한 전용 페이지예요. 고유함을 발견하고, 살아내고, 남기는 한 권.">
+  <meta property="og:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="robots" content="noindex,nofollow" />
   <meta name="referrer" content="no-referrer" />
   <!--
@@ -73,6 +80,24 @@
     .pt-legal{font-size:12.5px;color:#5f6a67;background:#fffbea;border:1px solid #f1e3b0;border-radius:12px;padding:12px 14px;margin-top:14px}
     .pt-agree{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px;cursor:pointer}
     .pt-agree input{width:18px;height:18px;margin-top:3px}
+    .pt-load[hidden],.pt-wrap[hidden]{display:none!important}
+    .pt-load{max-width:1080px;margin:0 auto;padding:24px 16px 48px;display:grid;grid-template-columns:1.05fr 1fr;gap:22px}
+    @media(max-width:860px){.pt-load{grid-template-columns:1fr;padding:14px 12px 40px}}
+    .pt-load-hero{background:linear-gradient(150deg,#2F5B54,#468D84 60%,#3A7A72);color:#fff;border-radius:20px;padding:32px 28px;min-height:300px}
+    .pt-load-hero img{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.15);padding:4px}
+    .pt-load-kick{margin:18px 0 6px;font-size:11px;letter-spacing:.2em;font-weight:800;opacity:.85}
+    .pt-load-t{margin:0;font-size:24px;font-weight:900;line-height:1.35}
+    .pt-load-s{margin:10px 0 0;font-size:14.5px;line-height:1.6;opacity:.9}
+    .pt-load-steps{display:flex;gap:8px;list-style:none;padding:0;margin:22px 0 0}
+    .pt-load-steps li{font-size:13px;font-weight:800;padding:6px 12px;border-radius:99px;background:rgba(255,255,255,.14);animation:ptStep 1.8s infinite}
+    .pt-load-steps li:nth-child(2){animation-delay:.6s}.pt-load-steps li:nth-child(3){animation-delay:1.2s}
+    @keyframes ptStep{0%,100%{background:rgba(255,255,255,.14)}30%{background:rgba(224,164,88,.75)}}
+    .pt-load-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:14px;align-content:start}
+    .pt-load-card i{display:block;height:16px;border-radius:8px;background:linear-gradient(90deg,#eef1ef 25%,#f7f8f7 50%,#eef1ef 75%);background-size:200% 100%;animation:ptSh 1.3s infinite}
+    @keyframes ptSh{to{background-position:-200% 0}}
+    @media(prefers-reduced-motion:reduce){.pt-load-steps li,.pt-load-card i{animation:none}}
+    .pt-load-slow{grid-column:1/-1;text-align:center;font-size:14px;color:var(--muted);margin:0}
+    .pt-load-slow button{font:inherit;font-weight:800;color:var(--teal1);background:none;border:0;text-decoration:underline;cursor:pointer;min-height:44px;padding:0 6px}
     .pt-state{text-align:center;padding:34px 18px}
     .pt-state h1{font-size:22px;margin:0 0 8px}
     .pt-foot{max-width:1080px;margin:0 auto;padding:0 16px 40px;font-size:12.5px;color:#7a8683;text-align:center}
@@ -88,7 +113,17 @@
   </header>
 
   <main>
-    <section class="pt-state" id="ptLoading"><p>제휴 정보를 확인하고 있어요…</p></section>
+    <section class="pt-load" id="ptLoading" role="status" aria-live="polite" aria-busy="true">
+      <div class="pt-load-hero">
+        <img src="/assets/logo-trademark.png" alt="" width="44" height="44">
+        <p class="pt-load-kick">ONLY ONE REPORT</p>
+        <p class="pt-load-t">기업 전용 페이지를 준비하고 있어요</p>
+        <p class="pt-load-s">링크가 맞는지 안전하게 확인하는 중이에요. 잠시만 기다려 주세요.</p>
+        <ol class="pt-load-steps" aria-hidden="true"><li>발견</li><li>살아내기</li><li>남기기</li></ol>
+      </div>
+      <div class="pt-load-card" aria-hidden="true"><i style="width:38%"></i><i style="width:62%;height:30px"></i><i></i><i></i><i style="height:46px;border-radius:12px"></i></div>
+      <p class="pt-load-slow" id="ptSlow" hidden>연결이 조금 늦어지고 있어요. <button type="button" id="ptRetry">다시 시도</button></p>
+    </section>
 
     <section class="pt-state" id="ptNotFound" hidden>
       <h1>찾을 수 없는 페이지예요</h1>
@@ -125,8 +160,8 @@
       </section>
 
       <section class="pt-card" aria-labelledby="ptPriceT">
-        <span class="pt-badge" id="ptBadge">제휴 혜택가</span>
-        <h2 class="pt-sr" id="ptPriceT">제휴 혜택가</h2>
+        <span class="pt-badge" id="ptBadge">기업 전용 혜택가</span>
+        <h2 class="pt-sr" id="ptPriceT">기업 전용 혜택가</h2>
         <p class="pt-price"><s id="ptRegular">19,900원</s><b id="ptPrice">-</b></p>
         <p class="pt-meta" id="ptMeta">부가세 포함 · 1인 1회 · 첫 결제에만 적용</p>
         <ul class="pt-reg" id="ptRegList" hidden>
@@ -230,7 +265,7 @@
       if (!r || r.state === "notfound") { show("ptNotFound"); return; }
       P = r.partner; TEST = P.test === true; partnerMark(P);
       $("ptTestBanner").hidden = !TEST;
-      document.title = "인생포트폴리오 × " + P.name + " 제휴 혜택";
+      document.title = "인생포트폴리오 × " + P.name + " 기업 전용 페이지";
       if (r.state !== "open" && r.state !== "soldout") {
         $("ptClosedT").textContent = r.state === "notstarted" ? "아직 혜택 기간이 아니에요" : r.state === "ended" ? "혜택 기간이 끝났어요" : "혜택 접수를 잠시 멈췄어요";
         $("ptClosedB").textContent = r.state === "notstarted" ? day(P.startAt) + "부터 시작해요. 일반 결제로는 언제든 시작하실 수 있어요." : "제휴사 안내를 확인해 주세요. 일반 결제로는 언제든 시작하실 수 있어요.";
@@ -245,8 +280,8 @@
       if (C.intro) $("ptIntro").textContent = C.intro;
       if (C.emotion) $("ptEmo").textContent = C.emotion;
       const REG = P.priceMode === "regular"; // 정상가 제휴: 할인·남은 혜택·기간을 보여 주지 않는다
-      $("ptBadge").textContent = REG ? P.name + " 회원 전용" : "제휴 혜택가";
-      $("ptPriceT").textContent = REG ? "이용 금액" : "제휴 혜택가";
+      $("ptBadge").textContent = REG ? P.name + " 회원 전용" : "기업 전용 혜택가";
+      $("ptPriceT").textContent = REG ? "이용 금액" : "기업 전용 혜택가";
       $("ptRegular").hidden = REG;
       $("ptMeta").textContent = REG ? "부가세 포함 · 한 번 결제로 모두 이용" : "부가세 포함 · 1인 1회 · 첫 결제에만 적용";
       $("ptRegList").hidden = !REG; $("ptSeatsRow").hidden = REG; $("ptPeriodRow").hidden = REG;
@@ -269,10 +304,13 @@
       renderPaypal();
     }
 
+    document.getElementById("ptRetry").addEventListener("click", () => location.reload());
     async function load() {
       if (!/^[a-z0-9-]{1,40}$/.test(SLUG) || !KEY) { show("ptNotFound"); return; }
+      const slow = setTimeout(() => { const e = $("ptSlow"); if (e) e.hidden = false; }, 8000);
       try { render((await fnPage({ slug: SLUG, k: KEY })).data); }
       catch (_) { show("ptNotFound"); }
+      finally { clearTimeout(slow); }
     }
 
     function needAgree() {
