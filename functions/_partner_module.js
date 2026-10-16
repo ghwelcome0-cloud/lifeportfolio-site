@@ -38,6 +38,7 @@ const VERIFY = ["link", "common", "personal"];
 const STATUS = ["draft", "active", "paused", "ended"];
 const REGULAR_KRW = 19900;
 const REGULAR_USD = "14.99";
+const THEMES = ["teal", "navy", "forest", "plum", "charcoal"]; // 제휴 화면 색 (화면 쪽 목록과 같아야 함)
 
 const sha = (s) => crypto.createHash("sha256").update(String(s)).digest("hex");
 const fs = () => admin.firestore();
@@ -63,6 +64,8 @@ function publicView(p, seatsLeft) {
     regularKrw: REGULAR_KRW, regularUsd: REGULAR_USD, startAt: ms(p.startAt), endAt: ms(p.endAt),
     seatsLeft, maxSeats: p.maxSeats, verify: p.verify, note: p.note || "", domesticPaused: p.domesticPaused === true,
     test: p.testMode === true,
+    priceMode: p.priceMode === "regular" ? "regular" : "partner", theme: THEMES.includes(p.theme) ? p.theme : "teal",
+    copy: { headline: (p.copy && p.copy.headline) || "", intro: (p.copy && p.copy.intro) || "", emotion: (p.copy && p.copy.emotion) || "" },
   };
 }
 
@@ -356,6 +359,14 @@ function readPartnerInput(d, isNew) {
   if (d.velocityHour != null) out.velocityHour = Math.max(0, Math.min(10000, parseInt(d.velocityHour, 10) || 0));
   if (d.velocityDay != null) out.velocityDay = Math.max(0, Math.min(100000, parseInt(d.velocityDay, 10) || 0));
   if (d.domesticPaused != null) out.domesticPaused = d.domesticPaused === true;
+  // 가격 방식: partner(제휴 혜택가) / regular(정상가 그대로, 혜택가·남은 혜택·기간 숨김)
+  if (d.priceMode != null) {
+    if (d.priceMode !== "partner" && d.priceMode !== "regular") fail("invalid-argument", "가격 방식을 골라 주세요.");
+    out.priceMode = d.priceMode;
+    if (d.priceMode === "regular") { out.priceKrw = REGULAR_KRW; out.priceUsd = REGULAR_USD; }
+  }
+  if (d.theme != null) { if (!THEMES.includes(d.theme)) fail("invalid-argument", "화면 색을 골라 주세요."); out.theme = d.theme; }
+  if (d.copy != null) out.copy = { headline: cleanText(d.copy.headline, 60), intro: cleanText(d.copy.intro, 300), emotion: cleanText(d.copy.emotion, 120) };
   if (isNew) out.testMode = d.testMode === true; // 시험용 여부는 만들 때만 정한다 (나중에 바꾸면 실제 결제와 섞일 수 있음)
   return out;
 }
@@ -446,7 +457,8 @@ async function adminPartnerList(req) {
   const partners = []; snap.forEach((x) => { const p = x.data(); const holds = (p.holds || []).filter((h) => h.until > now).length; partners.push({
     slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", logoData: p.logoData || "", status: p.status, pausedReason: p.pausedReason || null, verify: p.verify, priceKrw: p.priceKrw, priceUsd: p.priceUsd, fx: p.fx || null,
     startAt: ms(p.startAt), endAt: ms(p.endAt), maxSeats: p.maxSeats, used: (p.seatCount || {}).used || 0, holding: holds, sales: p.seatCount || {}, velocityHour: p.velocityHour || 0, velocityDay: p.velocityDay || 0,
-    domesticPaused: p.domesticPaused === true, note: p.note || "", hasCommonCode: !!p.commonCodeHash, test: p.testMode === true }); });
+    domesticPaused: p.domesticPaused === true, note: p.note || "", hasCommonCode: !!p.commonCodeHash, test: p.testMode === true,
+    priceMode: p.priceMode === "regular" ? "regular" : "partner", theme: p.theme || "teal", copy: p.copy || { headline: "", intro: "", emotion: "" } }); });
   const codeStats = {};
   const cs = await fs().collection("partner_codes").get();
   cs.forEach((x) => { const s = x.get("slug"); const st = x.get("status"); codeStats[s] = codeStats[s] || { unused: 0, held: 0, used: 0, void: 0 }; codeStats[s][st] = (codeStats[s][st] || 0) + 1; });
@@ -476,5 +488,5 @@ function makeExports(realDeps) {
 
 module.exports = {
   makeExports,
-  _internals: { getPartnerPage, startPartnerCheckout, confirmPartnerPayple, createPartnerPaypalOrder, capturePartnerPaypalOrder, reportDomesticFail, adminPartnerSave, adminPartnerAction, adminPartnerList, readLogoData, LOGO_MAX_BYTES, randCode, normCode, codeId, sha, CODE_ALPHABET, CODE_LEN, QUOTE_MS },
+  _internals: { getPartnerPage, startPartnerCheckout, confirmPartnerPayple, createPartnerPaypalOrder, capturePartnerPaypalOrder, reportDomesticFail, adminPartnerSave, adminPartnerAction, adminPartnerList, THEMES, readLogoData, LOGO_MAX_BYTES, randCode, normCode, codeId, sha, CODE_ALPHABET, CODE_LEN, QUOTE_MS },
 };

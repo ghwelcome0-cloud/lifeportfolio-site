@@ -21,6 +21,15 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <style>
     :root{--teal1:#2F5B54;--teal2:#468D84;--teal3:#3A7A72;--gold:#E0A458;--ink:#22302d;--muted:#5b6b67;--line:#e3e8e6;--bg:#f6f7f4;--card:#fff;--blue:#4A6984}
+    body[data-theme="navy"]{--teal1:#22385a;--teal2:#3a5c8c;--teal3:#2c4a74}
+    body[data-theme="forest"]{--teal1:#2f4f2f;--teal2:#4f7a4a;--teal3:#3e6a3a}
+    body[data-theme="plum"]{--teal1:#4a2f52;--teal2:#7a4f86;--teal3:#633f6e}
+    body[data-theme="charcoal"]{--teal1:#2b2f33;--teal2:#4c535a;--teal3:#3b4146}
+    .pt-intro{margin:14px 0 0;font-size:14.5px;line-height:1.7;opacity:.95}
+    .pt-emo{margin:16px 0 0;font-size:15px;font-weight:700;color:#f6e3c4;line-height:1.6}
+    .pt-facts{display:grid;gap:8px;margin:14px 0 4px;padding:0;list-style:none}
+    .pt-facts li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.55;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fafbfa}
+    .pt-facts li b{color:var(--teal1)}
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:break-word;line-height:1.6}
     a{color:var(--teal1)}
@@ -103,22 +112,31 @@
           <h1 class="pt-h1" id="ptH1"><span id="ptHeroName">제휴사</span> 회원을 위한<br>인생포트폴리오</h1>
           <div class="pt-gold" aria-hidden="true"></div>
           <p class="pt-sub">나의 고유함을 발견하고, 살아내고, 남기는 한 권.</p>
+          <p class="pt-intro" id="ptIntro">76문항 진단으로 나의 사명·비전·강점을 찾고, 이번 주 첫 행동 3가지와 3주 실행 루틴까지 한 권의 리포트로 받아요.</p>
           <ul class="pt-inc">
             <li>인생포트폴리오 리포트</li>
             <li>자산화 맞춤 실행 프로그램</li>
             <li>내 다이어리</li>
           </ul>
         </div>
-        <p class="pt-sub" style="font-size:13px;opacity:.8;margin-top:22px">결제 후에는 일반 결제와 똑같이 이용해요.</p>
+        <div>
+          <p class="pt-emo" id="ptEmo">나다운 내일을 위한 첫 번째 한 권.</p>
+          <p class="pt-sub" id="ptAfter" style="font-size:13px;opacity:.8;margin-top:14px">결제 후에는 일반 결제와 똑같이 이용해요.</p>
+        </div>
       </section>
 
       <section class="pt-card" aria-labelledby="ptPriceT">
         <span class="pt-badge" id="ptBadge">제휴 혜택가</span>
         <h2 class="pt-sr" id="ptPriceT">제휴 혜택가</h2>
         <p class="pt-price"><s id="ptRegular">19,900원</s><b id="ptPrice">-</b></p>
-        <p class="pt-meta">부가세 포함 · 1인 1회 · 첫 결제에만 적용</p>
-        <div class="pt-row"><span>남은 혜택</span><b id="ptSeats">-</b></div>
-        <div class="pt-row"><span>혜택 기간</span><b id="ptPeriod">-</b></div>
+        <p class="pt-meta" id="ptMeta">부가세 포함 · 1인 1회 · 첫 결제에만 적용</p>
+        <ul class="pt-facts" id="ptFacts" hidden>
+          <li><span aria-hidden="true">⏱</span><span><b>검사 15~20분</b> · 76문항에 차분히 답하면 끝나요.</span></li>
+          <li><span aria-hidden="true">📘</span><span><b>리포트 바로 발급</b> · 사명·비전·강점을 한 권으로 정리해 드려요.</span></li>
+          <li><span aria-hidden="true">🗓</span><span><b>3주 실행 루틴</b> · 이번 주 첫 행동 3가지부터 시작해요.</span></li>
+        </ul>
+        <div class="pt-row" id="ptSeatsRow"><span>남은 혜택</span><b id="ptSeats">-</b></div>
+        <div class="pt-row" id="ptPeriodRow"><span>혜택 기간</span><b id="ptPeriod">-</b></div>
         <div class="pt-row"><span>결제 계정</span><b id="ptAccount">로그인 전</b></div>
         <p class="pt-meta" id="ptNote" style="margin-top:8px" hidden></p>
 
@@ -221,6 +239,19 @@
       }
       show("ptMain");
       $("ptHeroName").textContent = P.name;
+      const C = P.copy || {}, REG = P.priceMode === "regular";
+      document.body.dataset.theme = P.theme || "teal";
+      if (C.headline) $("ptH1").textContent = C.headline;
+      if (C.intro) $("ptIntro").textContent = C.intro;
+      if (C.emotion) $("ptEmo").textContent = C.emotion;
+      if (REG) {
+        // 정상가 제휴: 혜택가·남은 혜택·기간을 보이지 않고, 검사 소개로 바꾼다
+        $("ptBadge").textContent = P.name + " 회원 안내"; $("ptPriceT").textContent = "인생포트폴리오 이용 금액";
+        $("ptRegular").hidden = true; $("ptMeta").textContent = "부가세 포함 · 한 번 결제로 리포트·실행 프로그램·다이어리까지";
+        $("ptFacts").hidden = false; $("ptSeatsRow").hidden = true; $("ptPeriodRow").hidden = true;
+        $("ptSignup").textContent = "회원가입하고 시작하기"; $("ptAfter").textContent = P.name + " 회원께 소개하는 인생포트폴리오예요.";
+        document.title = "인생포트폴리오 × " + P.name;
+      }
       $("ptRegular").textContent = won(P.regularKrw);
       $("ptPrice").textContent = won(P.priceKrw);
       $("ptUsd").textContent = "$" + P.priceUsd;
@@ -229,7 +260,7 @@
       if (P.note) { $("ptNote").hidden = false; $("ptNote").textContent = P.note; }
       $("ptCodeBox").hidden = !(P.verify === "common" || P.verify === "personal");
       if (P.verify === "personal") $("ptCodeHelp").textContent = "제휴사에서 받은 나만의 코드를 입력해 주세요. 코드는 처음 쓴 계정에만 쓸 수 있어요.";
-      if (r.state === "soldout") { $("ptPay").hidden = true; $("ptLogin").hidden = true; msg("준비된 혜택이 모두 소진되었어요. 일반 결제로 시작하실 수 있어요.", "err"); return; }
+      if (r.state === "soldout") { $("ptPay").hidden = true; $("ptLogin").hidden = true; msg(P.priceMode === "regular" ? "지금은 이 안내 페이지로 결제할 수 없어요. 일반 결제로 시작하실 수 있어요." : "준비된 혜택이 모두 소진되었어요. 일반 결제로 시작하실 수 있어요.", "err"); return; }
       if (!USER) { $("ptLogin").hidden = false; $("ptPay").hidden = true; $("ptPaid").hidden = true; $("ptAccount").textContent = "로그인 전"; return; }
       $("ptLogin").hidden = true;
       $("ptAccount").textContent = USER.email || "로그인됨";

@@ -88,6 +88,18 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   await M.adminPartnerAction(ADM({ slug: 'test-hanbit', action: 'setStatus', status: 'ended' }));
   await rtdb.ref('payments/tpaid').remove();
 
+  // ── 정상가 제휴 + 화면 색·문구 ─────────────────────────────────────
+  const rg = await M.adminPartnerSave(ADM({ create: true, slug: 'reg-co', name: '정상가회사', priceMode: 'regular', priceKrw: 5000, priceUsd: '3.00', theme: 'navy', copy: { headline: '<b>우리 회원을 위한</b> 한 권', intro: '소개', emotion: '감성' }, startAt: start, endAt: end, maxSeats: 10, verify: 'link' }));
+  const rgd = (await db.collection('partners').doc('reg-co').get()).data();
+  ok('regular-mode-forces-regular-price', rgd.priceKrw === 19900 && rgd.priceUsd === '14.99' && rgd.priceMode === 'regular');
+  ok('copy-sanitized', !/[<>]/.test(rgd.copy.headline) && rgd.theme === 'navy');
+  ok('bad-theme-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'reg-co', theme: 'red' })))) === 'invalid-argument');
+  ok('bad-price-mode-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'reg-co', priceMode: 'free' })))) === 'invalid-argument');
+  await M.adminPartnerAction(ADM({ slug: 'reg-co', action: 'setStatus', status: 'active' }));
+  const rgp = await M.getPartnerPage({ auth: null, data: { slug: 'reg-co', k: keyOf(rg.link) } }, D());
+  ok('regular-public-view', rgp.partner.priceMode === 'regular' && rgp.partner.priceKrw === 19900 && rgp.partner.theme === 'navy' && rgp.partner.copy.emotion === '감성');
+  await M.adminPartnerAction(ADM({ slug: 'reg-co', action: 'setStatus', status: 'ended' }));
+
   // ── 공개 페이지: 모방 링크 차단 ─────────────────────────────────
   const page = (slug, k, uid) => M.getPartnerPage(uid ? U(uid, { slug, k }) : { auth: null, data: { slug, k } }, D());
   ok('draft-is-notfound', (await page('sportsjobalio', K)).state === 'notfound');
