@@ -48,6 +48,8 @@
     .pt-badge{display:inline-block;font-size:12px;font-weight:800;color:var(--teal1);background:#e8f1ef;border-radius:99px;padding:4px 10px}
     .pt-price{margin:12px 0 2px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
     .pt-price s{color:#98a3a0;font-size:16px}
+    .pt-reg{list-style:none;margin:12px 0 4px;padding:12px 14px;background:#f4f8f7;border-radius:12px;font-size:14px;line-height:1.7;color:#2c4a45}
+    .pt-reg li::before{content:"✓";color:var(--teal1);font-weight:900;margin-right:8px}
     .pt-price b{font-size:34px;font-weight:900;color:var(--teal1)}
     .pt-meta{margin:0 0 14px;font-size:13px;color:var(--muted)}
     .pt-row{display:flex;justify-content:space-between;gap:10px;font-size:14px;padding:9px 0;border-top:1px solid var(--line)}
@@ -116,9 +118,14 @@
         <span class="pt-badge" id="ptBadge">제휴 혜택가</span>
         <h2 class="pt-sr" id="ptPriceT">제휴 혜택가</h2>
         <p class="pt-price"><s id="ptRegular">19,900원</s><b id="ptPrice">-</b></p>
-        <p class="pt-meta">부가세 포함 · 1인 1회 · 첫 결제에만 적용</p>
-        <div class="pt-row"><span>남은 혜택</span><b id="ptSeats">-</b></div>
-        <div class="pt-row"><span>혜택 기간</span><b id="ptPeriod">-</b></div>
+        <p class="pt-meta" id="ptMeta">부가세 포함 · 1인 1회 · 첫 결제에만 적용</p>
+        <ul class="pt-reg" id="ptRegList" hidden>
+          <li>리포트 · 실행 프로그램 · 다이어리를 한 번에</li>
+          <li>결제 후 바로 검사 시작 (15~20분)</li>
+          <li>결과는 마이페이지에 계속 보관</li>
+        </ul>
+        <div class="pt-row" id="ptSeatsRow"><span>남은 혜택</span><b id="ptSeats">-</b></div>
+        <div class="pt-row" id="ptPeriodRow"><span>혜택 기간</span><b id="ptPeriod">-</b></div>
         <div class="pt-row"><span>결제 계정</span><b id="ptAccount">로그인 전</b></div>
         <p class="pt-meta" id="ptNote" style="margin-top:8px" hidden></p>
 
@@ -221,6 +228,13 @@
       }
       show("ptMain");
       $("ptHeroName").textContent = P.name;
+      const REG = P.priceMode === "regular"; // 정상가 제휴: 할인·남은 혜택·기간을 보여 주지 않는다
+      $("ptBadge").textContent = REG ? P.name + " 회원 전용" : "제휴 혜택가";
+      $("ptPriceT").textContent = REG ? "이용 금액" : "제휴 혜택가";
+      $("ptRegular").hidden = REG;
+      $("ptMeta").textContent = REG ? "부가세 포함 · 한 번 결제로 모두 이용" : "부가세 포함 · 1인 1회 · 첫 결제에만 적용";
+      $("ptRegList").hidden = !REG; $("ptSeatsRow").hidden = REG; $("ptPeriodRow").hidden = REG;
+      $("ptSignup").textContent = REG ? "회원가입하고 시작하기" : "회원가입하고 혜택 받기";
       $("ptRegular").textContent = won(P.regularKrw);
       $("ptPrice").textContent = won(P.priceKrw);
       $("ptUsd").textContent = "$" + P.priceUsd;
@@ -229,7 +243,7 @@
       if (P.note) { $("ptNote").hidden = false; $("ptNote").textContent = P.note; }
       $("ptCodeBox").hidden = !(P.verify === "common" || P.verify === "personal");
       if (P.verify === "personal") $("ptCodeHelp").textContent = "제휴사에서 받은 나만의 코드를 입력해 주세요. 코드는 처음 쓴 계정에만 쓸 수 있어요.";
-      if (r.state === "soldout") { $("ptPay").hidden = true; $("ptLogin").hidden = true; msg("준비된 혜택이 모두 소진되었어요. 일반 결제로 시작하실 수 있어요.", "err"); return; }
+      if (r.state === "soldout") { $("ptPay").hidden = true; $("ptLogin").hidden = true; msg(P.priceMode === "regular" ? "이 링크의 접수가 마감되었어요. 일반 결제로 시작하실 수 있어요." : "준비된 혜택이 모두 소진되었어요. 일반 결제로 시작하실 수 있어요.", "err"); return; }
       if (!USER) { $("ptLogin").hidden = false; $("ptPay").hidden = true; $("ptPaid").hidden = true; $("ptAccount").textContent = "로그인 전"; return; }
       $("ptLogin").hidden = true;
       $("ptAccount").textContent = USER.email || "로그인됨";

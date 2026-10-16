@@ -62,7 +62,7 @@ function publicView(p, seatsLeft) {
     slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", logoData: p.logoData || "", priceKrw: p.priceKrw, priceUsd: p.priceUsd,
     regularKrw: REGULAR_KRW, regularUsd: REGULAR_USD, startAt: ms(p.startAt), endAt: ms(p.endAt),
     seatsLeft, maxSeats: p.maxSeats, verify: p.verify, note: p.note || "", domesticPaused: p.domesticPaused === true,
-    test: p.testMode === true,
+    test: p.testMode === true, priceMode: p.priceMode === "regular" ? "regular" : "discount",
   };
 }
 
@@ -343,6 +343,8 @@ function readPartnerInput(d, isNew) {
   if (d.name != null) { out.name = cleanText(d.name, 60); if (!out.name) fail("invalid-argument", "제휴사 이름을 적어 주세요."); }
   if (d.logoUrl != null) { const u = String(d.logoUrl).trim(); if (u && !/^https:\/\/[^\s"'<>]{4,400}$/.test(u)) fail("invalid-argument", "로고 주소는 https:// 로 시작해야 합니다."); out.logoUrl = u; }
   if (d.logoData != null) out.logoData = readLogoData(d.logoData);
+  if (d.priceMode != null) { if (!["discount", "regular"].includes(d.priceMode)) fail("invalid-argument", "가격 방식을 골라 주세요."); out.priceMode = d.priceMode; }
+  if (out.priceMode === "regular") { d = Object.assign({}, d, { priceKrw: REGULAR_KRW, priceUsd: REGULAR_USD }); } // 정상가: 서버가 정상 가격으로 고정
   if (d.priceKrw != null) { const n = parseInt(d.priceKrw, 10); if (!(n >= 1000 && n <= REGULAR_KRW)) fail("invalid-argument", "제휴가는 1,000원 ~ 19,900원(부가세 포함)입니다."); out.priceKrw = n; }
   if (d.priceUsd != null) { if (!usdOk(d.priceUsd) || Number(d.priceUsd) > Number(REGULAR_USD)) fail("invalid-argument", "해외가는 1.00 ~ 14.99 달러, 소수 둘째 자리까지입니다."); out.priceUsd = String(d.priceUsd); }
   if (d.fx != null) out.fx = { rate: Number(d.fx.rate) || null, date: cleanText(d.fx.date, 10), source: cleanText(d.fx.source, 40) };
@@ -446,7 +448,7 @@ async function adminPartnerList(req) {
   const partners = []; snap.forEach((x) => { const p = x.data(); const holds = (p.holds || []).filter((h) => h.until > now).length; partners.push({
     slug: p.slug, name: p.name, logoUrl: p.logoUrl || "", logoData: p.logoData || "", status: p.status, pausedReason: p.pausedReason || null, verify: p.verify, priceKrw: p.priceKrw, priceUsd: p.priceUsd, fx: p.fx || null,
     startAt: ms(p.startAt), endAt: ms(p.endAt), maxSeats: p.maxSeats, used: (p.seatCount || {}).used || 0, holding: holds, sales: p.seatCount || {}, velocityHour: p.velocityHour || 0, velocityDay: p.velocityDay || 0,
-    domesticPaused: p.domesticPaused === true, note: p.note || "", hasCommonCode: !!p.commonCodeHash, test: p.testMode === true }); });
+    domesticPaused: p.domesticPaused === true, note: p.note || "", hasCommonCode: !!p.commonCodeHash, test: p.testMode === true, priceMode: p.priceMode === "regular" ? "regular" : "discount" }); });
   const codeStats = {};
   const cs = await fs().collection("partner_codes").get();
   cs.forEach((x) => { const s = x.get("slug"); const st = x.get("status"); codeStats[s] = codeStats[s] || { unused: 0, held: 0, used: 0, void: 0 }; codeStats[s][st] = (codeStats[s][st] || 0) + 1; });

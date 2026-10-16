@@ -287,6 +287,11 @@
         <label>최대 인원<input id="pfSeats" type="number" min="1" max="100000" value="500"></label>
         <label>안내 문구 (선택)<input id="pfNote" maxlength="200" placeholder="예: 한빛스포츠클럽 회원 전용 혜택이에요."></label>
       </div>
+      <p class="desc" style="margin:12px 0 0"><b>가격 방식</b> · 제휴사가 고를 수 있어요.</p>
+      <div class="pt-verify" role="radiogroup" aria-label="가격 방식">
+        <label><input type="radio" name="pfPrice" value="discount" checked><span><b>제휴 혜택가</b>할인 금액, 남은 혜택, 혜택 기간이 보여요</span></label>
+        <label><input type="radio" name="pfPrice" value="regular"><span><b>정상가 (할인 없음)</b>사이트와 같은 19,900원 / $14.99. 할인·남은 혜택·기간 문구가 보이지 않아요</span></label>
+      </div>
       <p class="desc" style="margin:12px 0 0"><b>확인 방식</b> · 제휴마다 고를 수 있어요.</p>
       <div class="pt-verify" role="radiogroup" aria-label="확인 방식">
         <label><input type="radio" name="pfVerify" value="link"><span><b>① 링크만</b>링크를 가진 사람은 누구나 (사내 교육 등 비공개용)</span></label>
@@ -553,16 +558,23 @@
       catch (e) { setLogo(PT.logoData); $p("pfLogoMsg").textContent = "❌ " + (e.message || "올리지 못했어요."); }
     });
     $p("pfLogoDel").addEventListener("click", () => { setLogo(""); $p("pfLogoMsg").textContent = "파일을 지웠어요. [저장]을 눌러야 반영돼요."; });
+    const priceMode = () => (document.querySelector('input[name="pfPrice"]:checked') || {}).value || "discount";
+    function applyPriceMode() {
+      const reg = priceMode() === "regular";
+      ["pfKrw", "pfFx", "pfUsd"].forEach((i) => { $p(i).disabled = reg; });
+      if (reg) { $p("pfKrw").value = 19900; $p("pfUsd").value = "14.99"; }
+    }
+    document.querySelectorAll('input[name="pfPrice"]').forEach((r) => r.addEventListener("change", applyPriceMode));
     function formData() {
       const st = Date.parse($p("pfStart").value + "T00:00:00+09:00"), days = parseInt($p("pfDays").value, 10) || 90;
       return { name: $p("pfName").value, slug: $p("pfSlug").value.trim().toLowerCase(), logoUrl: $p("pfLogo").value.trim(), logoData: PT.logoData || "", priceKrw: Number($p("pfKrw").value), priceUsd: $p("pfUsd").value.trim(),
         fx: { rate: Number($p("pfFx").value) || null, date: $p("pfFx").dataset.date || today, source: "ECB(frankfurter)" }, startAt: st, endAt: st + days * 864e5 - 1000, maxSeats: Number($p("pfSeats").value),
-        verify: document.querySelector('input[name="pfVerify"]:checked').value, note: $p("pfNote").value, velocityHour: Number($p("pfVh").value), velocityDay: Number($p("pfVd").value), testMode: !PT.editing && $p("pfTest").checked };
+        verify: document.querySelector('input[name="pfVerify"]:checked').value, note: $p("pfNote").value, velocityHour: Number($p("pfVh").value), velocityDay: Number($p("pfVd").value), testMode: !PT.editing && $p("pfTest").checked, priceMode: priceMode() };
     }
     function outBox(html) { $p("pfOut").innerHTML = '<div class="pt-out">' + html + "</div>"; }
     function copyBtn(text, label) { const id = "cp" + Math.random().toString(36).slice(2, 8); setTimeout(() => { const b = $p(id); if (b) b.onclick = () => navigator.clipboard.writeText(text).then(() => { b.textContent = "복사됨 ✓"; }); }, 0); return ' <button type="button" class="btn" id="' + id + '">' + (label || "복사") + "</button>"; }
     function downloadCsv(name, csv) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" })); a.download = name; a.click(); }
-    $p("pfClear").addEventListener("click", () => { PT.editing = null; $p("pfSlug").disabled = false; $p("pfSave").textContent = "저장하고 링크 만들기"; ["pfName", "pfSlug", "pfLogo", "pfNote"].forEach((i) => { $p(i).value = ""; }); setLogo(""); $p("pfTest").checked = false; $p("pfTest").disabled = false; $p("pfOut").innerHTML = ""; });
+    $p("pfClear").addEventListener("click", () => { PT.editing = null; $p("pfSlug").disabled = false; $p("pfSave").textContent = "저장하고 링크 만들기"; ["pfName", "pfSlug", "pfLogo", "pfNote"].forEach((i) => { $p(i).value = ""; }); setLogo(""); $p("pfTest").checked = false; $p("pfTest").disabled = false; document.querySelector('input[name="pfPrice"][value="discount"]').checked = true; applyPriceMode(); $p("pfOut").innerHTML = ""; });
     $p("pfSave").addEventListener("click", async () => {
       const d = formData(); $p("pfSave").disabled = true; ptMsg("저장하는 중…");
       try {
@@ -582,7 +594,7 @@
       catch (e) { ptMsg("❌ " + escapeHtml(e.message || ""), "#c0392b"); return null; }
     }
     function edit(p) {
-      PT.editing = p.slug; $p("pfSlug").value = p.slug; $p("pfSlug").disabled = true; $p("pfName").value = p.name; $p("pfLogo").value = p.logoUrl; setLogo(p.logoData || ""); $p("pfTest").checked = p.test === true; $p("pfTest").disabled = true; $p("pfKrw").value = p.priceKrw; $p("pfUsd").value = p.priceUsd;
+      PT.editing = p.slug; $p("pfSlug").value = p.slug; $p("pfSlug").disabled = true; $p("pfName").value = p.name; $p("pfLogo").value = p.logoUrl; setLogo(p.logoData || ""); $p("pfTest").checked = p.test === true; $p("pfTest").disabled = true; document.querySelector('input[name="pfPrice"][value="' + (p.priceMode === "regular" ? "regular" : "discount") + '"]').checked = true; applyPriceMode(); $p("pfKrw").value = p.priceKrw; $p("pfUsd").value = p.priceUsd;
       if (p.fx && p.fx.rate) $p("pfFx").value = p.fx.rate; $p("pfStart").value = new Date(p.startAt + 9 * 3600e3).toISOString().slice(0, 10); $p("pfDays").value = Math.round((p.endAt - p.startAt + 1000) / 864e5);
       $p("pfSeats").value = p.maxSeats; $p("pfNote").value = p.note; $p("pfVh").value = p.velocityHour; $p("pfVd").value = p.velocityDay;
       document.querySelector('input[name="pfVerify"][value="' + p.verify + '"]').checked = true; $p("pfVelBox").hidden = p.verify !== "common";
@@ -595,7 +607,7 @@
         const cs = d.codeStats[p.slug] || {};
         const codeInfo = p.verify === "personal" ? "<br>코드: 미사용 " + (cs.unused || 0) + " · 사용 " + (cs.used || 0) + " · 정지 " + (cs.void || 0) : p.verify === "common" ? "<br>자동 멈춤 " + p.velocityHour + "/시간 · " + p.velocityDay + "/일" : "";
         const b = (a, t, cls) => '<button type="button" data-s="' + p.slug + '" data-a="' + a + '"' + (cls ? ' class="' + cls + '"' : "") + ">" + t + "</button>";
-        return "<tr><td>" + logoThumb(p) + "<b>" + escapeHtml(p.name) + "</b>" + (p.test ? '<span class="pt-testtag">🧪 시험용</span>' : "") + "<br><small>" + escapeHtml(p.slug) + "</small></td><td><span class=\"pt-pill " + p.status + "\">" + SNAME[p.status] + "</span>" + (p.pausedReason === "auto-velocity" ? "<br><small style=\"color:#9a3412\">자동 멈춤</small>" : "") + (p.domesticPaused ? "<br><small>국내 결제 쉬는 중</small>" : "") + "</td><td>" + won(p.priceKrw) + "<br>$" + escapeHtml(p.priceUsd) + "</td><td>" + dkst(p.startAt) + "<br>~ " + dkst(p.endAt) + "</td><td>결제 " + p.used + " / " + p.maxSeats + (p.holding ? "<br><small>결제 중 " + p.holding + "</small>" : "") + "</td><td>" + VNAME[p.verify] + codeInfo + "</td><td>" + won(p.sales.krw) + "<br>$" + (p.sales.usd || 0) + "</td><td><div class=\"pt-acts\">" +
+        return "<tr><td>" + logoThumb(p) + "<b>" + escapeHtml(p.name) + "</b>" + (p.test ? '<span class="pt-testtag">🧪 시험용</span>' : "") + (p.priceMode === "regular" ? '<span class="pt-testtag" style="background:#e8f1ef;color:#2F5B54">정상가</span>' : "") + "<br><small>" + escapeHtml(p.slug) + "</small></td><td><span class=\"pt-pill " + p.status + "\">" + SNAME[p.status] + "</span>" + (p.pausedReason === "auto-velocity" ? "<br><small style=\"color:#9a3412\">자동 멈춤</small>" : "") + (p.domesticPaused ? "<br><small>국내 결제 쉬는 중</small>" : "") + "</td><td>" + won(p.priceKrw) + "<br>$" + escapeHtml(p.priceUsd) + "</td><td>" + dkst(p.startAt) + "<br>~ " + dkst(p.endAt) + "</td><td>결제 " + p.used + " / " + p.maxSeats + (p.holding ? "<br><small>결제 중 " + p.holding + "</small>" : "") + "</td><td>" + VNAME[p.verify] + codeInfo + "</td><td>" + won(p.sales.krw) + "<br>$" + (p.sales.usd || 0) + "</td><td><div class=\"pt-acts\">" +
           (p.status !== "active" ? b("go", "진행") : b("pause", "멈춤")) + b("edit", "수정") + b("regen", "링크 다시 만들기") +
           (p.verify === "common" ? b("rotate", "코드 바꾸기") : "") + (p.verify === "personal" ? b("issue", "코드 만들기") + b("voidone", "코드 1개 정지") + b("voidall", "미사용 코드 모두 정지", "warn") : "") +
           b("dom", p.domesticPaused ? "국내 결제 다시 열기" : "국내 결제 잠시 쉬기") + (p.status !== "ended" ? b("end", "종료", "warn") : "") + "</div></td></tr>";

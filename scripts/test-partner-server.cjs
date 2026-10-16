@@ -88,6 +88,16 @@ const keyOf = (link) => new URL(link).searchParams.get('k');
   await M.adminPartnerAction(ADM({ slug: 'test-hanbit', action: 'setStatus', status: 'ended' }));
   await rtdb.ref('payments/tpaid').remove();
 
+  // ── 정상가 제휴 (priceMode=regular): 서버가 19,900원/$14.99로 고정 ───────
+  const rg = await M.adminPartnerSave(ADM({ create: true, slug: 'hanbit-regular', name: '한빛스포츠클럽', priceMode: 'regular', priceKrw: 5000, priceUsd: '3.00', startAt: start, endAt: end, maxSeats: 10, verify: 'link' }));
+  const rgd = (await db.collection('partners').doc('hanbit-regular').get()).data();
+  ok('regular-price-forced-by-server', rgd.priceMode === 'regular' && rgd.priceKrw === 19900 && rgd.priceUsd === '14.99');
+  await M.adminPartnerAction(ADM({ slug: 'hanbit-regular', action: 'setStatus', status: 'active' }));
+  const rgp = await M.getPartnerPage({ auth: null, data: { slug: 'hanbit-regular', k: keyOf(rg.link) } }, D());
+  ok('regular-mode-public', rgp.partner.priceMode === 'regular' && rgp.partner.priceKrw === 19900);
+  ok('bad-price-mode-rejected', (await err(M.adminPartnerSave(ADM({ slug: 'hanbit-regular', priceMode: 'free' })))) === 'invalid-argument');
+  await M.adminPartnerAction(ADM({ slug: 'hanbit-regular', action: 'setStatus', status: 'ended' }));
+
   // ── 공개 페이지: 모방 링크 차단 ─────────────────────────────────
   const page = (slug, k, uid) => M.getPartnerPage(uid ? U(uid, { slug, k }) : { auth: null, data: { slug, k } }, D());
   ok('draft-is-notfound', (await page('sportsjobalio', K)).state === 'notfound');
