@@ -32,30 +32,10 @@ assert.match(live, /environment:\s*production-live/);
 assert.doesNotMatch(live,/production_freeze_open:/,"live: dispatcher-controlled freeze override forbidden");
 assert.doesNotMatch(live,/PRODUCTION_DEPLOY_ENABLED|actions\/variables/,"live: variable freeze override forbidden");
 assert.equal((live.match(/node scripts\/verify-production-freeze\.mjs/g)||[]).length,2,"live: versioned freeze must be checked before credential materialization and deploy");
-const firstFreeze=live.indexOf("node scripts/verify-production-freeze.mjs"),materialize=live.indexOf("printf '%s' \"$SERVICE_ACCOUNT_JSON\""),lastFreeze=live.lastIndexOf("node scripts/verify-production-freeze.mjs"),deploy=live.indexOf("npx --no-install firebase deploy");assert.ok(firstFreeze<materialize,"live: first freeze check must precede credential materialization");assert.ok(lastFreeze<deploy,"live: second freeze check must precede deploy");
+const firstFreeze=live.indexOf("node scripts/verify-production-freeze.mjs"),materialize=live.indexOf("printf '%s' \"$FIREBASE_PRODUCTION_SERVICE_ACCOUNT\""),lastFreeze=live.lastIndexOf("node scripts/verify-production-freeze.mjs"),deploy=live.indexOf("npx --no-install firebase deploy");assert.ok(firstFreeze<materialize,"live: first freeze check must precede credential materialization");assert.ok(lastFreeze<deploy,"live: second freeze check must precede deploy");
 assert.match(live, /secrets\.FIREBASE_PRODUCTION_SERVICE_ACCOUNT/);
-const liveRepoSecretRefs = live.match(/secrets\.FIREBASE_SERVICE_ACCOUNT\b/g) || [];
-assert.ok(liveRepoSecretRefs.length <= 1, "live: repository deploy secret may be referenced at most once");
-if (liveRepoSecretRefs.length === 1) {
-  const preferredIndex = live.indexOf("secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT");
-  const fallbackIndex = live.search(/secrets\.FIREBASE_SERVICE_ACCOUNT\b/);
-  assert.ok(preferredIndex >= 0 && preferredIndex < fallbackIndex, "live: environment secret must be declared before the fallback");
-  const gatesBeforeCredential = [
-    "Require dispatch from current main",
-    "verify-workflow-artifact.mjs",
-    "verify-hosting-provenance.mjs",
-    "npm run build:hosting",
-    "REVIEWED_MANIFEST_SHA",
-  ];
-  for (const gate of gatesBeforeCredential) {
-    const at = live.indexOf(gate);
-    assert.ok(at >= 0, `live: missing required gate ${gate}`);
-    assert.ok(at < fallbackIndex, `live: gate ${gate} must run before credential access`);
-  }
-  assert.match(live, /if \[ -z "\$SERVICE_ACCOUNT_JSON" \]; then/, "live: fallback must be conditional on an empty environment secret");
-  assert.match(live, /c\.project_id!=="lifeporfolio"/, "live: fallback credential must be pinned to the lifeporfolio project");
-  assert.match(live, /rm -f "\$RUNNER_TEMP\/production-sa\.json"/, "live: credential file must be removed after deploy");
-}
+assert.doesNotMatch(live,/secrets\.FIREBASE_SERVICE_ACCOUNT\b|\bFIREBASE_SERVICE_ACCOUNT\b/,"live: repository preview credential and renamed fallback forbidden");assert.match(live,/test -n "\$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"/);assert.doesNotMatch(live,/if \[ -z "\$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"|SERVICE_ACCOUNT_JSON|IDENTITY_SOURCE|fallback/i);assert.match(live,/c\.project_id!=="lifeporfolio"/);assert.match(live,/rm -f "\$RUNNER_TEMP\/production-sa\.json"/);
+for(const bad of [live.replace("FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}","FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"),live.replace("test -n \"$FIREBASE_PRODUCTION_SERVICE_ACCOUNT\"","FIREBASE_SERVICE_ACCOUNT=${FIREBASE_PRODUCTION_SERVICE_ACCOUNT:-fallback}"),live.replace("printf '%s' \"$FIREBASE_PRODUCTION_SERVICE_ACCOUNT\"","printf '%s' \"${FIREBASE_PRODUCTION_SERVICE_ACCOUNT:-$REPO_DEPLOY_ID}\"")])assert.match(bad,/FIREBASE_SERVICE_ACCOUNT|fallback|REPO_DEPLOY_ID/);
 for(const name of["required-checks.yml","governance-bootstrap.yml","firebase-hosting-pr-build.yml","public-contact-policy-activation.yml"]){const body=fs.readFileSync(path.join(workflowDir,name),"utf8");if(!body.includes("PR_HEAD_SHA:"))throw new Error(`${name}: PR_HEAD_SHA env missing`);}
 const requiredWorkflow=fs.readFileSync(path.join(workflowDir,"required-checks.yml"),"utf8");
 assert.equal((requiredWorkflow.match(/name:\s*Validate internal evidence trust root/g)||[]).length,1,"required: exactly one direct evidence step");
