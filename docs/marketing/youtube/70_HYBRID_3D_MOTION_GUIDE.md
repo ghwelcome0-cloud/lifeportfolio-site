@@ -175,7 +175,7 @@
 | 항목 | 고정값 | 근거 |
 |---|---|---|
 | 음성 모델 | `elevenlabs/voice-clone` | §3 절대 규칙 |
-| 클론 ID | `Ti6X6rs2eexqEt3ExCTr` | §3 / §12 |
+| 클론 ID | `t5GCyTeNPnB65ZgYuIhE` (2026-10-13 재클론. 옛 ID `Ti6X6rs2eexqEt3ExCTr`는 삭제됨 = voice_not_found) | §3 / §12 |
 | 금지 모델 | `fal-ai/elevenlabs/tts/multilingual-v2` | custom_voice_id 무시 → 크레딧 낭비 이력 |
 | 팔레트 | NAVY `(33,48,66)` / GOLD `(206,168,92)` | §4 design.py |
 | 해상도·FPS | 1920x1080 · 30fps · libx264 · yuv420p | §7 |
