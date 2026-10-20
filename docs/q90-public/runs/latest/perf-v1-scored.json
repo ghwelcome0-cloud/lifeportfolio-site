@@ -1,0 +1,550 @@
+{
+ "meta": {
+  "generated": "2026-10-20T16:22Z",
+  "sheet_sha": "5019fe6034a2bf2afb6304b0ac9468e7ce8ed91ff123c58d396f7a5690c0d7b3",
+  "rubric_sha": "e01d76d3ae42e1ff3a94c57fb9d9152626fd90a4e5d1cf3de2f4a9516561a639",
+  "rubric_version": "v2.0",
+  "rubric_frozen_at": "2026-10-12",
+  "n_comp": 18,
+  "n_own": 2,
+  "anchor_sha": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
+  "anchor_max_diff": 1
+ },
+ "scoring": {
+  "main": "(L-1)×5 per axis, 5 axes, 100",
+  "ref": "rubric v2.0 public_weight normalized to 100",
+  "weights": {
+   "A1": 10,
+   "A2": 20,
+   "A3": 20,
+   "A4": 20,
+   "A5": 10
+  }
+ },
+ "median": {
+  "P": {
+   "A1": 5,
+   "A2": 10,
+   "A3": 10,
+   "A4": 5,
+   "A5": 7.5
+  },
+  "total": 45,
+  "wtotal": 43.8
+ },
+ "rows": [
+  {
+   "own": false,
+   "id": "K16",
+   "name": "한국가이던스 홀랜드 진로탐색검사",
+   "country": "KR",
+   "L": {
+    "A1": 4,
+    "A2": 4,
+    "A3": 4,
+    "A4": 3,
+    "A5": 3
+   },
+   "P": {
+    "A1": 15,
+    "A2": 15,
+    "A3": 15,
+    "A4": 10,
+    "A5": 10
+   },
+   "total": 65,
+   "wtotal": 65.6,
+   "third": [],
+   "url": "https://www.guidance.co.kr/agMain/eTest/Sample/SDA/SDS%EC%A0%81%EC%84%B1%ED%83%90%EC%83%89%EA%B2%80%EC%82%AC.pdf",
+   "sha": "bca9073845a76248e6d0acc3415eb78bba16d63f0454d285a912e5cde2622a87"
+  },
+  {
+   "own": true,
+   "id": "OWN-R",
+   "name": "인생포트폴리오 리포트(최신판, 자산화 유형·XI 자산화 길 찾기)",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 4,
+    "A3": 5,
+    "A4": 3,
+    "A5": 4
+   },
+   "P": {
+    "A1": 5,
+    "A2": 15,
+    "A3": 20,
+    "A4": 10,
+    "A5": 15
+   },
+   "total": 65,
+   "wtotal": 68.8,
+   "third": [
+    "A1",
+    "A5"
+   ],
+   "url": null,
+   "sha": null
+  },
+  {
+   "own": false,
+   "id": "G14",
+   "name": "Strong Interest Inventory",
+   "country": "INTL",
+   "L": {
+    "A1": 2,
+    "A2": 4,
+    "A3": 4,
+    "A4": 3,
+    "A5": 4
+   },
+   "P": {
+    "A1": 5,
+    "A2": 15,
+    "A3": 15,
+    "A4": 10,
+    "A5": 15
+   },
+   "total": 60,
+   "wtotal": 62.5,
+   "third": [
+    "A1"
+   ],
+   "url": "https://asia.themyersbriggs.com/wp-content/uploads/3-Profile-and-Interpretive-Report.pdf",
+   "sha": "63b66d5c1ea80fe962a7b139df06f50aba5ef1aeed8b8a89685cdee47a1a79d9"
+  },
+  {
+   "own": false,
+   "id": "M01",
+   "name": "CliftonStrengths 34 (Gallup)",
+   "country": "INTL",
+   "L": {
+    "A1": 4,
+    "A2": 4,
+    "A3": 4,
+    "A4": 2,
+    "A5": 2
+   },
+   "P": {
+    "A1": 15,
+    "A2": 15,
+    "A3": 15,
+    "A4": 5,
+    "A5": 5
+   },
+   "total": 55,
+   "wtotal": 56.3,
+   "third": [],
+   "url": "https://www.gallup.com/file/cliftonstrengths/en/260807/CliftonStrengths_34_Report.pdf",
+   "sha": "787fa3b55f47988cd710a6d7ebb7e2adbcad90b6f7f5fdd3c2189c844a11b57c"
+  },
+  {
+   "own": false,
+   "id": "G01",
+   "name": "VIA Survey (VIA Institute)",
+   "country": "INTL",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 4,
+    "A4": 3,
+    "A5": 3
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 15,
+    "A4": 10,
+    "A5": 10
+   },
+   "total": 50,
+   "wtotal": 53.1,
+   "third": [],
+   "url": "https://www.viacharacter.org/pdf/VIA%20Pro%20Report.pdf",
+   "sha": "2e89131d127f5aca0781cb05a73e99e79d6e72232078dccd612a0154c09dd7db"
+  },
+  {
+   "own": false,
+   "id": "G15b",
+   "name": "Self-Directed Search (PAR)",
+   "country": "INTL",
+   "L": {
+    "A1": 3,
+    "A2": 4,
+    "A3": 3,
+    "A4": 3,
+    "A5": 2
+   },
+   "P": {
+    "A1": 10,
+    "A2": 15,
+    "A3": 10,
+    "A4": 10,
+    "A5": 5
+   },
+   "total": 50,
+   "wtotal": 53.1,
+   "third": [],
+   "url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
+   "sha": "cc9230c4e184b0a7c509828e98d647931aade4441cd8a3d621755a368014ffa4"
+  },
+  {
+   "own": true,
+   "id": "OWN-P",
+   "name": "자산화 맞춤 실행 프로그램 리포트(최신판)",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 4,
+    "A4": 4,
+    "A5": 2
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 15,
+    "A4": 15,
+    "A5": 5
+   },
+   "total": 50,
+   "wtotal": 56.3,
+   "third": [
+    "A1"
+   ],
+   "url": null,
+   "sha": null
+  },
+  {
+   "own": false,
+   "id": "M02",
+   "name": "Everything DiSC Workplace (Wiley)",
+   "country": "INTL",
+   "L": {
+    "A1": 2,
+    "A2": 4,
+    "A3": 4,
+    "A4": 2,
+    "A5": 2
+   },
+   "P": {
+    "A1": 5,
+    "A2": 15,
+    "A3": 15,
+    "A4": 5,
+    "A5": 5
+   },
+   "total": 45,
+   "wtotal": 50,
+   "third": [
+    "A1"
+   ],
+   "url": "https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf",
+   "sha": "3960cd201c2a090ad76bbacc8a24058d85a145d4af78aa25b8d492e152cb7331"
+  },
+  {
+   "own": false,
+   "id": "G04",
+   "name": "Hogan Insight",
+   "country": "INTL",
+   "L": {
+    "A1": 2,
+    "A2": 4,
+    "A3": 2,
+    "A4": 2,
+    "A5": 4
+   },
+   "P": {
+    "A1": 5,
+    "A2": 15,
+    "A3": 5,
+    "A4": 5,
+    "A5": 15
+   },
+   "total": 45,
+   "wtotal": 43.8,
+   "third": [
+    "A1"
+   ],
+   "url": "https://www.hoganassessments.com/sites/default/files/uploads/HPI%20Insight%20-%20English.pdf",
+   "sha": "de5927e92ce87cb196f735a8494b87b05d782a9f611c51aaa5f0158e5a3ece85"
+  },
+  {
+   "own": false,
+   "id": "G08",
+   "name": "Insights Discovery",
+   "country": "INTL",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 4,
+    "A4": 3,
+    "A5": 2
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 15,
+    "A4": 10,
+    "A5": 5
+   },
+   "total": 45,
+   "wtotal": 50,
+   "third": [],
+   "url": "https://www.insights.com/media/1857/english-johnsmith-50-helping-supporter-accommodating.pdf",
+   "sha": "c9c6dd4c3edb3c0d2246992cc9f0e680f032aa67db84900dec65722717c9fb99"
+  },
+  {
+   "own": false,
+   "id": "G12",
+   "name": "Strengths Profile (Cappfinity)",
+   "country": "INTL",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 4,
+    "A4": 3,
+    "A5": 2
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 15,
+    "A4": 10,
+    "A5": 5
+   },
+   "total": 45,
+   "wtotal": 50,
+   "third": [
+    "A1"
+   ],
+   "url": "https://files.strengthsprofile.com/Deployable/LocalizableResources/en-GB/Profile%20Samples/Strengths_Profile_Leader_Sample.pdf?v=2.0.1224",
+   "sha": "8d8e29274f27a0075ed4cdc13205f771ec6bcf8400ff3da6e24b4d62b809c7c4"
+  },
+  {
+   "own": false,
+   "id": "K03",
+   "name": "어세스타 STRONG II",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 3,
+    "A4": 2,
+    "A5": 4
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 10,
+    "A4": 5,
+    "A5": 15
+   },
+   "total": 45,
+   "wtotal": 43.8,
+   "third": [],
+   "url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
+   "sha": "87709d9354ef440fa53f6d8c48e73023f4c039cba25802851a2b2f7fd7024f87"
+  },
+  {
+   "own": false,
+   "id": "K02",
+   "name": "커리어넷 직업흥미검사 H형",
+   "country": "KR",
+   "L": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 1,
+    "A4": 3,
+    "A5": 3
+   },
+   "P": {
+    "A1": 10,
+    "A2": 10,
+    "A3": 0,
+    "A4": 10,
+    "A5": 10
+   },
+   "total": 40,
+   "wtotal": 37.5,
+   "third": [],
+   "url": "https://www.krivet.re.kr/repository/bitstream/202405/10609/2/C234902_fulltext.pdf",
+   "sha": "e569908728fa0b968ad485d14ca8c6da0278965485127b9ff72655e5c425ceed"
+  },
+  {
+   "own": false,
+   "id": "K05",
+   "name": "태니지먼트 강점 리포트",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 3,
+    "A4": 3,
+    "A5": 2
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 10,
+    "A4": 10,
+    "A5": 5
+   },
+   "total": 40,
+   "wtotal": 43.8,
+   "third": [],
+   "url": "https://static.tanagement.co.kr/tanagement.co.kr/samples/strength.pdf",
+   "sha": "4df5a39ad5f86e0cf4a6203937bd51121cb37b8a281f8d0edca1bd8c15345ca0"
+  },
+  {
+   "own": false,
+   "id": "M03",
+   "name": "MBTI Complete (Myers-Briggs Co.)",
+   "country": "INTL",
+   "L": {
+    "A1": 4,
+    "A2": 2,
+    "A3": 1,
+    "A4": 1,
+    "A5": 3
+   },
+   "P": {
+    "A1": 15,
+    "A2": 5,
+    "A3": 0,
+    "A4": 0,
+    "A5": 10
+   },
+   "total": 30,
+   "wtotal": 21.9,
+   "third": [],
+   "url": "https://asia.themyersbriggs.com/wp-content/uploads/161003-MBTI-Complete.pdf",
+   "sha": "72f8773e4c08ed644548f72603b9fbe8d37d4bbce796930f7030ea866e99304d"
+  },
+  {
+   "own": false,
+   "id": "G07",
+   "name": "PI Behavioral Assessment",
+   "country": "INTL",
+   "L": {
+    "A1": 4,
+    "A2": 3,
+    "A3": 2,
+    "A4": 1,
+    "A5": 1
+   },
+   "P": {
+    "A1": 15,
+    "A2": 10,
+    "A3": 5,
+    "A4": 0,
+    "A5": 0
+   },
+   "total": 30,
+   "wtotal": 28.1,
+   "third": [],
+   "url": "https://media.predictiveindex.com/wp-content/uploads/2025/06/20115558/BehavioralReport.pdf",
+   "sha": "ddf9cb9d59ea1efdb1c7031d46ba36aa1984913160fab0acfb953ac364f63b4d"
+  },
+  {
+   "own": false,
+   "id": "K13",
+   "name": "커리어넷 직업가치관검사(대학생·일반용)",
+   "country": "KR",
+   "L": {
+    "A1": 3,
+    "A2": 3,
+    "A3": 2,
+    "A4": 2,
+    "A5": 1
+   },
+   "P": {
+    "A1": 10,
+    "A2": 10,
+    "A3": 5,
+    "A4": 5,
+    "A5": 0
+   },
+   "total": 30,
+   "wtotal": 31.3,
+   "third": [],
+   "url": "https://www.career.go.kr/cloud/w/inspect/value/intro#tab2",
+   "sha": "25abad1bf1be76cf5577e67c40c634e3769bd4f75e6ae53d8694779376005ed2"
+  },
+  {
+   "own": false,
+   "id": "K14",
+   "name": "커리어넷 진로개발준비도검사",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 3,
+    "A3": 2,
+    "A4": 1,
+    "A5": 3
+   },
+   "P": {
+    "A1": 5,
+    "A2": 10,
+    "A3": 5,
+    "A4": 0,
+    "A5": 10
+   },
+   "total": 30,
+   "wtotal": 28.1,
+   "third": [],
+   "url": "https://www.career.go.kr/cloud/w/inspect/ready/intro#tab2",
+   "sha": "d7bf3331875cbb9929fa93084e72a8e8cfe573bf6567b263315e77cfff54c016"
+  },
+  {
+   "own": false,
+   "id": "K18",
+   "name": "TCI 기질및성격검사(인싸이트)",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 2,
+    "A3": 1,
+    "A4": 1,
+    "A5": 3
+   },
+   "P": {
+    "A1": 5,
+    "A2": 5,
+    "A3": 0,
+    "A4": 0,
+    "A5": 10
+   },
+   "total": 20,
+   "wtotal": 15.6,
+   "third": [],
+   "url": "https://maumsarang.kr/maum/examine/tci_overview.asp",
+   "sha": "20c6108b210482ef0b632314b1da1c9767b1afb4779422ab2458509867d02821"
+  },
+  {
+   "own": false,
+   "id": "K17",
+   "name": "어세스타 MBTI Form M(한국판)",
+   "country": "KR",
+   "L": {
+    "A1": 3,
+    "A2": 1,
+    "A3": 2,
+    "A4": 1,
+    "A5": 1
+   },
+   "P": {
+    "A1": 10,
+    "A2": 0,
+    "A3": 5,
+    "A4": 0,
+    "A5": 0
+   },
+   "total": 15,
+   "wtotal": 12.5,
+   "third": [],
+   "url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/MBTI_FormM_Korea_Normal_ISTJ.pdf",
+   "sha": "e85d5dd4b0097829e4a2bfc944c3e76f7c82a33c9e39bb4cb7af56a0e929e67b"
+  }
+ ]
+}
