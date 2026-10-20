@@ -1127,6 +1127,7 @@
       "found": "ⓒ 일반 검색: 공식 hexaco.org 결과 샘플 없음; 대학·scribd 사본만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -1137,6 +1138,8 @@
       "bytes": 4439,
       "found": "(일치 문구 없음)",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -1454,6 +1457,7 @@
       "found": "ⓒ 일반 검색: 공식은 다운로드 폼 페이지뿐; gcsu.edu·scribd·코치 사이트 사본만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -1464,6 +1468,8 @@
       "bytes": 72486,
       "found": ">  Sample Signature Report Download | Birkman Get Started document.querySelector('#submenu-1 a, #su",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2081,6 +2087,7 @@
       "found": "ⓒ 일반 검색: 공식 개인 리포트 샘플 없음(팀 평가 샘플만, 개인 Premium 아님); scribd 사본만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -2091,6 +2098,8 @@
       "bytes": 5612,
       "found": "(일치 문구 없음)",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2448,6 +2457,7 @@
       "found": "ⓒ 일반 검색: 공식 샘플 없음; scribd·watneyinsights 등 제3자만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -2458,6 +2468,8 @@
       "bytes": 7415,
       "found": "(일치 문구 없음)",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2817,6 +2829,7 @@
       "found": "ⓒ 일반 검색: 공식은 빈 양식; 작성본은 scribd·studocu 등 제3자 개인 결과(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -2827,6 +2840,8 @@
       "bytes": 45225,
       "found": "> e the Career Exploration Tools License page for more information. Download: Interest Profiler (PDF) Score Report & Career Worksheet (Standard Version) (PDF) - updated March 2024 Score Report &",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3204,6 +3219,7 @@
       "found": "ⓑ 공식 도메인 검색: 블로그 예시글·백서만, 개인 리포트 샘플 없음",
       "method": "b",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -3214,6 +3230,8 @@
       "bytes": 160890,
       "found": "> Learn about Ready 60% increase in sales reps hitting quota with BetterUp Read story 77% of managers report they have more adaptive teams See all stories JMH shifts the well-being curve a",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3357,6 +3375,7 @@
       "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -3367,6 +3386,8 @@
       "bytes": 198291,
       "found": ">  CoachHub - The Digital Coaching Platform Research Report: Make change stick - why 79% of transformations fail Read here Why Coachhub Use",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3718,6 +3739,7 @@
       "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -3728,6 +3750,8 @@
       "bytes": 427773,
       "found": "(일치 문구 없음)",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3871,6 +3895,7 @@
       "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -3881,6 +3906,8 @@
       "bytes": 304618,
       "found": ">  Pricing | Lattice breaking news The 2027 State of People Strategy Report is out! Read the full report Skip to content Platform Platform overview Explore",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -5241,11 +5268,16 @@
     ],
     "closed_at": "2026-10-20T12:35Z",
     "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+<<<<<<< HEAD
     "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)",
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
    "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+=======
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)"
+   }
+>>>>>>> origin/main
   },
   {
    "id": "K12",
@@ -5382,11 +5414,16 @@
     ],
     "closed_at": "2026-10-20T12:35Z",
     "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+<<<<<<< HEAD
     "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)",
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
    "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+=======
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)"
+   }
+>>>>>>> origin/main
   },
   {
    "id": "K13",
@@ -5717,6 +5754,7 @@
       "found": "ⓒ 일반 검색: 직업공통능력 자가진단은 teenup.or.kr(별도 기관 사이트, 명부 도메인 아님) \"결과표 형태로 개별 응시자들에게 배포\" — 공개 샘플 없음",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -5727,6 +5765,8 @@
       "bytes": 1914,
       "found": "(일치 문구 없음)",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -6426,6 +6466,7 @@
       "found": "ⓒ 일반 검색: 언론 보도·개인 블로그만, 공식 결과 샘플 없음",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -6436,6 +6477,8 @@
       "bytes": 207686,
       "found": "> 에서는 ▲성실성 ▲스트레스 내성 ▲자존감 등을, 조직 영역에서는 ▲윤리의식 ▲협동심 등의 역량을 측정한다. 검사를 마치면 잡코리아 MICT 12개 핵심 내재 역량 유형 중 본인의 대표 캐릭터가 제시되고, 점수가 높은 4개의 내재 역량과 보완이 필요한 2개의 내재 역량을 확인할 수 있다. 잡코리아 관계자는 “성실성, 계획성 등 수치화",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -6579,6 +6622,7 @@
       "found": "ⓒ 일반 검색: 공식 팀 차트 예시·scribd 개인 결과 사본만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+<<<<<<< HEAD
      },
      {
       "at": "2026-10-20T13:41Z",
@@ -6589,6 +6633,8 @@
       "bytes": 5536,
       "found": "(일치 문구 없음)",
       "by": "strict-fix 2026-10-20"
+=======
+>>>>>>> origin/main
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
