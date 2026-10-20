@@ -2,7 +2,7 @@
  "tool": "closures-e1.cjs",
  "rule": "op:q90-auto-207 A-1·A-2 — 결박 측정기 run 3회 이상 실패(증거=run 폴더 결과) → 종결(사유)",
  "measure_tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-20T13:12:08.177Z",
+ "generatedAt": "2026-10-20T13:35:03.849Z",
  "rows": [
   {
    "row": "G11",
