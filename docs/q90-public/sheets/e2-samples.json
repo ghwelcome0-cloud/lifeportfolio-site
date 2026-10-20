@@ -4098,7 +4098,60 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreSNewDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 로그인 뒤 결과표 제공(공식). 공개 샘플 미발견.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreSNewDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -4777,7 +4830,60 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 동일(고용24). 유튜브 해석 강의는 샘플 아님.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -4937,7 +5043,60 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduAptNewDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 동일.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduAptNewDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -5097,7 +5256,60 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduValuesDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 동일.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduValuesDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -5257,7 +5469,60 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduEquipDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 동일.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduEquipDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -5418,7 +5683,61 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduFoundAptdDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 동일.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduFoundAptdDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -5579,7 +5898,61 @@
     "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
     "raw_fetch": "time budget 초과",
     "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
-    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보",
+    "exact_example_url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/univJobPreDetail.do?tabIdx=example",
+    "domestic_try": {
+     "at": "2026-10-20T15:52Z",
+     "result": "ERR_CONNECTION_TIMED_OUT",
+     "by": "대표 PC"
+    }
+   },
+   "closure": {
+    "state": "종결",
+    "reason": "연결 불가(국내 PC에서도 시간 초과) · 대표 결정 생략(2026-10-20)",
+    "rule": "op:q90-auto-207 A (comet 6978302) + 대표 결정 2026-10-20(고용24 생략, 확보분으로 성능표 1판)",
+    "attempts": [
+     {
+      "at": "2026-10-12T08:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "분모 분류: 동일.",
+      "method": "a"
+     },
+     {
+      "at": "2026-10-12T20:35Z",
+      "url": "https://www.work24.go.kr/",
+      "http": null,
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T12:06Z",
+      "url": null,
+      "http": null,
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T15:52Z",
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/univJobPreDetail.do?tabIdx=example",
+      "method": "a",
+      "http": null,
+      "error": "ERR_CONNECTION_TIMED_OUT — 대표 국내 PC에서도 work.go.kr 접속 불가(스크린샷 https://www.genspark.ai/api/files/s/Gg9snd9v, work.go.kr/pkg/index.do)",
+      "found": "정확한 결과예시 주소는 창신대 취창업지원센터 검사표의 공식 링크에서 확인(2026-10-20T15:48Z). 국내 출구도 실패 → 원문 확보 불가"
+     }
+    ],
+    "closed_at": "2026-10-20T15:57Z",
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)",
+    "reclosed_note": "Method 6983277 철회 사유(국내 출구 필요)를 이행: 국내 출구 시도 실패. 고용24가 열리면 op:207 A-4로 되돌림"
    }
   },
   {
@@ -5632,7 +6005,7 @@
      "finding": "서비스명·기관명·개발자명·URL 0건. 상·하단 띠 가림. 예시 인물은 \"검사자\"(일반명사)만. 직업 추천 표의 링크 글자는 일반 직업명"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -5687,17 +6060,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 11,
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T15:56:00Z",
+    "third_used": [],
+    "aggregate_sha256": "7c8b399cba0ba458f17ba25434bf077e02a61b8352521e29051f75c52b7a632d"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 3,
+   "A2": 3,
+   "A3": 2,
+   "A4": 2,
+   "A5": 1,
    "packet_sha256": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -5715,7 +6110,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "prev_status": "no_sample",
+   "prev_status": "redacted",
    "acquire_note": "공식 \"검사결과예시\" 탭(예시 결과표 4쪽: 검사자 \"검사자\" 2018-02-12 예시값) — 총괄 US 샌드박스 puppeteer 렌더(탭 2 내용만 A4 PDF), HTTP 200, 2026-10-20T15:05Z. E2 공식 샘플(문서도판 아님).",
    "packet_files": {
     "sample.pdf": "67e93fca15e70edf9509c39f44b92a401cd8f9522dea8c2a8b37c76b47f757f1",
@@ -8072,9 +8467,11 @@
       "attachment_sha256_sent": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh"
+      "reply_msg_id": "7003208",
+      "answer_sha256": "78b365c03cd7c37dd4374571b19a226d21d045d919977dedff43c6347b7cefd3",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T15:55:19Z",
+      "first_line_declaration_ok": true
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
