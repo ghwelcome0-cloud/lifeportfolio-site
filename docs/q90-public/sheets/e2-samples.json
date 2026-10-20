@@ -671,18 +671,141 @@
    "id": "G01",
    "name": "VIA Survey (VIA Institute)",
    "blind_id": "S-7b229a",
-   "sample_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
-   "sample_sha256": null,
+   "sample_url": "https://www.viacharacter.org/pdf/VIA%20Pro%20Report.pdf",
+   "sample_sha256": "2e89131d127f5aca0781cb05a73e99e79d6e72232078dccd612a0154c09dd7db",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Character",
+      "n": 110
+     },
+     {
+      "term": "Strengths",
+      "n": 97
+     },
+     {
+      "term": "Pro",
+      "n": 86
+     },
+     {
+      "term": "©-line",
+      "n": 27
+     },
+     {
+      "term": "VIA Institute",
+      "n": 27
+     },
+     {
+      "term": "viacharacter.org",
+      "n": 27
+     },
+     {
+      "term": "viacharacter",
+      "n": 27
+     },
+     {
+      "term": "Smith",
+      "n": 22
+     },
+     {
+      "term": "John Smith",
+      "n": 22
+     },
+     {
+      "term": "John",
+      "n": 22
+     },
+     {
+      "term": "VIA Pro",
+      "n": 2
+     },
+     {
+      "term": "VIA Classification",
+      "n": 2
+     },
+     {
+      "term": "Classification",
+      "n": 2
+     },
+     {
+      "term": "VIA-Pro",
+      "n": 1
+     },
+     {
+      "term": "VIA-Me",
+      "n": 1
+     },
+     {
+      "term": "VIA Inventory",
+      "n": 1
+     },
+     {
+      "term": "VRQCMN2",
+      "n": 1
+     },
+     {
+      "term": "surveymonkey",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 1,
+     "leaked_terms": [
+      "Strengths"
+     ],
+     "text_layer": [],
+     "ocr_layer": {
+      "Strengths": [
+       16
+      ]
+     },
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 150,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T13:32:31Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": null,
+    "final_file": "S-7b229a.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "4b9eb67f2225b88a5f16512eb5fce163dd416bed075c66dc2120e41b7446d28f",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-7b229a.img.contact.png",
+     "passed": true,
+     "checked_at": "2026-10-20T13:40Z",
+     "checked_by": "assistant(총괄 AI, 사람 아님) — 40dpi 28쪽 시트 + 16·19·24·26·28쪽 50~150dpi 확대 + 최종본 OCR",
+     "rounds": [
+      {
+       "n": 1,
+       "finding": "자동 가림 뒤 OCR 2건(16쪽 strength·24쪽 best self — 일반 단어)"
+      },
+      {
+       "n": 2,
+       "finding": "눈 확인: 26·27쪽 제목 \"The VIA Classification\"·19·21쪽 본문 \"VIA\" 잔존(VIA가 ALLOWLIST 모델명이라 자동 가림 제외 — KB-02 규칙상 회사·기관 유래 이름은 허용 금지) + 28쪽 설문 URL(surveymonkey) → 상자 추가"
+      },
+      {
+       "n": 3,
+       "finding": "19쪽 \"Classification\" 상자 추가 후 재처리. 남은 OCR 1건 16쪽 \"Strengths\" = 본문 \"fairness strength strongly\"를 공백 제거 OCR이 붙여 읽은 것(일반 단어, K16 선례와 같은 판정) → 통과"
+      }
+     ],
+     "note": "가상 인물 이름(John Smith)·회사명·URL·도구 명칭 가림. 표지 가림."
+    }
    },
-   "status": "ineligible",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -748,12 +871,20 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "4614168716e1d640b6543311d08d1cb204e2d6b96d10fc87a2cd8eeb579cfb47",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
     "evidence_url": "https://www.viacharacter.org/",
     "evidence_line": "개인 리포트(PDF) 존재. 수집본은 해석 가이드 미리보기 → 샘플 부적합. 분모에 남김.",
-    "checked_at": "2026-10-12T08:35Z"
+    "checked_at": "2026-10-12T08:35Z",
+    "class_history": [
+     {
+      "at": "2026-10-20T13:13Z",
+      "from": "미확보(비공개 포함)",
+      "to": "확보",
+      "why": "공식 호스팅 샘플 발견(종결 재탐색 ⓑ검색, op:207 A-1 — 찾으면 종결 금지)"
+     }
+    ]
    },
    "e2_alt": {
     "path_candidate": "E2-s",
@@ -763,7 +894,18 @@
     "checked_at": "2026-10-12T20:35Z",
     "note": "AI 자동 응시 금지 조항 명시. 사람 응시도 \"personal and non-commercial use\" — 공개 비교 사용은 범위 밖으로 해석. 경로 전환 안 함",
     "table_cell": "대안 없음(약관)"
-   }
+   },
+   "prev_status": "ineligible",
+   "prev_status_chain": [
+    "no_sample/ineligible→ready(13:13Z)→redacted_pending_visual→redacted(13:40Z)"
+   ],
+   "packet_files": {
+    "sample.pdf": "7475d0f1e5ccdeb3e347fc4cf7920e9c74efa9cadf0c003c0f9f738b6ef240ed",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "1e8b165c0c19f2e646618b5cd1cc629b5d3ba5a9cf9a1360b3d9fd7152247122",
+    "ANSWER.json": "800e1e4def6068c6faa4d880336d5e45b1f77b1bfd290b32ef761672dd4b0a04"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "G02a",
@@ -985,6 +1127,16 @@
       "found": "ⓒ 일반 검색: 공식 hexaco.org 결과 샘플 없음; 대학·scribd 사본만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://hexaco.org/hexaco-online",
+      "method": "a",
+      "http": 200,
+      "sha256": "5752cb271f983e85b3e22558b63a081683607ab2038035510750df7da9839aaa",
+      "bytes": 4439,
+      "found": "(일치 문구 없음)",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -1302,6 +1454,16 @@
       "found": "ⓒ 일반 검색: 공식은 다운로드 폼 페이지뿐; gcsu.edu·scribd·코치 사이트 사본만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://birkman.com/resources/ebooks/sample-signature-report-download",
+      "method": "a",
+      "http": 200,
+      "sha256": "9a3e1a5fce4b1214d4b0ee6309e4ad672e1c63daf076c235b299bf5cdc8bf33f",
+      "bytes": 72486,
+      "found": ">  Sample Signature Report Download | Birkman Get Started document.querySelector('#submenu-1 a, #su",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -1919,6 +2081,16 @@
       "found": "ⓒ 일반 검색: 공식 개인 리포트 샘플 없음(팀 평가 샘플만, 개인 Premium 아님); scribd 사본만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.16personalities.com/premium/career-suite",
+      "method": "a",
+      "http": 403,
+      "sha256": "c1fcba6edbbe1efb7e4fcba7060c73d2be9dc65993d00b2e67db1faafe8e1c73",
+      "bytes": 5612,
+      "found": "(일치 문구 없음)",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -1929,18 +2101,124 @@
    "id": "G12",
    "name": "Strengths Profile (Cappfinity)",
    "blind_id": "S-cb936c",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://files.strengthsprofile.com/Deployable/LocalizableResources/en-GB/Profile%20Samples/Strengths_Profile_Leader_Sample.pdf?v=2.0.1224",
+   "sample_sha256": "8d8e29274f27a0075ed4cdc13205f771ec6bcf8400ff3da6e24b4d62b809c7c4",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "Strengths",
+      "n": 117
+     },
+     {
+      "term": "Leader",
+      "n": 89
+     },
+     {
+      "term": "Leader Profile",
+      "n": 24
+     },
+     {
+      "term": "Omari",
+      "n": 23
+     },
+     {
+      "term": "Meadows",
+      "n": 23
+     },
+     {
+      "term": "Omari Meadows",
+      "n": 23
+     },
+     {
+      "term": "Cappfinity",
+      "n": 3
+     },
+     {
+      "term": "Capp",
+      "n": 3
+     },
+     {
+      "term": "Strengths Profile",
+      "n": 2
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 1,
+     "leaked_terms": [
+      "Capp"
+     ],
+     "text_layer": [],
+     "ocr_layer": {
+      "Capp": [
+       14
+      ]
+     },
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 145,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {
+       "Profile": [
+        2,
+        3,
+        15,
+        16,
+        20,
+        21,
+        24
+       ],
+       "career": [
+        2,
+        3,
+        8,
+        10,
+        11,
+        14,
+        24
+       ],
+       "insights": [
+        2,
+        3,
+        5,
+        12,
+        17,
+        23
+       ]
+      }
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T13:24:44Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": null,
+    "final_file": "S-cb936c.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "70fa97aadfd4fd577b90696fe28e02f3e7e4333dce69e3383358bbd99e2c72b8",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-cb936c.img.contact.png",
+     "passed": true,
+     "checked_at": "2026-10-20T13:40Z",
+     "checked_by": "assistant(총괄 AI, 사람 아님) — 40dpi 24쪽 시트 + 14쪽 150dpi OCR 재확인",
+     "rounds": [
+      {
+       "n": 1,
+       "finding": "자동 가림 뒤 OCR 1건 14쪽 \"Capp\" = 본문 \"can’t they took a more pragmatic approach\"를 공백 제거 OCR이 붙여 읽은 것(…can’tthey…/ \"cap\" 아님 확인: 문맥 \"approach\") — 일반 단어 → 통과. 머리띠(로고)·쪽 하단·가상 인물 이름 가림 확인. \"Families\"·강점 이름(Courage 등)은 일반 단어라 유지"
+      }
+     ],
+     "note": "표지 가림"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -2006,12 +2284,20 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "86ab5af3dcf3f450c9d215e0490dd55b7d72d346379c0a2f28408dcf17791346",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
     "evidence_url": "https://www.strengthsprofile.com/en-GB/Products",
     "evidence_line": "개인 구매 프로파일 리포트 존재. 공개 샘플 미발견.",
-    "checked_at": "2026-10-12T08:35Z"
+    "checked_at": "2026-10-12T08:35Z",
+    "class_history": [
+     {
+      "at": "2026-10-20T13:13Z",
+      "from": "미확보(비공개 포함)",
+      "to": "확보",
+      "why": "공식 호스팅 샘플 발견(종결 재탐색 ⓑ검색, op:207 A-1 — 찾으면 종결 금지)"
+     }
+    ]
    },
    "e2_alt": {
     "path_candidate": "E2-p",
@@ -2020,7 +2306,18 @@
     "tos_verdict": "대안 없음(약관)",
     "checked_at": "2026-10-12T20:45Z",
     "note": "개인·비상업 이용만. 구매 리포트를 공개 비교에 쓰는 것은 범위 밖으로 해석(보수적). 봇 응시 조항 없음이나 구매 경로라 무관. 경로 전환 안 함 | 23:20 site: 검색: 제3자 호스팅 샘플만(미채택)"
-   }
+   },
+   "prev_status": "no_sample",
+   "prev_status_chain": [
+    "no_sample/ineligible→ready(13:13Z)→redacted_pending_visual→redacted(13:40Z)"
+   ],
+   "packet_files": {
+    "sample.pdf": "fba9472b51b8a863a13204b2b7a1e18f38a98a84ea096072bf8828ca0039b36d",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "dc1b65bf963a15df606e8cd17ef602de82ceb8de22d78f5b8601921940a90d22",
+    "ANSWER.json": "416c502ae75950eb336e8831b82d51c1ce361a9a4b8768d07ae9497d3cb47bc1"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "G13",
@@ -2151,6 +2448,16 @@
       "found": "ⓒ 일반 검색: 공식 샘플 없음; scribd·watneyinsights 등 제3자만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.workinggenius.com/",
+      "method": "a",
+      "http": 200,
+      "sha256": "ad54553502726258fd62c061fbfb2fdbd4ea3278dd6664631d03747e66b1d053",
+      "bytes": 7415,
+      "found": "(일치 문구 없음)",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2510,6 +2817,16 @@
       "found": "ⓒ 일반 검색: 공식은 빈 양식; 작성본은 scribd·studocu 등 제3자 개인 결과(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.onetcenter.org/IP.html",
+      "method": "a",
+      "http": 200,
+      "sha256": "336be350116b8e7458a58578bc6c6bc25b83b6b90667e35bbd356be6a2ab090a",
+      "bytes": 45225,
+      "found": "> e the Career Exploration Tools License page for more information. Download: Interest Profiler (PDF) Score Report & Career Worksheet (Standard Version) (PDF) - updated March 2024 Score Report &",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2887,6 +3204,16 @@
       "found": "ⓑ 공식 도메인 검색: 블로그 예시글·백서만, 개인 리포트 샘플 없음",
       "method": "b",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.betterup.com/",
+      "method": "a",
+      "http": 200,
+      "sha256": "753c4720a4a2826eff601620e21bb4dc67f7dbd4b57395b199e63e3be6805527",
+      "bytes": 160890,
+      "found": "> Learn about Ready 60% increase in sales reps hitting quota with BetterUp Read story 77% of managers report they have more adaptive teams See all stories JMH shifts the well-being curve a",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3030,6 +3357,16 @@
       "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.coachhub.com/",
+      "method": "a",
+      "http": 200,
+      "sha256": "2e0788898b86bf4ca30fd760f01895f4bb49c8e218116e8d62423f3c42157712",
+      "bytes": 198291,
+      "found": ">  CoachHub - The Digital Coaching Platform Research Report: Make change stick - why 79% of transformations fail Read here Why Coachhub Use",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3381,6 +3718,16 @@
       "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.15five.com/pricing",
+      "method": "a",
+      "http": 200,
+      "sha256": "ef2cbc12fffddbb2570c87f66542f234e47e05100dddb44f272c30451e9c736d",
+      "bytes": 427773,
+      "found": "(일치 문구 없음)",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3524,6 +3871,16 @@
       "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://lattice.com/pricing",
+      "method": "a",
+      "http": 200,
+      "sha256": "58c42a213897e9223b502e898c448dd181b204ae6e47ca7d062e903539addb20",
+      "bytes": 304618,
+      "found": ">  Pricing | Lattice breaking news The 2027 State of People Strategy Report is out! Read the full report Skip to content Platform Platform overview Explore",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3628,7 +3985,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -3664,8 +4021,11 @@
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
-   }
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K02",
@@ -4284,7 +4644,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -4320,8 +4680,11 @@
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
-   }
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K08",
@@ -4421,7 +4784,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -4457,8 +4820,11 @@
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
-   }
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K09",
@@ -4558,7 +4924,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -4594,8 +4960,11 @@
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
-   }
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K10",
@@ -4695,7 +5064,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -4731,8 +5100,11 @@
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
-   }
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K11",
@@ -4832,7 +5204,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -4869,8 +5241,11 @@
     ],
     "closed_at": "2026-10-20T12:35Z",
     "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
-    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)"
-   }
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K12",
@@ -4970,7 +5345,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "closure": {
+   "closure_withdrawn": {
     "state": "종결",
     "reason": "연결 불가(시간 초과)",
     "rule": "op:q90-auto-207 A (comet 6978302)",
@@ -5007,8 +5382,11 @@
     ],
     "closed_at": "2026-10-20T12:35Z",
     "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
-    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)"
-   }
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)",
+    "withdrawn_at": "2026-10-20T13:50Z",
+    "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
+   },
+   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
   },
   {
    "id": "K13",
@@ -5339,6 +5717,16 @@
       "found": "ⓒ 일반 검색: 직업공통능력 자가진단은 teenup.or.kr(별도 기관 사이트, 명부 도메인 아님) \"결과표 형태로 개별 응시자들에게 배포\" — 공개 샘플 없음",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.ncs.go.kr/",
+      "method": "a",
+      "http": 200,
+      "sha256": "01a3494d19baf5cd4b1f8e16d8afef910ecc6c8dcb9ef1f98083b63647274d6d",
+      "bytes": 1914,
+      "found": "(일치 문구 없음)",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -6038,6 +6426,16 @@
       "found": "ⓒ 일반 검색: 언론 보도·개인 블로그만, 공식 결과 샘플 없음",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.jobkorea.co.kr/goodjob/tip/view?News_No=20596",
+      "method": "a",
+      "http": 200,
+      "sha256": "34f1895a56bb094798803871323cd3a57ae8ddf1c20ef7b9133a6935bc20405a",
+      "bytes": 207686,
+      "found": "> 에서는 ▲성실성 ▲스트레스 내성 ▲자존감 등을, 조직 영역에서는 ▲윤리의식 ▲협동심 등의 역량을 측정한다. 검사를 마치면 잡코리아 MICT 12개 핵심 내재 역량 유형 중 본인의 대표 캐릭터가 제시되고, 점수가 높은 4개의 내재 역량과 보완이 필요한 2개의 내재 역량을 확인할 수 있다. 잡코리아 관계자는 “성실성, 계획성 등 수치화",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -6181,6 +6579,16 @@
       "found": "ⓒ 일반 검색: 공식 팀 차트 예시·scribd 개인 결과 사본만(§21 미채택)",
       "method": "c",
       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:41Z",
+      "url": "https://www.16personalities.com/ko",
+      "method": "a",
+      "http": 403,
+      "sha256": "61bbea92e89be0f37ce9f500f3dd9c0c159d93c7f44144cb3deb1f788d79bfe5",
+      "bytes": 5536,
+      "found": "(일치 문구 없음)",
+      "by": "strict-fix 2026-10-20"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -6202,7 +6610,9 @@
   "S-e88b89",
   "S-e9e660",
   "S-f7229a",
-  "S-8729f4"
+  "S-8729f4",
+  "S-7b229a",
+  "S-cb936c"
  ],
  "judge_sessions": {
   "note": "TL 6054779 5조건 + Peer 6057976 ④(받은 쪽 sha) + TL 6058049(read_check). 채점 전 채움. 값은 사실만.",
@@ -7751,5 +8161,14 @@
    "K14": "https://www.career.go.kr/cloud/w/inspect/ready/intro \"검사결과예시\"(공식 소개 페이지 도판)"
   },
   "why_open": "공식 샘플·결과예시가 있으면 종결 불가(A-1: 못 찾은 경우만). 다음 패킷(op:205·206·207 C 규칙: 48시간·교체 1회)으로 확보·채점."
+ },
+ "packet_round7": {
+  "blind_ids": [
+   "S-7b229a",
+   "S-cb936c"
+  ],
+  "built_at": "2026-10-20T13:33Z",
+  "rule": "op:205·206·207 C (48시간·교체 1회·1명 응답 봉인·제3자 48시간)",
+  "note": "G01·G12 종결 재탐색에서 공식 샘플 확보(op:207 A-4 되돌림). build-packet packet_order 덮어쓰기는 KB-02 절차대로 이전 14건 복구 후 추가."
  }
 }

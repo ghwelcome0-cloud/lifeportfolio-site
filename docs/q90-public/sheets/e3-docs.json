@@ -460,15 +460,15 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
-    "source_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
-    "collected_at": "2026-10-12",
-    "note": "VIA 'LOOK INSIDE GUIDE' — 해석 가이드 미리보기(개인 리포트 샘플 아님: E2 적합성 검토 필요) | 1729653 bytes, 4p | 원본은 저장소 밖 보관 | **E2 부적합**: 4쪽 미리보기, 개인 결과 리포트 아님. 개인 샘플 리포트 공개 링크 미발견 → E2 미측정"
+    "value": "https://www.viacharacter.org/pdf/VIA%20Pro%20Report.pdf",
+    "source_url": "https://www.viacharacter.org/pdf/VIA%20Pro%20Report.pdf",
+    "collected_at": "2026-10-20",
+    "note": "VIA 공식 호스팅 Pro Report 샘플(가상 인물 John Smith) | 1331084 bytes, 28p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": "31bc696693a72bb098e9639d144b656d2357e2632d648b2370e71e9c6fe08989",
-    "source_url": "https://www.viacharacter.org/pdf/Interpretation_Insight_Guide_Preview.pdf",
-    "collected_at": "2026-10-12",
+    "value": "2e89131d127f5aca0781cb05a73e99e79d6e72232078dccd612a0154c09dd7db",
+    "source_url": "https://www.viacharacter.org/pdf/VIA%20Pro%20Report.pdf",
+    "collected_at": "2026-10-20",
     "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
@@ -970,6 +970,16 @@
        "http": null,
        "found": "8차 ⓒ: 결과 1건(메서드 개요)",
        "method": "c"
+      },
+      {
+       "at": "2026-10-20T13:42Z",
+       "url": "https://birkman.com/",
+       "method": "a",
+       "http": 200,
+       "sha256": "efb3d8fed40acff3babc40ea477d55a4f105d00b0290c4510081187bfa479290",
+       "bytes": 123043,
+       "found": "(일치 문구 없음)",
+       "by": "strict-fix 2026-10-20"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -1531,16 +1541,16 @@
     "note": ""
    },
    "sample_report_url": {
-    "value": null,
-    "source_url": "https://www.strengthsprofile.com/en-GB/Products",
-    "collected_at": "2026-10-12",
-    "note": "미발견 → E2 미측정"
+    "value": "https://files.strengthsprofile.com/Deployable/LocalizableResources/en-GB/Profile%20Samples/Strengths_Profile_Leader_Sample.pdf?v=2.0.1224",
+    "source_url": "https://files.strengthsprofile.com/Deployable/LocalizableResources/en-GB/Profile%20Samples/Strengths_Profile_Leader_Sample.pdf?v=2.0.1224",
+    "collected_at": "2026-10-20",
+    "note": "Cappfinity 공식 호스팅 Leader Profile 샘플(가상 인물) | 1068181 bytes, 24p | 원본은 저장소 밖 보관"
    },
    "sample_report_sha256": {
-    "value": null,
-    "source_url": null,
-    "collected_at": null,
-    "note": ""
+    "value": "8d8e29274f27a0075ed4cdc13205f771ec6bcf8400ff3da6e24b4d62b809c7c4",
+    "source_url": "https://files.strengthsprofile.com/Deployable/LocalizableResources/en-GB/Profile%20Samples/Strengths_Profile_Leader_Sample.pdf?v=2.0.1224",
+    "collected_at": "2026-10-20",
+    "note": "fetch-sample.cjs"
    },
    "privacy_policy_url": {
     "value": null,
@@ -3882,6 +3892,28 @@
        "found": "ⓒ 공식 도메인 검색: 고객센터 안내 요약에 \"20분~30분\" 단서, work24.go.kr 직접 접속 000(13:11Z) → 미채택",
        "method": "c",
        "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:42Z",
+       "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+       "method": "a",
+       "http": null,
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "bytes": 0,
+       "found": "(일치 문구 없음)",
+       "by": "strict-fix 2026-10-20",
+       "error": "연결 실패/시간 초과(curl 000, 40s)"
+      },
+      {
+       "at": "2026-10-20T13:43Z",
+       "url": "https://m.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1",
+       "method": "b",
+       "http": null,
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "bytes": 0,
+       "found": "(일치 문구 없음)",
+       "by": "strict-fix 2026-10-20",
+       "error": "연결 실패/시간 초과(curl 000, 40s)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4556,6 +4588,28 @@
        "found": "ⓒ 공식 도메인 검색: 요약 \"검사시간 : 15분~25분 문항수 : 93문항\"; 직접 접속 000(13:10Z) → verified 미충족, 되돌림 후보(25)",
        "method": "c",
        "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:44Z",
+       "url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
+       "method": "a",
+       "http": null,
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "bytes": 0,
+       "found": "(일치 문구 없음)",
+       "by": "strict-fix 2026-10-20",
+       "error": "연결 실패/시간 초과(curl 000, 40s)"
+      },
+      {
+       "at": "2026-10-20T13:44Z",
+       "url": "https://www.career4u.net/Tester/ExamIntro/Intro.asp",
+       "method": "b",
+       "http": null,
+       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+       "bytes": 0,
+       "found": "(일치 문구 없음)",
+       "by": "strict-fix 2026-10-20",
+       "error": "연결 실패/시간 초과(curl 000, 40s)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4711,6 +4765,16 @@
        "http": null,
        "found": "8차 ⓒ: TCI 상품 페이지 검색 노출 없음(K-IIP만)",
        "method": "c"
+      },
+      {
+       "at": "2026-10-20T13:44Z",
+       "url": "https://inpsyt.co.kr/psy/item/view/TCI_RS_SG",
+       "method": "a",
+       "http": 500,
+       "sha256": "03b557bd4d17c4e9a197b41661ce0ffdb93af074da1663274e52bb2c7d148211",
+       "bytes": 1836,
+       "found": "(일치 문구 없음)",
+       "by": "strict-fix 2026-10-20"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4942,6 +5006,16 @@
        "found": "ⓒ 공식 도메인 검색: 소요시간 문장 없음(36문항·무료만)",
        "method": "c",
        "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:44Z",
+       "url": "https://www.jobkorea.co.kr/goodjob/tip/view?News_No=20596",
+       "method": "a",
+       "http": 200,
+       "sha256": "8ef7711cf13823a97f61fa4fdb6d4ccec4133f77d4799d1f5a136fa3af4f6d08",
+       "bytes": 207578,
+       "found": "> 헤드헌팅 공고 합격축하금 원픽 합격축하금 공고 원픽서비스 안내 공채정보 1000대기업 공채 공채달력 공공기관 채용일정 신입·인턴 신입·인턴공고 콘텐츠 탐색 기업·연봉 기업리뷰 기업분석 보고서 슈퍼기업관 연봉 커리어 소식 콘텐츠LAB 합격자소서 인적성·면접 후기 직무 인터뷰 실전공략 인성역량검사 공기업 모의고사 역량테스트(M",
+       "by": "strict-fix 2026-10-20"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4998,6 +5072,16 @@
        "found": "ⓑ 공식 공지 \"역량테스트(MICT) 서비스 오픈!\" 직접 접속 200 (sha 68902274…) — 이번엔 열림. 그러나 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품이라는 공식 문장 없음 → 값 미채택",
        "method": "b",
        "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:44Z",
+       "url": "https://www.jobkorea.co.kr/goodjob/tip/view?News_No=20596",
+       "method": "a",
+       "http": 200,
+       "sha256": "88a267edcd64afe4d8b192e6770f28aed30bde80af35836a25cf47dbd980c72b",
+       "bytes": 207468,
+       "found": "> 헤드헌팅 공고 합격축하금 원픽 합격축하금 공고 원픽서비스 안내 공채정보 1000대기업 공채 공채달력 공공기관 채용일정 신입·인턴 신입·인턴공고 콘텐츠 탐색 기업·연봉 기업리뷰 기업분석 보고서 슈퍼기업관 연봉 커리어 소식 콘텐츠LAB 합격자소서 인적성·면접 후기 직무 인터뷰 실전공략 인성역량검사 공기업 모의고사 역량테스트(M",
+       "by": "strict-fix 2026-10-20"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -5060,6 +5144,16 @@
        "found": "ⓑ 공식 공지 \"역량테스트(MICT) 서비스 오픈!\" 직접 접속 200 (sha 68902274…) — 이번엔 열림. 그러나 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품이라는 공식 문장 없음 → 값 미채택",
        "method": "b",
        "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:44Z",
+       "url": "https://www.jobkorea.co.kr/goodjob/tip/view?News_No=20596",
+       "method": "a",
+       "http": 200,
+       "sha256": "20d9712478878d0f744e2306744afe661c16f4f44474564686f45aab43da2c8c",
+       "bytes": 207580,
+       "found": "> 헤드헌팅 공고 합격축하금 원픽 합격축하금 공고 원픽서비스 안내 공채정보 1000대기업 공채 공채달력 공공기관 채용일정 신입·인턴 신입·인턴공고 콘텐츠 탐색 기업·연봉 기업리뷰 기업분석 보고서 슈퍼기업관 연봉 커리어 소식 콘텐츠LAB 합격자소서 인적성·면접 후기 직무 인터뷰 실전공략 인성역량검사 공기업 모의고사 역량테스트(M",
+       "by": "strict-fix 2026-10-20"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -5140,6 +5234,16 @@
        "found": "ⓑ 공식 공지 \"역량테스트(MICT) 서비스 오픈!\" 직접 접속 200 (sha 68902274…) — 이번엔 열림. 그러나 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품이라는 공식 문장 없음 → 값 미채택",
        "method": "b",
        "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:45Z",
+       "url": "https://www.jobkorea.co.kr/goodjob/tip/view?News_No=20596",
+       "method": "a",
+       "http": 200,
+       "sha256": "dbfc5e441661e1dacebb5f6273712937a47045ae075d524a2cd53a5d37d1eed9",
+       "bytes": 207493,
+       "found": "> 헤드헌팅 공고 합격축하금 원픽 합격축하금 공고 원픽서비스 안내 공채정보 1000대기업 공채 공채달력 공공기관 채용일정 신입·인턴 신입·인턴공고 콘텐츠 탐색 기업·연봉 기업리뷰 기업분석 보고서 슈퍼기업관 연봉 커리어 소식 콘텐츠LAB 합격자소서 인적성·면접 후기 직무 인터뷰 실전공략 인성역량검사 공기업 모의고사 역량테스트(M",
+       "by": "strict-fix 2026-10-20"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"

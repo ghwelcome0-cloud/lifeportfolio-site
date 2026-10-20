@@ -18,12 +18,15 @@ const host = u => { try { return new URL(u).hostname.replace(/^www\./, ''); } ca
 const rosterHost = Object.fromEntries(roster.rows.map(r => [r.id, host(r.url)]));
 const latestDoubt = v => { let d = null; for (const seg of String(v.note || '').split(' | ')) if (/재확인 필요/.test(seg)) { const m = seg.match(/\d{4}-\d{2}-\d{2}/g); if (m) for (const x of m) if (!d || x > d) d = x; } return d; };
 const verifiedOk = (v, id) => v.verified_at && v.verified_url && v.verified_quote && /^2\d\d$/.test(String(v.verified_http || '')) && host(v.verified_url) === rosterHost[id] && (() => { const d = latestDoubt(v); return !d || d <= String(v.verified_at).slice(0, 10); })();
-const filled = (v, id) => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && (verifiedOk(v, id) || !/재확인 필요/.test(v.note || ''));
+// TL 6983344(차단급): verified_url이 있는 칸은 verifiedOk만으로 판정(예외 없음). 옛 문구 기준은 verified_url 없는 칸에만.
+const filled = (v, id) => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && (v.verified_url ? verifiedOk(v, id) : !/재확인 필요/.test(v.note || ''));
 // E3 '해당 없음' 칸(value null + note '해당 없음' + 근거 URL)은 분모에서 뺀다(E3 rule 3차-b). 두 분모 병기.
 const na = v => v && typeof v === 'object' && v.value == null && v.source_url && /^해당 없음/.test(v.note || '');
 // op:q90-auto-207 A(대표 결정 ①): 종결 = 시도 3회 이상 + 시도별 증거(closure.attempts). 해당 없음처럼 분모에서 빼고, 실측 수와 종결 수를 함께 적는다.
 // op:208 보완(Method 6978346 · Peer 6978351): 3회 = ⓐⓑⓒ 서로 다른 방법 각 1회 이상(attempt.method a/b/c, 'a+'=다른 공식 경로는 a로 셈). 같은 URL 반복('dup')은 세지 않음.
-const methodsOk = c => { const m = new Set((c.attempts || []).map(a => a.method === 'a+' ? 'a' : a.method)); return c.attempts.length >= 3 && ['a', 'b', 'c'].every(x => m.has(x)); };
+// TL 6983344 · Method 6983277: 시도마다 method∈{a,b,c} + 증거(http 코드 또는 오류/검색 기록) 필수, 서로 다른 method 3개. '대안 경로 확인'(E2-alt 판단)·분류 메모는 시도로 세지 않음(method 없음).
+const attOk = a => ['a', 'a+', 'b', 'c'].includes(a.method) && (a.http != null || a.error || /^google:/.test(a.url || '') || /^google:/.test(a.found || ''));
+const methodsOk = c => { const ok = (c.attempts || []).filter(attOk); const m = new Set(ok.map(a => a.method === 'a+' ? 'a' : a.method)); return ['a', 'b', 'c'].every(x => m.has(x)); };
 const closed = v => !!(v && typeof v === 'object' && v.value == null && v.closure && v.closure.state === '종결' && Array.isArray(v.closure.attempts) && methodsOk(v.closure));
 let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0, e3closed = 0;
 for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k], r.id)).length, m = E3_KEYS.filter(k => na(r[k])).length, z = E3_KEYS.filter(k => closed(r[k])).length; e3cells += n; e3na += m; e3closed += z; if (n > 0) e3rowsTouched++; if (n + m + z === E3_KEYS.length) e3rowsComplete++; }
