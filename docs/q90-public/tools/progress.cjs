@@ -31,6 +31,10 @@ const closed = v => !!(v && typeof v === 'object' && v.value == null && v.closur
 let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0, e3closed = 0;
 for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k], r.id)).length, m = E3_KEYS.filter(k => na(r[k])).length, z = E3_KEYS.filter(k => closed(r[k])).length; e3cells += n; e3na += m; e3closed += z; if (n > 0) e3rowsTouched++; if (n + m + z === E3_KEYS.length) e3rowsComplete++; }
 // E2: 샘플 확보(ready 이상) / 채점 완료(final)
+// op:q90-auto-210: 자사 E2 트랙(kind=own)·앵커(kind=anchor) 행은 비교 분모 밖 — 비교 행만 센다
+const e2all = e2.rows; e2.rows = e2all.filter(r => !r.kind);
+const ownE2 = e2all.filter(r => r.kind === 'own'), ancE2 = e2all.filter(r => r.kind === 'anchor');
+const isFinal = r => ['final', 'judged', 'resolved'].includes(r.status);
 const st = s => e2.rows.filter(r => r.status === s).length;
 // 결함 수정(2026-10-12): 'redacted_pending_visual'(자동 가림 완료, 사람 눈 확인 대기)이 빠져 9건이 0으로 집계됐었다 → 포함
 const e2ready = e2.rows.filter(r => ['ready', 'redacted_pending_visual', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
@@ -64,7 +68,7 @@ const out = {
     { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length - e3na - e3closed, pct: pct(e3cells, rows.length * E3_KEYS.length - e3na - e3closed), note: `채움 ${e3cells} · 종결 ${e3closed}(op:207 A) · `+`행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결(해당 없음 포함) ${e3rowsComplete} · 해당 없음 ${e3na}칸 제외(옛 분모 ${rows.length * E3_KEYS.length} 기준 ${pct(e3cells, rows.length * E3_KEYS.length)}%)` },
     { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: e2target, pct: pct(e2ready, e2target), note: `측정 ${e2ready} / 대상 ${e2target}(해당 없음 ${e2na} · 종결 ${e2closedRows.length} 제외${e2closedRows.length ? ': ' + e2closedRows.join('·') : ''}) / 명부 ${nonOwn.length} · 옛 분모 기준 ${pct(e2ready, nonOwn.length)}% → 분모 정정 효과 +${pct(e2ready, e2target) - pct(e2ready, nonOwn.length)}%p · ` + `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
     { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: `judged(원본 저장·미집계) ${st('judged')}, final ${st('final')} — judge 2인 + 제3자` },
-    { step: '자사 행 전사 1/1(채점 안 됨, G14 미달성)', done: own ? 1 : 0, total: 1, pct: own ? 100 : 0, note: 'TL D 도구 → 0-c → 실행 → judge → scorer 뒤' }
+    { step: '자사 E2 블라인드 채점(op:210, 최신판 2부)', done: ownE2.filter(isFinal).length, total: ownE2.length || 1, pct: pct(ownE2.filter(isFinal).length, ownE2.length || 1), note: `자사 ${ownE2.map(r => r.id + '=' + r.status).join(', ')} · 앵커(검증용, 분모 밖) ${ancE2.map(r => r.id + '=' + r.status).join(', ')} · Q90 2회차 전사 열은 별도 유지(${own ? 'own.json 있음, G14 미달성' : 'own.json 없음'})` }
   ]
 };
 // 전체 진행률(두괄식 보고용): 단계별 % 를 가중 평균. 가중치는 표에서 차지하는 비중(결박): E1 25 · E3 25 · E2 확보 15 · E2 채점 25 · 자사 10
@@ -78,7 +82,7 @@ const cov = [
   { step: 'E3 커버리지', done: e3cells, total: rows.length * E3_KEYS.length - e3na },
   { step: 'E2 확보 커버리지', done: e2ready, total: nonOwn.length - e2na },
   { step: 'E2 채점', done: e2final, total: e2ready },
-  { step: '자사', done: own ? 1 : 0, total: 1 }
+  { step: '자사 E2', done: ownE2.filter(isFinal).length, total: ownE2.length || 1 }
 ].map(c => ({ ...c, pct: pct(c.done, c.total) }));
 out.coverage = { steps: cov, overall_pct: Math.round(cov.reduce((a, c, i) => a + c.pct * W[i], 0) / W.reduce((a, b) => a + b, 0)), note: '종결은 분모에 남김(§21). E1 종결 ' + e1closed.length + ' · E3 종결 ' + e3closed + ' · E2 종결 ' + e2closedRows.length };
 out.completion_pct = out.overall_pct;

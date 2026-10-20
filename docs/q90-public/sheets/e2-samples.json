@@ -805,7 +805,7 @@
      "note": "가상 인물 이름(John Smith)·회사명·URL·도구 명칭 가림. 표지 가림."
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -860,17 +860,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 15,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T14:51:09Z",
+    "third_used": [],
+    "aggregate_sha256": "5292746dc87fffb80903523edb4e1e32100facf9bd0dbbdaf20fa778b07dbdba"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 4,
+   "A4": 3,
+   "A5": 3,
    "packet_sha256": "4614168716e1d640b6543311d08d1cb204e2d6b96d10fc87a2cd8eeb579cfb47",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -895,7 +917,7 @@
     "note": "AI 자동 응시 금지 조항 명시. 사람 응시도 \"personal and non-commercial use\" — 공개 비교 사용은 범위 밖으로 해석. 경로 전환 안 함",
     "table_cell": "대안 없음(약관)"
    },
-   "prev_status": "ineligible",
+   "prev_status": "redacted",
    "prev_status_chain": [
     "no_sample/ineligible→ready(13:13Z)→redacted_pending_visual→redacted(13:40Z)"
    ],
@@ -2218,7 +2240,7 @@
      "note": "표지 가림"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -2307,7 +2329,7 @@
     "checked_at": "2026-10-12T20:45Z",
     "note": "개인·비상업 이용만. 구매 리포트를 공개 비교에 쓰는 것은 범위 밖으로 해석(보수적). 봇 응시 조항 없음이나 구매 경로라 무관. 경로 전환 안 함 | 23:20 site: 검색: 제3자 호스팅 샘플만(미채택)"
    },
-   "prev_status": "no_sample",
+   "prev_status": "redacted",
    "prev_status_chain": [
     "no_sample/ineligible→ready(13:13Z)→redacted_pending_visual→redacted(13:40Z)"
    ],
@@ -2317,7 +2339,14 @@
     "README.md": "dc1b65bf963a15df606e8cd17ef602de82ceb8de22d78f5b8601921940a90d22",
     "ANSWER.json": "416c502ae75950eb336e8831b82d51c1ce361a9a4b8768d07ae9497d3cb47bc1"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "third_pending": {
+    "axes": [
+     "A1"
+    ],
+    "msg": 6997497,
+    "deadline": "2026-10-22T14:50Z"
+   }
   },
   {
    "id": "G13",
@@ -5392,18 +5421,53 @@
    "id": "K13",
    "name": "커리어넷 직업가치관검사(성인)",
    "blind_id": "S-aaeb13",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.career.go.kr/cloud/w/inspect/value/intro#tab2",
+   "sample_sha256": "25abad1bf1be76cf5577e67c40c634e3769bd4f75e6ae53d8694779376005ed2",
    "redaction": {
-    "items_found": [],
-    "tool_sha256": null,
+    "items_found": [
+     {
+      "term": "커리어넷",
+      "n": 2
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 134,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T14:55:18Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "67e93fca15e70edf9509c39f44b92a401cd8f9522dea8c2a8b37c76b47f757f1",
+    "final_file": "S-aaeb13.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "fe7d7ade40125d4378891073f25adc056346490bd86393d91fc45e24c8c0cf48",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-aaeb13.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T15:12Z",
+     "finding": "서비스명·기관명·개발자명·URL 0건. 상·하단 띠 가림. 예시 인물은 \"검사자\"(일반명사)만. 직업 추천 표의 링크 글자는 일반 직업명"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -5469,7 +5533,7 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
     "evidence_url": "https://www.career.go.kr/",
@@ -5485,24 +5549,63 @@
     "note": "커리어넷 성인 로그인 필요",
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
-   }
+   },
+   "prev_status": "no_sample",
+   "acquire_note": "공식 \"검사결과예시\" 탭(예시 결과표 4쪽: 검사자 \"검사자\" 2018-02-12 예시값) — 총괄 US 샌드박스 puppeteer 렌더(탭 2 내용만 A4 PDF), HTTP 200, 2026-10-20T15:05Z. E2 공식 샘플(문서도판 아님).",
+   "packet_files": {
+    "sample.pdf": "67e93fca15e70edf9509c39f44b92a401cd8f9522dea8c2a8b37c76b47f757f1",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "d0e4abccc8ce3f3162a890ee687a62537d4c081432fe1f45922ae33b17d88577",
+    "ANSWER.json": "ad4bc0a19463f2014a8e905757460f152b77d043693467fc1d7c39ce0ca9c787"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K14",
    "name": "커리어넷 진로개발준비도검사",
    "blind_id": "S-0366bb",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.career.go.kr/cloud/w/inspect/ready/intro#tab2",
+   "sample_sha256": "d7bf3331875cbb9929fa93084e72a8e8cfe573bf6567b263315e77cfff54c016",
    "redaction": {
     "items_found": [],
-    "tool_sha256": null,
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 134,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T14:55:27Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "ecf37908924fa361e2023b07b29f7551c946895eaea8cf6474b260b35d3c0490",
+    "final_file": "S-0366bb.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "5b528dcb540edc551f2e2a936e84d85e82e6207b55f2cd61d898bb31c5137cfa",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-0366bb.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T15:12Z",
+     "finding": "서비스명·기관명·개발자명·URL 0건. 상·하단 띠 가림. 예시 인물은 \"검사자\"(일반명사)만. 직업 추천 표의 링크 글자는 일반 직업명"
+    }
    },
-   "status": "no_sample",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -5568,7 +5671,7 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "packet_sha256": null,
+   "packet_sha256": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
     "evidence_url": "https://www.career.go.kr/",
@@ -5584,7 +5687,16 @@
     "note": "커리어넷 성인 로그인 필요",
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
-   }
+   },
+   "prev_status": "no_sample",
+   "acquire_note": "공식 \"검사결과예시\" 탭(예시 결과표 2쪽: 검사자 \"검사자\" 2018-02-12 예시값) — 총괄 US 샌드박스 puppeteer 렌더(탭 2 내용만 A4 PDF), HTTP 200, 2026-10-20T15:05Z. E2 공식 샘플(문서도판 아님).",
+   "packet_files": {
+    "sample.pdf": "ecf37908924fa361e2023b07b29f7551c946895eaea8cf6474b260b35d3c0490",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "7bb5dac2eb96f50b9ac18bac29103daec6cb0acd2dae212e1d21ee59d2d411a8",
+    "ANSWER.json": "40ee4f7fb6b69131a5585df59644621c2a8431e45ea603249d99706970695858"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "K15",
@@ -6624,12 +6736,12 @@
       "ocr_layer": {}
      },
      "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
-     "checked_at": "2026-10-20T14:35:47Z"
+     "checked_at": "2026-10-20T14:42:27Z"
     },
-    "redacted_sha256": "f33cd19a88a736f7e97d83b6c1fdb6a1c3a26f6e7892c1d5b2020d9ce691cd90",
+    "redacted_sha256": "2bd3b7eb9c8228cb1dad245656316870fd8f929a4051983d154662c69e27d673",
     "final_file": "S-45132d.img.pdf",
     "final_format": "image-pdf@200dpi",
-    "intermediate_sha256": "326847b0773f010d70eaf7e3b710a6ecd8a541c6831ed3766060de24719d10a1",
+    "intermediate_sha256": "3249db749c109738f2dd220773e283377e5a56f325986686ee890e8741cd7b83",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -6641,13 +6753,13 @@
     },
     "visual_check": {
      "contact_sheet": "S-45132d.img.contact.png",
-     "passed": false,
+     "passed": true,
      "by": "총괄",
-     "at": "2026-10-20T14:50Z",
-     "finding": "마지막 쪽 고유 코드 \"LP-…\"(브랜드 약자 단서) 남음 → --boxes 추가 후 재가림 필요. 이름(민서) 2글자는 도구가 3글자 미만을 건너뛰어 1차에서 누락 → 좌표 상자로 보완(0건 확인)."
+     "at": "2026-10-20T15:10Z",
+     "finding": "상품명·인물명(민서)·고유코드(LP-) 0건 확인, 표지 통가림. 본문 구조(장 제목) 남음 — 모델 계열 단서 수준(타사 모델명 남김 규칙과 같음)"
     }
    },
-   "status": "redacted_pending_visual",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -6713,7 +6825,15 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)"
+   "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)",
+   "packet_sha256": "6deb55bb68ae99f86535eaee4864581ab8dbaf13f846e23aa31324596cde8ffe",
+   "packet_files": {
+    "sample.pdf": "2bd3b7eb9c8228cb1dad245656316870fd8f929a4051983d154662c69e27d673",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "46a6eaf0376cfcd8dfa6ae23513065fa3b3f4db89edecc65a4f9bbc82f05ccba",
+    "ANSWER.json": "0a7c3aa19723230158c9ef353ad33db4b835d24467dc932cca1bf51d809be4b3"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "OWN-P",
@@ -6744,12 +6864,12 @@
       "ocr_layer": {}
      },
      "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
-     "checked_at": "2026-10-20T14:36:43Z"
+     "checked_at": "2026-10-20T14:43:21Z"
     },
-    "redacted_sha256": "e07cd8d7556e4b758fd57ce2f2215dd299b7d0055acb9c0a28ab975b42f60397",
+    "redacted_sha256": "607a67908c52aa5842570ff4f708fec428f9b0f1e23e794e91bf7b4ae059e4d7",
     "final_file": "S-16bb7c.img.pdf",
     "final_format": "image-pdf@200dpi",
-    "intermediate_sha256": "5beb62ab385c1bc22b69e3e9c6a1c897d3a31ee78cbcd6ad9f8cae1424e068ff",
+    "intermediate_sha256": "cc684ce200b8861f4433360519a270df9b49d670a68204798654904eefd4214d",
     "hidden_structure": {
      "text_layer_bytes": 0,
      "fonts": [],
@@ -6761,13 +6881,13 @@
     },
     "visual_check": {
      "contact_sheet": "S-16bb7c.img.contact.png",
-     "passed": false,
+     "passed": true,
      "by": "총괄",
-     "at": "2026-10-20T14:50Z",
-     "finding": "마지막 쪽 고유 코드 \"LP-…\"(브랜드 약자 단서) 남음 → --boxes 추가 후 재가림 필요. 이름(민서) 2글자는 도구가 3글자 미만을 건너뛰어 1차에서 누락 → 좌표 상자로 보완(0건 확인)."
+     "at": "2026-10-20T15:10Z",
+     "finding": "상품명·인물명(민서)·고유코드(LP-) 0건 확인, 표지 통가림. 본문 구조(장 제목) 남음 — 모델 계열 단서 수준(타사 모델명 남김 규칙과 같음)"
     }
    },
-   "status": "redacted_pending_visual",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -6833,7 +6953,15 @@
    "A3": null,
    "A4": null,
    "A5": null,
-   "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)"
+   "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)",
+   "packet_sha256": "7ea002312ec928726e1821efc2ee0e41ed33ba86eed30ab6d624d13beda0387e",
+   "packet_files": {
+    "sample.pdf": "607a67908c52aa5842570ff4f708fec428f9b0f1e23e794e91bf7b4ae059e4d7",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "b618960e832216bf47a84fe12d0f1817aab22164fa6ef4c920ffeb7761a9ff3e",
+    "ANSWER.json": "24b161a19a6ba2de0c1a2349f341a1225a3c39bc343e16633164770a2cb543cb"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "ANC-H",
@@ -6845,14 +6973,44 @@
    "sample_sha256": "dd8affbae100ece5e400c83542e9dc4de22849456ef9a22cb876605e64ae83dc",
    "redaction": {
     "items_found": [],
-    "tool_sha256": null,
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 131,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T14:46:34Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "f268fe1c1930ecd5832fc28283a99ffeb9491cb2474016e45bc0eaa348b30779",
+    "final_file": "S-728007.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "d20173751b74cf546e481fe9061cfef85ecefb362a44eb2838ce0b88153b7397",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-728007.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T15:10Z",
+     "finding": "인물명(지훈) 상자 가림 0건, 표지 가림 없음(--cover 0, 앵커는 1쪽에 채점 내용)"
+    }
    },
-   "status": "acquired",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -6919,7 +7077,15 @@
    "A4": null,
    "A5": null,
    "denominator_class": "anchor(op:210 B — 검증용, 표·분모 밖)",
-   "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)"
+   "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)",
+   "packet_sha256": "09de27f68b03f3f64d3c008fb6ed9e665f3c93f700518ffd50138913736a995f",
+   "packet_files": {
+    "sample.pdf": "f268fe1c1930ecd5832fc28283a99ffeb9491cb2474016e45bc0eaa348b30779",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "73b6c833ab3dd70bae3cb7a86035b8274370b32e95322385803f5e91fb7b493e",
+    "ANSWER.json": "20c05a43f1ce121f8d7bef07dde4c252a964f34d158e7735fd5122cc810475ce"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   },
   {
    "id": "ANC-L",
@@ -6931,14 +7097,44 @@
    "sample_sha256": "f62c0e017e556f7d7b03fde57cda7e6cbe00244ba3be2afa0efd094f088f2f33",
    "redaction": {
     "items_found": [],
-    "tool_sha256": null,
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 131,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T14:43:36Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "f2095d57bd3b8e61a350e731730f8c407a739459ce5253246fe4657477379fe9",
+    "final_file": "S-5ad6c9.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "fe5c2fed699b673ef04bcec0f162f6b5946ab506f8976e0ebfa125e4475bba98",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-5ad6c9.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T15:10Z",
+     "finding": "인물명(지훈) 상자 가림 0건, 표지 가림 없음(--cover 0, 앵커는 1쪽에 채점 내용)"
+    }
    },
-   "status": "acquired",
+   "status": "redacted",
    "judge1": {
     "A1": {
      "level": null,
@@ -7005,7 +7201,15 @@
    "A4": null,
    "A5": null,
    "denominator_class": "anchor(op:210 B — 검증용, 표·분모 밖)",
-   "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)"
+   "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)",
+   "packet_sha256": "8cc58ca88e69eef5bfacdff425706edcaabdaac2f00b6e1534952211f4a58763",
+   "packet_files": {
+    "sample.pdf": "f2095d57bd3b8e61a350e731730f8c407a739459ce5253246fe4657477379fe9",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "8a33c55b4e7c5864f0bfdb973dc817052a5a996bf20d3b0a41ef07e8c00e63f5",
+    "ANSWER.json": "8a964e26983535cae2e740852e7ff833844dc5fa1cb98b45bceb8892e3ae2f90"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
   }
  ],
  "packet_order": [
@@ -7024,7 +7228,13 @@
   "S-f7229a",
   "S-8729f4",
   "S-7b229a",
-  "S-cb936c"
+  "S-cb936c",
+  "S-16bb7c",
+  "S-45132d",
+  "S-5ad6c9",
+  "S-728007",
+  "S-0366bb",
+  "S-aaeb13"
  ],
  "judge_sessions": {
   "note": "TL 6054779 5조건 + Peer 6057976 ④(받은 쪽 sha) + TL 6058049(read_check). 채점 전 채움. 값은 사실만.",
@@ -7476,6 +7686,98 @@
       "nudge_msg_id": "6967684",
       "nudge_at": "2026-10-20T10:11:28Z",
       "delay_note": "6일 무응답 → 재요청(파일·규칙 불변). judge1 자기신고: 10-14 채점 중 크레딧 소진으로 중단"
+     },
+     "S-7b229a": {
+      "sent_msg_id": "6989440",
+      "sent_at": "2026-10-20T13:34:33Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/aqUhw9HO",
+      "attachment_sha256_sent": "4614168716e1d640b6543311d08d1cb204e2d6b96d10fc87a2cd8eeb579cfb47",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "6989803",
+      "answer_sha256": "28d19918e41dc362e1e71f5b6b4fe915d25af4977dfa052bc407acadf9bc2acd",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T14:49:44Z",
+      "first_line_declaration_ok": true
+     },
+     "S-cb936c": {
+      "sent_msg_id": "6989465",
+      "sent_at": "2026-10-20T13:34:46Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/qWSVaqp9",
+      "attachment_sha256_sent": "86ab5af3dcf3f450c9d215e0490dd55b7d72d346379c0a2f28408dcf17791346",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "6990027",
+      "answer_sha256": "945e06981feed2db0f4927ddeecc68a666baa9011b7dda9555196464592d6538",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T14:49:47Z",
+      "first_line_declaration_ok": true
+     },
+     "S-16bb7c": {
+      "sent_msg_id": "6997138",
+      "sent_at": "2026-10-20T14:47:56Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/59WVikUP",
+      "attachment_sha256_sent": "7ea002312ec928726e1821efc2ee0e41ed33ba86eed30ab6d624d13beda0387e",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-45132d": {
+      "sent_msg_id": "6997155",
+      "sent_at": "2026-10-20T14:48:08Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/SMvbFlkR",
+      "attachment_sha256_sent": "6deb55bb68ae99f86535eaee4864581ab8dbaf13f846e23aa31324596cde8ffe",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-5ad6c9": {
+      "sent_msg_id": "6997173",
+      "sent_at": "2026-10-20T14:48:19Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/74rM4iNm",
+      "attachment_sha256_sent": "8cc58ca88e69eef5bfacdff425706edcaabdaac2f00b6e1534952211f4a58763",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-728007": {
+      "sent_msg_id": "6997197",
+      "sent_at": "2026-10-20T14:48:30Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/J8D2SFrz",
+      "attachment_sha256_sent": "09de27f68b03f3f64d3c008fb6ed9e665f3c93f700518ffd50138913736a995f",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-0366bb": {
+      "sent_msg_id": "6998115",
+      "sent_at": "2026-10-20T14:56:21Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/IcMSkqzo",
+      "attachment_sha256_sent": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh"
+     },
+     "S-aaeb13": {
+      "sent_msg_id": "6998137",
+      "sent_at": "2026-10-20T14:56:32Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/suyYwx7Q",
+      "attachment_sha256_sent": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh"
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -7732,6 +8034,98 @@
       "nudge_msg_id": "6967646",
       "nudge_at": "2026-10-20T10:11:12Z",
       "delay_note": "6일 무응답 → 재요청(파일·규칙 불변). judge1 자기신고: 10-14 채점 중 크레딧 소진으로 중단"
+     },
+     "S-7b229a": {
+      "sent_msg_id": "6989433",
+      "sent_at": "2026-10-20T13:34:27Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/aqUhw9HO",
+      "attachment_sha256_sent": "4614168716e1d640b6543311d08d1cb204e2d6b96d10fc87a2cd8eeb579cfb47",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "6989840",
+      "answer_sha256": "f1b8d0923aad3bf1813d4852fa8af31d967e2e49f9b4d230cb8c610941be7ff8",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T14:49:43Z",
+      "first_line_declaration_ok": true
+     },
+     "S-cb936c": {
+      "sent_msg_id": "6989455",
+      "sent_at": "2026-10-20T13:34:40Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/qWSVaqp9",
+      "attachment_sha256_sent": "86ab5af3dcf3f450c9d215e0490dd55b7d72d346379c0a2f28408dcf17791346",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "6990118",
+      "answer_sha256": "384c6f1387e6b86e8ddcca799dfc99c8a6c55f0e12199e50a91add04fcc6c7a3",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T14:49:46Z",
+      "first_line_declaration_ok": true
+     },
+     "S-16bb7c": {
+      "sent_msg_id": "6997128",
+      "sent_at": "2026-10-20T14:47:51Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/59WVikUP",
+      "attachment_sha256_sent": "7ea002312ec928726e1821efc2ee0e41ed33ba86eed30ab6d624d13beda0387e",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-45132d": {
+      "sent_msg_id": "6997145",
+      "sent_at": "2026-10-20T14:48:02Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/SMvbFlkR",
+      "attachment_sha256_sent": "6deb55bb68ae99f86535eaee4864581ab8dbaf13f846e23aa31324596cde8ffe",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-5ad6c9": {
+      "sent_msg_id": "6997165",
+      "sent_at": "2026-10-20T14:48:13Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/74rM4iNm",
+      "attachment_sha256_sent": "8cc58ca88e69eef5bfacdff425706edcaabdaac2f00b6e1534952211f4a58763",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-728007": {
+      "sent_msg_id": "6997186",
+      "sent_at": "2026-10-20T14:48:25Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/J8D2SFrz",
+      "attachment_sha256_sent": "09de27f68b03f3f64d3c008fb6ed9e665f3c93f700518ffd50138913736a995f",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+     },
+     "S-0366bb": {
+      "sent_msg_id": "6998102",
+      "sent_at": "2026-10-20T14:56:15Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/IcMSkqzo",
+      "attachment_sha256_sent": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh"
+     },
+     "S-aaeb13": {
+      "sent_msg_id": "6998125",
+      "sent_at": "2026-10-20T14:56:27Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/suyYwx7Q",
+      "attachment_sha256_sent": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh"
      }
     },
     "team_ok": {
@@ -7859,6 +8253,15 @@
       "reply_msg_id": "6077775",
       "answered_at": "2026-10-12T07:57:07Z",
       "first_line_declaration_ok": true
+     },
+     "S-cb936c": {
+      "sent_msg_id": "6997497",
+      "sent_at": "2026-10-20T14:50:59Z",
+      "axes": [
+       "A1"
+      ],
+      "deadline": "2026-10-22T14:50Z",
+      "sent_via": "gsend.sh(e2-third.py 메시지 틀 동일, 재활성 — op:205/206 같은 actor·48h)"
      }
     },
     "post_memory_check": {
@@ -8610,6 +9013,52 @@
    "network": 0
   },
   "expected_anchor_sha256": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
-  "status": "가림 2차 필요(LP- 코드) → 눈 확인 → 8회차 패킷 4건 발송 전"
+  "status": "8회차 패킷 4건 발송(2026-10-20T14:48Z), 기한 2026-10-22T14:48Z"
+ },
+ "packet_round8": {
+  "blind_ids": [
+   "S-16bb7c",
+   "S-45132d",
+   "S-5ad6c9",
+   "S-728007"
+  ],
+  "built_at": "2026-10-20T14:47Z",
+  "rule": "op:205·206·207 C + op:210(자사 E2 트랙·앵커). 자사 2 + 앵커 2 섞음, blind_id 사전순",
+  "note": "build-packet은 신규 4행만 담은 임시 시트로 실행 → 기존 16건 패킷·순서 불변(KB-02).",
+  "sent": {
+   "judge1_ch": "ch_dm_5a346861bd600f17b575",
+   "judge2_ch": "ch_dm_3aeb1c1cf21c4e0b69ad",
+   "msgs": {
+    "S-16bb7c": [
+     6997128,
+     6997138
+    ],
+    "S-45132d": [
+     6997145,
+     6997155
+    ],
+    "S-5ad6c9": [
+     6997165,
+     6997173
+    ],
+    "S-728007": [
+     6997186,
+     6997197
+    ]
+   },
+   "sent_at": "2026-10-20T14:48Z",
+   "deadline": "2026-10-22T14:48Z"
+  }
+ },
+ "packet_round9": {
+  "blind_ids": [
+   "S-0366bb",
+   "S-aaeb13"
+  ],
+  "built_at": "2026-10-20T14:55Z",
+  "rule": "op:205·206·207 C",
+  "note": "K13·K14 공식 검사결과예시(커리어넷) 확보 — 2026-10-20 종결 후보에서 확보로(op:207 A-4).",
+  "sent_at": "2026-10-20T14:56Z",
+  "deadline": "2026-10-22T14:56Z"
  }
 }
