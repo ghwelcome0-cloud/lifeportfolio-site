@@ -524,5 +524,5 @@
    ]
   }
  ],
- "r6_footnote": "r6(US, 2026-10-20) 고용24 6행: 동일 URL 6행, 결과 상관됨(TL 6320929) · 행별 성공/실패는 측정 시점 차이이며 서비스 간 차이를 뜻하지 않음(Method 6969820) · 2분 간격 성공/실패 혼재(TL 6969403) · r4 KR과 출구 다름 · TL 사전 curl 3회 = 측정 전 접근성 확인, 결과값 미사용 · run-meta 4칸 측정 뒤 기입(beab90f, accept_language_sent=unknown) · 수령 검사 FAIL 상태에서 조립 미리보기 1회(비공개·되돌림) 뒤 PASS 후 재조립 · K11·K12 = r3·r4·r6 모두 미측정"
+ "r6_footnote": "r6(US, 2026-10-20) 고용24 6행: 동일 URL 6행, 결과 상관됨(TL 6320929) · 행별 성공/실패는 측정 시점 차이이며 서비스 간 차이를 뜻하지 않음(Method 6969820) · 2분 간격 성공/실패 혼재(TL 6969403) · r4 KR과 출구 다름 · TL 사전 curl 3회 = 측정 전 접근성 확인, 결과값 미사용 · run-meta 4칸 측정 뒤 기입(beab90f, accept_language_sent=unknown) · 수령 검사 FAIL 상태에서 조립 미리보기 1회(비공개·되돌림) 뒤 PASS 후 재조립 · K11·K12 = r3·r4·r6 모두 미측정 · 요청 언어 헤더 미확인(accept_language_sent=unknown) — 따라서 r6가 r3(US)와 같은 언어 조건이었는지는 확인되지 않음(Peer 6970351 · Method 6970353)"
 }
