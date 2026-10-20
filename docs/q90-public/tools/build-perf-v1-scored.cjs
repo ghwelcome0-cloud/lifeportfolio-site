@@ -31,6 +31,9 @@ const ownName = { 'OWN-R2': '인생포트폴리오 리포트', 'OWN-P2': '인생
 const rows = [...own.map(r => ({ r, own: true })), ...comp.map(r => ({ r, own: false }))]
   .map(o => ({ ...o, id: o.r.id, name: o.own ? ownName[o.r.id] : (ro(o.r.id).name || o.r.name), country: o.own ? 'KR' : ro(o.r.id).country, L: Object.fromEntries(AX.map(a => [a, o.r[a]])), P: Object.fromEntries(AX.map(a => [a, pt(o.r[a])])), total: total(o.r), wtotal: wtotal(o.r), third: third(o.r), url: o.r.sample_url || null, sha: o.r.sample_sha256 || null }))
   .sort((a, b) => b.total - a.total || (a.own === b.own ? 0 : a.own ? 1 : -1)); // 동점이면 자사를 뒤에(보수적), 참고 점수로 순서를 정하지 않음
+const PUBLIC = process.env.PUBLIC === '1';
+if (PUBLIC) { const cnt = { KR: 0, INTL: 0 }; const AB = 'ABCDEFGHIJKLMNOPQRST';
+  for (const x of rows) if (!x.own) { const k = x.country === 'KR' ? 'KR' : 'INTL'; x.name = (k === 'KR' ? '국내 타사 ' : '해외 타사 ') + AB[cnt[k]++]; x.url = null; x.sha = null; } }
 const med = { P: Object.fromEntries(AX.map(a => [a, median(comp.map(r => pt(r[a])))])), total: median(comp.map(total)), wtotal: median(comp.map(wtotal)) };
 const top = Object.fromEntries(AX.map(a => [a, Math.max(...comp.map(r => pt(r[a])))]));
 const ac = e2.anchor_check_r11 ? { ...e2.anchor_check, ...e2.anchor_check_r11 } : (e2.anchor_check || {});
@@ -38,7 +41,7 @@ const nThird = rows.reduce((s, x) => s + x.third.length, 0);
 const meta = { generated: new Date().toISOString().slice(0, 16) + 'Z', sheet_sha: sha('sheets/e2-samples.json'), rubric_sha: sha('rubric/rubric-v2.json'), rubric_version: rubric.version, rubric_frozen_at: rubric.frozen_at, n_comp: comp.length, n_own: own.length, anchor_sha: ac.expected_sha256, anchor_max_diff: ac.max_diff };
 const anchorRule = 'L1 전혀 없음 · L2 흔적만 · L3 있으나 일반론/부분 · L4 구체적이고 응답과 연결 · L5 바로 쓸 수 있을 만큼 구체적이고 일관됨';
 const Q = Object.fromEntries(AX.map(a => [a, (rubric.e2_judge_rubric_public.per_axis_question || {})[a]]));
-fs.writeFileSync(path.join(OUT, 'perf-v1-scored.json'), JSON.stringify({ meta, scoring: { main: '(L-1)×5 per axis, 5 axes, 100', ref: 'rubric v2.0 public_weight normalized to 100', weights: W }, median: med, rows: rows.map(({ r, ...x }) => x) }, null, 1));
+fs.writeFileSync(path.join(OUT, PUBLIC ? 'perf-v1-public.json' : 'perf-v1-scored.json'), JSON.stringify({ meta, scoring: { main: '(L-1)×5 per axis, 5 axes, 100', ref: 'rubric v2.0 public_weight normalized to 100', weights: W }, median: med, rows: rows.map(({ r, ...x }) => x) }, null, 1));
 
 // ---------- HTML ----------
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -75,7 +78,7 @@ td.top .bar i{background:#2f9e44}td.top .bar i.o{background:#2b8a3e}
 .note{font-size:12.5px;color:#5c6577;margin-top:8px;line-height:1.6}
 code{background:#f1f3f5;padding:1px 4px;border-radius:3px;font-size:12px}
 </style></head><body><main>
-<span class="badge">내부판 · 외부 공개는 대표 승인 뒤</span><span class="badge" style="background:#e7f5ff;color:#1864ab">채점 루브릭 ${esc(rubric.version)} · ${esc(rubric.frozen_at)} 결과 전 동결</span>
+<span class="badge">${PUBLIC ? '공개판 · 비교 대상 회사명 비공개' : '내부판 · 외부 공개는 대표 승인 뒤'}</span><span class="badge" style="background:#e7f5ff;color:#1864ab">채점 루브릭 ${esc(rubric.version)} · ${esc(rubric.frozen_at)} 결과 전 동결</span>
 <h1>자기이해·진로 리포트 성능표 1판 — 100점 환산</h1>
 <div class="sub">타사 공개 샘플 리포트 ${comp.length}종 + 인생포트폴리오 실제 리포트 ${own.length}종 · 같은 루브릭 · 같은 블라인드 심사위원 · 생성 ${meta.generated}</div>
 <div class="cards">
@@ -95,7 +98,7 @@ code{background:#f1f3f5;padding:1px 4px;border-radius:3px;font-size:12px}
 
 <h2>2. 어떻게 채점했나 — 8단계 절차</h2>
 <div class="box"><ol>
-<li><b>샘플 수집</b> — 각 회사가 <u>공식 사이트에 직접 공개한</u> 샘플 리포트만 씁니다(제3자 사본 제외). 주소·수집 시각·파일 sha256을 기록합니다(부록 표).</li>
+<li><b>샘플 수집</b> — 각 회사가 <u>공식 사이트에 직접 공개한</u> 샘플 리포트만 씁니다(제3자 사본 제외). 주소·수집 시각·파일 sha256을 기록합니다.</li>
 <li><b>자사 리포트</b> — 실제 서비스에서 실제 응답으로 만들어진 고객 리포트(리포트·실행 프로그램 각 1부, 2026-10-21 발행본)를 손대지 않은 그대로 썼습니다(파일 sha256 기록).</li>
 <li><b>가림(블라인드)</b> — 회사명·서비스명·로고·주소·연락처·고객 이름을 가리고, 글자층이 없는 이미지 PDF로 바꾼 뒤 자동 누출 검사(0건)와 사람 눈 확인을 거칩니다. 파일 이름도 무작위 번호(S-xxxxxx)라 심사위원은 어느 회사인지 모릅니다. <b>우리 리포트도 똑같이</b> 가렸습니다.</li>
 <li><b>독립 채점</b> — <u>20종 모두 똑같은 AI 심사위원 2명</u>(서로 다른 모델, 샘플마다 기억 없는 새 대화)이 각자 5축을 L1~L5로 매기고 축마다 이유 1문장을 씁니다. 패킷 밖 자료(검색 등)는 금지입니다.</li>
@@ -121,22 +124,22 @@ ${AX.map(a => `<li><b>${a} ${esc(ax[a].name)}</b> — 타사 중간값 ${med.P[a
 <li>모델명·유형명(예: 16유형)은 가리면 읽을 수 없어 남겼습니다. 심사위원이 회사를 짐작한 경우 기록만 하고 점수에 쓰지 않았습니다.</li>
 <li>이 표는 리포트(결과지) 5축만 봅니다. 홈페이지 편의성(A6)·보안(A7)·비용은 포함하지 않았습니다.</li>
 <li>100점 환산 방식은 결과를 본 뒤(2026-10-20 대표 결정) 정했습니다. 그래서 재량이 없는 균등 배점을 주 점수로 씁니다. 레벨 값 자체는 결과 전에 정한 규칙으로만 나왔습니다.</li>
-<li>공식 샘플을 받을 수 없는 서비스(접속 불가·로그인·구매 필요)는 넣지 않았고, 0점으로 치지도 않았습니다(예: 고용24 7종은 접속 불가로 이번 판 제외).</li>
+<li>공식 샘플을 받을 수 없는 서비스(접속 불가·로그인·구매 필요)는 넣지 않았고, 0점으로 치지도 않았습니다${PUBLIC ? '(공공기관 검사 7종은 결과 예시 화면 접속 불가로 이번 판에서 제외)' : '(예: 고용24 7종은 접속 불가로 이번 판 제외)'}.</li>
 <li>채점 기준 보충(첫 결과 페이지)과 공개 문서 반영 규칙은 1차 채점 뒤 해석 차이가 확인되어 정했고, <b>20종 모두에 똑같이</b> 적용해 다시 채점했습니다. 검증용 리포트에서 심사위원 판정이 기대와 2단계 차이 난 칸이 있었다면 아래 카드에 표시됩니다.</li>
 <li>최종 채점은 서로 다른 AI 모델 3개(같은 회사 계열)가 맡았습니다. 평가 기준과 규칙은 사람이 정하고 결과를 검토해 최종 승인했으며, 점수 자체는 사람이 고치지 않았습니다.</li>
 <li>검증용으로 만든 낮은 품질 리포트의 첫인상을 심사위원이 기대보다 높게 본 칸이 있어, 첫인상 점수는 모든 회사가 조금 후하게 나왔을 수 있습니다(같은 조건이라 순위 영향 없음).</li>
-<li>각 서비스명·상표는 해당 회사의 소유이며, 이 표는 각 회사가 공개한 예시 리포트만으로 만든 비교입니다.</li>
+${PUBLIC ? '<li>비교 대상 회사명은 공개하지 않습니다. 이 표는 각 회사가 공개한 예시 리포트만으로 만든 비교이며, 해당 회사의 공식 평가나 인증이 아닙니다.</li>' : '<li>각 서비스명·상표는 해당 회사의 소유이며, 이 표는 각 회사가 공개한 예시 리포트만으로 만든 비교입니다.</li>'}
 <li>AI 심사위원 채점이며, 사람 대상 효과 검증이 아닙니다. 점수는 "리포트가 루브릭 질문에 얼마나 답하는가"이지 검사의 과학적 타당도가 아닙니다.</li>
 </ul></div>
 
-<h2>부록. 타사 샘플 출처 (누구나 같은 파일을 받아 확인 가능)</h2>
-<table><thead><tr><th>ID</th><th>서비스</th><th>공식 샘플 주소</th><th>sha256 앞 12자</th><th>확정 레벨 A1~A5</th></tr></thead><tbody>${src}</tbody></table>
+${PUBLIC ? '<h2>비교 대상 안내</h2><div class="box">비교 대상은 각 회사가 공식 홈페이지에 공개한 대표 예시 리포트 18종(해외 10·국내 8)입니다. 특정 회사를 평가하거나 깎아내리려는 목적이 아니므로 회사명은 공개하지 않습니다. 이름표(해외 타사 A 등)는 총점 순서로 붙였습니다. 출처 주소와 파일 지문(sha256)은 내부에 보관하고 있습니다.</div>' : `<h2>부록. 타사 샘플 출처 (누구나 같은 파일을 받아 확인 가능)</h2>
+<table><thead><tr><th>ID</th><th>서비스</th><th>공식 샘플 주소</th><th>sha256 앞 12자</th><th>확정 레벨 A1~A5</th></tr></thead><tbody>${src}</tbody></table>`}
 <div class="note">자료: 시트 e2-samples.json sha256 <code>${meta.sheet_sha.slice(0, 16)}…</code> · 도구 build-perf-v1-scored.cjs · 레벨 원자료와 심사위원 답 원본은 내부 보관(요청 시 대조 가능).</div>
 </main>
 <script>
 document.querySelectorAll('#perf th').forEach((th,i)=>th.onclick=()=>{const tb=document.querySelector('#perf tbody');const med=tb.querySelector('tr.med');const rs=[...tb.querySelectorAll('tr:not(.med)')];const d=th.dataset.d=th.dataset.d==='a'?'d':'a';rs.sort((x,y)=>{const a=x.children[i],b=y.children[i];const va=a.dataset.v,vb=b.dataset.v;const r=va!==undefined?(+va)-(+vb):a.innerText.localeCompare(b.innerText,'ko');return d==='a'?r:-r});rs.forEach(r=>tb.appendChild(r));tb.appendChild(med);});
 </script></body></html>`;
-fs.writeFileSync(path.join(OUT, 'perf-v1-scored.html'), html);
+fs.writeFileSync(path.join(OUT, PUBLIC ? 'perf-v1-public.html' : 'perf-v1-scored.html'), html);
 
 // ---------- MD ----------
 let md = `# 성능표 1판 — 100점 환산 (내부판, 외부 공개는 대표 승인 뒤)\n\n생성 ${meta.generated} · 루브릭 ${rubric.version}(${rubric.frozen_at} 결과 전 동결, sha ${meta.rubric_sha.slice(0, 12)}…) · 시트 sha ${meta.sheet_sha.slice(0, 12)}… · 도구 build-perf-v1-scored.cjs\n\n`;
@@ -145,5 +148,5 @@ md += `| 서비스 | 총점 | ${AX.map(a => `${a} ${ax[a].name}`).join(' | ')} |
 for (const x of rows) md += `| ${x.own ? '**[자사] ' + x.name + '**' : x.name}${x.third.length ? ' †' + x.third.join('·') : ''} | ${x.own ? '**' + x.total + '**' : x.total} | ${AX.map(a => x.P[a]).join(' | ')} | ${x.wtotal} |\n`;
 md += `| *타사 ${comp.length}곳 중간값* | *${med.total}* | ${AX.map(a => '*' + med.P[a] + '*').join(' | ')} | *${med.wtotal}* |\n`;
 md += `\n채점 절차·기준·한계·출처는 perf-v1-scored.html 1~5절과 부록 참조. 앵커 검증: 기대 봉인 sha ${(ac.expected_sha256 || '').slice(0, 12)}… → 최대 차이 ${ac.max_diff}단계.\n`;
-fs.writeFileSync(path.join(OUT, 'perf-v1-scored.md'), md);
+fs.writeFileSync(path.join(OUT, PUBLIC ? 'perf-v1-public.md' : 'perf-v1-scored.md'), md);
 console.log('perf-v1-scored', 'rows', rows.length, 'comp', comp.length, 'own', own.length, '→', path.relative(B, OUT), '(점수는 파일에만)');
