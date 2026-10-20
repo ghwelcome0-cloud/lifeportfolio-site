@@ -1,0 +1,40 @@
+{
+ "run": "r6",
+ "purpose": "미측정 행 K01a·K08·K09·K10·K11·K12의 첫 2xx 측정 (op:q90-auto-201 6967766 결박)",
+ "binding_ref": "op:q90-auto-201 comet 6967766",
+ "egress_country": "US",
+ "egress_note": "r4(KR)과 출구 다름",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh",
+ "browser_lang_flag": "en-US",
+ "rows_requested": 6,
+ "bridge_rows": [],
+ "attempts_per_row": 1,
+ "retry": "없음(결박)",
+ "started_utc": "2026-10-20T10:14:24.609Z",
+ "ended_utc": "2026-10-20T10:24:07.423Z",
+ "roster_subset_file": "roster-r6-6rows.json",
+ "roster_subset_sha256": "4b2de0338755a905ad685fa3a53033311bea64e2180492819687739950ced7ae",
+ "roster_subset_note": "roster-v2.r6-subset.json(v2.1)에서 K02 겹침 행을 뺀 6행 — 결박 범위가 6행이므로",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "footnotes": [
+  "동일 URL 6행, 결과 상관됨",
+  "r4 KR과 출구 다름",
+  "TL 사전 curl 3회(2026-10-14 07:3xZ, HTTP 200) = 측정 전 접근성 확인, 결과값 미사용"
+ ],
+ "scores_viewed": 0,
+ "assembled_into_table": false,
+ "bound_commit": "df77723049ddc8bda446546f0f1cabe2397af2c6",
+ "os_kind": "Linux 6.18.15 (genspark sandbox)",
+ "os_timezone": "Etc/UTC",
+ "accept_language_sent": "unknown(측정 직전 헤더 확인 미실시; 도구는 --lang=en-US 플래그만 설정, 명시 헤더 없음)",
+ "meta_backfilled_at": "2026-10-20T10:3xZ",
+ "meta_backfill_source": {
+  "bound_commit": "git: 측정 브랜치 q90-public/e1-r6의 부모 commit = 측정 시작 시 checkout된 origin/main HEAD. commit 시각 2026-10-16T08:05:28Z < r6 시작 10:14:24Z. 도구 파일은 3205820(2026-10-12)부터 이 commit까지 바이트 동일(c276bb21)",
+  "os_kind": "환경 조회(uname -sr), 측정 뒤 같은 샌드박스에서 읽음",
+  "os_timezone": "환경 조회(/etc/timezone = Etc/UTC, date +%Z = UTC), 측정 뒤 같은 샌드박스에서 읽음",
+  "accept_language_sent": "unknown — Method 6969820 규칙: 측정 직전 확인 없으면 기본값 기입 금지"
+ }
+}
