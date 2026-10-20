@@ -25,5 +25,16 @@
   "TL 사전 curl 3회(2026-10-14 07:3xZ, HTTP 200) = 측정 전 접근성 확인, 결과값 미사용"
  ],
  "scores_viewed": 0,
- "assembled_into_table": false
+ "assembled_into_table": false,
+ "bound_commit": "df77723049ddc8bda446546f0f1cabe2397af2c6",
+ "os_kind": "Linux 6.18.15 (genspark sandbox)",
+ "os_timezone": "Etc/UTC",
+ "accept_language_sent": "unknown(측정 직전 헤더 확인 미실시; 도구는 --lang=en-US 플래그만 설정, 명시 헤더 없음)",
+ "meta_backfilled_at": "2026-10-20T10:3xZ",
+ "meta_backfill_source": {
+  "bound_commit": "git: 측정 브랜치 q90-public/e1-r6의 부모 commit = 측정 시작 시 checkout된 origin/main HEAD. commit 시각 2026-10-16T08:05:28Z < r6 시작 10:14:24Z. 도구 파일은 3205820(2026-10-12)부터 이 commit까지 바이트 동일(c276bb21)",
+  "os_kind": "환경 조회(uname -sr), 측정 뒤 같은 샌드박스에서 읽음",
+  "os_timezone": "환경 조회(/etc/timezone = Etc/UTC, date +%Z = UTC), 측정 뒤 같은 샌드박스에서 읽음",
+  "accept_language_sent": "unknown — Method 6969820 규칙: 측정 직전 확인 없으면 기본값 기입 금지"
+ }
 }
