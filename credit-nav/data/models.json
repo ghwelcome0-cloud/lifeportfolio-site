@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "asOf": "2026-10-20",
+  "_note": "토큰 100만 개당 USD (공식 API 가격). densityPerChar = 글자 1개당 토큰 (o200k_base 실측/추정).",
+  "models": {
+    "gpt-5-mini": { "input": 0.25, "output": 2.0, "source": "OpenAI pricing" },
+    "gpt-5":      { "input": 1.25, "output": 10.0, "source": "OpenAI pricing" }
+  },
+  "densityPerChar": { "ko": 0.53, "en": 0.25, "ja": 0.9, "zh": 0.75, "es": 0.27 }
+}

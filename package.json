@@ -63,7 +63,13 @@
     "test:partner:emulator": "node scripts/prepare-b2b-test.cjs && firebase emulators:exec --project demo-lp-b2b-stability --config firebase.b2b-test.json --only auth,firestore,database 'node scripts/test-partner-server.cjs'",
     "test:answer-validation:emulator": "node scripts/prepare-b2b-test.cjs && firebase emulators:exec --project demo-lp-b2b-stability --config firebase.b2b-test.json --only auth,database 'node scripts/test-answer-validation-gate.cjs'",
     "gen:answer-validation": "node scripts/gen-answer-validation.cjs --write",
-    "test:a63": "node scripts/test-a63-mobile-readability.cjs"
+    "test:a63": "node scripts/test-a63-mobile-readability.cjs",
+    "i18n:check": "node scripts/i18n/check.mjs",
+    "i18n:extract": "node scripts/i18n/extract.mjs",
+    "i18n:translate": "node scripts/i18n/translate.mjs",
+    "i18n:review": "node scripts/i18n/review.mjs",
+    "credit-nav:test": "node --test credit-nav/test/engine.test.mjs",
+    "credit-nav:calibrate": "node credit-nav/engine/calibrate.mjs"
   },
   "keywords": [],
   "author": "",

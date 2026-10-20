@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "asOf": "2026-10-20",
+  "services": {
+    "genspark": { "unit": "credit", "usdPerCredit": 0.0020, "basis": "Pro $249.99 / 125,000 credits (표시가)" }
+  },
+  "fx": { "KRWperUSD": 1328, "asOf": "2026-10-20" }
+}

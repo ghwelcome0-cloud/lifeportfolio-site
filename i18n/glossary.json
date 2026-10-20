@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "_note": "브랜드·핵심 용어. translate가 프롬프트에 주입하고 review/check가 위반을 찾음. dnt=true면 번역 금지(원문 그대로).",
+  "terms": [
+    {
+      "ko": "인생포트폴리오",
+      "en": "Life Portfolio",
+      "ja": "Life Portfolio",
+      "zh": "Life Portfolio",
+      "es": "Life Portfolio"
+    },
+    {
+      "ko": "Only One Report",
+      "dnt": true
+    },
+    {
+      "ko": "Only One 리포트",
+      "en": "Only One Report",
+      "ja": "Only One Report",
+      "zh": "Only One Report",
+      "es": "Only One Report"
+    },
+    {
+      "ko": "사명",
+      "en": "mission",
+      "ja": "使命",
+      "zh": "使命",
+      "es": "misión"
+    },
+    {
+      "ko": "비전",
+      "en": "vision",
+      "ja": "ビジョン",
+      "zh": "愿景",
+      "es": "visión"
+    },
+    {
+      "ko": "강점",
+      "en": "strengths",
+      "ja": "強み",
+      "zh": "优势",
+      "es": "fortalezas"
+    },
+    {
+      "ko": "자기경영 진단",
+      "en": "self-leadership assessment",
+      "ja": "セルフリーダーシップ診断",
+      "zh": "自我管理诊断",
+      "es": "diagnóstico de autogestión"
+    },
+    {
+      "ko": "실행 프로그램",
+      "en": "Action Program",
+      "ja": "実行プログラム",
+      "zh": "行动计划",
+      "es": "Programa de Acción"
+    },
+    {
+      "ko": "실행 설계도",
+      "en": "action blueprint",
+      "ja": "実行設計図",
+      "zh": "行动蓝图",
+      "es": "plano de acción"
+    },
+    {
+      "ko": "21일 루틴",
+      "en": "21-day routine",
+      "ja": "21日間ルーティン",
+      "zh": "21天习惯",
+      "es": "rutina de 21 días"
+    },
+    {
+      "ko": "마이페이지",
+      "en": "My Page",
+      "ja": "マイページ",
+      "zh": "我的页面",
+      "es": "Mi página"
+    },
+    {
+      "ko": "다이어리",
+      "en": "Diary",
+      "ja": "ダイアリー",
+      "zh": "日记",
+      "es": "Diario"
+    },
+    {
+      "ko": "리포트",
+      "en": "report",
+      "ja": "レポート",
+      "zh": "报告",
+      "es": "informe"
+    }
+  ]
+}

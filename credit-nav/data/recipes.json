@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "_note": "작업 레시피. outPerIn = 출력 토큰 / 입력 원문 토큰. overheadIn = 묶음당 지시문 토큰. 값은 ledger 실측으로 보정.",
+  "recipes": {
+    "translate": {
+      "label": {
+        "ko": "번역 (LLM 프록시, JSON 묶음)",
+        "en": "Translation (batched JSON)"
+      },
+      "model": "gpt-5-mini",
+      "batchSize": 50,
+      "overheadIn": 398,
+      "inPerSrcToken": 1.47,
+      "outPerSrcToken": {
+        "mean": 5.5,
+        "sd": 1.6
+      },
+      "_outNote": "gpt-5-mini 추론 토큰 포함. 2026-10-20 실측 3건 최소제곱 (호출당 고정 + 원문 토큰 비례). 표본 3건이라 흔들림 큼 → PR-1 실측으로 재보정",
+      "overheadOut": 1843
+    },
+    "backtranslate_review": {
+      "label": {
+        "ko": "역번역 검수",
+        "en": "Back-translation review"
+      },
+      "model": "gpt-5-mini",
+      "batchSize": 40,
+      "overheadIn": 180,
+      "inPerSrcToken": 2.2,
+      "outPerSrcToken": {
+        "mean": 3.0,
+        "sd": 1.5
+      },
+      "_outNote": "추정값. PR-1에서 실측",
+      "overheadOut": 600
+    }
+  }
+}

@@ -14,6 +14,8 @@ function run(label, command, args, options = {}) {
 }
 
 run("JSON syntax", process.execPath, ["scripts/test-json-syntax.mjs"]);
+run("i18n check (다국어 C-7)", process.execPath, ["scripts/i18n/check.mjs"]);
+run("credit-nav engine", process.execPath, ["--test", "credit-nav/test/engine.test.mjs"]);
 run("Engine syntax", process.execPath, ["--check", "assets/js/report-engine.js"]);
 run("Report v4 syntax", process.execPath, ["--check", "assets/js/report-engine-v4.js"]);
 run("Program syntax", process.execPath, ["--check", "assets/js/program-engine.js"]);

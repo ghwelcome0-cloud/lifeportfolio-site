@@ -150,3 +150,7 @@ youtube/hybrid3d/out/
 # docs/q90-public: 표 HTML 산출물은 git 추적 안 함 — ux_quality_gate가 git 추적 *.html 전부를 고객 페이지로 세기 때문.
 # 표는 table-v2.md/json에서 build-table.cjs로 언제든 재생성한다. 공개 확정본은 table/ 에서 별도 결정.
 docs/q90-public/runs/*/table-v2.html
+
+# i18n 작업 산출물 (번역 기록 i18n/memory 는 커밋)
+i18n/out/
+i18n/extract/
