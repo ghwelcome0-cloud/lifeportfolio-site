@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "default": "ko",
+  "order": ["ko", "en", "ja", "zh", "es"],
+  "locales": {
+    "ko": { "name": "한국어", "path": "/", "htmlLang": "ko", "hreflang": "ko", "ogLocale": "ko_KR", "payment": "payple", "currency": "KRW", "price": "19900", "bible": "개역개정", "dateFormat": "YYYY.MM.DD", "legal": "original", "tone": "style/ko.md" },
+    "en": { "name": "English", "path": "/en/", "htmlLang": "en", "hreflang": "en", "ogLocale": "en_US", "payment": "paypal", "currency": "USD", "price": "14.99", "bible": "NIV", "dateFormat": "MMM D, YYYY", "legal": "translation", "tone": "style/en.md" },
+    "ja": { "name": "日本語", "path": "/ja/", "htmlLang": "ja", "hreflang": "ja", "ogLocale": "ja_JP", "payment": "paypal", "currency": "USD", "price": "14.99", "bible": "口語訳", "dateFormat": "YYYY年M月D日", "legal": "translation", "tone": "style/ja.md" },
+    "zh": { "name": "简体中文", "path": "/zh/", "htmlLang": "zh-Hans", "hreflang": "zh-Hans", "ogLocale": "zh_CN", "payment": "paypal", "currency": "USD", "price": "14.99", "bible": "和合本", "dateFormat": "YYYY年M月D日", "legal": "translation", "tone": "style/zh.md" },
+    "es": { "name": "Español", "path": "/es/", "htmlLang": "es", "hreflang": "es", "ogLocale": "es_ES", "payment": "paypal", "currency": "USD", "price": "14.99", "bible": "Reina-Valera 1909", "dateFormat": "D/M/YYYY", "legal": "translation", "tone": "style/es.md" }
+  },
+  "xDefault": "ko"
+}

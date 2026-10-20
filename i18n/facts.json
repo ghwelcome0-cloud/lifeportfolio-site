@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "_note": "페이지·llms.txt·JSON-LD가 모두 이 값을 씀. 값을 바꿀 때는 여기만 바꾸고 check.mjs로 확인.",
+  "brand": { "ko": "인생포트폴리오", "en": "Life Portfolio" },
+  "questions": 76,
+  "minutes": 15,
+  "price": { "KRW": "19900", "USD": "14.99" },
+  "delivery": "instant",
+  "languages": ["ko", "en", "ja", "zh", "es"]
+}
