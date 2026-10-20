@@ -1,0 +1,42 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-9d99bb",
+  "judge_actor_id": "openai:gpt-5.1",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 5,
+   "reason": "첫 결과 페이지의 Executive Summary에서 그의 스트레스 대처, 리더십 성향, 대인관계, 책임감, 호기심과 학습 태도를 구체적으로 서술해 한 문장으로 요약 가능한 뚜렷한 인상을 준다."
+  },
+  "A2": {
+   "level": 4,
+   "reason": "각 척도별 페이지와 요약에서 응답으로 산출된 점수에 기초해 ‘Mr. X’s score on the ~ scale suggests he…’ 형태로 해석을 제시하며 비난 없이 공감적·묘사용 어조로 설명하지만, 구체적 답 문항 인용보다는 점수대 일반 해석에 가깝다."
+  },
+  "A3": {
+   "level": 3,
+   "reason": "척도마다 코치와의 대화를 위한 Discussion Points 형태의 질문들이 제시되어 오늘 바로 대화·자기성찰에 활용할 수 있지만, 응답자 맞춤 행동계획이나 구체적 실행 지침(예: 단계·기한·상황별 행동)은 제시되지 않는다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "직무 잠재력과 성격 척도의 점수 구조상 향후 재검사 비교에 사용할 수는 있으나, 리포트 안에는 재검사 비교 표, 기록 공간, 후속 프로그램 안내 등 반복적 활용을 의도한 장치가 거의 언급되지 않는다."
+  },
+  "A5": {
+   "level": 3,
+   "reason": "백분위 점수의 규준(일반 규준, 점수 구간의 low/average/high 기준)과 ‘This report is valid and interpretable.’, 특정 척도가 선발용이며 개발용이 아니라는 주의 등 일부 한계·주의 문구는 있으나, 신뢰도 계수나 자세한 규준 설명 등은 제시되지 않는다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "보고서 구조와 척도명·용어 사용으로 미루어 특정 글로벌 인성검사 회사의 직무용 인벤토리 리포트로 추정된다."
+  },
+  "outside_materials_used": null,
+  "time_spent_min": 18,
+  "pages_total": 18,
+  "pages_viewed": 18,
+  "unreadable_pages": [],
+  "competitor_research_done_before": true
+ },
+ "api_id": "chatcmpl-15fab432-b23d-4328-89a3-176f6aa97c35",
+ "model": "gpt-5.1",
+ "at": "2026-10-20T18:15:31.066911+00:00"
+}

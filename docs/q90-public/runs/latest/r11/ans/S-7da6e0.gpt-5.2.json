@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-7da6e0",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 2,
+   "reason": "첫 결과 페이지에서 3-letter 코드(RIE)와 직업/학업 추천 중심임은 보이지만, 그 사람의 성향을 한 문장으로 즉시 요약할 만큼 설명이 충분치 않습니다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "요약 코드(RIE) 및 사용자가 입력한 ‘daydream occupations’/‘job history’와의 매칭 언급은 있으나, 대체로 코드 기반 일반 설명과 목록 제시가 중심입니다."
+  },
+  "A3": {
+   "level": 3,
+   "reason": "직업 목록을 다시 검토하거나(occupations list), 교육/자격 섹션에서 필터링·탭으로 확인하라는 수준의 실행 지시가 있으나 구체 행동 계획까지는 제한적입니다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "즐겨찾기(하트), 인쇄/링크(예: salary data, Indeed) 등 탐색 장치는 보이나 재검사 비교·누적 기록·후속 프로그램 같은 반복 설계는 뚜렷하지 않습니다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "샘플 내에서 규준·신뢰도·검사의 한계/주의 문구(해석 유의, 오차 등)를 명시적으로 확인할 수 없었습니다."
+  },
+  "guess": {
+   "thinks_knows": false,
+   "note": "회사 추정 불가(직업흥미 RIASEC 계열로 보이는 3-letter 코드 RIE 사용)."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 18,
+  "pages_total": 8,
+  "pages_viewed": 8,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-ff878a46-e6d6-4670-a125-e4ac265d427c",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:14:37.922896+00:00"
+}

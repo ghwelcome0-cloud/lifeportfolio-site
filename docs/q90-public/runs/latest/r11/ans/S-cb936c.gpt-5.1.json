@@ -1,0 +1,42 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-cb936c",
+  "judge_actor_id": "openai:gpt-5.1",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지의 네 개 영역(Realised, Unrealised, Learned Behaviours, Weaknesses)에 구체 명칭들이 정리되어 있어 이 사람이 어떤 강점과 약점을 가진 리더인지 한 문장으로 요약하기 쉽지만, 서술형 인물 요약까지는 제공되지 않는다."
+  },
+  "A2": {
+   "level": 4,
+   "reason": "각 강점·행동·약점마다 이 사람의 해당 요소가 어떻게 나타난다는 서술과 함께, 그에 따른 영향과 주의점이 상세히 적혀 있어 개인 프로파일에 기반한 설명이 많고 어조도 전반적으로 공감적이며 비판을 피하려 한다."
+  },
+  "A3": {
+   "level": 5,
+   "reason": "각 강점·약점 페이지와 Learned Behaviours, Families·Coaching Questions 등에서 '다음 회의에서 ~해보라', '이번 주에 ~를 적어보라' 등 오늘·이번 주에 바로 실행 가능한 행동 제안이 다수 제시되고 응답자의 각 영역과 직접 연결된다."
+  },
+  "A4": {
+   "level": 4,
+   "reason": "Families 분포, Coaching Questions, 팀·매니저용 활용 가이드, 그리고 마지막의 추가 프로그램 안내 등이 있어 결과를 반복적으로 검토·적용하고 후속 프로그램으로 확장하도록 설계되어 있으나, 명시적인 재검사 비교나 장기 추적 기록 도구는 보이지 않는다."
+  },
+  "A5": {
+   "level": 2,
+   "reason": "리포트 전반에 해석 시 주의나 강점·약점 과용에 대한 경고 문구는 있으나 검사의 규준, 신뢰도, 표준화 표본이나 통계적 한계에 대한 구체 정보는 포함되지 않는다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "60개 강점 언어와 Realised/Unrealised/Learned Behaviours/Weaknesses, Families 구조를 보아 특정 상용 강점 진단 도구로 추정된다."
+  },
+  "outside_materials_used": null,
+  "time_spent_min": 18,
+  "pages_total": 24,
+  "pages_viewed": 24,
+  "unreadable_pages": [],
+  "competitor_research_done_before": false
+ },
+ "api_id": "chatcmpl-7e8773dd-d904-4ab7-aa77-7d342d4cdb73",
+ "model": "gpt-5.1",
+ "at": "2026-10-20T18:16:11.000721+00:00"
+}

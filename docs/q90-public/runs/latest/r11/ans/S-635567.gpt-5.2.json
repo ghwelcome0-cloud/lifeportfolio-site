@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-635567",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지(Overview)만 봐도 이 사람은 조용하고 협조적이며 사람·가치 중심으로 조화와 충성을 중시하는 유형이라는 요약이 가능하다."
+  },
+  "A2": {
+   "level": 2,
+   "reason": "대부분이 '그 유형은 보통 ~하다'식 서술과 조언 목록으로 구성되어 응답자의 구체 답변/사례 인용이 거의 보이지 않지만 어조는 비난 없이 공감적이다."
+  },
+  "A3": {
+   "level": 4,
+   "reason": "의사결정·시간관리·창의성·세일즈 단계별로 'could' 및 'Suggested Action for Development'처럼 이번 주에 실행 가능한 구체 행동들이 여러 개 제시된다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "개인 노트/개발 계획에 포함하라는 안내는 있으나 재검사 비교, 추적 기록 양식, 후속 프로그램 연결 등 반복적으로 쌓게 하는 장치는 뚜렷하지 않다."
+  },
+  "A5": {
+   "level": 2,
+   "reason": "서문에 '직접적으로 능력/지능/교육/훈련을 측정하지 않는다' 및 진술을 수정·검증하라는 주의가 있으나 규준·신뢰도·한계에 대한 체계적 설명은 거의 없다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "페이지 내에 'Insights Preference' 및 'opposite Insights type' 표기가 반복되어 Insights 계열 성향/유형 리포트로 보인다."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 35,
+  "pages_total": 39,
+  "pages_viewed": 39,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-fca8ae79-2b99-4221-94f2-559647d224e6",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:16:05.205058+00:00"
+}

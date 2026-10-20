@@ -1,0 +1,42 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-e9e660",
+  "judge_actor_id": "openai:gpt-5.1",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지의 서술만 읽어도 경쟁적이고 독립적이며 빠른 결정과 실행을 중시하는 권위적인 리더형 사람이라는 이미지를 비교적 구체적으로 떠올릴 수 있다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "서술이 응답자의 경향을 설명하지만 문항이나 점수 등 구체 응답 근거 연결 없이 유형 일반론을 공감적 어조로 제시한다."
+  },
+  "A3": {
+   "level": 3,
+   "reason": "‘관리 전략’과 ‘선호 작업 스타일’ 등에서 제공·지향해야 할 행동이 나열되어 있으나 오늘 당장 할 수 있는 수준으로 세분되지는 않았고 응답 결과와의 직접 연결 설명도 제한적이다."
+  },
+  "A4": {
+   "level": 1,
+   "reason": "재검사 비교, 기록용 표, 후속 프로그램 안내 등 결과를 누적·갱신해 활용하도록 설계된 장치는 보이지 않는다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "규준, 신뢰도, 해석상의 한계나 주의 문구에 대한 언급은 리포트 내에서 찾을 수 없다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "보고서 형식과 용어(Behavioral Report, Reference Profile: Captain, A/B/C/D 요인 등)로 보아 특정 글로벌 행동성향 검사 서비스의 리포트로 추정된다."
+  },
+  "outside_materials_used": null,
+  "time_spent_min": 10,
+  "pages_total": 5,
+  "pages_viewed": 5,
+  "unreadable_pages": [],
+  "competitor_research_done_before": true
+ },
+ "api_id": "chatcmpl-584dbb94-6533-4471-b3de-9143cf2234aa",
+ "model": "gpt-5.1",
+ "at": "2026-10-20T18:14:18.406067+00:00"
+}

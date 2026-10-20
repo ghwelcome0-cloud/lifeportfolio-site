@@ -1,0 +1,42 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-7da6e0",
+  "judge_actor_id": "openai:gpt-5.1",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 2,
+   "reason": "첫 결과 페이지에서 요약 코드(RIE)와 그 의미(Realistic, Investigative, Enterprising)는 알 수 있으나 구체적인 성향 설명이 거의 없어 한 문장으로 인물상을 그리기에는 정보가 부족하다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "응답자가 선택한 Daydream occupations, Job History, Education 등 입력값을 요약 코드와 연결해 언급하지만 설명 문구는 주로 일반적인 진로 안내와 유형 일반론 중심이다."
+  },
+  "A3": {
+   "level": 4,
+   "reason": "직업·전공 리스트, 임금·경력 탐색, 클러스터별 탐색 등 오늘 바로 할 수 있는 탐색 행동들이 여러 군데에서 구체적으로 제시되고 응답자의 코드(RIE)와 연계된다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "향후 경력 결정을 계속 생각하라는 일반적인 권유는 있으나 재검사 비교나 기록용 표, 후속 프로그램 연동 등 결과를 다시 보고 쌓도록 유도하는 장치는 거의 보이지 않는다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "보고서 내에서 규준, 신뢰도, 도구의 한계나 결과 사용 시 주의 문구에 관한 설명은 찾을 수 없었다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "미국식 Holland 코드(Realistic, Investigative, Enterprising) 기반 진로검사 리포트로 추정되나 회사명은 가림 처리되어 있다."
+  },
+  "outside_materials_used": null,
+  "time_spent_min": 10,
+  "pages_total": 8,
+  "pages_viewed": 8,
+  "unreadable_pages": [],
+  "competitor_research_done_before": true
+ },
+ "api_id": "chatcmpl-bdc352a2-7dbe-4c49-b1f2-a47b69dcdaee",
+ "model": "gpt-5.1",
+ "at": "2026-10-20T18:14:38.363486+00:00"
+}

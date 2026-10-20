@@ -1,0 +1,13 @@
+{
+ "blind_id": "S-da397f",
+ "axis": "A2",
+ "pick": "Y",
+ "picked": "gpt-5.1",
+ "level": 4,
+ "reason": "Si 스타일을 기본으로 하되 점의 중심·가장자리 중간 위치(중간 기울기)와 Shading이 Action·Accuracy까지 확장된 사실을 명시하고 이후 여러 쪽에서 “당신도 Action/Accuracy를 우선한다”는 점을 반복 언급하며 공감적으로 맞춤 조언을 제공한다.",
+ "map": {
+  "X": "gpt-5.2",
+  "Y": "gpt-5.1"
+ },
+ "api_id": "chatcmpl-967d2ec6-6a87-478f-ac06-a524862f2fe0"
+}

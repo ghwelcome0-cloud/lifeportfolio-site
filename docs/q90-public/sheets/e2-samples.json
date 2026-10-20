@@ -211,15 +211,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 16,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 4,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -231,18 +230,19 @@
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 4,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 신뢰도/규준 수치( · 규준 57000)"
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": []
+    "total": 17
    },
    "A1": 4,
-   "A2": 4,
+   "A2": 3,
    "A3": 4,
    "A4": 2,
-   "A5": 2,
+   "A5": 4,
    "packet_sha256": "bf6ea8f125e55ccdb32e04ebe4f002d8ff8578aa3c34a674ccb3a47c507a05d6",
    "packet_files": {
     "sample.pdf": "62298a114c69ce4b25ecf01aeae0f9fe09698920c61bfb1cffae13c5b8ab5ea9",
@@ -261,6 +261,33 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "610dcc2f336b2b0cce916a8f53720fd2f23d5e3ba0c8de215bf9702ee8660d5d",
     "third_needed_axes_n": 0
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 신뢰도/규준 수치( · 규준 57000)"
+     }
+    },
+    "total_levels": 17
    }
   },
   {
@@ -417,41 +444,39 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 14,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
-      "rule": "diff>=2 → third picked A",
-      "third_reason": "처음 보이는 내용 쪽(2쪽 'Introduction to DiSC')은 일반 소개와 4유형 형용사뿐이고 'Your DiSC Style: Si'는 3쪽에 처음 나오므로, 1쪽만 보는 A1 기준으로는 L2 '흔적만'이 맞습니다."
+      "level": 4,
+      "rule": "diff<=1 → lower"
      },
      "A2": {
       "level": 4,
-      "rule": "diff<=1 → lower"
+      "rule": "diff>=2 → third picked",
+      "third_reason": "Si 스타일을 기본으로 하되 점의 중심·가장자리 중간 위치(중간 기울기)와 Shading이 Action·Accuracy까지 확장된 사실을 명시하고 이후 여러 쪽에서 “당신도 Action/Accuracy를 우선한다”는 점을 반복 언급하며 공감적으로 맞춤 조언을 제공한다."
      },
      "A3": {
       "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 2,
+      "level": 1,
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 4,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 신뢰도/규준 수치(test-retest 중앙값 .87 (8개 척도 .85~.88, N=599))"
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": [
-     "A1"
-    ]
+    "total": 17
    },
-   "A1": 2,
+   "A1": 4,
    "A2": 4,
    "A3": 4,
-   "A4": 2,
-   "A5": 2,
+   "A4": 1,
+   "A5": 4,
    "packet_sha256": "86f3feae0072f7a0ac5bff3b5907c63a826f98b1db901bf5d7122ac74da0c44b",
    "packet_files": {
     "sample.pdf": "bb73489b45a111b624d2ace4d63947899e371ea55cbe06022d8f1bbc36793688",
@@ -470,6 +495,34 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "a64e6a96e19eca6567875b01fdc689e0f6f4308e9a911e040d58e95744a818a2",
     "third_needed_axes_n": 1
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "Si 스타일을 기본으로 하되 점의 중심·가장자리 중간 위치(중간 기울기)와 Shading이 Action·Accuracy까지 확장된 사실을 명시하고 이후 여러 쪽에서 “당신도 Action/Accuracy를 우선한다”는 점을 반복 언급하며 공감적으로 맞춤 조언을 제공한다."
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 신뢰도/규준 수치(test-retest 중앙값 .87 (8개 척도 .85~.88, N=599))"
+     }
+    },
+    "total_levels": 17
    }
   },
   {
@@ -615,11 +668,10 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 11,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 4,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A2": {
@@ -636,13 +688,14 @@
      },
      "A5": {
       "level": 3,
-      "rule": "diff<=1 → lower"
+      "rule": "diff<=1 → lower",
+      "in_report": 2,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": []
+    "total": 10
    },
-   "A1": 4,
+   "A1": 3,
    "A2": 2,
    "A3": 1,
    "A4": 1,
@@ -665,6 +718,33 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "eea55568aebc0fd1a5d56f953ac81afc75e07a6ed1fa37a423273a415f5a6166",
     "third_needed_axes_n": 0
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 2,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
+     }
+    },
+    "total_levels": 10
    }
   },
   {
@@ -860,12 +940,12 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 15,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 2,
-      "rule": "diff<=1 → lower"
+      "rule": "diff>=2 → third picked",
+      "third_reason": "첫 결과 페이지는 ‘in Rank Order’ 순위/점수 그래프만 보여 주어 개별 강점의 짧은 서술이나 통합 요약이 없어 한 문장으로 인상을 즉시 잡기 어렵다."
      },
      "A2": {
       "level": 3,
@@ -876,23 +956,22 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 3,
-      "rule": "diff<=1 → lower"
+      "level": 2,
+      "rule": "diff<=1 → lower",
+      "in_report": 2
      }
     },
-    "resolved_at": "2026-10-20T14:51:09Z",
-    "third_used": [],
-    "aggregate_sha256": "5292746dc87fffb80903523edb4e1e32100facf9bd0dbbdaf20fa778b07dbdba"
+    "total": 13
    },
    "A1": 2,
    "A2": 3,
    "A3": 4,
-   "A4": 3,
-   "A5": 3,
+   "A4": 2,
+   "A5": 2,
    "packet_sha256": "4614168716e1d640b6543311d08d1cb204e2d6b96d10fc87a2cd8eeb579cfb47",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -927,7 +1006,34 @@
     "README.md": "1e8b165c0c19f2e646618b5cd1cc629b5d3ba5a9cf9a1360b3d9fd7152247122",
     "ANSWER.json": "800e1e4def6068c6faa4d880336d5e45b1f77b1bfd290b32ef761672dd4b0a04"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "첫 결과 페이지는 ‘in Rank Order’ 순위/점수 그래프만 보여 주어 개별 강점의 짧은 서술이나 통합 요약이 없어 한 문장으로 인상을 즉시 잡기 어렵다."
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower",
+      "in_report": 2
+     }
+    },
+    "total_levels": 13
+   }
   },
   {
    "id": "G02a",
@@ -1292,16 +1398,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 14,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
-      "rule": "diff>=2 → third picked B",
-      "third_reason": "A1은 '처음 1페이지만' 보고 판단하는 축인데, 처음 보이는 내용 쪽(2쪽)은 검사 소개와 척도 정의표뿐이라 사람에 대한 정보는 'Mr.(가림)' 이름 자리 정도의 흔적만 있고, X가 근거로 든 요약은 3쪽에 있어 L2 '흔적만'이 맞습니다."
+      "level": 4,
+      "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 4,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -1309,24 +1413,22 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 2,
+      "level": 1,
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 4,
-      "rule": "diff<=1 → lower"
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 3
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": [
-     "A1"
-    ]
+    "total": 13
    },
-   "A1": 2,
-   "A2": 4,
+   "A1": 4,
+   "A2": 3,
    "A3": 2,
-   "A4": 2,
-   "A5": 4,
+   "A4": 1,
+   "A5": 3,
    "packet_sha256": "bf2d3ff286749d451d13e849a4afd044919e63e5be037caf2baa417eaf6b4989",
    "packet_files": {
     "sample.pdf": "baab65120368275e10ea3d6511ee2ac3040aa0603a7fd956c56d1ebdf863d8c7",
@@ -1345,6 +1447,32 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "0466a268b05155c466b093c8a5b05f8bb72ad8a5a1ced6aefbb63ca1930a6c18",
     "third_needed_axes_n": 1
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 3
+     }
+    },
+    "total_levels": 13
    }
   },
   {
@@ -1612,15 +1740,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 11,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -1632,18 +1759,19 @@
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 1,
-      "rule": "diff<=1 → lower"
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": []
+    "total": 12
    },
    "A1": 4,
-   "A2": 3,
+   "A2": 2,
    "A3": 2,
    "A4": 1,
-   "A5": 1,
+   "A5": 3,
    "packet_sha256": "81a4abf40a15f068fb6ccfa102d511aa4365233470deef31f7103d8957994ee6",
    "packet_files": {
     "sample.pdf": "203f1e1c9e9c15174c7ce3d892fcdbda6d937ac58c429f292b504e8ecea1b203",
@@ -1662,6 +1790,33 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "0cdc1678b876dfac70b4f05adc67b1bd6ce075f5408ff6381fa0a0fbe3bd0a79",
     "third_needed_axes_n": 0
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
+     }
+    },
+    "total_levels": 12
    }
   },
   {
@@ -1913,15 +2068,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 14,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
+      "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -1929,23 +2083,23 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
      }
     },
-    "resolved_at": "2026-10-12T23:59:56Z",
-    "third_used": [],
-    "aggregate_sha256": "f6e7abee2909338766497ccec263eadbffe41929a622d9944856e52c356d18f6"
+    "total": 15
    },
-   "A1": 2,
-   "A2": 3,
+   "A1": 4,
+   "A2": 2,
    "A3": 4,
-   "A4": 3,
-   "A5": 2,
+   "A4": 2,
+   "A5": 3,
    "packet_sha256": "b539a6390874b147470c4d84007cc0407df9013d3e61dc66377ef748957ce87c",
    "denominator_class": {
     "class": "확보(2026-10-12 23:20Z 수집)",
@@ -1972,7 +2126,34 @@
    "aggregate_sha256": "d3921b9e6e8a3cea580c0f47d50cdcdb01df1f67b1a694cda19d34e924152303",
    "resolved_at": "2026-10-12T23:42Z",
    "e2_round": 3,
-   "resolve_note": "judge1 6119839 · judge2 6119834 · 차이≥2 축 0 → 제3자 불필요(규칙 diff<=1 → 낮은 값). 총괄 점수 미열람(집계 파일에만)."
+   "resolve_note": "judge1 6119839 · judge2 6119834 · 차이≥2 축 0 → 제3자 불필요(규칙 diff<=1 → 낮은 값). 총괄 점수 미열람(집계 파일에만).",
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 1,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
+     }
+    },
+    "total_levels": 15
+   }
   },
   {
    "id": "G11",
@@ -2295,13 +2476,11 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 14,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
-      "rule": "diff>=2 → third picked B",
-      "third_reason": "처음 보이는 내용 쪽(2쪽 'How To Use this Profile')은 리포트 사용법 안내뿐이고, 이 사람의 강점·약점 목록('Unique Quadrant Profile': Courage, Counterpoint … / Optimism, Self-awareness, Growth)은 3쪽에 처음 나오므로, '처음 1페이지만' 보는 A1 기준으로는 L2 '흔적만'이 맞습니다."
+      "level": 4,
+      "rule": "diff<=1 → lower"
      },
      "A2": {
       "level": 3,
@@ -2316,21 +2495,18 @@
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
      }
     },
-    "resolved_at": "2026-10-20T15:06:08Z",
-    "third_used": [
-     "A1"
-    ],
-    "aggregate_sha256": "00b10e9aae3f1694e911b613d3fd00b07b39b55762a40eb8bca611df8b609c47"
+    "total": 15
    },
-   "A1": 2,
+   "A1": 4,
    "A2": 3,
    "A3": 4,
    "A4": 3,
-   "A5": 2,
+   "A5": 1,
    "packet_sha256": "86ab5af3dcf3f450c9d215e0490dd55b7d72d346379c0a2f28408dcf17791346",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -2371,6 +2547,32 @@
     ],
     "msg": 6997497,
     "deadline": "2026-10-22T14:50Z"
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
+     }
+    },
+    "total_levels": 15
    }
   },
   {
@@ -2686,13 +2888,11 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 17,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
-      "rule": "diff>=2 → third picked B",
-      "third_reason": "처음 보이는 내용 쪽(2쪽 'How the Strong can help you')은 검사 소개와 리포트 구성 안내뿐이고 'Your highest themes: Social, Artistic(SA)'는 3쪽에 처음 나오므로, 1쪽만 보는 A1 기준으로는 L2가 맞습니다."
+      "level": 4,
+      "rule": "diff<=1 → lower"
      },
      "A2": {
       "level": 4,
@@ -2703,24 +2903,23 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 4,
-      "rule": "diff<=1 → lower"
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 2,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": [
-     "A1"
-    ]
+    "total": 17
    },
-   "A1": 2,
+   "A1": 4,
    "A2": 4,
    "A3": 4,
-   "A4": 3,
-   "A5": 4,
+   "A4": 2,
+   "A5": 3,
    "packet_sha256": "1793ec5f34e03650d7632535b00a03d60d099ac161ae0f71d60fe87200c06200",
    "packet_files": {
     "sample.pdf": "6d74432073d28f1484e4d739579e19e76c15a7a090ca3dbe6d1bceb85b98eef6",
@@ -2739,6 +2938,33 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "16b6453b5dcd4330ffba6ebfa0556ced40d6cd6f5b39f29917db0b04488254bf",
     "third_needed_axes_n": 1
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 2,
+      "public_evidence": "공개 문서에 검증 범위·한계 명시"
+     }
+    },
+    "total_levels": 17
    }
   },
   {
@@ -3075,15 +3301,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 15,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 4,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -3091,22 +3316,22 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A5": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
      }
     },
-    "resolved_at": "2026-10-12T08:40:01Z",
-    "third_used": []
+    "total": 11
    },
-   "A1": 3,
-   "A2": 4,
+   "A1": 2,
+   "A2": 3,
    "A3": 3,
-   "A4": 3,
-   "A5": 2,
+   "A4": 2,
+   "A5": 1,
    "packet_sha256": "7df0fa26113f34ca8d15439236a257cab3ee6945e777cf9ff825f0b79cf9b5f4",
    "denominator_class": {
     "class": "확보(2026-10-12 수집)",
@@ -3127,6 +3352,32 @@
     "judge2_actor": "agent_kxmtj2g9mmyk",
     "third_needed_axes_n": 0,
     "post_q2": "judge1 아니오(6081891) · judge2 아니오(6081867) → 2회차 유효"
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
+     }
+    },
+    "total_levels": 11
    }
   },
   {
@@ -4269,15 +4520,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 13,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -4285,22 +4535,22 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 3,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A5": {
       "level": 3,
-      "rule": "diff<=1 → lower"
+      "rule": "diff>=2 → third picked",
+      "third_reason": "결과가 심리상태·상황 등에 따라 달라질 수 있고 진로선택에는 다양한 요소가 작용한다는 주의 문구가 있으나, 규준 표본 정보나 신뢰도 수치는 제시되지 않습니다.",
+      "in_report": 3
      }
     },
-    "resolved_at": "2026-10-12T23:59:56Z",
-    "third_used": [],
-    "aggregate_sha256": "f6e7abee2909338766497ccec263eadbffe41929a622d9944856e52c356d18f6"
+    "total": 11
    },
    "A1": 3,
-   "A2": 3,
+   "A2": 2,
    "A3": 1,
-   "A4": 3,
+   "A4": 2,
    "A5": 3,
    "packet_sha256": "92b3e7579fd1a3e762dad363d903080ac6af24f3a05ab3b62788fa2ca9ef3d03",
    "denominator_class": {
@@ -4329,7 +4579,34 @@
    "aggregate_sha256": "f6e7abee2909338766497ccec263eadbffe41929a622d9944856e52c356d18f6",
    "resolved_at": "2026-10-12T23:58Z",
    "e2_round": 4,
-   "resolve_note": "judge1·judge2 답 수신(judge-r4.log), 차이≥2 축 0 → 제3자 불필요. 경로 (문서도판·부분 3/4) — 표 꼬리표로 구분, (샘플)과 직접 비교 금지"
+   "resolve_note": "judge1·judge2 답 수신(judge-r4.log), 차이≥2 축 0 → 제3자 불필요. 경로 (문서도판·부분 3/4) — 표 꼬리표로 구분, (샘플)과 직접 비교 금지",
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "결과가 심리상태·상황 등에 따라 달라질 수 있고 진로선택에는 다양한 요소가 작용한다는 주의 문구가 있으나, 규준 표본 정보나 신뢰도 수치는 제시되지 않습니다.",
+      "in_report": 3
+     }
+    },
+    "total_levels": 11
+   }
   },
   {
    "id": "K03",
@@ -4442,8 +4719,7 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 14,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 2,
@@ -4458,21 +4734,23 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "직업 리스트 작성→정보 수집→적합도 5점 체크→1차 선택→PSS 결과와의 비교→계획 수립까지의 절차와 메모/체크 칸이 있어 이후에도 업데이트하며 반복 활용하도록 설계되어 있습니다."
      },
      "A5": {
       "level": 4,
-      "rule": "diff<=1 → lower"
+      "rule": "diff>=2 → third picked",
+      "third_reason": "T점수의 평균·표준편차 설명, 남녀 규준 비교 그래프, TR·TI 지수 설명과 ‘검사 결과만으로 직업을 단정할 수 없다’는 주의 문구가 리포트 내에 제시되어 있어 규준·신뢰도 및 한계 안내가 체계적입니다.",
+      "in_report": 4
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": []
+    "total": 16
    },
    "A1": 2,
    "A2": 3,
    "A3": 3,
-   "A4": 2,
+   "A4": 4,
    "A5": 4,
    "packet_sha256": "91352576a76890f5cb7551e55214783922beca96c00b7a66766c865be42417dd",
    "packet_files": {
@@ -4492,6 +4770,34 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "ae3726aef81b27cfd121b5687e6fa832a101743d4912abcd203e7039bdf6aec2",
     "third_needed_axes_n": 0
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "직업 리스트 작성→정보 수집→적합도 5점 체크→1차 선택→PSS 결과와의 비교→계획 수립까지의 절차와 메모/체크 칸이 있어 이후에도 업데이트하며 반복 활용하도록 설계되어 있습니다."
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "T점수의 평균·표준편차 설명, 남녀 규준 비교 그래프, TR·TI 지수 설명과 ‘검사 결과만으로 직업을 단정할 수 없다’는 주의 문구가 리포트 내에 제시되어 있어 규준·신뢰도 및 한계 안내가 체계적입니다.",
+      "in_report": 4
+     }
+    },
+    "total_levels": 16
    }
   },
   {
@@ -4621,11 +4927,10 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 13,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
+      "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A2": {
@@ -4634,25 +4939,27 @@
      },
      "A3": {
       "level": 3,
-      "rule": "diff<=1 → lower"
+      "rule": "diff>=2 → third picked",
+      "third_reason": "각 재능·강점 페이지는 경험 기록·계획 작성 프롬프트가 있고 태도 보완에 3가지 행동 제안이 있으나, 빈도·상황·측정이 포함된 오늘/이번 주 단위의 구체 실행 지침은 부족합니다."
      },
      "A4": {
-      "level": 3,
-      "rule": "diff<=1 → lower"
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "여러 페이지에 ‘당신의 이야기를 적어보세요’, ‘실천 계획을 세워보세요’ 등 기록·계획 작성란이 반복되어 추후 확인·업데이트가 가능하지만 재검사 안내나 후속 프로그램 연동은 구체히 보이지 않는다."
      },
      "A5": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": []
+    "total": 15
    },
-   "A1": 2,
+   "A1": 4,
    "A2": 3,
    "A3": 3,
-   "A4": 3,
-   "A5": 2,
+   "A4": 4,
+   "A5": 1,
    "packet_sha256": "477f0d940d86e0d9bf4521a71a982ad38c55435f478b278f451e422cde0d5f6f",
    "packet_files": {
     "sample.pdf": "5c59acbbfbb7060a2f3c798d25a61fd40e277b063d462dbfc1c53c960746cd55",
@@ -4671,6 +4978,34 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "ef703111d1d2a5cb88726b0a2bfe2e50c8974223311a94d6c2dbb0b4e65ab85f",
     "third_needed_axes_n": 0
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "각 재능·강점 페이지는 경험 기록·계획 작성 프롬프트가 있고 태도 보완에 3가지 행동 제안이 있으나, 빈도·상황·측정이 포함된 오늘/이번 주 단위의 구체 실행 지침은 부족합니다."
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "여러 페이지에 ‘당신의 이야기를 적어보세요’, ‘실천 계획을 세워보세요’ 등 기록·계획 작성란이 반복되어 추후 확인·업데이트가 가능하지만 재검사 안내나 후속 프로그램 연동은 구체히 보이지 않는다."
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
+     }
+    },
+    "total_levels": 15
    }
   },
   {
@@ -6060,8 +6395,7 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 11,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 3,
@@ -6076,22 +6410,21 @@
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 2,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A5": {
       "level": 1,
-      "rule": "diff<=1 → lower"
+      "rule": "diff<=1 → lower",
+      "in_report": 1
      }
     },
-    "resolved_at": "2026-10-20T15:56:00Z",
-    "third_used": [],
-    "aggregate_sha256": "7c8b399cba0ba458f17ba25434bf077e02a61b8352521e29051f75c52b7a632d"
+    "total": 12
    },
    "A1": 3,
    "A2": 3,
    "A3": 2,
-   "A4": 2,
+   "A4": 3,
    "A5": 1,
    "packet_sha256": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
    "denominator_class": {
@@ -6118,7 +6451,33 @@
     "README.md": "d0e4abccc8ce3f3162a890ee687a62537d4c081432fe1f45922ae33b17d88577",
     "ANSWER.json": "ad4bc0a19463f2014a8e905757460f152b77d043693467fc1d7c39ce0ca9c787"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
+     }
+    },
+    "total_levels": 12
+   }
   },
   {
    "id": "K14",
@@ -6220,19 +6579,19 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 11,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 2,
-      "rule": "diff<=1 → lower"
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "첫 결과 페이지에 6개 영역의 명칭과 T점수 높낮이가 막대그래프로 드러나 ‘구직준비도는 높고 의사결정자신감·진로결정확신도는 낮다’처럼 강약을 한 문장으로 요약할 수 있다."
      },
      "A2": {
       "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A3": {
-      "level": 2,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A4": {
@@ -6241,16 +6600,16 @@
      },
      "A5": {
       "level": 3,
-      "rule": "diff<=1 → lower"
+      "rule": "diff>=2 → third picked",
+      "third_reason": "1페이지에 T점수와 백분위의 의미 및 같은 학년 학생들과의 상대 비교 설명은 있으나 표본 규모·신뢰도·검사 한계나 주의문은 보이지 않습니다.",
+      "in_report": 3
      }
     },
-    "resolved_at": "2026-10-20T15:17:27Z",
-    "third_used": [],
-    "aggregate_sha256": "529edbab7ee29906b162da4621b92548ba05ed5f4ce85743bfe6fde2e12d2953"
+    "total": 14
    },
-   "A1": 2,
+   "A1": 4,
    "A2": 3,
-   "A3": 2,
+   "A3": 3,
    "A4": 1,
    "A5": 3,
    "packet_sha256": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
@@ -6278,7 +6637,35 @@
     "README.md": "7bb5dac2eb96f50b9ac18bac29103daec6cb0acd2dae212e1d21ee59d2d411a8",
     "ANSWER.json": "40ee4f7fb6b69131a5585df59644621c2a8431e45ea603249d99706970695858"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "첫 결과 페이지에 6개 영역의 명칭과 T점수 높낮이가 막대그래프로 드러나 ‘구직준비도는 높고 의사결정자신감·진로결정확신도는 낮다’처럼 강약을 한 문장으로 요약할 수 있다."
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "1페이지에 T점수와 백분위의 의미 및 같은 학년 학생들과의 상대 비교 설명은 있으나 표본 규모·신뢰도·검사 한계나 주의문은 보이지 않습니다.",
+      "in_report": 3
+     }
+    },
+    "total_levels": 14
+   }
   },
   {
    "id": "K15",
@@ -6545,39 +6932,38 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 18,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 4,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A3": {
-      "level": 4,
+      "level": 3,
       "rule": "diff<=1 → lower"
      },
      "A4": {
-      "level": 3,
-      "rule": "diff<=1 → lower"
+      "level": 2,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "마지막 7쪽에 직업·관심을 적는 작성형 워크시트만 있고 재검사 시 과거 기록과 비교·누적하도록 설계된 표나 추적 안내는 보이지 않는다."
      },
      "A5": {
-      "level": 3,
-      "rule": "diff<=1 → lower"
+      "level": 2,
+      "rule": "diff<=1 → lower",
+      "in_report": 2
      }
     },
-    "resolved_at": "2026-10-20T10:19:34Z",
-    "third_used": [],
-    "aggregate_sha256": "0091f5f1322968c4f1050f0d287c4981354249e8d74b32e20887a632975b2e26"
+    "total": 14
    },
    "A1": 4,
-   "A2": 4,
-   "A3": 4,
-   "A4": 3,
-   "A5": 3,
+   "A2": 3,
+   "A3": 3,
+   "A4": 2,
+   "A5": 2,
    "packet_sha256": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
    "denominator_class": {
     "class": "확보",
@@ -6614,6 +7000,33 @@
     "delay": "6일 무응답 → 재요청 10:11Z(파일·규칙 불변) → 답 judge1 6968021 · judge2 6968002",
     "aggregate_sha256_16": "0091f5f1322968c4",
     "aggregate_note": "e2-aggregate.py를 K16 1행만 대상으로 실행(이전 13행은 이미 final, 답안 원본은 이전 샘플박스에 있어 재집계 안 함 — 값 덮어쓰기 금지 원칙)"
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 2,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "마지막 7쪽에 직업·관심을 적는 작성형 워크시트만 있고 재검사 시 과거 기록과 비교·누적하도록 설계된 표나 추적 안내는 보이지 않는다."
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower",
+      "in_report": 2
+     }
+    },
+    "total_levels": 14
    }
   },
   {
@@ -6727,15 +7140,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 8,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
-      "level": 3,
+      "level": 4,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 1,
+      "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -6748,14 +7160,14 @@
      },
      "A5": {
       "level": 1,
-      "rule": "diff<=1 → lower"
+      "rule": "diff<=1 → lower",
+      "in_report": 1
      }
     },
-    "resolved_at": "2026-10-12T08:01:02Z",
-    "third_used": []
+    "total": 10
    },
-   "A1": 3,
-   "A2": 1,
+   "A1": 4,
+   "A2": 2,
    "A3": 2,
    "A4": 1,
    "A5": 1,
@@ -6777,6 +7189,32 @@
     "judge1_actor": "agent_eqfq2vg1m72e",
     "judge1_answer_sha256": "360a672c8260d1da614209dc114f316f025ecc4ab1e2da6f5f57c642c6cceda8",
     "third_needed_axes_n": 0
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower",
+      "in_report": 1
+     }
+    },
+    "total_levels": 10
    }
   },
   {
@@ -6930,15 +7368,14 @@
    },
    "judge3": null,
    "final": {
-    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
-    "total": 9,
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
     "axes": {
      "A1": {
       "level": 2,
       "rule": "diff<=1 → lower"
      },
      "A2": {
-      "level": 2,
+      "level": 1,
       "rule": "diff<=1 → lower"
      },
      "A3": {
@@ -6951,15 +7388,14 @@
      },
      "A5": {
       "level": 3,
-      "rule": "diff<=1 → lower"
+      "rule": "diff<=1 → lower",
+      "in_report": 3
      }
     },
-    "resolved_at": "2026-10-13T00:16:45Z",
-    "third_used": [],
-    "aggregate_sha256": "18d7ad9ef4b4f09a53e249e8d501da26459697d2686c1d239c4cf60829d619c5"
+    "total": 8
    },
    "A1": 2,
-   "A2": 2,
+   "A2": 1,
    "A3": 1,
    "A4": 1,
    "A5": 3,
@@ -6987,7 +7423,33 @@
    "aggregate_sha256": "18d7ad9ef4b4f09a53e249e8d501da26459697d2686c1d239c4cf60829d619c5",
    "resolved_at": "2026-10-13T00:16Z",
    "e2_round": 5,
-   "resolve_note": "judge1 6121964 · judge2 6121967 · 차이≥2 축 0 → 제3자 불필요. 두 judge 모두 guess thinks_knows=True(모델명 TCI 노출은 허용 규칙) — 점수 미반영 선언"
+   "resolve_note": "judge1 6121964 · judge2 6121967 · 차이≥2 축 0 → 제3자 불필요. 두 judge 모두 guess thinks_knows=True(모델명 TCI 노출은 허용 규칙) — 점수 미반영 선언",
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 3
+     }
+    },
+    "total_levels": 8
+   }
   },
   {
    "id": "K19",
@@ -7892,6 +8354,272 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "prev_status": "redacted"
+  },
+  {
+   "id": "OWN-R2",
+   "name": "인생포트폴리오 리포트(최신판, 실제 고객 리포트 — 대표 본인 응답 2026-10-21)",
+   "kind": "own",
+   "blind_id": "S-abf2e3",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_source": "대표 업로드 실제 리포트(운영 서비스 화면판 PDF) — file 8HcdKoXJ",
+   "sample_sha256": "8798a14f23179221d5b6c39ddcba2f32d7cf750b0a36fc43c8b9c84807b0110b",
+   "status": "judged",
+   "judge1": {},
+   "judge2": {},
+   "judge3": {},
+   "denominator_class": "own",
+   "own_note": "대표 결정 2026-10-21: 자사 샘플을 실제 리포트로 교체. 같은 블라인드 절차(가림·judge 2·제3자).",
+   "redaction": {
+    "items_found": [
+     {
+      "term": "김영식",
+      "n": 1
+     },
+     {
+      "term": "인생포트폴리오",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
+    "leak_check": {
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 135,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T16:36:53Z"
+    },
+    "redacted_sha256": "a1626e61d06cf0dfa8936db43cffd1d2e088e850673fcfaab51a1bcf2964fbae",
+    "final_file": "S-abf2e3.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "07b9e513ab920eb41649720656824b8c88d34055208934ccd8399a4836d8c2c2",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-abf2e3.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T16:39Z",
+     "finding": "이름(표지·사명 카드·마무리·머리글)·고유코드·서비스명 상자 가림 확인. 이미지 제거는 다른 샘플과 동일 규칙(채점 대상 아님)."
+    },
+    "boxes": "3:0.6200,0.2830,0.7700,0.3020;4:0.3700,0.3850,0.4560,0.4100;14:0.1150,0.4900,0.3300,0.5150"
+   },
+   "packet_sha256": "79b81204b22b0bd074ad2733ec0622f9c36696f463122d1d12043971060d91a5",
+   "packet_files": {
+    "sample.pdf": "a1626e61d06cf0dfa8936db43cffd1d2e088e850673fcfaab51a1bcf2964fbae",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "a39fa1d130fd8eefdb1fdb7284a61aff4e4df44c53d977f2feb446b447fb29f5",
+    "ANSWER.json": "2b125bb0348b0bc0f4a1a275c1d898d079b11820371e2051c17790c926ecd3d2"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judge2_source": "judge2r(gpt-5.2 교체)",
+   "A1": 5,
+   "A2": 4,
+   "A3": 5,
+   "A4": 4,
+   "A5": 3,
+   "final": {
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
+    "axes": {
+     "A1": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 3
+     }
+    },
+    "total": 21
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower",
+      "in_report": 3
+     }
+    },
+    "total_levels": 21
+   }
+  },
+  {
+   "id": "OWN-P2",
+   "name": "자산화 맞춤 실행 프로그램 리포트(최신판, 실제 고객 리포트 — 대표 본인 응답 2026-10-21)",
+   "kind": "own",
+   "blind_id": "S-94ea2a",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_source": "대표 업로드 실제 리포트(운영 서비스 화면판 PDF) — file EjCxJTFq",
+   "sample_sha256": "d1311cfac0cb56035208cb6ca4b9e63c05195e8badc4b6f1bdcbc0d6185bb1d6",
+   "status": "judged",
+   "judge1": {},
+   "judge2": {},
+   "judge3": {},
+   "denominator_class": "own",
+   "own_note": "대표 결정 2026-10-21: 자사 샘플을 실제 리포트로 교체. 같은 블라인드 절차(가림·judge 2·제3자).",
+   "redaction": {
+    "items_found": [
+     {
+      "term": "김영식",
+      "n": 15
+     },
+     {
+      "term": "인생포트폴리오",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
+    "leak_check": {
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 135,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T16:38:02Z"
+    },
+    "redacted_sha256": "f6279f7d680720d0346c83bc9a4533a4463b06887b8644d93f149889b229f801",
+    "final_file": "S-94ea2a.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "5888a125de4e7bf809a11109a5d57dcbca45ead168745cdce97b7cf468f9cce6",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-94ea2a.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T16:39Z",
+     "finding": "이름(표지·사명 카드·마무리·머리글)·고유코드·서비스명 상자 가림 확인. 이미지 제거는 다른 샘플과 동일 규칙(채점 대상 아님)."
+    },
+    "boxes": "15:0.1300,0.2120,0.1950,0.2390;15:0.2450,0.5100,0.4250,0.5310;15:0.3500,0.7350,0.6500,0.7620;3:0.5150,0.0440,0.5650,0.0620;4:0.5150,0.0440,0.5650,0.0620;5:0.5150,0.0440,0.5650,0.0620;6:0.5150,0.0440,0.5650,0.0620;7:0.5150,0.0440,0.5650,0.0620;8:0.5150,0.0440,0.5650,0.0620;9:0.5150,0.0440,0.5650,0.0620;10:0.5150,0.0440,0.5650,0.0620;11:0.5150,0.0440,0.5650,0.0620;12:0.5150,0.0440,0.5650,0.0620;13:0.5150,0.0440,0.5650,0.0620;14:0.5150,0.0440,0.5650,0.0620;15:0.5150,0.0440,0.5650,0.0620"
+   },
+   "packet_sha256": "474e16a31a1b7cb243426ad95933d3b43cb0640de88328f8cc1d78b3d328689e",
+   "packet_files": {
+    "sample.pdf": "f6279f7d680720d0346c83bc9a4533a4463b06887b8644d93f149889b229f801",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "a1c47b79b8ecc98d8e5c3dca69573ddb93a9046de981c965395f8d7526cd727e",
+    "ANSWER.json": "747b618f74bbcaf898e22807043ad46c3de26a0680310de25c947acb546085b5"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judge2_source": "judge2r(gpt-5.2 교체)",
+   "A1": 4,
+   "A2": 3,
+   "A3": 5,
+   "A4": 4,
+   "A5": 3,
+   "final": {
+    "rule": "r11: judge gpt-5.2+gpt-5.1(전 샘플 동일), diff≤1 낮은 값/≥2 제3자 gpt-5, A1=첫 결과 페이지, A5=max(리포트 안, 공개 문서)",
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "마지막 장에 ‘재현성·당신만의 고유 코드’ 안내는 있으나 규준 표본·신뢰도 계수·타당도 한계나 주의 문구는 보이지 않습니다.",
+      "in_report": 3
+     }
+    },
+    "total": 19
+   },
+   "r11": {
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff>=2 → third picked",
+      "third_reason": "마지막 장에 ‘재현성·당신만의 고유 코드’ 안내는 있으나 규준 표본·신뢰도 계수·타당도 한계나 주의 문구는 보이지 않습니다.",
+      "in_report": 3
+     }
+    },
+    "total_levels": 19
+   }
   }
  ],
  "packet_order": [
@@ -7916,7 +8644,9 @@
   "S-5ad6c9",
   "S-728007",
   "S-0366bb",
-  "S-aaeb13"
+  "S-aaeb13",
+  "S-94ea2a",
+  "S-abf2e3"
  ],
  "judge_sessions": {
   "note": "TL 6054779 5조건 + Peer 6057976 ④(받은 쪽 sha) + TL 6058049(read_check). 채점 전 채움. 값은 사실만.",
@@ -8472,6 +9202,38 @@
       "sent_via": "gsend.sh",
       "answered_at": "2026-10-20T15:55:19Z",
       "first_line_declaration_ok": true
+     },
+     "S-94ea2a": {
+      "sent_msg_id": "7007387",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ChIXmAZa",
+      "attachment_sha256_sent": "474e16a31a1b7cb243426ad95933d3b43cb0640de88328f8cc1d78b3d328689e",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh",
+      "timeout_replaced": {
+       "at": "2026-10-20T17:36Z",
+       "reason": "무응답 54분+ — gsend 재요청 7008806·멘션 7010231·태스크 배정 2건(wake 확인) 후에도 답 없음",
+       "by": "대표 지시 2026-10-21(\"다른 방안으로 진행\")"
+      }
+     },
+     "S-abf2e3": {
+      "sent_msg_id": "7007414",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/I7lRdSIQ",
+      "attachment_sha256_sent": "79b81204b22b0bd074ad2733ec0622f9c36696f463122d1d12043971060d91a5",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh",
+      "timeout_replaced": {
+       "at": "2026-10-20T17:36Z",
+       "reason": "무응답 54분+ — gsend 재요청 7008806·멘션 7010231·태스크 배정 2건(wake 확인) 후에도 답 없음",
+       "by": "대표 지시 2026-10-21(\"다른 방안으로 진행\")"
+      }
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -8832,6 +9594,32 @@
       "sent_via": "gsend.sh",
       "answered_at": "2026-10-20T15:17:06Z",
       "first_line_declaration_ok": true
+     },
+     "S-94ea2a": {
+      "sent_msg_id": "7007371",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ChIXmAZa",
+      "attachment_sha256_sent": "474e16a31a1b7cb243426ad95933d3b43cb0640de88328f8cc1d78b3d328689e",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "7008340",
+      "answer_sha256": "78053c15e5e291dcffb47ff60467aed16cc72da1047ae6484e22fbf3522fa44b",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T16:52:51Z",
+      "first_line_declaration_ok": true
+     },
+     "S-abf2e3": {
+      "sent_msg_id": "7007404",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/I7lRdSIQ",
+      "attachment_sha256_sent": "79b81204b22b0bd074ad2733ec0622f9c36696f463122d1d12043971060d91a5",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "7008490",
+      "answer_sha256": "855644fe4807d5c0b3971e8f3522f37c5f4a657a97c96aae340529b3b9fa2cf1",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T16:54:44Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
@@ -9005,6 +9793,32 @@
      "file_sha_no_newline": "018ca9e539844148…",
      "status": "prefix_verified_only"
     }
+   },
+   {
+    "role": "judge2r",
+    "status": "active",
+    "actor_id": "openai:gpt-5.2(judge2-replacement)",
+    "dm_channel_id": null,
+    "how": "gsk LLM proxy(gpt-5.2), 패킷마다 새 세션(기억 없음), 입력 = README·RUBRIC·ANSWER 양식·sample.pdf 전 쪽 100dpi 이미지만. 스크립트 /home/user/work/judge2r/run.py",
+    "independence": "judge1(Opus 계열)과 다른 모델 회사. 자사 작성·검수 미관여(새 세션).",
+    "anchor_check": {
+     "ANC-H": "A2·A4 1단계 차",
+     "ANC-L": "A1 2단계 차(각주 대상), 나머지 ≤1",
+     "rule": "tolerance: 2단계 이상이면 해당 축 각주"
+    },
+    "packets": {
+     "S-94ea2a": {
+      "answer_sha256": "4cdb7863792bba549c94b3a7ed2dbd92a1a4c42d15e418e33f16cff047e5d7c1",
+      "answered_at": "2026-10-20T17:36Z",
+      "first_line_declaration_ok": true
+     },
+     "S-abf2e3": {
+      "answer_sha256": "0ab1aa88ab1cf02af309070eebae7175f4637e856fcfa8cf6db7d53ad5e6f33f",
+      "answered_at": "2026-10-20T17:36Z",
+      "first_line_declaration_ok": true
+     }
+    },
+    "display": "judge2 교체(gpt-5.2, 새 세션)"
    }
   ],
   "packet_record_schema": {
@@ -9739,7 +10553,14 @@
    "network": 0
   },
   "expected_anchor_sha256": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
-  "status": "확정(judge 2 + 제3자 3축) — 2026-10-20"
+  "status": "확정(judge 2 + 제3자 3축) — 2026-10-20",
+  "real_report_2026_10_21": {
+   "decision": "대표 지시: 가상 인물 리포트 대신 대표 본인의 실제 리포트로 채점. OWN-R/OWN-P(가상)는 이력으로 보존, 성능표 자사 행은 OWN-R2/OWN-P2.",
+   "files": [
+    "8HcdKoXJ",
+    "EjCxJTFq"
+   ]
+  }
  },
  "packet_round8": {
   "blind_ids": [
@@ -9866,5 +10687,84 @@
   "max_diff": 1,
   "verdict": "통과 — 모든 축 기대와 1단계 이내(각주 없음)",
   "at": "2026-10-20T15:18Z"
+ },
+ "packet_round10": {
+  "blind_ids": [
+   "S-94ea2a",
+   "S-abf2e3"
+  ],
+  "built_at": "2026-10-20T16:40Z",
+  "rule": "op:210 + 대표 결정 2026-10-21(자사 실제 리포트)",
+  "note": "자사 샘플을 대표 본인 실제 리포트로 교체 — 같은 judge 2인·같은 루브릭",
+  "sent_at": "2026-10-20T16:39Z",
+  "deadline": "2026-10-22T16:39Z"
+ },
+ "round11": {
+  "at": "2026-10-21",
+  "why": "대표 지시: ① 자사만 다른 심사위원 → 전 샘플 같은 두 심사위원으로 재채점 ② A5에 공개 문서(공개 성능표 포함) 반영 — 전 회사 동일 규칙 ③ A1 첫 페이지 = 첫 결과 페이지(전 샘플 동일)",
+  "judges": "gpt-5.2 · gpt-5.1(각 패킷 새 세션, 패킷 파일+기준 보충 v2.1만 입력), 제3자 gpt-5",
+  "addendum": "# 채점 기준 보충 v2.1 (2026-10-21, 모든 샘플에 똑같이 적용)\n- A1 \"처음 1페이지\" = 표지·목차·사용 안내·검사 소개 글을 뺀 **첫 결과 페이지**(그 사람의 결과가 처음 나오는 쪽)입니다. 그 쪽만 보고 판단하세요. 가림 처리된 표지는 세지 않습니다.\n- A5 는 리포트 안에 적힌 규준·신뢰도·한계·주의 문구만 봅니다. (회사 공개 문서는 별도 규칙으로 따로 반영하니 여기서는 보지 않습니다.)\n",
+  "a5_public_rule": "공개 문서 수준: 신뢰도 계수 또는 규준 표본 수치 공개 = L4 · 검증 범위·한계를 공식 문서에 명시 = L3 · 없음 = 반영 없음. 최종 A5 = max(리포트 안 A5, 공개 문서 수준). 근거 = E3 공개문서 시트(같은 시트·같은 규칙, 전 회사)",
+  "packets_integrity": "채점 패킷은 이전 회차와 같은 파일(sample.pdf sha256 = 시트 redacted_sha256 일치 확인)"
+ },
+ "anchor_check_r11": {
+  "result": {
+   "ANC-H": {
+    "A1": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    },
+    "A2": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    },
+    "A3": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    },
+    "A4": {
+     "expected": 5,
+     "final": 4,
+     "diff": 1
+    },
+    "A5": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    }
+   },
+   "ANC-L": {
+    "A1": {
+     "expected": 2,
+     "final": 4,
+     "diff": 2
+    },
+    "A2": {
+     "expected": 1,
+     "final": 2,
+     "diff": 1
+    },
+    "A3": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    },
+    "A4": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    },
+    "A5": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    }
+   }
+  },
+  "max_diff": 2,
+  "verdict": "각주(2단계 차 축 있음)"
  }
 }

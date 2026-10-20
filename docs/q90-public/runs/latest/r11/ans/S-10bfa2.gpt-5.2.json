@@ -1,0 +1,42 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-10bfa2",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 2,
+   "reason": "첫 결과 페이지(점수 그래프)만으로는 REI 등 흥미유형과 점수는 보이지만 이를 한 문장 인물상으로 즉시 요약하기는 어렵습니다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "수치는 응답 결과(예: GOT REI, PSS 리더십 71 등)를 근거로 제시하지만 해석 문장은 유형 일반 설명이 주를 이룹니다."
+  },
+  "A3": {
+   "level": 3,
+   "reason": "후반에 직업 리스트업→정보수집→적합도 5점 체크리스트→1차 선택→PSS 비교→실행 계획 같은 단계적 행동이 있으나 개인 결과에 맞춘 구체 과제까지는 제한적입니다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "기록용 빈칸/체크리스트 등은 있으나 재검사 비교나 명시적 후속 프로그램 연결 같은 누적 장치는 약합니다."
+  },
+  "A5": {
+   "level": 2,
+   "reason": "T점수의 평균/표준편차 등 기본 설명은 있으나 규준·신뢰도·한계/주의 문구가 체계적으로 제시되지는 않습니다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "문서에 STRONG(직업흥미검사 II) 및 Holland RIASEC, GOT/BIS/PSS 용어가 반복되어 해당 검사 리포트 형식으로 보입니다."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 20,
+  "pages_total": 18,
+  "pages_viewed": 18,
+  "unreadable_pages": [],
+  "competitor_research_done_before": false
+ },
+ "api_id": "chatcmpl-c643de8e-15f5-42c2-ba52-af01de97287a",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:15:45.438394+00:00"
+}

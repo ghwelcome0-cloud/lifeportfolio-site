@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-e9e660",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지(Behavioral Report)만으로도 자신감 있고 독립적이며 빠른 의사결정·추진력이 강하고 도전/경쟁을 선호하는 사람으로 요약 가능하다."
+  },
+  "A2": {
+   "level": 2,
+   "reason": "서술이 전반적으로 ‘이 유형은 ~하다’식 일반 특성 설명이 많고 샘플 내 응답(문항/선택)과의 직접 연결 근거는 거의 보이지 않지만 어조는 비난적이지 않다."
+  },
+  "A3": {
+   "level": 2,
+   "reason": "Management Strategies가 제시되지만 ‘독립/학습기회/다양성 제공’ 등 환경 제안 중심으로, 오늘·이번 주에 당사자가 실행할 구체 행동 단계는 부족하다."
+  },
+  "A4": {
+   "level": 1,
+   "reason": "재검사 비교, 추적 기록, 후속 프로그램/코칭 연계 등 결과를 누적·반복 활용하도록 하는 장치가 리포트 내에 보이지 않는다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "규준, 신뢰도, 한계, 해석상 주의문구 같은 심리측정/사용상 고지가 리포트 페이지들에서 확인되지 않는다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "Reference Profile: Captain, BSID 표기와 D/C/A/B 요인( Dominance/Extraversion/Formality/Patience ) 구성이 보이는 행동평가(DISC 계열로 추정) 리포트처럼 보인다."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 18,
+  "pages_total": 5,
+  "pages_viewed": 5,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "value": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-4d54493b-33c6-4d9a-945c-747681633aef",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:14:22.573577+00:00"
+}

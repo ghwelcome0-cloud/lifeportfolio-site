@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-f7229a",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지에서 최고 테마가 Social·Artistic(SA)로 제시되어 ‘사람을 돕고 창의적 표현을 선호하는 사람’이라는 한 문장 요약이 가능하다."
+  },
+  "A2": {
+   "level": 4,
+   "reason": "테마/흥미/직업/개인스타일이 표준점수와 상·중·하(예: Social 61 High, Risk Taking 35) 등 응답 결과에 근거해 설명되며 낙인적 표현 없이 안내형 어조다."
+  },
+  "A3": {
+   "level": 4,
+   "reason": "각 섹션에 ACTION STEP이 반복적으로 제시되고(하이라이트/교차표시, 관심 직업 탐색, O*NET에서 테마코드로 검색, 사람들에게 인터뷰·봉사 참여 등) 이번 주 실행 가능한 구체 행동이 있다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "후속 참고자료(워크시트/북클릿)와 탐색을 이어가라는 안내는 있으나 재검사 비교·진척 기록 같은 누적 설계 장치는 리포트 내에서 약하다."
+  },
+  "A5": {
+   "level": 3,
+   "reason": "규준 관련 설명(표준점수는 근로자 표본 평균 기반, 성별 평균 대비로 흥미수준 결정)과 ‘흥미이지 능력검사가 아님’ 등의 주의가 있으나 신뢰도/한계가 체계적으로 자세히 제시되진 않는다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "Strong Interest Inventory(Strong interpretive report)로 보임."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 25,
+  "pages_total": 19,
+  "pages_viewed": 19,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "value": true,
+   "note": "업무상 진로/적성 검사(여러 회사)의 결과 리포트를 비교·검토한 경험이 있다."
+  }
+ },
+ "api_id": "chatcmpl-2b4591df-f404-43b0-b72b-ab67bd9aeea5",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:15:29.378306+00:00"
+}

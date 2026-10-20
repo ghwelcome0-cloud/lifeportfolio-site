@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-4e6f48",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지에서 상위 5개 테마(예: Significance, Futuristic, Individualization, Focus, Maximizer)가 제시되어 ‘영향력/성과/미래지향·개인맞춤·집중’ 성향을 한 문장으로 요약할 수 있다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "각 테마 페이지에 ‘personalized insights…specific to your results’ 문구가 있으나 근거가 응답자의 구체 답변 인용이 아니라 테마 일반 설명 중심이며 어조는 비난 없이 공감적이다."
+  },
+  "A3": {
+   "level": 4,
+   "reason": "각 테마마다 ‘Take action to maximize your potential’에 이번 주에도 실행 가능한 행동(예: 목표에 타임라인/측정치 붙이기, 주간 파워아워 예약, 아이디어 기록, 피드백 요청 등)이 여러 개 제시된다."
+  },
+  "A4": {
+   "level": 2,
+   "reason": "‘Share your results with others/Find a coach’ 등 후속 활용을 권하지만 재검사 비교, 추적 기록 템플릿, 프로그램 연결 같은 누적 설계 장치는 거의 없다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "리포트 내에서 규준, 신뢰도/타당도, 한계, 해석상의 주의 문구를 확인할 수 없다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "34개 테마와 도메인(Executing/Influencing/Relationship Building/Strategic Thinking) 구성으로 보아 CliftonStrengths 계열 리포트로 추정."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 25,
+  "pages_total": 25,
+  "pages_viewed": 25,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-0a8a7788-092a-42d6-b201-78bd02f23682",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:15:25.173224+00:00"
+}

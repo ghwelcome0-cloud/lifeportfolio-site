@@ -1,0 +1,42 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-635567",
+  "judge_actor_id": "openai:gpt-5.1",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지(Overview)는 이 사람이 온화하고 협조적이며 갈등을 피하고 관계와 조화를 중시하는 양상 등을 여러 단락에 걸쳐 구체적으로 묘사해 한 문장으로 요약 가능한 이미지를 준다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "전반적으로 긍정적·공감적 어조이지만, 내용은 같은 유형 사람에게 모두 적용될 듯한 일반론적 서술이 많고 응답 문항 자체나 점수와의 직접 연결 근거는 거의 제시되지 않는다."
+  },
+  "A3": {
+   "level": 5,
+   "reason": "여러 장에서 'could', 'may benefit from', 'Suggested Action For Development' 형식으로 구체 행동 목록(예: 마감 기한 설정, 새 아이디어 제안, 경쟁사 조사 등)을 다수 제시하며 응답자의 경향과 연결하여 바로 실천 가능하게 제안한다."
+  },
+  "A4": {
+   "level": 3,
+   "reason": "각 섹션마다 'Personal Notes' 공란이 있어 반복적으로 기록·리뷰할 수 있게 되어 있으나 재검사 비교나 후속 프로그램 안내 등 장기적 추적 설계는 보이지 않는다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "본문 어디에도 규준, 신뢰도, 한계, 해석 시 주의 문구에 대한 설명이 제시되어 있지 않다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "Insights Discovery 계열 리포트로 추정된다."
+  },
+  "outside_materials_used": null,
+  "time_spent_min": 26,
+  "pages_total": 39,
+  "pages_viewed": 39,
+  "unreadable_pages": [],
+  "competitor_research_done_before": true
+ },
+ "api_id": "chatcmpl-dca6147f-62de-40c0-8f45-77aea5c0f268",
+ "model": "gpt-5.1",
+ "at": "2026-10-20T18:16:06.644797+00:00"
+}
