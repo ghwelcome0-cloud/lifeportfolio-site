@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-da397f",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지에서 응답자의 DiSC 스타일이 Si이며 협업·지원·긍정/관계지향적이라는 핵심 인상을 한 문장으로 요약할 수 있다."
+  },
+  "A2": {
+   "level": 2,
+   "reason": "결과가 설문 응답의 구체 문항/선택 근거를 인용하지 않고 대부분 'you probably'식 유형 일반 설명으로 전개되며 어조는 비낙인적이다."
+  },
+  "A3": {
+   "level": 4,
+   "reason": "다른 스타일(D/i/S/C)과 연결·문제해결·긴장상황별로 바로 실행 가능한 대화/행동 팁이 불릿으로 제시된다."
+  },
+  "A4": {
+   "level": 1,
+   "reason": "재검사 비교, 추적 기록, 후속 프로그램/과제 링크 등 시간이 지나 다시 쌓아보게 하는 장치가 리포트 내에 보이지 않는다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "규준, 신뢰도/타당도, 한계나 해석 주의 문구 같은 심리측정 정보가 본문에서 확인되지 않는다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "DiSC 프로파일(Workplace 계열로 보임) 형태의 리포트로 보인다."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 35,
+  "pages_total": 20,
+  "pages_viewed": 20,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-bf530fe0-b692-46b8-88aa-876f81df9494",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:15:25.009310+00:00"
+}

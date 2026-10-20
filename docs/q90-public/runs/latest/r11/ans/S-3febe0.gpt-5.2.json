@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-3febe0",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 2,
+   "reason": "첫 결과 페이지에는 TCI-RS 각 척도의 점수/백분위와 그래프만 있어 높은·낮은 경향을 짐작할 수는 있으나 한 문장으로 사람을 즉시 요약하기는 어렵다."
+  },
+  "A2": {
+   "level": 1,
+   "reason": "샘플 범위(2쪽)에는 점수표와 하위척도 설명 라벨만 있고 응답자의 구체 응답 근거를 들어 해석하거나 공감적 설명 서술이 없다."
+  },
+  "A3": {
+   "level": 1,
+   "reason": "오늘/이번 주에 할 수 있는 행동 제안이나 실천 과제 섹션이 보이지 않는다."
+  },
+  "A4": {
+   "level": 1,
+   "reason": "재검사 비교, 추적 기록, 후속 프로그램/코칭 연계 등 결과를 쌓아가게 하는 장치가 보이지 않는다."
+  },
+  "A5": {
+   "level": 3,
+   "reason": "규준집단 평균·표준편차 기반이라는 설명, 하위척도 문항 수가 적어 참고자료로 활용하라는 주의 문구 등 제한/주의가 일부 포함돼 있다."
+  },
+  "guess": {
+   "thinks_knows": false,
+   "note": ""
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 10,
+  "pages_total": 2,
+  "pages_viewed": 2,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-161ad437-17db-4f9f-bc6a-b01b2cdaaa6a",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:14:06.557392+00:00"
+}

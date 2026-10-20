@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-cb936c",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지(Unique Quadrant Profile)에서 Realised(예: Courage, Counterpoint, Personal Responsibility 등)와 Weaknesses(Optimism, Self-awareness, Growth) 구성이 한눈에 보여 이 사람을 ‘용기·책임감·다른 관점 제시가 강점인 리더’로 요약할 수 있다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "강점/약점이 응답자 결과(사분면에 배치된 항목)에서 왔음은 분명하지만, 각 항목 설명 문구는 항목 일반 설명 중심이며 직접적 응답 근거 인용은 보이지 않는다."
+  },
+  "A3": {
+   "level": 4,
+   "reason": "Unrealised/Weaknesses/ Learned behaviours 섹션에 ‘다음 회의에 유머 넣기’, ‘피드백 1-2-1 하기’, ‘위임해보기’ 등 이번 주 실행 가능한 구체 행동 제안이 다수 제시된다."
+  },
+  "A4": {
+   "level": 3,
+   "reason": "마지막 What Next?에서 코치/프로그램/툴킷 및 팀·매니저 프로파일 등 후속 자원으로의 연결이 있으나, 재검사 비교나 개인 기록 누적 같은 반복 추적 장치는 뚜렷하지 않다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "리포트 내에서 규준, 신뢰도, 한계, 해석 주의 문구(측정의 한계/오차 등)를 확인할 수 없었다."
+  },
+  "guess": {
+   "thinks_knows": false,
+   "note": ""
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 25,
+  "pages_total": 24,
+  "pages_viewed": 24,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-91ab9491-2e44-4833-89c9-3e3995bb4fcd",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:16:10.761944+00:00"
+}

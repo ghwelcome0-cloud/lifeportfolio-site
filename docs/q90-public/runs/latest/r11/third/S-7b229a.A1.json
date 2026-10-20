@@ -1,0 +1,13 @@
+{
+ "blind_id": "S-7b229a",
+ "axis": "A1",
+ "pick": "X",
+ "picked": "gpt-5.2",
+ "level": 2,
+ "reason": "첫 결과 페이지는 ‘in Rank Order’ 순위/점수 그래프만 보여 주어 개별 강점의 짧은 서술이나 통합 요약이 없어 한 문장으로 인상을 즉시 잡기 어렵다.",
+ "map": {
+  "X": "gpt-5.2",
+  "Y": "gpt-5.1"
+ },
+ "api_id": "chatcmpl-ffcb614a-5f64-4c06-b651-92ea797382cb"
+}

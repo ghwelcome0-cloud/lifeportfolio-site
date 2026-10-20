@@ -8,4 +8,4 @@
 | E2 블라인드 채점 완료 | 18/18 | 100% | judged(원본 저장·미집계) 4, final 0 — judge 2인 + 제3자 |
 | 자사 E2 블라인드 채점(op:210, 최신판 2부) | 4/4 | 100% | 자사 OWN-R=judged, OWN-P=judged, OWN-R2=judged, OWN-P2=judged · 앵커(검증용, 분모 밖) ANC-H=judged, ANC-L=judged · Q90 2회차 전사 열은 별도 유지(own.json 있음, G14 미달성) |
 
-(2026-10-20T17:40Z · 명부 41행 · 최신 run latest)
+(2026-10-20T18:18Z · 명부 41행 · 최신 run latest)

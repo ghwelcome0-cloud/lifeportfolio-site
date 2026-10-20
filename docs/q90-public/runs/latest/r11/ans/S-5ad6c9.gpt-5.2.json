@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+ "answer": {
+  "blind_id": "S-5ad6c9",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없으며, 채점 내용을 메모·노트에 남기지 않는다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지에서 ‘탐험가형’으로서 새로움·호기심·변화 선호와 때때로 꾸준함 부족 같은 핵심을 한 문장으로 요약할 수 있다."
+  },
+  "A2": {
+   "level": 2,
+   "reason": "응답자의 실제 답변/문항 근거는 보이지 않고 유형 일반 설명(강점·약점·직업) 위주이지만 낙인 없이 무난한 어조다."
+  },
+  "A3": {
+   "level": 1,
+   "reason": "‘장점을 살리고 단점을 보완’ 같은 격려만 있고 오늘/이번 주 실행할 구체 행동 지침이 없다."
+  },
+  "A4": {
+   "level": 1,
+   "reason": "재검사 비교, 기록, 후속 프로그램 연결 등 결과를 누적·추적하는 장치가 제시되지 않는다."
+  },
+  "A5": {
+   "level": 1,
+   "reason": "규준·신뢰도·한계·주의 문구에 대한 언급이 리포트 내에 없다."
+  },
+  "guess": {
+   "thinks_knows": false,
+   "note": ""
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 6,
+  "pages_total": 3,
+  "pages_viewed": 3,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "done": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-59ff9c26-9be9-415c-9ef5-00cbfd81b979",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:13:57.410674+00:00"
+}

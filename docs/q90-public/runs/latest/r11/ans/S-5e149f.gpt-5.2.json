@@ -1,0 +1,45 @@
+{
+ "first_line": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+ "answer": {
+  "blind_id": "S-5e149f",
+  "judge_actor_id": "openai:gpt-5.2",
+  "scored_at_utc": "2026-10-20T00:00:00Z",
+  "declaration": "나는 이 평가 대상의 다른 역할(작성·검수·채점·심판)에 관여한 적이 없다",
+  "A1": {
+   "level": 4,
+   "reason": "첫 결과 페이지에서 응답자의 유형이 ESTJ이고(E,S,T,J 선호도 제시) 전반적 성향을 한 문장으로 요약할 수 있다."
+  },
+  "A2": {
+   "level": 3,
+   "reason": "유형과 선호도/확률지수(E 89, S 96, T 68, J 81)를 제시하지만 설명 내용은 주로 ESTJ 일반 특성 서술이며 응답 문항의 구체 근거 인용은 없다."
+  },
+  "A3": {
+   "level": 1,
+   "reason": "오늘/이번 주에 할 수 있는 구체 행동 지침이나 체크리스트가 보이지 않고 특징 설명 위주다."
+  },
+  "A4": {
+   "level": 1,
+   "reason": "재검사 비교, 기록, 후속 프로그램 연결 등 결과를 축적·추적하는 장치가 리포트 내에 없다."
+  },
+  "A5": {
+   "level": 2,
+   "reason": "확률지수가 선호 강도를 재는 것이 아니라 '정확할 가능성'을 보여준다는 한계 설명은 있으나 규준·신뢰도 등 심리측정 정보는 거의 없다."
+  },
+  "guess": {
+   "thinks_knows": true,
+   "note": "MBTI Type Indicator / Global Step I 형식으로 보임(회사명은 가려져 있어 확정 불가)."
+  },
+  "outside_materials_used": false,
+  "time_spent_min": 12,
+  "pages_total": 6,
+  "pages_viewed": 6,
+  "unreadable_pages": [],
+  "competitor_research_done_before": {
+   "value": false,
+   "note": ""
+  }
+ },
+ "api_id": "chatcmpl-2a8749df-dfc0-4bf9-a0e4-8e890c4f2d55",
+ "model": "gpt-5.2",
+ "at": "2026-10-20T18:14:34.570606+00:00"
+}

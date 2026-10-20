@@ -33,7 +33,7 @@ const rows = [...own.map(r => ({ r, own: true })), ...comp.map(r => ({ r, own: f
   .sort((a, b) => b.total - a.total || (a.own === b.own ? 0 : a.own ? 1 : -1)); // 동점이면 자사를 뒤에(보수적), 참고 점수로 순서를 정하지 않음
 const med = { P: Object.fromEntries(AX.map(a => [a, median(comp.map(r => pt(r[a])))])), total: median(comp.map(total)), wtotal: median(comp.map(wtotal)) };
 const top = Object.fromEntries(AX.map(a => [a, Math.max(...comp.map(r => pt(r[a])))]));
-const ac = e2.anchor_check || {};
+const ac = e2.anchor_check_r11 ? { ...e2.anchor_check, ...e2.anchor_check_r11 } : (e2.anchor_check || {});
 const nThird = rows.reduce((s, x) => s + x.third.length, 0);
 const meta = { generated: new Date().toISOString().slice(0, 16) + 'Z', sheet_sha: sha('sheets/e2-samples.json'), rubric_sha: sha('rubric/rubric-v2.json'), rubric_version: rubric.version, rubric_frozen_at: rubric.frozen_at, n_comp: comp.length, n_own: own.length, anchor_sha: ac.expected_sha256, anchor_max_diff: ac.max_diff };
 const anchorRule = 'L1 전혀 없음 · L2 흔적만 · L3 있으나 일반론/부분 · L4 구체적이고 응답과 연결 · L5 바로 쓸 수 있을 만큼 구체적이고 일관됨';
@@ -91,16 +91,17 @@ code{background:#f1f3f5;padding:1px 4px;border-radius:3px;font-size:12px}
 
 <h2>1. 무엇을 비교했나 — 축과 질문 (결과 전 동결)</h2>
 <table><thead><tr><th>축</th><th>심사위원이 답한 질문(원문)</th><th>쉬운 말</th><th>주 점수 배점</th><th>참고 가중</th></tr></thead><tbody>${axRows}</tbody></table>
-<div class="note">질문 원문은 루브릭 ${esc(rubric.version)}(${esc(rubric.frozen_at)} 동결, 대표 승인, 파일 sha256 <code>${meta.rubric_sha.slice(0, 16)}…</code>)에서 그대로 옮겼고, 채점 패킷의 RUBRIC.md와 같은 문장입니다. 레벨 기준: ${esc(anchorRule)}.</div>
+<div class="note">질문 원문은 루브릭 ${esc(rubric.version)}(${esc(rubric.frozen_at)} 동결, 대표 승인, 파일 sha256 <code>${meta.rubric_sha.slice(0, 16)}…</code>)에서 그대로 옮겼고, 채점 패킷의 RUBRIC.md와 같은 문장입니다. 레벨 기준: ${esc(anchorRule)}.<br><b>기준 보충 v2.1(2026-10-21, 모든 샘플 동일)</b>: A1의 "처음 1페이지" = 표지·목차·사용 안내를 뺀 <b>첫 결과 페이지</b>. 회사마다 표지·목차 구성이 달라 생기는 불공정을 없애기 위한 보충이며, 심사위원 해석이 갈렸던 사실이 확인된 뒤 정했습니다.</div>
 
-<h2>2. 어떻게 채점했나 — 7단계 절차</h2>
+<h2>2. 어떻게 채점했나 — 8단계 절차</h2>
 <div class="box"><ol>
 <li><b>샘플 수집</b> — 각 회사가 <u>공식 사이트에 직접 공개한</u> 샘플 리포트만 씁니다(제3자 사본 제외). 주소·수집 시각·파일 sha256을 기록합니다(부록 표).</li>
 <li><b>자사 리포트</b> — 실제 서비스에서 실제 응답으로 만들어진 고객 리포트(리포트·실행 프로그램 각 1부, 2026-10-21 발행본)를 손대지 않은 그대로 썼습니다(파일 sha256 기록).</li>
 <li><b>가림(블라인드)</b> — 회사명·서비스명·로고·주소·연락처·고객 이름을 가리고, 글자층이 없는 이미지 PDF로 바꾼 뒤 자동 누출 검사(0건)와 사람 눈 확인을 거칩니다. 파일 이름도 무작위 번호(S-xxxxxx)라 심사위원은 어느 회사인지 모릅니다. <b>우리 리포트도 똑같이</b> 가렸습니다.</li>
-<li><b>독립 채점</b> — 서로 다른 AI 심사위원 2명이 각자 5축을 L1~L5로 매기고, 축마다 이유 1문장을 씁니다. 패킷 밖 자료(검색 등)는 금지입니다. 심사위원은 이 성능표 작성자와 다른 사람이고, 이전 회차 심사위원은 다시 쓰지 않았습니다.</li>
+<li><b>독립 채점</b> — <u>20종 모두 똑같은 AI 심사위원 2명</u>(서로 다른 모델, 샘플마다 기억 없는 새 대화)이 각자 5축을 L1~L5로 매기고 축마다 이유 1문장을 씁니다. 패킷 밖 자료(검색 등)는 금지입니다.</li>
 <li><b>합치기 규칙(평균 금지)</b> — 두 점수 차이가 1 이하면 <u>낮은 쪽</u>(보수적). 2 이상이면 제3 심사위원이 이유를 보고 둘 중 하나를 고릅니다. 새 값·평균은 만들지 않습니다.</li>
 <li><b>채점 검증(앵커)</b> — 일부러 아주 좋은 리포트와 아주 나쁜 리포트를 만들어 섞고, 기대 점수를 미리 봉인(sha256 <code>${esc((ac.expected_sha256 || '').slice(0, 16))}…</code>)했습니다. 결과 최대 차이 ${ac.max_diff ?? '-'}단계 → 심사위원이 좋고 나쁨을 제대로 가린다는 확인입니다. 앵커는 표에 넣지 않습니다.</li>
+<li><b>공개 문서 반영(A5, 모든 회사 동일)</b> — 신뢰 근거는 리포트 안의 문구와 <u>회사가 공식 공개한 문서</u>(기술 매뉴얼·연구 보고서·공개 성능표) 중 높은 쪽을 씁니다. 공개 문서에 신뢰도 계수나 규준 인원 수치가 있으면 L4, 검증 범위와 한계를 공식 문서에 명시했으면 L3. 근거 문서 주소는 공개 문서 시트에 기록돼 있습니다.</li>
 <li><b>100점 환산</b> — 레벨은 그대로 두고 표시만 바꿉니다. 축 점수 = (레벨−1)×5 → L1 0 · L2 5 · L3 10 · L4 15 · L5 20, 5축 합 100점. 축마다 똑같이 20점(재량 없음).</li>
 </ol></div>
 
@@ -121,7 +122,7 @@ ${AX.map(a => `<li><b>${a} ${esc(ax[a].name)}</b> — 타사 중간값 ${med.P[a
 <li>이 표는 리포트(결과지) 5축만 봅니다. 홈페이지 편의성(A6)·보안(A7)·비용은 포함하지 않았습니다.</li>
 <li>100점 환산 방식은 결과를 본 뒤(2026-10-20 대표 결정) 정했습니다. 그래서 재량이 없는 균등 배점을 주 점수로 씁니다. 레벨 값 자체는 결과 전에 정한 규칙으로만 나왔습니다.</li>
 <li>공식 샘플을 받을 수 없는 서비스(접속 불가·로그인·구매 필요)는 넣지 않았고, 0점으로 치지도 않았습니다(예: 고용24 7종은 접속 불가로 이번 판 제외).</li>
-<li>인생포트폴리오 리포트 2종의 두 번째 심사위원은 기존 심사위원이 1시간 가까이 응답하지 않아, 같은 패킷·같은 규칙으로 다른 회사의 AI 모델(새 세션)로 교체했습니다. 이 심사위원의 검증용 리포트 채점은 10칸 중 1칸이 기대와 2단계 차이였습니다(나머지 1단계 이내).</li>
+<li>채점 기준 보충(첫 결과 페이지)과 공개 문서 반영 규칙은 1차 채점 뒤 해석 차이가 확인되어 정했고, <b>20종 모두에 똑같이</b> 적용해 다시 채점했습니다. 검증용 리포트에서 심사위원 판정이 기대와 2단계 차이 난 칸이 있었다면 아래 카드에 표시됩니다.</li>
 <li>AI 심사위원 채점이며, 사람 대상 효과 검증이 아닙니다. 점수는 "리포트가 루브릭 질문에 얼마나 답하는가"이지 검사의 과학적 타당도가 아닙니다.</li>
 </ul></div>
 
