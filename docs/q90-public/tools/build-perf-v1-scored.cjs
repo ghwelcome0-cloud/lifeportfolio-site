@@ -23,9 +23,13 @@ const median = arr => { const s = [...arr].sort((x, y) => x - y); const m = s.le
 const ro = id => roster.rows.find(x => x.id === id) || {};
 const third = r => Object.entries((r.final || {}).axes || {}).filter(([, v]) => /third/.test(v.rule)).map(([k]) => k);
 const comp = e2.rows.filter(r => !r.kind && done(r));
-const own = e2.rows.filter(r => r.kind === 'own' && done(r));
+// 대표 결정 2026-10-21: 자사 행 = 실제 고객 리포트(OWN-R2·OWN-P2). 가상 인물 리포트(OWN-R·OWN-P)는 이력·검증용으로만 남김.
+const OWN_IDS = ['OWN-R2', 'OWN-P2'];
+const own = OWN_IDS.map(id => e2.rows.find(r => r.id === id)).filter(r => r && done(r));
+if (own.length < OWN_IDS.length) { console.error('자사 실제 리포트 확정 전 — 표 생성 보류:', OWN_IDS.filter(id => !own.find(r => r.id === id)).join(',')); process.exit(2); }
+const ownName = { 'OWN-R2': '인생포트폴리오 리포트', 'OWN-P2': '인생포트폴리오 자산화 맞춤 실행 프로그램' };
 const rows = [...own.map(r => ({ r, own: true })), ...comp.map(r => ({ r, own: false }))]
-  .map(o => ({ ...o, id: o.r.id, name: o.own ? o.r.name : (ro(o.r.id).name || o.r.name), country: o.own ? 'KR' : ro(o.r.id).country, L: Object.fromEntries(AX.map(a => [a, o.r[a]])), P: Object.fromEntries(AX.map(a => [a, pt(o.r[a])])), total: total(o.r), wtotal: wtotal(o.r), third: third(o.r), url: o.r.sample_url || null, sha: o.r.sample_sha256 || null }))
+  .map(o => ({ ...o, id: o.r.id, name: o.own ? ownName[o.r.id] : (ro(o.r.id).name || o.r.name), country: o.own ? 'KR' : ro(o.r.id).country, L: Object.fromEntries(AX.map(a => [a, o.r[a]])), P: Object.fromEntries(AX.map(a => [a, pt(o.r[a])])), total: total(o.r), wtotal: wtotal(o.r), third: third(o.r), url: o.r.sample_url || null, sha: o.r.sample_sha256 || null }))
   .sort((a, b) => b.total - a.total || (a.own === b.own ? 0 : a.own ? 1 : -1)); // 동점이면 자사를 뒤에(보수적), 참고 점수로 순서를 정하지 않음
 const med = { P: Object.fromEntries(AX.map(a => [a, median(comp.map(r => pt(r[a])))])), total: median(comp.map(total)), wtotal: median(comp.map(wtotal)) };
 const top = Object.fromEntries(AX.map(a => [a, Math.max(...comp.map(r => pt(r[a])))]));
@@ -46,7 +50,7 @@ tr += `<tr class="med"><td class="nm">타사 ${comp.length}곳 중간값</td><td
 const axRows = AX.map(a => `<tr><td><b>${a}</b> ${esc(ax[a].name)}</td><td>${esc(Q[a])}</td><td>${esc(ax[a].customer_line)}</td><td class="r">20</td><td class="r">${W[a] * 100 / Wsum}</td></tr>`).join('');
 const src = rows.filter(x => !x.own).map(x => `<tr><td>${esc(x.id)}</td><td>${esc(x.name)}</td><td class="u">${x.url ? `<a href="${esc(x.url)}">${esc(x.url.length > 70 ? x.url.slice(0, 70) + '…' : x.url)}</a>` : ''}</td><td class="m">${esc((x.sha || '').slice(0, 12))}</td><td>${AX.map(a => x.L[a]).join(' · ')}</td></tr>`).join('');
 const ownRow = id => rows.find(x => x.id === id);
-const R = ownRow('OWN-R'), P = ownRow('OWN-P');
+const R = ownRow('OWN-R2'), P = ownRow('OWN-P2');
 const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>자기이해 리포트 성능표 1판 — 100점 환산 (내부판)</title>
 <style>
 body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;margin:0;background:#f6f7f9;color:#1d2330}
@@ -73,7 +77,7 @@ code{background:#f1f3f5;padding:1px 4px;border-radius:3px;font-size:12px}
 </style></head><body><main>
 <span class="badge">내부판 · 외부 공개는 대표 승인 뒤</span><span class="badge" style="background:#e7f5ff;color:#1864ab">채점 루브릭 ${esc(rubric.version)} · ${esc(rubric.frozen_at)} 결과 전 동결</span>
 <h1>자기이해·진로 리포트 성능표 1판 — 100점 환산</h1>
-<div class="sub">타사 공개 샘플 리포트 ${comp.length}종 + 인생포트폴리오 최신판 ${own.length}종 · 같은 루브릭 · 같은 블라인드 심사위원 · 생성 ${meta.generated}</div>
+<div class="sub">타사 공개 샘플 리포트 ${comp.length}종 + 인생포트폴리오 실제 리포트 ${own.length}종 · 같은 루브릭 · 같은 블라인드 심사위원 · 생성 ${meta.generated}</div>
 <div class="cards">
 <div class="card"><div class="k">인생포트폴리오 리포트</div><div class="v">${R ? R.total : '-'}<span style="font-size:14px">/100</span></div><div class="d">타사 중간값 ${med.total} · 타사 최고 ${Math.max(...comp.map(total))}</div></div>
 <div class="card"><div class="k">자산화 실행 프로그램 리포트</div><div class="v">${P ? P.total : '-'}<span style="font-size:14px">/100</span></div><div class="d">A4 자산화 ${P ? P.P.A4 : '-'}/20 (타사 최고 ${top.A4})</div></div>
@@ -92,8 +96,8 @@ code{background:#f1f3f5;padding:1px 4px;border-radius:3px;font-size:12px}
 <h2>2. 어떻게 채점했나 — 7단계 절차</h2>
 <div class="box"><ol>
 <li><b>샘플 수집</b> — 각 회사가 <u>공식 사이트에 직접 공개한</u> 샘플 리포트만 씁니다(제3자 사본 제외). 주소·수집 시각·파일 sha256을 기록합니다(부록 표).</li>
-<li><b>자사 샘플 생성</b> — 가상 인물 1명이 타사와 <u>같은 응시 AI·같은 인물 설정</u>으로 56문항에 한 번 답하고, 그 답을 최신 출시판 엔진에 그대로 넣어 리포트를 만들었습니다. 답은 고치지 않았습니다(답 파일 sha256 기록).</li>
-<li><b>가림(블라인드)</b> — 회사명·서비스명·로고·주소·연락처·인물 이름을 가리고, 글자층이 없는 이미지 PDF로 바꾼 뒤 자동 누출 검사(0건)와 사람 눈 확인을 거칩니다. 파일 이름도 무작위 번호(S-xxxxxx)라 심사위원은 어느 회사인지 모릅니다. <b>우리 리포트도 똑같이</b> 가렸습니다.</li>
+<li><b>자사 리포트</b> — 실제 서비스에서 실제 응답으로 만들어진 고객 리포트(리포트·실행 프로그램 각 1부, 2026-10-21 발행본)를 손대지 않은 그대로 썼습니다(파일 sha256 기록).</li>
+<li><b>가림(블라인드)</b> — 회사명·서비스명·로고·주소·연락처·고객 이름을 가리고, 글자층이 없는 이미지 PDF로 바꾼 뒤 자동 누출 검사(0건)와 사람 눈 확인을 거칩니다. 파일 이름도 무작위 번호(S-xxxxxx)라 심사위원은 어느 회사인지 모릅니다. <b>우리 리포트도 똑같이</b> 가렸습니다.</li>
 <li><b>독립 채점</b> — 서로 다른 AI 심사위원 2명이 각자 5축을 L1~L5로 매기고, 축마다 이유 1문장을 씁니다. 패킷 밖 자료(검색 등)는 금지입니다. 심사위원은 이 성능표 작성자와 다른 사람이고, 이전 회차 심사위원은 다시 쓰지 않았습니다.</li>
 <li><b>합치기 규칙(평균 금지)</b> — 두 점수 차이가 1 이하면 <u>낮은 쪽</u>(보수적). 2 이상이면 제3 심사위원이 이유를 보고 둘 중 하나를 고릅니다. 새 값·평균은 만들지 않습니다.</li>
 <li><b>채점 검증(앵커)</b> — 일부러 아주 좋은 리포트와 아주 나쁜 리포트를 만들어 섞고, 기대 점수를 미리 봉인(sha256 <code>${esc((ac.expected_sha256 || '').slice(0, 16))}…</code>)했습니다. 결과 최대 차이 ${ac.max_diff ?? '-'}단계 → 심사위원이 좋고 나쁨을 제대로 가린다는 확인입니다. 앵커는 표에 넣지 않습니다.</li>
@@ -111,12 +115,13 @@ ${AX.map(a => `<li><b>${a} ${esc(ax[a].name)}</b> — 타사 중간값 ${med.P[a
 
 <h2>5. 공정성을 위해 밝혀 두는 한계</h2>
 <div class="box"><ul>
-<li>타사 샘플은 <b>회사가 고른 가장 좋은 예시</b>라 실제 고객이 받는 리포트보다 좋게 보일 수 있습니다. 자사는 가상 인물 1명의 <b>응답 1회</b> 결과입니다.</li>
-<li>자사 샘플 생성은 총괄이 운영했습니다(이해상충). 그래서 답은 다른 AI가 냈고, 채점·합치기·환산은 정해진 도구가 하며 총괄은 값을 고치지 않습니다.</li>
+<li><b>비교한 것은 "보여 줄 수 있는 결과지"입니다.</b> 타사는 각 회사가 공식 홈페이지에 직접 올린 대표 예시 리포트를, 인생포트폴리오는 실제 고객이 받는 리포트를 그대로 채점했습니다. 각 회사의 대표 예시는 가장 잘 보여 주고 싶은 모습일 수 있다는 점을 감안해 읽어 주세요.</li>
+<li>성능표는 인생포트폴리오가 만들었습니다. 그래서 채점은 우리 리포트 작성에 관여하지 않은 별도 심사위원이 회사 이름을 가린 채 했고, 합치기·환산은 정해진 계산식이 하며 사람이 값을 고치지 않습니다. 자료와 계산식은 요청하시면 그대로 보여 드립니다.</li>
 <li>모델명·유형명(예: 16유형)은 가리면 읽을 수 없어 남겼습니다. 심사위원이 회사를 짐작한 경우 기록만 하고 점수에 쓰지 않았습니다.</li>
 <li>이 표는 리포트(결과지) 5축만 봅니다. 홈페이지 편의성(A6)·보안(A7)·비용은 포함하지 않았습니다.</li>
 <li>100점 환산 방식은 결과를 본 뒤(2026-10-20 대표 결정) 정했습니다. 그래서 재량이 없는 균등 배점을 주 점수로 씁니다. 레벨 값 자체는 결과 전에 정한 규칙으로만 나왔습니다.</li>
 <li>공식 샘플을 받을 수 없는 서비스(접속 불가·로그인·구매 필요)는 넣지 않았고, 0점으로 치지도 않았습니다(예: 고용24 7종은 접속 불가로 이번 판 제외).</li>
+<li>인생포트폴리오 리포트 2종의 두 번째 심사위원은 기존 심사위원이 1시간 가까이 응답하지 않아, 같은 패킷·같은 규칙으로 다른 회사의 AI 모델(새 세션)로 교체했습니다. 이 심사위원의 검증용 리포트 채점은 10칸 중 1칸이 기대와 2단계 차이였습니다(나머지 1단계 이내).</li>
 <li>AI 심사위원 채점이며, 사람 대상 효과 검증이 아닙니다. 점수는 "리포트가 루브릭 질문에 얼마나 답하는가"이지 검사의 과학적 타당도가 아닙니다.</li>
 </ul></div>
 

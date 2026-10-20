@@ -7892,6 +7892,228 @@
    },
    "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
    "prev_status": "redacted"
+  },
+  {
+   "id": "OWN-R2",
+   "name": "인생포트폴리오 리포트(최신판, 실제 고객 리포트 — 대표 본인 응답 2026-10-21)",
+   "kind": "own",
+   "blind_id": "S-abf2e3",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_source": "대표 업로드 실제 리포트(운영 서비스 화면판 PDF) — file 8HcdKoXJ",
+   "sample_sha256": "8798a14f23179221d5b6c39ddcba2f32d7cf750b0a36fc43c8b9c84807b0110b",
+   "status": "judged",
+   "judge1": {},
+   "judge2": {},
+   "judge3": {},
+   "denominator_class": "own",
+   "own_note": "대표 결정 2026-10-21: 자사 샘플을 실제 리포트로 교체. 같은 블라인드 절차(가림·judge 2·제3자).",
+   "redaction": {
+    "items_found": [
+     {
+      "term": "김영식",
+      "n": 1
+     },
+     {
+      "term": "인생포트폴리오",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
+    "leak_check": {
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 135,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T16:36:53Z"
+    },
+    "redacted_sha256": "a1626e61d06cf0dfa8936db43cffd1d2e088e850673fcfaab51a1bcf2964fbae",
+    "final_file": "S-abf2e3.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "07b9e513ab920eb41649720656824b8c88d34055208934ccd8399a4836d8c2c2",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-abf2e3.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T16:39Z",
+     "finding": "이름(표지·사명 카드·마무리·머리글)·고유코드·서비스명 상자 가림 확인. 이미지 제거는 다른 샘플과 동일 규칙(채점 대상 아님)."
+    },
+    "boxes": "3:0.6200,0.2830,0.7700,0.3020;4:0.3700,0.3850,0.4560,0.4100;14:0.1150,0.4900,0.3300,0.5150"
+   },
+   "packet_sha256": "79b81204b22b0bd074ad2733ec0622f9c36696f463122d1d12043971060d91a5",
+   "packet_files": {
+    "sample.pdf": "a1626e61d06cf0dfa8936db43cffd1d2e088e850673fcfaab51a1bcf2964fbae",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "a39fa1d130fd8eefdb1fdb7284a61aff4e4df44c53d977f2feb446b447fb29f5",
+    "ANSWER.json": "2b125bb0348b0bc0f4a1a275c1d898d079b11820371e2051c17790c926ecd3d2"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judge2_source": "judge2r(gpt-5.2 교체)",
+   "A1": 2,
+   "A2": 4,
+   "A3": 5,
+   "A4": 3,
+   "A5": 2,
+   "final": {
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 16,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked B",
+      "third_reason": "가림 표지 다음 처음 보이는 쪽(2쪽)은 목차뿐이고 '신념 지키는 사람 — 멀리 보고 함께 갈 방향을 그려 주는 사람'과 강점·키워드는 3쪽('한눈에 보는 나')에 처음 나오므로, '처음 1페이지만' 보는 A1 기준으로는 L2가 맞습니다. X는 3쪽을 첫 페이지로 보고 매긴 점수입니다."
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T17:39:45Z",
+    "third_used": [
+     "A1"
+    ],
+    "aggregate_sha256": "4456c1263bfbe449bcd3b58d60f4a1dc270d58d1c8235ed91df6094a19c02464"
+   }
+  },
+  {
+   "id": "OWN-P2",
+   "name": "자산화 맞춤 실행 프로그램 리포트(최신판, 실제 고객 리포트 — 대표 본인 응답 2026-10-21)",
+   "kind": "own",
+   "blind_id": "S-94ea2a",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_source": "대표 업로드 실제 리포트(운영 서비스 화면판 PDF) — file EjCxJTFq",
+   "sample_sha256": "d1311cfac0cb56035208cb6ca4b9e63c05195e8badc4b6f1bdcbc0d6185bb1d6",
+   "status": "judged",
+   "judge1": {},
+   "judge2": {},
+   "judge3": {},
+   "denominator_class": "own",
+   "own_note": "대표 결정 2026-10-21: 자사 샘플을 실제 리포트로 교체. 같은 블라인드 절차(가림·judge 2·제3자).",
+   "redaction": {
+    "items_found": [
+     {
+      "term": "김영식",
+      "n": 15
+     },
+     {
+      "term": "인생포트폴리오",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
+    "leak_check": {
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 135,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T16:38:02Z"
+    },
+    "redacted_sha256": "f6279f7d680720d0346c83bc9a4533a4463b06887b8644d93f149889b229f801",
+    "final_file": "S-94ea2a.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "5888a125de4e7bf809a11109a5d57dcbca45ead168745cdce97b7cf468f9cce6",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-94ea2a.img.contact.png",
+     "passed": true,
+     "by": "총괄",
+     "at": "2026-10-20T16:39Z",
+     "finding": "이름(표지·사명 카드·마무리·머리글)·고유코드·서비스명 상자 가림 확인. 이미지 제거는 다른 샘플과 동일 규칙(채점 대상 아님)."
+    },
+    "boxes": "15:0.1300,0.2120,0.1950,0.2390;15:0.2450,0.5100,0.4250,0.5310;15:0.3500,0.7350,0.6500,0.7620;3:0.5150,0.0440,0.5650,0.0620;4:0.5150,0.0440,0.5650,0.0620;5:0.5150,0.0440,0.5650,0.0620;6:0.5150,0.0440,0.5650,0.0620;7:0.5150,0.0440,0.5650,0.0620;8:0.5150,0.0440,0.5650,0.0620;9:0.5150,0.0440,0.5650,0.0620;10:0.5150,0.0440,0.5650,0.0620;11:0.5150,0.0440,0.5650,0.0620;12:0.5150,0.0440,0.5650,0.0620;13:0.5150,0.0440,0.5650,0.0620;14:0.5150,0.0440,0.5650,0.0620;15:0.5150,0.0440,0.5650,0.0620"
+   },
+   "packet_sha256": "474e16a31a1b7cb243426ad95933d3b43cb0640de88328f8cc1d78b3d328689e",
+   "packet_files": {
+    "sample.pdf": "f6279f7d680720d0346c83bc9a4533a4463b06887b8644d93f149889b229f801",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "a1c47b79b8ecc98d8e5c3dca69573ddb93a9046de981c965395f8d7526cd727e",
+    "ANSWER.json": "747b618f74bbcaf898e22807043ad46c3de26a0680310de25c947acb546085b5"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judge2_source": "judge2r(gpt-5.2 교체)",
+   "A1": 2,
+   "A2": 2,
+   "A3": 5,
+   "A4": 4,
+   "A5": 1,
+   "final": {
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 14,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked A",
+      "third_reason": "가림 표지 다음 처음 보이는 쪽(2쪽)은 목차뿐이고 '신념 지키는 사람 — 멀리 보고 함께 갈 방향을 그려 주는 사람'은 3쪽에 처음 나오므로, '처음 1페이지만' 보는 A1 기준으로는 L2가 맞습니다. Y는 3쪽을 '1페이지'로 바꿔 읽었는데, 이는 축 문구와 맞지 않습니다."
+     },
+     "A2": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T17:39:45Z",
+    "third_used": [
+     "A1"
+    ],
+    "aggregate_sha256": "4456c1263bfbe449bcd3b58d60f4a1dc270d58d1c8235ed91df6094a19c02464"
+   }
   }
  ],
  "packet_order": [
@@ -7916,7 +8138,9 @@
   "S-5ad6c9",
   "S-728007",
   "S-0366bb",
-  "S-aaeb13"
+  "S-aaeb13",
+  "S-94ea2a",
+  "S-abf2e3"
  ],
  "judge_sessions": {
   "note": "TL 6054779 5조건 + Peer 6057976 ④(받은 쪽 sha) + TL 6058049(read_check). 채점 전 채움. 값은 사실만.",
@@ -8472,6 +8696,38 @@
       "sent_via": "gsend.sh",
       "answered_at": "2026-10-20T15:55:19Z",
       "first_line_declaration_ok": true
+     },
+     "S-94ea2a": {
+      "sent_msg_id": "7007387",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ChIXmAZa",
+      "attachment_sha256_sent": "474e16a31a1b7cb243426ad95933d3b43cb0640de88328f8cc1d78b3d328689e",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh",
+      "timeout_replaced": {
+       "at": "2026-10-20T17:36Z",
+       "reason": "무응답 54분+ — gsend 재요청 7008806·멘션 7010231·태스크 배정 2건(wake 확인) 후에도 답 없음",
+       "by": "대표 지시 2026-10-21(\"다른 방안으로 진행\")"
+      }
+     },
+     "S-abf2e3": {
+      "sent_msg_id": "7007414",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/I7lRdSIQ",
+      "attachment_sha256_sent": "79b81204b22b0bd074ad2733ec0622f9c36696f463122d1d12043971060d91a5",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": null,
+      "answer_sha256": null,
+      "sent_via": "gsend.sh",
+      "timeout_replaced": {
+       "at": "2026-10-20T17:36Z",
+       "reason": "무응답 54분+ — gsend 재요청 7008806·멘션 7010231·태스크 배정 2건(wake 확인) 후에도 답 없음",
+       "by": "대표 지시 2026-10-21(\"다른 방안으로 진행\")"
+      }
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -8832,6 +9088,32 @@
       "sent_via": "gsend.sh",
       "answered_at": "2026-10-20T15:17:06Z",
       "first_line_declaration_ok": true
+     },
+     "S-94ea2a": {
+      "sent_msg_id": "7007371",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/ChIXmAZa",
+      "attachment_sha256_sent": "474e16a31a1b7cb243426ad95933d3b43cb0640de88328f8cc1d78b3d328689e",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "7008340",
+      "answer_sha256": "78053c15e5e291dcffb47ff60467aed16cc72da1047ae6484e22fbf3522fa44b",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T16:52:51Z",
+      "first_line_declaration_ok": true
+     },
+     "S-abf2e3": {
+      "sent_msg_id": "7007404",
+      "sent_at": "2026-10-20T16:39Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/I7lRdSIQ",
+      "attachment_sha256_sent": "79b81204b22b0bd074ad2733ec0622f9c36696f463122d1d12043971060d91a5",
+      "attachment_sha256_received_redownload": null,
+      "bytes_match": null,
+      "reply_msg_id": "7008490",
+      "answer_sha256": "855644fe4807d5c0b3971e8f3522f37c5f4a657a97c96aae340529b3b9fa2cf1",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T16:54:44Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
@@ -9005,6 +9287,32 @@
      "file_sha_no_newline": "018ca9e539844148…",
      "status": "prefix_verified_only"
     }
+   },
+   {
+    "role": "judge2r",
+    "status": "active",
+    "actor_id": "openai:gpt-5.2(judge2-replacement)",
+    "dm_channel_id": null,
+    "how": "gsk LLM proxy(gpt-5.2), 패킷마다 새 세션(기억 없음), 입력 = README·RUBRIC·ANSWER 양식·sample.pdf 전 쪽 100dpi 이미지만. 스크립트 /home/user/work/judge2r/run.py",
+    "independence": "judge1(Opus 계열)과 다른 모델 회사. 자사 작성·검수 미관여(새 세션).",
+    "anchor_check": {
+     "ANC-H": "A2·A4 1단계 차",
+     "ANC-L": "A1 2단계 차(각주 대상), 나머지 ≤1",
+     "rule": "tolerance: 2단계 이상이면 해당 축 각주"
+    },
+    "packets": {
+     "S-94ea2a": {
+      "answer_sha256": "4cdb7863792bba549c94b3a7ed2dbd92a1a4c42d15e418e33f16cff047e5d7c1",
+      "answered_at": "2026-10-20T17:36Z",
+      "first_line_declaration_ok": true
+     },
+     "S-abf2e3": {
+      "answer_sha256": "0ab1aa88ab1cf02af309070eebae7175f4637e856fcfa8cf6db7d53ad5e6f33f",
+      "answered_at": "2026-10-20T17:36Z",
+      "first_line_declaration_ok": true
+     }
+    },
+    "display": "judge2 교체(gpt-5.2, 새 세션)"
    }
   ],
   "packet_record_schema": {
@@ -9739,7 +10047,14 @@
    "network": 0
   },
   "expected_anchor_sha256": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
-  "status": "확정(judge 2 + 제3자 3축) — 2026-10-20"
+  "status": "확정(judge 2 + 제3자 3축) — 2026-10-20",
+  "real_report_2026_10_21": {
+   "decision": "대표 지시: 가상 인물 리포트 대신 대표 본인의 실제 리포트로 채점. OWN-R/OWN-P(가상)는 이력으로 보존, 성능표 자사 행은 OWN-R2/OWN-P2.",
+   "files": [
+    "8HcdKoXJ",
+    "EjCxJTFq"
+   ]
+  }
  },
  "packet_round8": {
   "blind_ids": [
@@ -9866,5 +10181,16 @@
   "max_diff": 1,
   "verdict": "통과 — 모든 축 기대와 1단계 이내(각주 없음)",
   "at": "2026-10-20T15:18Z"
+ },
+ "packet_round10": {
+  "blind_ids": [
+   "S-94ea2a",
+   "S-abf2e3"
+  ],
+  "built_at": "2026-10-20T16:40Z",
+  "rule": "op:210 + 대표 결정 2026-10-21(자사 실제 리포트)",
+  "note": "자사 샘플을 대표 본인 실제 리포트로 교체 — 같은 judge 2인·같은 루브릭",
+  "sent_at": "2026-10-20T16:39Z",
+  "deadline": "2026-10-22T16:39Z"
  }
 }

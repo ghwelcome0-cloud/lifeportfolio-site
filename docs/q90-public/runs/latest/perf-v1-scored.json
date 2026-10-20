@@ -1,7 +1,7 @@
 {
  "meta": {
-  "generated": "2026-10-20T16:22Z",
-  "sheet_sha": "5019fe6034a2bf2afb6304b0ac9468e7ce8ed91ff123c58d396f7a5690c0d7b3",
+  "generated": "2026-10-20T17:40Z",
+  "sheet_sha": "05b9eb11d3c6189c417829f6ea4ef34c9d42c2653be5e6a10a4378ae847e94e2",
   "rubric_sha": "e01d76d3ae42e1ff3a94c57fb9d9152626fd90a4e5d1cf3de2f4a9516561a639",
   "rubric_version": "v2.0",
   "rubric_frozen_at": "2026-10-12",
@@ -59,34 +59,6 @@
    "sha": "bca9073845a76248e6d0acc3415eb78bba16d63f0454d285a912e5cde2622a87"
   },
   {
-   "own": true,
-   "id": "OWN-R",
-   "name": "인생포트폴리오 리포트(최신판, 자산화 유형·XI 자산화 길 찾기)",
-   "country": "KR",
-   "L": {
-    "A1": 2,
-    "A2": 4,
-    "A3": 5,
-    "A4": 3,
-    "A5": 4
-   },
-   "P": {
-    "A1": 5,
-    "A2": 15,
-    "A3": 20,
-    "A4": 10,
-    "A5": 15
-   },
-   "total": 65,
-   "wtotal": 68.8,
-   "third": [
-    "A1",
-    "A5"
-   ],
-   "url": null,
-   "sha": null
-  },
-  {
    "own": false,
    "id": "G14",
    "name": "Strong Interest Inventory",
@@ -139,6 +111,33 @@
    "sha": "787fa3b55f47988cd710a6d7ebb7e2adbcad90b6f7f5fdd3c2189c844a11b57c"
   },
   {
+   "own": true,
+   "id": "OWN-R2",
+   "name": "인생포트폴리오 리포트",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 4,
+    "A3": 5,
+    "A4": 3,
+    "A5": 2
+   },
+   "P": {
+    "A1": 5,
+    "A2": 15,
+    "A3": 20,
+    "A4": 10,
+    "A5": 5
+   },
+   "total": 55,
+   "wtotal": 62.5,
+   "third": [
+    "A1"
+   ],
+   "url": null,
+   "sha": "8798a14f23179221d5b6c39ddcba2f32d7cf750b0a36fc43c8b9c84807b0110b"
+  },
+  {
    "own": false,
    "id": "G01",
    "name": "VIA Survey (VIA Institute)",
@@ -187,33 +186,6 @@
    "third": [],
    "url": "https://self-directed-search.com/wp-content/uploads/2020/05/SDS-Standard-Report-RIE.pdf",
    "sha": "cc9230c4e184b0a7c509828e98d647931aade4441cd8a3d621755a368014ffa4"
-  },
-  {
-   "own": true,
-   "id": "OWN-P",
-   "name": "자산화 맞춤 실행 프로그램 리포트(최신판)",
-   "country": "KR",
-   "L": {
-    "A1": 2,
-    "A2": 3,
-    "A3": 4,
-    "A4": 4,
-    "A5": 2
-   },
-   "P": {
-    "A1": 5,
-    "A2": 10,
-    "A3": 15,
-    "A4": 15,
-    "A5": 5
-   },
-   "total": 50,
-   "wtotal": 56.3,
-   "third": [
-    "A1"
-   ],
-   "url": null,
-   "sha": null
   },
   {
    "own": false,
@@ -345,6 +317,33 @@
    "third": [],
    "url": "https://www.career4u.net/g_common/library/FileDownLoader.asp?PathType=&filename=/Profile/sample/Strong_JI2_Profile_NR.pdf",
    "sha": "87709d9354ef440fa53f6d8c48e73023f4c039cba25802851a2b2f7fd7024f87"
+  },
+  {
+   "own": true,
+   "id": "OWN-P2",
+   "name": "인생포트폴리오 자산화 맞춤 실행 프로그램",
+   "country": "KR",
+   "L": {
+    "A1": 2,
+    "A2": 2,
+    "A3": 5,
+    "A4": 4,
+    "A5": 1
+   },
+   "P": {
+    "A1": 5,
+    "A2": 5,
+    "A3": 20,
+    "A4": 15,
+    "A5": 0
+   },
+   "total": 45,
+   "wtotal": 53.1,
+   "third": [
+    "A1"
+   ],
+   "url": null,
+   "sha": "d1311cfac0cb56035208cb6ca4b9e63c05195e8badc4b6f1bdcbc0d6185bb1d6"
   },
   {
    "own": false,
