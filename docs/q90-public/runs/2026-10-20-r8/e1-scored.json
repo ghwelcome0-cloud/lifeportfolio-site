@@ -1,0 +1,62 @@
+[
+ {
+  "row": "G11",
+  "name": "16Personalities Premium Career Suite",
+  "group": "진단",
+  "url": "https://www.16personalities.com/premium/career-suite",
+  "at": "2026-10-20T12:03:20.835Z",
+  "a6err": "status 403 / blocks 4",
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": false,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "중"
+ },
+ {
+  "row": "K20",
+  "name": "16Personalities 한국어판(무료 MBTI류)",
+  "group": "국내",
+  "url": "https://www.16personalities.com/ko",
+  "at": "2026-10-20T12:03:26.512Z",
+  "a6err": "status 403 / blocks 4",
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": false,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "중"
+ }
+]

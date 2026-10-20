@@ -1,0 +1,204 @@
+{
+ "tool": "closures-e1.cjs",
+ "rule": "op:q90-auto-207 A-1·A-2 — 결박 측정기 run 3회 이상 실패(증거=run 폴더 결과) → 종결(사유)",
+ "measure_tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "generatedAt": "2026-10-20T12:17:45.738Z",
+ "rows": [
+  {
+   "row": "G11",
+   "attempts_n": 3,
+   "fails_n": 3,
+   "closed": true,
+   "reason": "접근 차단(403·봇)",
+   "attempts": [
+    {
+     "run": "2026-10-12-r3",
+     "startedAt": "2026-10-12T09:50:27.974Z",
+     "egress": "US",
+     "ok": false,
+     "status": 403,
+     "error": null,
+     "title": "Just a moment...",
+     "dom_sha256": "391efcec83293386805d23f0e79afb1749ec5cf9929edb506d8458c2cafeb88f"
+    },
+    {
+     "run": "2026-10-20-r7",
+     "startedAt": "2026-10-20T11:44:32.910Z",
+     "egress": "US",
+     "ok": false,
+     "status": 403,
+     "error": null,
+     "title": "Just a moment...",
+     "dom_sha256": "e75a215353bd146886cb21079efaf3d2b44ccd9deb96bd6da5d152bb013bba3d"
+    },
+    {
+     "run": "2026-10-20-r8",
+     "startedAt": "2026-10-20T12:03:13.724Z",
+     "egress": null,
+     "ok": false,
+     "status": 403,
+     "error": null,
+     "title": "Just a moment...",
+     "dom_sha256": "a1f8afb545cf5e29afef19b6ca1a6470fbb4b6e78949f4150696af0961ac8537"
+    }
+   ]
+  },
+  {
+   "row": "K11",
+   "attempts_n": 5,
+   "fails_n": 5,
+   "closed": true,
+   "reason": "연결 불가(시간 초과)",
+   "attempts": [
+    {
+     "run": "2026-10-12-r3",
+     "startedAt": "2026-10-12T09:50:27.974Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-12-r3b-us-repro",
+     "startedAt": "2026-10-12T19:10:18.504Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-12-r4",
+     "startedAt": "2026-10-12T22:32:54.219Z",
+     "egress": "KR",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-20-r6",
+     "startedAt": "2026-10-20T10:14:24.746Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-20-r7",
+     "startedAt": "2026-10-20T11:44:32.910Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "Navigation timeout of 45000 ms exceeded",
+     "title": null,
+     "dom_sha256": null
+    }
+   ]
+  },
+  {
+   "row": "K12",
+   "attempts_n": 5,
+   "fails_n": 5,
+   "closed": true,
+   "reason": "연결 불가(시간 초과)",
+   "attempts": [
+    {
+     "run": "2026-10-12-r3",
+     "startedAt": "2026-10-12T09:50:27.974Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-12-r3b-us-repro",
+     "startedAt": "2026-10-12T19:10:18.504Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-12-r4",
+     "startedAt": "2026-10-12T22:32:54.219Z",
+     "egress": "KR",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-20-r6",
+     "startedAt": "2026-10-20T10:14:24.746Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    },
+    {
+     "run": "2026-10-20-r7",
+     "startedAt": "2026-10-20T11:44:32.910Z",
+     "egress": "US",
+     "ok": false,
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+     "title": null,
+     "dom_sha256": null
+    }
+   ]
+  },
+  {
+   "row": "K20",
+   "attempts_n": 3,
+   "fails_n": 3,
+   "closed": true,
+   "reason": "접근 차단(403·봇)",
+   "attempts": [
+    {
+     "run": "2026-10-12-r3",
+     "startedAt": "2026-10-12T09:50:27.974Z",
+     "egress": "US",
+     "ok": false,
+     "status": 403,
+     "error": null,
+     "title": "Just a moment...",
+     "dom_sha256": "25cc02bfcf357214aaa32481620959e59fc5a9d09efe1ca91bdb64f63da6f566"
+    },
+    {
+     "run": "2026-10-20-r7",
+     "startedAt": "2026-10-20T11:44:32.910Z",
+     "egress": "US",
+     "ok": false,
+     "status": 403,
+     "error": null,
+     "title": "Just a moment...",
+     "dom_sha256": "524b2ec31442378390ba8053a6d04fe4ca2592ee18038a3d752992360593f4b3"
+    },
+    {
+     "run": "2026-10-20-r8",
+     "startedAt": "2026-10-20T12:03:13.724Z",
+     "egress": null,
+     "ok": false,
+     "status": 403,
+     "error": null,
+     "title": "Just a moment...",
+     "dom_sha256": "8370b73545da3c40bcd99c5b6761deaec8dd119423ddc1c1a39b1a93d374a681"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,283 @@
+{
+ "tool": "measure-e1.cjs",
+ "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_version": "v2.1",
+ "evidence": "E1",
+ "startedAt": "2026-10-20T11:44:32.910Z",
+ "results": [
+  {
+   "row": "G11",
+   "name": "16Personalities Premium Career Suite",
+   "group": "진단",
+   "url": "https://www.16personalities.com/premium/career-suite",
+   "skip": false,
+   "origin": "https://www.16personalities.com",
+   "measuredAt": "2026-10-20T11:44:51.802Z",
+   "headers": {
+    "ok": true,
+    "status": 403,
+    "finalUrl": "https://www.16personalities.com/premium/career-suite",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 5527,
+    "bodySha256": "1b025a14cdd01fee7dc151066317308bc456cb4b25a016f81dacd9a79cba3349"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 403,
+    "title": "Just a moment...",
+    "domSha256": "e75a215353bd146886cb21079efaf3d2b44ccd9deb96bd6da5d152bb013bba3d",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 4,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 222,
+     "chars16": 195
+    },
+    "touch": {
+     "total": 2,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": "en-us"
+   }
+  },
+  {
+   "row": "K11",
+   "name": "고용24 창업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T11:46:50.458Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K12",
+   "name": "고용24 대학생 진로준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T11:48:16.769Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K20",
+   "name": "16Personalities 한국어판(무료 MBTI류)",
+   "group": "국내",
+   "url": "https://www.16personalities.com/ko",
+   "skip": false,
+   "origin": "https://www.16personalities.com",
+   "measuredAt": "2026-10-20T11:48:22.433Z",
+   "headers": {
+    "ok": true,
+    "status": 403,
+    "finalUrl": "https://www.16personalities.com/ko",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 5451,
+    "bodySha256": "795336ec425ba3c138347507ba7f8dab417cd63ac6712f3089b0b75ba5c1264d"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 403,
+    "title": "Just a moment...",
+    "domSha256": "524b2ec31442378390ba8053a6d04fe4ca2592ee18038a3d752992360593f4b3",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 4,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 222,
+     "chars16": 195
+    },
+    "touch": {
+     "total": 2,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": "en-us"
+   }
+  }
+ ]
+}

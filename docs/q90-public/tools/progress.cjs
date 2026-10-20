@@ -21,14 +21,18 @@ const verifiedOk = (v, id) => v.verified_at && v.verified_url && v.verified_quot
 const filled = (v, id) => v && typeof v === 'object' && v.source_url && v.value !== null && v.value !== undefined && v.value !== '' && (verifiedOk(v, id) || !/재확인 필요/.test(v.note || ''));
 // E3 '해당 없음' 칸(value null + note '해당 없음' + 근거 URL)은 분모에서 뺀다(E3 rule 3차-b). 두 분모 병기.
 const na = v => v && typeof v === 'object' && v.value == null && v.source_url && /^해당 없음/.test(v.note || '');
-let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0;
-for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k], r.id)).length, m = E3_KEYS.filter(k => na(r[k])).length; e3cells += n; e3na += m; if (n > 0) e3rowsTouched++; if (n + m === E3_KEYS.length) e3rowsComplete++; }
+// op:q90-auto-207 A(대표 결정 ①): 종결 = 시도 3회 이상 + 시도별 증거(closure.attempts). 해당 없음처럼 분모에서 빼고, 실측 수와 종결 수를 함께 적는다.
+const closed = v => !!(v && typeof v === 'object' && v.value == null && v.closure && v.closure.state === '종결' && Array.isArray(v.closure.attempts) && v.closure.attempts.length >= 3);
+let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0, e3closed = 0;
+for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k], r.id)).length, m = E3_KEYS.filter(k => na(r[k])).length, z = E3_KEYS.filter(k => closed(r[k])).length; e3cells += n; e3na += m; e3closed += z; if (n > 0) e3rowsTouched++; if (n + m + z === E3_KEYS.length) e3rowsComplete++; }
 // E2: 샘플 확보(ready 이상) / 채점 완료(final)
 const st = s => e2.rows.filter(r => r.status === s).length;
 // 결함 수정(2026-10-12): 'redacted_pending_visual'(자동 가림 완료, 사람 눈 확인 대기)이 빠져 9건이 0으로 집계됐었다 → 포함
 const e2ready = e2.rows.filter(r => ['ready', 'redacted_pending_visual', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
 // 분모 정정(G21 §21 결박): '해당 없음'(제품 구조상 개인 리포트 없음, 공식 근거)만 분모에서 뺀다. 두 분모를 함께 공개하고 정정 효과를 따로 적는다.
-const e2na = e2.rows.filter(r => r.status === 'not_applicable').length, e2target = nonOwn.length - e2na;
+const e2na = e2.rows.filter(r => r.status === 'not_applicable').length;
+const e2closedRows = e2.rows.filter(r => ['no_sample', 'ineligible'].includes(r.status) && r.closure && r.closure.state === '종결' && Array.isArray(r.closure.attempts) && r.closure.attempts.length >= 3).map(r => r.id);
+const e2target = nonOwn.length - e2na - e2closedRows.length;
 const e2final = st('final') + st('judged') + st('resolved'), e2inel = st('ineligible'), e2pend = st('redacted_pending_visual'), e2red = st('redacted');
 // E1: 최신 run에서 a61 또는 a71이 있는 비자사 행
 const runs = fs.readdirSync(path.join(B, 'runs')).filter(d => /^\d{4}-\d{2}-\d{2}-r\d+$/.test(d)).sort();
@@ -42,15 +46,18 @@ const failSummary = a => { if (!a) return ''; const c = {}; for (const p of a.pr
 const e1n = asm ? asm.measured : scored.filter(v => !v.own && (v.a61 || v.a71)).length;
 // §24-c: 조립본이면 '전체(A6+A7 2xx)'와 '부분' 을 나눠 센다(TL 6118208)
 const e1full = asm ? asm.measured_full : e1n, e1partial = asm ? asm.measured_partial : [];
+// op:207 A: E1 종결 = tools/closures-e1.cjs 출력(결박 측정기 run 3회 이상 실패) — 손 집계 금지
+const e1cPath = path.join(B, 'sheets', 'e1-closures.json');
+const e1closed = fs.existsSync(e1cPath) ? J('sheets/e1-closures.json').rows.filter(r => r.closed && r.fails_n >= 3).map(r => r.row) : [];
 // 자사 행: own.json 존재 여부
 const own = fs.existsSync(path.join(B, 'table', 'own.json'));
 const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
 const out = {
   at: new Date().toISOString().slice(0, 16) + 'Z', roster_rows: rows.length, compare_rows: nonOwn.length, latest_run: latest || null,
   steps: [
-    { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length, pct: pct(e1n, nonOwn.length), note: asm ? `조립본(runs/latest) = ${asm.inputs.map(i => `${i.run}·${i.egress_country}(${i.rows}행)`).join(' + ')} · **${e1n}/${nonOwn.length}(전체 ${e1full} + 부분 ${e1partial.length}: ${e1partial.join(', ')})** · 2xx 규칙(§24-c) 적용 — 비-2xx 축은 측정 무효 · 미측정 ${nonOwn.length - e1n}행 = ${failSummary(asm)} · 옛 기준(헤더 ok면 성공) 34 → 2xx 기준 ${e1n}${asm.url_corrected_rows ? ` · 그중 ${asm.url_corrected_rows.rows.join('·')}은 명부 URL 404 → 결과 뒤 현행 주소로 교정해 다시 잼(G21 §28, TL·Peer 예)` : ''}` : (latest ? `${latest}` : '') },
-    { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length - e3na, pct: pct(e3cells, rows.length * E3_KEYS.length - e3na), note: `행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결(해당 없음 포함) ${e3rowsComplete} · 해당 없음 ${e3na}칸 제외(옛 분모 ${rows.length * E3_KEYS.length} 기준 ${pct(e3cells, rows.length * E3_KEYS.length)}%)` },
-    { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: e2target, pct: pct(e2ready, e2target), note: `측정 ${e2ready} / 대상 ${e2target}(해당 없음 ${e2na} 제외) / 명부 ${nonOwn.length} · 옛 분모 기준 ${pct(e2ready, nonOwn.length)}% → 분모 정정 효과 +${pct(e2ready, e2target) - pct(e2ready, nonOwn.length)}%p · ` + `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
+    { step: 'E1 실측(최신 run, 비자사 행)', done: e1n, total: nonOwn.length - e1closed.length, pct: pct(e1n, nonOwn.length - e1closed.length), note: (e1closed.length ? `실측 ${e1n} · 종결 ${e1closed.length}(${e1closed.join('·')}, op:207 A) / 명부 ${nonOwn.length} · ` : '') + (asm ? `조립본(runs/latest) = ${asm.inputs.map(i => `${i.run}·${i.egress_country}(${i.rows}행)`).join(' + ')} · **${e1n}/${nonOwn.length}(전체 ${e1full} + 부분 ${e1partial.length}: ${e1partial.join(', ')})** · 2xx 규칙(§24-c) 적용 — 비-2xx 축은 측정 무효 · 미측정 ${nonOwn.length - e1n}행 = ${failSummary(asm)} · 옛 기준(헤더 ok면 성공) 34 → 2xx 기준 ${e1n}${asm.url_corrected_rows ? ` · 그중 ${asm.url_corrected_rows.rows.join('·')}은 명부 URL 404 → 결과 뒤 현행 주소로 교정해 다시 잼(G21 §28, TL·Peer 예)` : ''}` : (latest ? `${latest}` : '')) },
+    { step: 'E3 공개 문서 — 핵심 7칸 채움', done: e3cells, total: rows.length * E3_KEYS.length - e3na - e3closed, pct: pct(e3cells, rows.length * E3_KEYS.length - e3na - e3closed), note: `채움 ${e3cells} · 종결 ${e3closed}(op:207 A) · `+`행 기준 착수 ${e3rowsTouched}/${rows.length}, 7칸 완결(해당 없음 포함) ${e3rowsComplete} · 해당 없음 ${e3na}칸 제외(옛 분모 ${rows.length * E3_KEYS.length} 기준 ${pct(e3cells, rows.length * E3_KEYS.length)}%)` },
+    { step: 'E2 공개 샘플 확보(적합 판정 포함)', done: e2ready, total: e2target, pct: pct(e2ready, e2target), note: `측정 ${e2ready} / 대상 ${e2target}(해당 없음 ${e2na} · 종결 ${e2closedRows.length} 제외${e2closedRows.length ? ': ' + e2closedRows.join('·') : ''}) / 명부 ${nonOwn.length} · 옛 분모 기준 ${pct(e2ready, nonOwn.length)}% → 분모 정정 효과 +${pct(e2ready, e2target) - pct(e2ready, nonOwn.length)}%p · ` + `가림 완료·눈 확인 대기 ${e2pend}, 눈 확인 끝 ${e2red}, 부적합 판정 ${e2inel}(빈 양식·미리보기 등), 미확보 ${st('no_sample')}` },
     { step: 'E2 블라인드 채점 완료', done: e2final, total: e2ready, pct: pct(e2final, e2ready), note: `judged(원본 저장·미집계) ${st('judged')}, final ${st('final')} — judge 2인 + 제3자` },
     { step: '자사 행 전사 1/1(채점 안 됨, G14 미달성)', done: own ? 1 : 0, total: 1, pct: own ? 100 : 0, note: 'TL D 도구 → 0-c → 실행 → judge → scorer 뒤' }
   ]

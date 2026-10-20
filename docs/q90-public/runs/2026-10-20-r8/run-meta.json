@@ -1,0 +1,32 @@
+{
+ "run": "r8",
+ "purpose": "종결 판정용 재시도 2회째: G11·K20(403) — 같은 측정기·같은 URL (op:q90-auto-207 6978302 A-2)",
+ "binding_ref": "op:q90-auto-207 comet 6978302",
+ "egress_country": "US",
+ "egress_note": "r6과 같은 샌드박스 계열",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh",
+ "browser_lang_flag": "en-US",
+ "rows_requested": 2,
+ "bridge_rows": [],
+ "attempts_per_row": 1,
+ "retry": "없음(결박)",
+ "started_utc": "2026-10-20T12:03:13.366Z",
+ "ended_utc": "2026-10-20T12:03:26.635Z",
+ "roster_subset_file": "roster-r8-2rows.json",
+ "roster_subset_sha256": "682c5ebf1e42cc00c2c8c59e2b5ebdc0ee81039b45a3bc9d3f7004c2a155099a",
+ "roster_subset_note": "roster-v2.json에서 G11·K20만 추림(필드 변경 없음)",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "footnotes": [
+  "G11·K20 같은 도메인 — 봇 검증 화면(Just a moment...) 403",
+  "r7 직후 같은 샌드박스·같은 출구 — r7과 독립 시도로 보기 어려움(상관됨)"
+ ],
+ "scores_viewed": 0,
+ "assembled_into_table": false,
+ "bound_commit": "426dd31f8146a9792fd0cb3945a28396ea85ab11",
+ "os_kind": "Linux (genspark sandbox)",
+ "os_timezone": "Etc/UTC",
+ "accept_language_sent": "unknown(측정 직전 헤더 확인 미실시; 도구는 --lang=en-US 플래그만 설정)"
+}
