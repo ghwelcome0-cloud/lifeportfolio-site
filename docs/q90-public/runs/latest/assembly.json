@@ -34,10 +34,19 @@
    "startedAt": "2026-10-13T00:52:57.775Z",
    "rows": 2,
    "bridge_rows": []
+  },
+  {
+   "run": "r6",
+   "dir": "2026-10-20-r6",
+   "egress_country": "US",
+   "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+   "startedAt": "2026-10-20T10:14:24.746Z",
+   "rows": 6,
+   "bridge_rows": []
   }
  ],
  "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-13T01:01:29.127Z",
+ "generatedAt": "2026-10-20T10:33:29.092Z",
  "url_corrected_rows": {
   "rows": [
    "K13",
@@ -45,11 +54,12 @@
   ],
   "note": "명부 url 교정 뒤 측정(G21 §28, 결과 뒤 교정 — 공개 수치에 밝힘)"
  },
- "measured": 32,
- "measured_full": 29,
+ "measured": 36,
+ "measured_full": 32,
  "measured_partial": [
   "G08(A6만)",
   "K01(A7만)",
+  "K08(A7만)",
   "K16(A7만)"
  ],
  "rule_2xx": "최종 응답 2xx만 성공(§24-c, TL 6106475·Peer 6106517). 비-2xx 축은 측정 무효로 비움",
@@ -328,99 +338,47 @@
   },
   {
    "row": "K01a",
-   "from": "r4·KR",
-   "ok": false,
-   "full": false,
+   "from": "r6·US",
+   "ok": true,
+   "full": true,
    "partial": null,
-   "prior_failure_note": null,
+   "prior_failure_note": "해외 접속 시 시간 초과(r4)",
    "compare_only_runs": null,
-   "failures": [
-    {
-     "run": "r3",
-     "egress": "US",
-     "status": null,
-     "error": "Navigation timeout of 45000 ms exceeded"
-    },
-    {
-     "run": "r4",
-     "egress": "KR",
-     "status": null,
-     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
-    }
-   ]
+   "failures": null
   },
   {
    "row": "K08",
-   "from": "r4·KR",
-   "ok": false,
+   "from": "r6·US",
+   "ok": true,
    "full": false,
-   "partial": null,
-   "prior_failure_note": null,
+   "partial": "A7만",
+   "prior_failure_note": "해외 접속 시 시간 초과(r4)",
    "compare_only_runs": null,
-   "failures": [
-    {
-     "run": "r3",
-     "egress": "US",
-     "status": null,
-     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
-    },
-    {
-     "run": "r4",
-     "egress": "KR",
-     "status": null,
-     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
-    }
-   ]
+   "failures": null
   },
   {
    "row": "K09",
-   "from": "r4·KR",
-   "ok": false,
-   "full": false,
+   "from": "r6·US",
+   "ok": true,
+   "full": true,
    "partial": null,
-   "prior_failure_note": null,
+   "prior_failure_note": "해외 접속 시 시간 초과(r4)",
    "compare_only_runs": null,
-   "failures": [
-    {
-     "run": "r3",
-     "egress": "US",
-     "status": null,
-     "error": "Navigation timeout of 45000 ms exceeded"
-    },
-    {
-     "run": "r4",
-     "egress": "KR",
-     "status": null,
-     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
-    }
-   ]
+   "failures": null
   },
   {
    "row": "K10",
-   "from": "r4·KR",
-   "ok": false,
-   "full": false,
+   "from": "r6·US",
+   "ok": true,
+   "full": true,
    "partial": null,
-   "prior_failure_note": null,
+   "prior_failure_note": "해외 접속 시 시간 초과(r4)",
    "compare_only_runs": null,
-   "failures": [
-    {
-     "run": "r3",
-     "egress": "US",
-     "status": null,
-     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
-    },
-    {
-     "run": "r4",
-     "egress": "KR",
-     "status": null,
-     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
-    }
-   ]
+   "failures": null
   },
   {
    "row": "K11",
-   "from": "r4·KR",
+   "from": "r6·US",
    "ok": false,
    "full": false,
    "partial": null,
@@ -436,6 +394,12 @@
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+    },
+    {
+     "run": "r6",
+     "egress": "US",
      "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
@@ -443,7 +407,7 @@
   },
   {
    "row": "K12",
-   "from": "r4·KR",
+   "from": "r6·US",
    "ok": false,
    "full": false,
    "partial": null,
@@ -459,6 +423,12 @@
     {
      "run": "r4",
      "egress": "KR",
+     "status": null,
+     "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+    },
+    {
+     "run": "r6",
+     "egress": "US",
      "status": null,
      "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
     }
@@ -553,5 +523,6 @@
     }
    ]
   }
- ]
+ ],
+ "r6_footnote": "r6(US, 2026-10-20) 고용24 6행: 동일 URL 6행, 결과 상관됨(TL 6320929) · 행별 성공/실패는 측정 시점 차이이며 서비스 간 차이를 뜻하지 않음(Method 6969820) · 2분 간격 성공/실패 혼재(TL 6969403) · r4 KR과 출구 다름 · TL 사전 curl 3회 = 측정 전 접근성 확인, 결과값 미사용 · run-meta 4칸 측정 뒤 기입(beab90f, accept_language_sent=unknown) · 수령 검사 FAIL 상태에서 조립 미리보기 1회(비공개·되돌림) 뒤 PASS 후 재조립 · K11·K12 = r3·r4·r6 모두 미측정"
 }

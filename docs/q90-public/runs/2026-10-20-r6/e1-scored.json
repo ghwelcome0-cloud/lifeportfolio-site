@@ -1,0 +1,230 @@
+[
+ {
+  "row": "K01a",
+  "name": "고용24 직업선호도검사 L형",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T10:15:52.809Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.1111111111111111,
+   "level": 1,
+   "ge16": 1,
+   "blocks": 9,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.5641025641025641,
+   "level": 3,
+   "ok44": 22,
+   "ok24": 39,
+   "total": 39,
+   "ratio24": 1
+  },
+  "a6partial": {
+   "points": 5.7,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": true,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K08",
+  "name": "고용24 성인용 직업적성검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T10:17:45.006Z",
+  "a6err": "Navigation timeout of 45000 ms exceeded",
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": true,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K09",
+  "name": "고용24 직업가치관검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T10:19:11.848Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.1111111111111111,
+   "level": 1,
+   "ge16": 1,
+   "blocks": 9,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.5641025641025641,
+   "level": 3,
+   "ok44": 22,
+   "ok24": 39,
+   "total": 39,
+   "ratio24": 1
+  },
+  "a6partial": {
+   "points": 5.7,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": true,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K10",
+  "name": "고용24 구직준비도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T10:20:35.893Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.1111111111111111,
+   "level": 1,
+   "ge16": 1,
+   "blocks": 9,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.5641025641025641,
+   "level": 3,
+   "ok44": 22,
+   "ok24": 39,
+   "total": 39,
+   "ratio24": 1
+  },
+  "a6partial": {
+   "points": 5.7,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": true,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "하"
+ },
+ {
+  "row": "K11",
+  "name": "고용24 창업적성검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T10:22:35.151Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K12",
+  "name": "고용24 대학생 진로준비도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T10:24:07.311Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ }
+]
