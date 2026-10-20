@@ -66,8 +66,19 @@ const out = {
 const W = [25, 25, 15, 25, 10];
 out.overall_pct = Math.round(out.steps.reduce((a, s, i) => a + s.pct * W[i], 0) / W.reduce((a, b) => a + b, 0));
 out.overall_weights = W;
+// Method 6978346 · Peer 6978351(차단급, §21 ab24af6과 충돌): 종결을 분모에서 빼는 위 숫자는 **작업 완료율**(더 할 일이 없는 정도)일 뿐이다.
+// 비교표의 정보량은 **측정 커버리지** = 종결을 분모에 남긴 값(§21 그대로). 공개 대표 숫자는 커버리지, 완료율은 병기.
+const cov = [
+  { step: 'E1 커버리지', done: e1n, total: nonOwn.length },
+  { step: 'E3 커버리지', done: e3cells, total: rows.length * E3_KEYS.length - e3na },
+  { step: 'E2 확보 커버리지', done: e2ready, total: nonOwn.length - e2na },
+  { step: 'E2 채점', done: e2final, total: e2ready },
+  { step: '자사', done: own ? 1 : 0, total: 1 }
+].map(c => ({ ...c, pct: pct(c.done, c.total) }));
+out.coverage = { steps: cov, overall_pct: Math.round(cov.reduce((a, c, i) => a + c.pct * W[i], 0) / W.reduce((a, b) => a + b, 0)), note: '종결은 분모에 남김(§21). E1 종결 ' + e1closed.length + ' · E3 종결 ' + e3closed + ' · E2 종결 ' + e2closedRows.length };
+out.completion_pct = out.overall_pct;
 if (process.argv.includes('--md')) {
-  console.log(`**전체 진행률 ${out.overall_pct}%** (가중: E1 25 · E3 25 · E2확보 15 · E2채점 25 · 자사 10)\n`);
+  console.log(`**측정 커버리지 ${out.coverage.overall_pct}%**(공개 대표 숫자, 종결은 분모에 남김 §21) · **작업 완료율 ${out.overall_pct}%**(종결=처리 끝, op:207) (가중: E1 25 · E3 25 · E2확보 15 · E2채점 25 · 자사 10)\n`);
   console.log(`| 단계 | 완료/전체 | % | 비고 |\n|---|---|---|---|`);
   for (const s of out.steps) console.log(`| ${s.step} | ${s.done}/${s.total} | ${s.pct}% | ${s.note} |`);
   console.log(`\n(${out.at} · 명부 ${out.roster_rows}행 · 최신 run ${out.latest_run})`);
