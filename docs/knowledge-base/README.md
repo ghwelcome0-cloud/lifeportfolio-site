@@ -16,9 +16,10 @@
 | KB-04 | [genteam-agent-ops-playbook.md](genteam-agent-ops-playbook.md) | GenTeam에서 에이전트 팀을 **운영**하는 법(CLI 패턴·결박 ref·Genny로 에이전트 생성·1회용 스크립트 규칙) | 매일 사용 |
 | KB-05 | [deploy-governance-playbook.md](deploy-governance-playbook.md) | GitHub Environments로 운영 배포를 **멈추지 않으면서 통제**하는 법(Required reviewers + 위임 승인기 + ALLOW 기록) | 가동 중 |
 | KB-06 | [defect-ledger.md](defect-ledger.md) | 결함을 **뿌리별로** 세고 재발을 줄이는 장부(R1~R5) + 예방 점검 | 14건 분류 |
+| KB-07 | [q90-scorer-chain-playbook.md](q90-scorer-chain-playbook.md) | Q90 자사 측정을 **사전 결박 계약 + 고정 scorer**로 돌리고, 막히면 막힌 그대로 공개하는 법(1·2회차 실전, 3회차 체크리스트) | 2회 실행(둘 다 절차 차단) |
 
 ## 이 베이스가 다루지 않는 것(정직하게)
-- Q90 본류(자사 제품 2회차 측정)는 아직 TL D 도구 대기 → 플레이북 없음. 끝나면 KB-07로 추가.
+- Q90 본류는 KB-07(2026-10-20 추가).
 - **Q90 1회차·2회차 판정 기록은 여기 없음** — G14·G16·G17 원본만 정본. KB-01의 블라인드 채점 절차는 **E2(경쟁 샘플)용**이고, Q90 judge 절차는 별도 계약(G16)을 따른다. 둘을 섞지 말 것(Peer 6082200).
 - 여기 적힌 "확인된 것"은 **이 팀의 환경(GenTeam·이 저장소)에서** 확인된 것. 다른 환경에서는 ②의 열린 질문부터 다시 확인할 것.
 
