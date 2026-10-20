@@ -6594,6 +6594,418 @@
     "closed_at": "2026-10-20T12:35Z",
     "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
    }
+  },
+  {
+   "id": "OWN-R",
+   "name": "인생포트폴리오 리포트(최신판, 자산화 유형·XI 자산화 길 찾기)",
+   "kind": "own",
+   "blind_id": "S-45132d",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [
+     {
+      "term": "인생포트폴리오",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
+    "leak_check": {
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 135,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T14:35:47Z"
+    },
+    "redacted_sha256": "f33cd19a88a736f7e97d83b6c1fdb6a1c3a26f6e7892c1d5b2020d9ce691cd90",
+    "final_file": "S-45132d.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "326847b0773f010d70eaf7e3b710a6ecd8a541c6831ed3766060de24719d10a1",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-45132d.img.contact.png",
+     "passed": false,
+     "by": "총괄",
+     "at": "2026-10-20T14:50Z",
+     "finding": "마지막 쪽 고유 코드 \"LP-…\"(브랜드 약자 단서) 남음 → --boxes 추가 후 재가림 필요. 이름(민서) 2글자는 도구가 3글자 미만을 건너뛰어 1차에서 누락 → 좌표 상자로 보완(0건 확인)."
+    }
+   },
+   "status": "redacted_pending_visual",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)"
+  },
+  {
+   "id": "OWN-P",
+   "name": "자산화 맞춤 실행 프로그램 리포트(최신판)",
+   "kind": "own",
+   "blind_id": "S-16bb7c",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_sha256": null,
+   "redaction": {
+    "items_found": [
+     {
+      "term": "인생포트폴리오",
+      "n": 1
+     }
+    ],
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
+    "leak_check": {
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 135,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-20T14:36:43Z"
+    },
+    "redacted_sha256": "e07cd8d7556e4b758fd57ce2f2215dd299b7d0055acb9c0a28ab975b42f60397",
+    "final_file": "S-16bb7c.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "5beb62ab385c1bc22b69e3e9c6a1c897d3a31ee78cbcd6ad9f8cae1424e068ff",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-16bb7c.img.contact.png",
+     "passed": false,
+     "by": "총괄",
+     "at": "2026-10-20T14:50Z",
+     "finding": "마지막 쪽 고유 코드 \"LP-…\"(브랜드 약자 단서) 남음 → --boxes 추가 후 재가림 필요. 이름(민서) 2글자는 도구가 3글자 미만을 건너뛰어 1차에서 누락 → 좌표 상자로 보완(0건 확인)."
+    }
+   },
+   "status": "redacted_pending_visual",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)"
+  },
+  {
+   "id": "ANC-H",
+   "name": "앵커(가상 자기경영진단 · 상)",
+   "kind": "anchor",
+   "blind_id": "S-728007",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_sha256": "dd8affbae100ece5e400c83542e9dc4de22849456ef9a22cb876605e64ae83dc",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "acquired",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "denominator_class": "anchor(op:210 B — 검증용, 표·분모 밖)",
+   "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)"
+  },
+  {
+   "id": "ANC-L",
+   "name": "앵커(가상 자기경영진단 · 하)",
+   "kind": "anchor",
+   "blind_id": "S-5ad6c9",
+   "blind_salt": "r8",
+   "sample_url": null,
+   "sample_sha256": "f62c0e017e556f7d7b03fde57cda7e6cbe00244ba3be2afa0efd094f088f2f33",
+   "redaction": {
+    "items_found": [],
+    "tool_sha256": null,
+    "leak_check": {
+     "roster_strings_found": null,
+     "checked_at": null
+    },
+    "redacted_sha256": null
+   },
+   "status": "acquired",
+   "judge1": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge2": {
+    "A1": {
+     "level": null,
+     "reason": ""
+    },
+    "A2": {
+     "level": null,
+     "reason": ""
+    },
+    "A3": {
+     "level": null,
+     "reason": ""
+    },
+    "A4": {
+     "level": null,
+     "reason": ""
+    },
+    "A5": {
+     "level": null,
+     "reason": ""
+    },
+    "guess": {
+     "thinks_knows": null,
+     "note": ""
+    }
+   },
+   "judge3": null,
+   "final": {
+    "A1": null,
+    "A2": null,
+    "A3": null,
+    "A4": null,
+    "A5": null
+   },
+   "A1": null,
+   "A2": null,
+   "A3": null,
+   "A4": null,
+   "A5": null,
+   "denominator_class": "anchor(op:210 B — 검증용, 표·분모 밖)",
+   "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)"
   }
  ],
  "packet_order": [
@@ -8170,5 +8582,34 @@
   "built_at": "2026-10-20T13:33Z",
   "rule": "op:205·206·207 C (48시간·교체 1회·1명 응답 봉인·제3자 48시간)",
   "note": "G01·G12 종결 재탐색에서 공식 샘플 확보(op:207 A-4 되돌림). build-packet packet_order 덮어쓰기는 KB-02 절차대로 이전 14건 복구 후 추가."
+ },
+ "salt_r8": {
+  "sha256": "736460097df40f6f936298f87a9a274ba72ecc2bef7d709cb2fcc2262492aa7c",
+  "bytes": 48,
+  "rule": "op:210 — 8회차 신규 행 전용 salt(기존 salt는 공개됨). blind_id = \"S-\" + sha256(salt_r8 + \"|\" + id + \"|\" + roster.version)[0:6]. salt는 저장소 밖 보관, 채점 뒤 공개.",
+  "created_at": "2026-10-20T14:23Z"
+ },
+ "own_e2_track": {
+  "op": "op:q90-auto-210 (comet 6994014)",
+  "respondent": {
+   "agent": "agent_eq9y43t4masm",
+   "task_msg": 6994035,
+   "answer_msg": 6994144,
+   "memory_check": "Q1·Q2·Q3 아니오",
+   "answers_sha256": "baa0a72f0fcf7c52bb579075b739f0519342195e7769653950ec31d8b7cc6000",
+   "persona_sha256": "3b5600da154a92954518f826467864f6aa8d1f393c0b7ee3ebe5254f6207c7d7",
+   "questions_sha256": "55645aa528c7d3ee5445015df154aded731cd5a16fb028a9a602dc4573f5cbdb"
+  },
+  "generate": {
+   "git_head": "196a6664ba32a848f06fb55ecac36b0105df9841",
+   "engineVersion": "v4.1",
+   "asset_type": "세움",
+   "report_sha256": "7ea3039c150a2a7a0ed84f0f2c4d1f9fd142235c580bbcf789b21f1005e4604f",
+   "program_sha256": "fcf0727f9fe9639ffaeb5453cc5f22a56ea0b4179bbf8f92382ab3cddd052c08",
+   "writes": 0,
+   "network": 0
+  },
+  "expected_anchor_sha256": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
+  "status": "가림 2차 필요(LP- 코드) → 눈 확인 → 8회차 패킷 4건 발송 전"
  }
 }
