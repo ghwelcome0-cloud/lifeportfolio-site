@@ -1,0 +1,23 @@
+{
+ "source": {
+  "file": "scorer-output-r2.json",
+  "sha256": "3a37f94406ddc40748004dd9a4c716417a2e5984c079a18500f856d3f882edd7",
+  "ref": "TL 6196380/6196389 · op:q90-auto-192 · freeze edce3bcd · prereg a8b7b7dd · pkg 7b73d4cb · G14=미달성(사유: R19_execution_scope_required)",
+  "transcribed_at": "2026-10-13T11:52:23.303Z"
+ },
+ "rule": "Q90 2회차 scorer 출력 전사(계산·해석 없음). 2회차 미달이면 미달 점수 그대로. A8은 E3 규칙(sheets/e3-docs.json OWN).",
+ "A1": null,
+ "A2": null,
+ "A3": null,
+ "A4": null,
+ "A5": null,
+ "A6": null,
+ "A7grade": null,
+ "status": "blocked",
+ "reasons": [
+  "R19_execution_scope_required"
+ ],
+ "public_release": false,
+ "g14": "미달성(사유: R19_execution_scope_required)",
+ "note": "scorer r18 1회 실행(2026-10-13T11:47:56.896Z), 37행 차단 → 점수 필드 null. 결박: op:q90-auto-190/191/192(차단 결과 명칭 = 미달성(사유: 코드), 2회차 유효 결과, §7.3 미발동). 공식 점수 열람 0회."
+}

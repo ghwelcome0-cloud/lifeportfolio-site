@@ -1,0 +1,1430 @@
+[
+ {
+  "row": "M01",
+  "name": "CliftonStrengths 34 (Gallup)",
+  "group": "진단",
+  "url": "https://www.gallup.com/cliftonstrengths/en/403127/cliftonstrengths-34-report.aspx",
+  "at": "2026-10-09T06:42:50.268Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.6323529411764706,
+   "level": 3,
+   "ge16": 43,
+   "blocks": 68,
+   "lt12": 9
+  },
+  "a64": {
+   "ratio": 0.10526315789473684,
+   "level": 1,
+   "ok44": 2,
+   "ok24": 17,
+   "total": 19,
+   "ratio24": 0.8947368421052632
+  },
+  "a6partial": {
+   "points": 6,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 2,
+   "hsts": false,
+   "xcto": false,
+   "frame": true,
+   "referrer": false,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "M02",
+  "name": "Everything DiSC Workplace (Wiley)",
+  "group": "진단",
+  "url": "https://www.everythingdisc.com/",
+  "at": "2026-10-09T06:42:57.435Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.768595041322314,
+   "level": 4,
+   "ge16": 93,
+   "blocks": 121,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.35714285714285715,
+   "level": 2,
+   "ok44": 5,
+   "ok24": 7,
+   "total": 14,
+   "ratio24": 0.5
+  },
+  "a6partial": {
+   "points": 7.05,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 2,
+   "hsts": true,
+   "xcto": false,
+   "frame": true,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "M03",
+  "name": "MBTI Complete (Myers-Briggs Co.)",
+  "group": "진단",
+  "url": "https://www.themyersbriggs.com/en-us/explore-solutions/mbti",
+  "at": "2026-10-09T06:43:05.390Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.71875,
+   "level": 3,
+   "ge16": 46,
+   "blocks": 64,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.36363636363636365,
+   "level": 2,
+   "ok44": 4,
+   "ok24": 9,
+   "total": 11,
+   "ratio24": 0.8181818181818182
+  },
+  "a6partial": {
+   "points": 6.45,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 2,
+   "hsts": true,
+   "xcto": false,
+   "frame": false,
+   "referrer": true,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "G01",
+  "name": "VIA Survey (VIA Institute)",
+  "group": "진단",
+  "url": "https://www.viacharacter.org/",
+  "at": "2026-10-09T06:43:10.926Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.5522388059701493,
+   "level": 3,
+   "ge16": 37,
+   "blocks": 67,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.24324324324324326,
+   "level": 1,
+   "ok44": 9,
+   "ok24": 25,
+   "total": 37,
+   "ratio24": 0.6756756756756757
+  },
+  "a6partial": {
+   "points": 6,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": true,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G02a",
+  "name": "IPIP Big-Five 50 (ORI)",
+  "group": "진단",
+  "url": "https://ipip.ori.org/new_ipip-50-item-scale.htm",
+  "at": "2026-10-09T06:43:16.486Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": false,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 980,
+   "innerW": 980
+  },
+  "a63": {
+   "ratio": 1,
+   "level": 5,
+   "ge16": 59,
+   "blocks": 59,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0,
+   "level": 1,
+   "ok44": 0,
+   "ok24": 1,
+   "total": 7,
+   "ratio24": 0.14285714285714285
+  },
+  "a6partial": {
+   "points": 4.2,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "G03",
+  "name": "HEXACO-PI-R 60",
+  "group": "진단",
+  "url": "https://hexaco.org/hexaco-inventory",
+  "at": "2026-10-09T06:43:21.137Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.07407407407407407,
+   "level": 1,
+   "ge16": 2,
+   "blocks": 27,
+   "lt12": 8
+  },
+  "a64": {
+   "ratio": 0,
+   "level": 1,
+   "ok44": 0,
+   "ok24": 98,
+   "total": 119,
+   "ratio24": 0.8235294117647058
+  },
+  "a6partial": {
+   "points": 4.8,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": false,
+   "frame": true,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [
+    "/.DS_Store"
+   ],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "G04",
+  "name": "Hogan Insight",
+  "group": "진단",
+  "url": "https://www.hoganassessments.com/",
+  "at": "2026-10-09T06:43:28.929Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.9464285714285714,
+   "level": 4,
+   "ge16": 53,
+   "blocks": 56,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.42105263157894735,
+   "level": 2,
+   "ok44": 8,
+   "ok24": 16,
+   "total": 19,
+   "ratio24": 0.8421052631578947
+  },
+  "a6partial": {
+   "points": 4.05,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G06",
+  "name": "Birkman Signature",
+  "group": "진단",
+  "url": "https://birkman.com/",
+  "at": "2026-10-09T06:43:41.032Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.4146341463414634,
+   "level": 2,
+   "ge16": 34,
+   "blocks": 82,
+   "lt12": 1
+  },
+  "a64": {
+   "ratio": 0.3157894736842105,
+   "level": 2,
+   "ok44": 30,
+   "ok24": 52,
+   "total": 95,
+   "ratio24": 0.5473684210526316
+  },
+  "a6partial": {
+   "points": 2.85,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 3,
+   "hsts": false,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G07",
+  "name": "PI Behavioral Assessment",
+  "group": "진단",
+  "url": "https://www.predictiveindex.com/learn/support/our-assessments/",
+  "at": "2026-10-09T06:43:50.240Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 421,
+   "innerW": 421
+  },
+  "a63": {
+   "ratio": 0.7169811320754716,
+   "level": 3,
+   "ge16": 38,
+   "blocks": 53,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.4444444444444444,
+   "level": 2,
+   "ok44": 4,
+   "ok24": 7,
+   "total": 9,
+   "ratio24": 0.7777777777777778
+  },
+  "a6partial": {
+   "points": 3.45,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": false,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G08",
+  "name": "Insights Discovery",
+  "group": "진단",
+  "url": "https://www.insights.com/",
+  "at": "2026-10-09T06:44:02.259Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.7837837837837838,
+   "level": 4,
+   "ge16": 29,
+   "blocks": 37,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.8571428571428571,
+   "level": 4,
+   "ok44": 12,
+   "ok24": 14,
+   "total": 14,
+   "ratio24": 1
+  },
+  "a6partial": {
+   "points": 7.95,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G11",
+  "name": "16Personalities Premium Career Suite",
+  "group": "진단",
+  "url": "https://www.16personalities.com/premium/career-suite",
+  "at": "2026-10-09T06:44:07.722Z",
+  "a6err": "status 403 / blocks 4",
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": false,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G12",
+  "name": "Strengths Profile (Cappfinity)",
+  "group": "진단",
+  "url": "https://www.strengthsprofile.com/",
+  "at": "2026-10-09T06:44:14.661Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.9166666666666666,
+   "level": 4,
+   "ge16": 33,
+   "blocks": 36,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.2,
+   "level": 1,
+   "ok44": 4,
+   "ok24": 13,
+   "total": 20,
+   "ratio24": 0.65
+  },
+  "a6partial": {
+   "points": 6.6,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 5,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 3
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G13",
+  "name": "Working Genius",
+  "group": "진단",
+  "url": "https://www.workinggenius.com/",
+  "at": "2026-10-09T06:44:21.909Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.5652173913043478,
+   "level": 3,
+   "ge16": 26,
+   "blocks": 46,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.2857142857142857,
+   "level": 2,
+   "ok44": 4,
+   "ok24": 13,
+   "total": 14,
+   "ratio24": 0.9285714285714286
+  },
+  "a6partial": {
+   "points": 3.45,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "G14",
+  "name": "Strong Interest Inventory",
+  "group": "진단",
+  "url": "https://www.themyersbriggs.com/en-us/explore-solutions/strong",
+  "at": "2026-10-09T06:44:29.762Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.6285714285714286,
+   "level": 3,
+   "ge16": 22,
+   "blocks": 35,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.35714285714285715,
+   "level": 2,
+   "ok44": 5,
+   "ok24": 12,
+   "total": 14,
+   "ratio24": 0.8571428571428571
+  },
+  "a6partial": {
+   "points": 6.45,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 2,
+   "hsts": true,
+   "xcto": false,
+   "frame": false,
+   "referrer": true,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": 2,
+  "a59": null
+ },
+ {
+  "row": "G15a",
+  "name": "O*NET Interest Profiler",
+  "group": "진단",
+  "url": "https://www.onetcenter.org/IP.html",
+  "at": "2026-10-09T06:44:34.961Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.06666666666666667,
+   "level": 1,
+   "ge16": 2,
+   "blocks": 30,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0,
+   "level": 1,
+   "ok44": 0,
+   "ok24": 24,
+   "total": 38,
+   "ratio24": 0.631578947368421
+  },
+  "a6partial": {
+   "points": 4.8,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": true,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "G15b",
+  "name": "Self-Directed Search (PAR)",
+  "group": "진단",
+  "url": "https://self-directed-search.com/what-is-it/",
+  "at": "2026-10-09T06:44:41.788Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.9,
+   "level": 4,
+   "ge16": 18,
+   "blocks": 20,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.21739130434782608,
+   "level": 1,
+   "ok44": 5,
+   "ok24": 16,
+   "total": 23,
+   "ratio24": 0.6956521739130435
+  },
+  "a6partial": {
+   "points": 3.6,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "E01",
+  "name": "BetterUp",
+  "group": "실행축적",
+  "url": "https://www.betterup.com/",
+  "at": "2026-10-09T06:44:47.927Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.7954545454545454,
+   "level": 4,
+   "ge16": 35,
+   "blocks": 44,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.5,
+   "level": 3,
+   "ok44": 6,
+   "ok24": 10,
+   "total": 12,
+   "ratio24": 0.8333333333333334
+  },
+  "a6partial": {
+   "points": 7.5,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "E02",
+  "name": "CoachHub",
+  "group": "실행축적",
+  "url": "https://www.coachhub.com/",
+  "at": "2026-10-09T06:44:54.286Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.6352941176470588,
+   "level": 3,
+   "ge16": 54,
+   "blocks": 85,
+   "lt12": 4
+  },
+  "a64": {
+   "ratio": 0.8125,
+   "level": 4,
+   "ok44": 13,
+   "ok24": 13,
+   "total": 16,
+   "ratio24": 0.8125
+  },
+  "a6partial": {
+   "points": 7.35,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 2,
+   "hsts": true,
+   "xcto": false,
+   "frame": true,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "E06",
+  "name": "Full Focus Planner",
+  "group": "실행축적",
+  "url": "https://fullfocusstore.com/products/full-focus-planner-linen",
+  "at": "2026-10-09T06:45:01.295Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.2,
+   "level": 1,
+   "ge16": 1,
+   "blocks": 5,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.25,
+   "level": 2,
+   "ok44": 1,
+   "ok24": 3,
+   "total": 4,
+   "ratio24": 0.75
+  },
+  "a6partial": {
+   "points": 5.25,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 3,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": "비적용"
+ },
+ {
+  "row": "E07",
+  "name": "BestSelf Self Journal",
+  "group": "실행축적",
+  "url": "https://bestself.co/products/self-journal",
+  "at": "2026-10-09T06:45:18.645Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 427,
+   "innerW": 427
+  },
+  "a63": {
+   "ratio": 0.3835616438356164,
+   "level": 2,
+   "ge16": 28,
+   "blocks": 73,
+   "lt12": 1
+  },
+  "a64": {
+   "ratio": 0.3763440860215054,
+   "level": 2,
+   "ok44": 35,
+   "ok24": 65,
+   "total": 93,
+   "ratio24": 0.6989247311827957
+  },
+  "a6partial": {
+   "points": 2.85,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 3,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": "비적용"
+ },
+ {
+  "row": "E11",
+  "name": "15Five Perform",
+  "group": "실행축적",
+  "url": "https://www.15five.com/pricing",
+  "at": "2026-10-09T06:45:24.795Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 396,
+   "innerW": 396
+  },
+  "a63": {
+   "ratio": 0.9380530973451328,
+   "level": 4,
+   "ge16": 106,
+   "blocks": 113,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.7368421052631579,
+   "level": 3,
+   "ok44": 14,
+   "ok24": 19,
+   "total": 19,
+   "ratio24": 1
+  },
+  "a6partial": {
+   "points": 4.5,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 5,
+   "hsts": true,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 3
+  },
+  "a76": {
+   "csp": true,
+   "reporting": true,
+   "level": 2
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": "비적용"
+ },
+ {
+  "row": "E12",
+  "name": "Lattice Performance",
+  "group": "실행축적",
+  "url": "https://lattice.com/pricing",
+  "at": "2026-10-09T06:45:33.795Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.0898876404494382,
+   "level": 1,
+   "ge16": 8,
+   "blocks": 89,
+   "lt12": 40
+  },
+  "a64": {
+   "ratio": 0.05263157894736842,
+   "level": 1,
+   "ok44": 2,
+   "ok24": 20,
+   "total": 38,
+   "ratio24": 0.5263157894736842
+  },
+  "a6partial": {
+   "points": 4.8,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 2,
+   "hsts": true,
+   "xcto": false,
+   "frame": true,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": "비적용"
+ },
+ {
+  "row": "K01",
+  "name": "고용24 직업선호도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/",
+  "at": "2026-10-09T06:47:36.774Z",
+  "a6err": "Navigation timeout of 45000 ms exceeded",
+  "a71": {
+   "https": true,
+   "controls": 1,
+   "hsts": false,
+   "xcto": true,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 2
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "K02",
+  "name": "커리어넷 직업흥미검사 H형",
+  "group": "국내",
+  "url": "https://www.career.go.kr/cloud/w/guide/counsel",
+  "at": "2026-10-09T06:47:48.779Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": true,
+   "docW": 1380,
+   "innerW": 1380
+  },
+  "a63": {
+   "ratio": 0.8888888888888888,
+   "level": 4,
+   "ge16": 8,
+   "blocks": 9,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.425,
+   "level": 2,
+   "ok44": 17,
+   "ok24": 32,
+   "total": 40,
+   "ratio24": 0.8
+  },
+  "a6partial": {
+   "points": 4.05,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": 2
+ },
+ {
+  "row": "K03",
+  "name": "어세스타 STRONG II",
+  "group": "국내",
+  "url": "https://www.assesta.com/",
+  "at": "2026-10-09T06:47:59.603Z",
+  "a61": {
+   "pass": false,
+   "level": 1,
+   "vp": true,
+   "zoomBlocked": true,
+   "overflow": true,
+   "docW": 400,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 0.16666666666666666,
+   "level": 1,
+   "ge16": 1,
+   "blocks": 6,
+   "lt12": 3
+  },
+  "a64": {
+   "ratio": 0.391304347826087,
+   "level": 2,
+   "ok44": 9,
+   "ok24": 13,
+   "total": 23,
+   "ratio24": 0.5652173913043478
+  },
+  "a6partial": {
+   "points": 2.25,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ },
+ {
+  "row": "K05",
+  "name": "태니지먼트 강점 리포트",
+  "group": "국내",
+  "url": "https://www.tanagement.co.kr/",
+  "at": "2026-10-09T06:48:13.822Z",
+  "a61": {
+   "pass": true,
+   "level": 5,
+   "vp": true,
+   "zoomBlocked": false,
+   "overflow": false,
+   "docW": 390,
+   "innerW": 390
+  },
+  "a63": {
+   "ratio": 1,
+   "level": 5,
+   "ge16": 1,
+   "blocks": 1,
+   "lt12": 0
+  },
+  "a64": {
+   "ratio": 0.8181818181818182,
+   "level": 4,
+   "ok44": 9,
+   "ok24": 10,
+   "total": 11,
+   "ratio24": 0.9090909090909091
+  },
+  "a6partial": {
+   "points": 8.55,
+   "max": 9,
+   "W": 60
+  },
+  "a71": {
+   "https": true,
+   "controls": 0,
+   "hsts": false,
+   "xcto": false,
+   "frame": false,
+   "referrer": false,
+   "permissions": false,
+   "level": 1
+  },
+  "a76": {
+   "csp": false,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null
+ }
+]

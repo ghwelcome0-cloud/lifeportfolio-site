@@ -1,0 +1,823 @@
+{
+ "protocol": "Q90-ALT-v1",
+ "round": 2,
+ "bundle": "B4",
+ "role": "adjudicator",
+ "actor_id": "agent_9akn3657bq2s",
+ "started_at": "2026-10-13T10:45:27Z",
+ "ended_at": "2026-10-13T10:50:57Z",
+ "input_diff_sha256": "294317c39b5eeaf266e37ed5ae1271ab99a2d5a2c262b15e48969199757f760e",
+ "input_tgz_sha256": "fb7542cf0316d21395bf82c3c08d41d11023731d54d3387a093a6750ab151cd0",
+ "judge_inputs_sha256": {
+  "jB1r1": "99e3fe391b0e90d90b6e3a2d4c2e41cb48681012b3f4f5a30613c0d3d465f27e",
+  "jB1r2": "573cc44f70343a36054a8cf5ccae3e82387b82eaca20a524ca5bc909cecd3ae9",
+  "jB2r1": "33cf2af2c8e5b748aa27fdb14a4039b2c2bebf59a7fe6ad46d08873fcde36dee",
+  "jB2r2": "13603a93cb2695d18aba1c83a896d6ac92610856711f1aa1cf00209b53745005"
+ },
+ "disagree_in_diff": 100,
+ "processed": 100,
+ "unresolved": 0,
+ "isolation": "1회차 산출물·판정·점수 미열람, 메시지 검색 미사용, 이 방 밖 참조 0. 세션 시작 시 MEMORY.md 앞부분(Q90 1회차 내용 없음) 열람, notes/channels.md에 방 규칙 1줄 추가(기존 내용 미열람).",
+ "items": [
+  {
+   "label": "0JWXP8",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "0JWXP8",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "0JWXP8",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "0JWXP8",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "0JWXP8",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "BGNKOC",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "BGNKOC",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "BGNKOC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "BGNKOC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "BGNKOC",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "DCS50U",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "DCS50U",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "DCS50U",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "DCS50U",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "DCS50U",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "FKZ2M4",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "FKZ2M4",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "FKZ2M4",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "FKZ2M4",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "FKZ2M4",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "FO1GJX",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "FO1GJX",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "FO1GJX",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "FO1GJX",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "FO1GJX",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "FQWMF9",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "FQWMF9",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "FQWMF9",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "FQWMF9",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "FQWMF9",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "IEVWVQ",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "IEVWVQ",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "IEVWVQ",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "IEVWVQ",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "IEVWVQ",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "IH48YU",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "IH48YU",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "IH48YU",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "IH48YU",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "IH48YU",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "KDPZRC",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "KDPZRC",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "KDPZRC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "KDPZRC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "KDPZRC",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "LCBD7E",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "LCBD7E",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "LCBD7E",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "LCBD7E",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "LCBD7E",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "M5ZDRD",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "M5ZDRD",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "M5ZDRD",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "M5ZDRD",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "M5ZDRD",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "MRS03D",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "MRS03D",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "MRS03D",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "MRS03D",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "MRS03D",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "NKRNEE",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "NKRNEE",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "NKRNEE",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "NKRNEE",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "NKRNEE",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "PRGBEJ",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "PRGBEJ",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "PRGBEJ",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "PRGBEJ",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "PRGBEJ",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "Q24JQX",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "Q24JQX",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "Q24JQX",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "Q24JQX",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "Q24JQX",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "VACKWK",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "VACKWK",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "VACKWK",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "VACKWK",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "VACKWK",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "XDPB9D",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "XDPB9D",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "XDPB9D",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "XDPB9D",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "XDPB9D",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "XXDITC",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "XXDITC",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "XXDITC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "XXDITC",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "XXDITC",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "Z3R2CR",
+   "lang": "ko",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "Z3R2CR",
+   "lang": "ko",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "Z3R2CR",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "Z3R2CR",
+   "lang": "ko",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "Z3R2CR",
+   "lang": "ko",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  },
+  {
+   "label": "Z55DMO",
+   "lang": "en",
+   "indicator": "A5.2",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence['evidence_pack.A5.7.banned_term_check'].runs[4] 원응답 반영 반응 시험 기록 존재; jB2의 SURFACE_MISSING은 jB2 자신이 같은 banned_term_check.runs를 A5.7에서 인용하므로 결측 아님"
+  },
+  {
+   "label": "Z55DMO",
+   "lang": "en",
+   "indicator": "A5.5",
+   "check": 2,
+   "chosen": "true",
+   "reason": "jB2r2 evidence: evidence_pack.A5.5.doc_vs_artifact_audit.rows(분리 전수 실물 대조) — jB2r2 머리말 'A5.5.checks[2] 풀이를 1회 제출 뒤 받음'에 따른 기준; jB1 summary의 불일치4·확인불가33은 대조 수행 사실을 부정하지 않음"
+  },
+  {
+   "label": "Z55DMO",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 0,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: shared_evidence.scoring.report_rules.qualityChecklist + qualityChecklistMeta 표면 존재; jB2의 SURFACE_MISSING은 해당 경로를 확인하지 않은 판정"
+  },
+  {
+   "label": "Z55DMO",
+   "lang": "en",
+   "indicator": "A5.6",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: banned_term_check.runs[0](정상 회귀)·runs[1](결함 주입 검출) 실제 회귀 로그·실패 대조 기록 존재"
+  },
+  {
+   "label": "Z55DMO",
+   "lang": "en",
+   "indicator": "A5.8",
+   "check": 1,
+   "chosen": "true",
+   "reason": "jB1r1·jB1r2 evidence: evidence_pack.A5.8.claim_inventory[0].rows·[1].rows 주장 전수 대응표 존재; jB2가 든 '단위 연결 없음'은 체크 문구(주장–판/범위/출처 대응)의 요건이 아님"
+  }
+ ]
+}
