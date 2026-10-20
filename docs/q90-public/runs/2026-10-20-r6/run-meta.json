@@ -1,0 +1,29 @@
+{
+ "run": "r6",
+ "purpose": "미측정 행 K01a·K08·K09·K10·K11·K12의 첫 2xx 측정 (op:q90-auto-201 6967766 결박)",
+ "binding_ref": "op:q90-auto-201 comet 6967766",
+ "egress_country": "US",
+ "egress_note": "r4(KR)과 출구 다름",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh",
+ "browser_lang_flag": "en-US",
+ "rows_requested": 6,
+ "bridge_rows": [],
+ "attempts_per_row": 1,
+ "retry": "없음(결박)",
+ "started_utc": "2026-10-20T10:14:24.609Z",
+ "ended_utc": "2026-10-20T10:24:07.423Z",
+ "roster_subset_file": "roster-r6-6rows.json",
+ "roster_subset_sha256": "4b2de0338755a905ad685fa3a53033311bea64e2180492819687739950ced7ae",
+ "roster_subset_note": "roster-v2.r6-subset.json(v2.1)에서 K02 겹침 행을 뺀 6행 — 결박 범위가 6행이므로",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "footnotes": [
+  "동일 URL 6행, 결과 상관됨",
+  "r4 KR과 출구 다름",
+  "TL 사전 curl 3회(2026-10-14 07:3xZ, HTTP 200) = 측정 전 접근성 확인, 결과값 미사용"
+ ],
+ "scores_viewed": 0,
+ "assembled_into_table": false
+}

@@ -1,0 +1,448 @@
+{
+ "tool": "measure-e1.cjs",
+ "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_version": "v2.1",
+ "evidence": "E1",
+ "startedAt": "2026-10-20T10:14:24.746Z",
+ "results": [
+  {
+   "row": "K01a",
+   "name": "고용24 직업선호도검사 L형",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T10:15:52.809Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 380697,
+    "bodySha256": "8d6aab07291729f0d046c6a699d017fbdc67a561b8b351b2b5c5014703987f4c"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "직업심리검사 실시 | 직업심리검사 | 취업가이드 | 취업지원",
+    "domSha256": "1e67c59b2f6c36aef24ee93e9f710fcedae614e305fc49f85f353b6c37928fa0",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 9,
+     "ge16": 1,
+     "lt12": 0,
+     "chars": 488,
+     "chars16": 35
+    },
+    "touch": {
+     "total": 39,
+     "ok44": 22,
+     "ok24": 39
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K08",
+   "name": "고용24 성인용 직업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T10:17:45.006Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 380697,
+    "bodySha256": "8d6aab07291729f0d046c6a699d017fbdc67a561b8b351b2b5c5014703987f4c"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": 404,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "Navigation timeout of 45000 ms exceeded"
+   }
+  },
+  {
+   "row": "K09",
+   "name": "고용24 직업가치관검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T10:19:11.848Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 380697,
+    "bodySha256": "8d6aab07291729f0d046c6a699d017fbdc67a561b8b351b2b5c5014703987f4c"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "직업심리검사 실시 | 직업심리검사 | 취업가이드 | 취업지원",
+    "domSha256": "1e67c59b2f6c36aef24ee93e9f710fcedae614e305fc49f85f353b6c37928fa0",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 9,
+     "ge16": 1,
+     "lt12": 0,
+     "chars": 488,
+     "chars16": 35
+    },
+    "touch": {
+     "total": 39,
+     "ok44": 22,
+     "ok24": 39
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K10",
+   "name": "고용24 구직준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T10:20:35.893Z",
+   "headers": {
+    "ok": true,
+    "status": 200,
+    "finalUrl": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": false,
+    "referrer": false,
+    "permissions": false,
+    "csp": false,
+    "cspReporting": false,
+    "server": null,
+    "bodyBytes": 380697,
+    "bodySha256": "8d6aab07291729f0d046c6a699d017fbdc67a561b8b351b2b5c5014703987f4c"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 200,
+    "title": "직업심리검사 실시 | 직업심리검사 | 취업가이드 | 취업지원",
+    "domSha256": "1e67c59b2f6c36aef24ee93e9f710fcedae614e305fc49f85f353b6c37928fa0",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 9,
+     "ge16": 1,
+     "lt12": 0,
+     "chars": 488,
+     "chars16": 35
+    },
+    "touch": {
+     "total": 39,
+     "ok44": 22,
+     "ok24": 39
+    },
+    "lang": "ko"
+   }
+  },
+  {
+   "row": "K11",
+   "name": "고용24 창업적성검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T10:22:35.151Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "The operation was aborted due to timeout"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  },
+  {
+   "row": "K12",
+   "name": "고용24 대학생 진로준비도검사",
+   "group": "국내",
+   "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+   "skip": false,
+   "origin": "https://www.work24.go.kr",
+   "measuredAt": "2026-10-20T10:24:07.311Z",
+   "headers": {
+    "ok": false,
+    "error": "fetch failed"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/wp-config.php",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/package.json",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/server-status",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    },
+    {
+     "path": "/.DS_Store",
+     "status": null,
+     "exposed": false,
+     "error": "fetch failed"
+    }
+   ],
+   "mobile": {
+    "ok": false,
+    "error": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do"
+   }
+  }
+ ]
+}
