@@ -2295,17 +2295,42 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 14,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked B",
+      "third_reason": "처음 보이는 내용 쪽(2쪽 'How To Use this Profile')은 리포트 사용법 안내뿐이고, 이 사람의 강점·약점 목록('Unique Quadrant Profile': Courage, Counterpoint … / Optimism, Self-awareness, Growth)은 3쪽에 처음 나오므로, '처음 1페이지만' 보는 A1 기준으로는 L2 '흔적만'이 맞습니다."
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T15:06:08Z",
+    "third_used": [
+     "A1"
+    ],
+    "aggregate_sha256": "00b10e9aae3f1694e911b613d3fd00b07b39b55762a40eb8bca611df8b609c47"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 4,
+   "A4": 3,
+   "A5": 2,
    "packet_sha256": "86ab5af3dcf3f450c9d215e0490dd55b7d72d346379c0a2f28408dcf17791346",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -4054,7 +4079,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "공식 결과예시 존재 확인(work.go.kr) · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K02",
@@ -4713,7 +4758,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "공식 결과예시 존재 확인(work.go.kr) · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K08",
@@ -4853,7 +4918,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "같은 기관 결과예시 체계 확인 · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K09",
@@ -4993,7 +5078,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "같은 기관 결과예시 체계 확인 · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K10",
@@ -5133,7 +5238,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "같은 기관 결과예시 체계 확인 · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K11",
@@ -5274,7 +5399,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "같은 기관 결과예시 체계 확인 · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K12",
@@ -5415,7 +5560,27 @@
     "withdrawn_at": "2026-10-20T13:50Z",
     "withdrawn_reason": "Method 6983277: 고용24 \"결과 예시\" 후보 있음 → op:207 A-4(공식 샘플 후보가 있으면 종결 불가). 상태: 후보 있음 · 국내 출구 필요"
    },
-   "acquire_note": "후보 있음 · 국내 출구 필요(work24 미국 egress 시간 초과)"
+   "acquire_note": "같은 기관 결과예시 체계 확인 · 원문 전체 확보 경로 필요(국내 출구)",
+   "candidate_evidence": {
+    "at": "2026-10-20T15:25Z",
+    "route": "crawler(render_js, 비샌드박스 출구)",
+    "found": [
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExam/aduPreLNewDetail.do",
+      "test": "직업선호도검사 L형",
+      "note": "결과예시 탭 존재(예시 인물 홍길동, 흥미코드 AE, 성격 5요인·응답신뢰성 등) — 본문 28,692토큰 중 1만 토큰만 반환(잘림)"
+     },
+     {
+      "url": "https://www.work.go.kr/consltJobCarpa/jobPsyExamNew/jobPsyExamAdultList.do",
+      "test": "직업선호도검사 S형",
+      "note": "결과예시 존재(흥미코드 ES) — 잘림"
+     }
+    ],
+    "sandbox": "work.go.kr·work24.go.kr 모두 000(연결 실패)",
+    "raw_fetch": "time budget 초과",
+    "blocked_reason": "원문 전체 확보 불가 → 부분본 채점은 왜곡 위험이라 보류",
+    "next": "국내 출구(대표 PC 등)로 결과예시 탭 전체 저장, 또는 공식 가이드 e북(keisDownload) 확보"
+   }
   },
   {
    "id": "K13",
@@ -5605,7 +5770,7 @@
      "finding": "서비스명·기관명·개발자명·URL 0건. 상·하단 띠 가림. 예시 인물은 \"검사자\"(일반명사)만. 직업 추천 표의 링크 글자는 일반 직업명"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -5660,17 +5825,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 11,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T15:17:27Z",
+    "third_used": [],
+    "aggregate_sha256": "529edbab7ee29906b162da4621b92548ba05ed5f4ce85743bfe6fde2e12d2953"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 2,
+   "A4": 1,
+   "A5": 3,
    "packet_sha256": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
    "denominator_class": {
     "class": "미확보(비공개 포함)",
@@ -5688,7 +5875,7 @@
     "path": "대안 없음(본인인증)",
     "table_cell": "대안 없음(본인인증)"
    },
-   "prev_status": "no_sample",
+   "prev_status": "redacted",
    "acquire_note": "공식 \"검사결과예시\" 탭(예시 결과표 2쪽: 검사자 \"검사자\" 2018-02-12 예시값) — 총괄 US 샌드박스 puppeteer 렌더(탭 2 내용만 A4 PDF), HTTP 200, 2026-10-20T15:05Z. E2 공식 샘플(문서도판 아님).",
    "packet_files": {
     "sample.pdf": "ecf37908924fa361e2023b07b29f7551c946895eaea8cf6474b260b35d3c0490",
@@ -6759,7 +6946,7 @@
      "finding": "상품명·인물명(민서)·고유코드(LP-) 0건 확인, 표지 통가림. 본문 구조(장 제목) 남음 — 모델 계열 단서 수준(타사 모델명 남김 규칙과 같음)"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -6814,17 +7001,44 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 18,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked A",
+      "third_reason": "가림 표지 다음 처음 보이는 쪽(2쪽)은 목차뿐이고 '의미 짓는 사람'·사명·강점·네 축 점수는 3쪽에 처음 나오므로, '처음 1페이지만' 보는 A1 기준으로는 L2가 맞습니다(앞선 패킷들과 같은 기준)."
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 4,
+      "rule": "diff>=2 → third picked A",
+      "third_reason": "규준·신뢰도 수치는 리포트에 없지만, 5쪽('기간의 효과를 검증한 것은 아닙니다'), 13쪽('지수는 우열이나 능력의 확정 점수가 아니며 이 진단은 심리검사가 아닙니다', 문항이 영역에 배정되는 규칙, 선택형 13문항은 지수 계산에만 사용), 14쪽('당신의 미래를 예측하지 않습니다')에 응답과 연결된 구체적인 한계 문구가 여러 번 나와 '흔적만'(L2)보다 L4에 가깝습니다. 또 Y의 '공개 성능 지표가 없음'은 13·14쪽의 '공개 성능표에 적어 두었다'는 문구와 맞지 않습니다."
+     }
+    },
+    "resolved_at": "2026-10-20T15:32:12Z",
+    "third_used": [
+     "A1",
+     "A5"
+    ],
+    "aggregate_sha256": "5d94712be10d821675b8399bf34079a5a9a2244fe0d44bd985c2aba0a6c4db65"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 4,
+   "A3": 5,
+   "A4": 3,
+   "A5": 4,
    "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)",
    "packet_sha256": "6deb55bb68ae99f86535eaee4864581ab8dbaf13f846e23aa31324596cde8ffe",
    "packet_files": {
@@ -6833,7 +7047,8 @@
     "README.md": "46a6eaf0376cfcd8dfa6ae23513065fa3b3f4db89edecc65a4f9bbc82f05ccba",
     "ANSWER.json": "0a7c3aa19723230158c9ef353ad33db4b835d24467dc932cca1bf51d809be4b3"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "prev_status": "redacted"
   },
   {
    "id": "OWN-P",
@@ -6887,7 +7102,7 @@
      "finding": "상품명·인물명(민서)·고유코드(LP-) 0건 확인, 표지 통가림. 본문 구조(장 제목) 남음 — 모델 계열 단서 수준(타사 모델명 남김 규칙과 같음)"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -6942,17 +7157,42 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 15,
+    "axes": {
+     "A1": {
+      "level": 2,
+      "rule": "diff>=2 → third picked A",
+      "third_reason": "가림 표지 다음 처음 보이는 쪽(2쪽)은 목차뿐이고 '의미 짓는 사람 — 꾸준히 살아갈 이유를 짚어 주는 사람'은 3쪽에 처음 나오므로, '처음 1페이지만' 보는 A1 기준으로는 L2 '흔적만'이 맞습니다(앞서 판정한 패킷들과 같은 기준)."
+     },
+     "A2": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 2,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T15:32:12Z",
+    "third_used": [
+     "A1"
+    ],
+    "aggregate_sha256": "5d94712be10d821675b8399bf34079a5a9a2244fe0d44bd985c2aba0a6c4db65"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 2,
+   "A2": 3,
+   "A3": 4,
+   "A4": 4,
+   "A5": 2,
    "denominator_class": "own_e2_track(op:210 A — 비교 분모 밖, 자사 행 별도 열)",
    "packet_sha256": "7ea002312ec928726e1821efc2ee0e41ed33ba86eed30ab6d624d13beda0387e",
    "packet_files": {
@@ -6961,7 +7201,8 @@
     "README.md": "b618960e832216bf47a84fe12d0f1817aab22164fa6ef4c920ffeb7761a9ff3e",
     "ANSWER.json": "24b161a19a6ba2de0c1a2349f341a1225a3c39bc343e16633164770a2cb543cb"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "prev_status": "redacted"
   },
   {
    "id": "ANC-H",
@@ -7010,7 +7251,7 @@
      "finding": "인물명(지훈) 상자 가림 0건, 표지 가림 없음(--cover 0, 앵커는 1쪽에 채점 내용)"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -7065,17 +7306,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 24,
+    "axes": {
+     "A1": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 5,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T15:17:27Z",
+    "third_used": [],
+    "aggregate_sha256": "529edbab7ee29906b162da4621b92548ba05ed5f4ce85743bfe6fde2e12d2953"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 5,
+   "A2": 5,
+   "A3": 5,
+   "A4": 4,
+   "A5": 5,
    "denominator_class": "anchor(op:210 B — 검증용, 표·분모 밖)",
    "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)",
    "packet_sha256": "09de27f68b03f3f64d3c008fb6ed9e665f3c93f700518ffd50138913736a995f",
@@ -7085,7 +7348,8 @@
     "README.md": "73b6c833ab3dd70bae3cb7a86035b8274370b32e95322385803f5e91fb7b493e",
     "ANSWER.json": "20c05a43f1ce121f8d7bef07dde4c252a964f34d158e7735fd5122cc810475ce"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "prev_status": "redacted"
   },
   {
    "id": "ANC-L",
@@ -7134,7 +7398,7 @@
      "finding": "인물명(지훈) 상자 가림 0건, 표지 가림 없음(--cover 0, 앵커는 1쪽에 채점 내용)"
     }
    },
-   "status": "redacted",
+   "status": "judged",
    "judge1": {
     "A1": {
      "level": null,
@@ -7189,17 +7453,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 7,
+    "axes": {
+     "A1": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 1,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T15:17:27Z",
+    "third_used": [],
+    "aggregate_sha256": "529edbab7ee29906b162da4621b92548ba05ed5f4ce85743bfe6fde2e12d2953"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 3,
+   "A2": 1,
+   "A3": 1,
+   "A4": 1,
+   "A5": 1,
    "denominator_class": "anchor(op:210 B — 검증용, 표·분모 밖)",
    "note": "앵커 원본 생성됨(저장소 밖). 기대 수준 봉인 sha fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68. 가림 전(표지 통째 가림 규칙은 앵커에 맞지 않음 → --cover 0 필요)",
    "packet_sha256": "8cc58ca88e69eef5bfacdff425706edcaabdaac2f00b6e1534952211f4a58763",
@@ -7209,7 +7495,8 @@
     "README.md": "8a33c55b4e7c5864f0bfdb973dc817052a5a996bf20d3b0a41ef07e8c00e63f5",
     "ANSWER.json": "8a964e26983535cae2e740852e7ff833844dc5fa1cb98b45bceb8892e3ae2f90"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "prev_status": "redacted"
   }
  ],
  "packet_order": [
@@ -7720,9 +8007,11 @@
       "attachment_sha256_sent": "7ea002312ec928726e1821efc2ee0e41ed33ba86eed30ab6d624d13beda0387e",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6997498",
+      "answer_sha256": "c025492974e06134d12bc854b08d0da8ea6577527736e3e01ae86b99ca222269",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:25Z",
+      "first_line_declaration_ok": true
      },
      "S-45132d": {
       "sent_msg_id": "6997155",
@@ -7731,9 +8020,11 @@
       "attachment_sha256_sent": "6deb55bb68ae99f86535eaee4864581ab8dbaf13f846e23aa31324596cde8ffe",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6997705",
+      "answer_sha256": "33be367afb156448cd102b1538c5ee9c996f89ba7847f69a2c58572bb3107b3d",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:27Z",
+      "first_line_declaration_ok": true
      },
      "S-5ad6c9": {
       "sent_msg_id": "6997173",
@@ -7742,9 +8033,11 @@
       "attachment_sha256_sent": "8cc58ca88e69eef5bfacdff425706edcaabdaac2f00b6e1534952211f4a58763",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6997862",
+      "answer_sha256": "7509b5c371f093c584ecdb1e359080ca33dbb597f0595d2678cbd8a62f715073",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:29Z",
+      "first_line_declaration_ok": true
      },
      "S-728007": {
       "sent_msg_id": "6997197",
@@ -7753,9 +8046,11 @@
       "attachment_sha256_sent": "09de27f68b03f3f64d3c008fb6ed9e665f3c93f700518ffd50138913736a995f",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6997864",
+      "answer_sha256": "6dfd0ce17521bd4b4f906f1e66da70d4c24e89b4c1ebda8133e679671aa9da59",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:31Z",
+      "first_line_declaration_ok": true
      },
      "S-0366bb": {
       "sent_msg_id": "6998115",
@@ -7764,9 +8059,11 @@
       "attachment_sha256_sent": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh"
+      "reply_msg_id": "6998252",
+      "answer_sha256": "db1b65fd4da9f1969ed81262a5d11d34c60f399a0ef553d45cc48726da890ad0",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T15:05:33Z",
+      "first_line_declaration_ok": true
      },
      "S-aaeb13": {
       "sent_msg_id": "6998137",
@@ -8068,9 +8365,11 @@
       "attachment_sha256_sent": "7ea002312ec928726e1821efc2ee0e41ed33ba86eed30ab6d624d13beda0387e",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6997546",
+      "answer_sha256": "0f250eb89dd7b23ef65265a6b3508bdbf9a9a22dc1dbc539c79948684df0aaf6",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:15Z",
+      "first_line_declaration_ok": true
      },
      "S-45132d": {
       "sent_msg_id": "6997145",
@@ -8079,9 +8378,11 @@
       "attachment_sha256_sent": "6deb55bb68ae99f86535eaee4864581ab8dbaf13f846e23aa31324596cde8ffe",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6998813",
+      "answer_sha256": "2b8232701d1e395d0adf895f791a23bd9fd70a0207fea65e81f5551c201547cd",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:16Z",
+      "first_line_declaration_ok": true
      },
      "S-5ad6c9": {
       "sent_msg_id": "6997165",
@@ -8090,9 +8391,11 @@
       "attachment_sha256_sent": "8cc58ca88e69eef5bfacdff425706edcaabdaac2f00b6e1534952211f4a58763",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6998968",
+      "answer_sha256": "f70ee6b08e084939e8c59a4c88bc6f586f273a5956ee583057c55888b504d1b9",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:05:18Z",
+      "first_line_declaration_ok": true
      },
      "S-728007": {
       "sent_msg_id": "6997186",
@@ -8101,9 +8404,11 @@
       "attachment_sha256_sent": "09de27f68b03f3f64d3c008fb6ed9e665f3c93f700518ffd50138913736a995f",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6999126",
+      "answer_sha256": "25a8a4c9169ff8b4c7a1305b3fc4ea657b82a9f47d44fe641074edc68747d4e1",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T15:06:21Z",
+      "first_line_declaration_ok": true
      },
      "S-0366bb": {
       "sent_msg_id": "6998102",
@@ -8112,9 +8417,11 @@
       "attachment_sha256_sent": "1dd3bc8317fe359160c4f13a772d640ee4cdb94bdbb783a59efa97ef4a0b6991",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh"
+      "reply_msg_id": "6999347",
+      "answer_sha256": "e483c1e6ad50b87e328b534a7f60af1631b7a886b39e798bb1e23c3d57230a68",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T15:17:06Z",
+      "first_line_declaration_ok": true
      },
      "S-aaeb13": {
       "sent_msg_id": "6998125",
@@ -8123,9 +8430,11 @@
       "attachment_sha256_sent": "ec133a015ce835010969d21589189a5575048bf5302d2102da7183d83c89ece8",
       "attachment_sha256_received_redownload": null,
       "bytes_match": null,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh"
+      "reply_msg_id": "6999347",
+      "answer_sha256": "36aac04689ad63b467259a8e632e384c154d85b489af90576478f591baf6aec3",
+      "sent_via": "gsend.sh",
+      "answered_at": "2026-10-20T15:17:06Z",
+      "first_line_declaration_ok": true
      }
     },
     "team_ok": {
@@ -8261,7 +8570,27 @@
        "A1"
       ],
       "deadline": "2026-10-22T14:50Z",
-      "sent_via": "gsend.sh(e2-third.py 메시지 틀 동일, 재활성 — op:205/206 같은 actor·48h)"
+      "sent_via": "gsend.sh(e2-third.py 메시지 틀 동일, 재활성 — op:205/206 같은 actor·48h)",
+      "reply_msg_id": "6997625",
+      "answered_at": "2026-10-20T15:0Z",
+      "first_line_declaration_ok": true
+     },
+     "S-16bb7c": {
+      "sent_msg_id": "7000450",
+      "reply_msg_id": "7000637",
+      "axes": [
+       "A1"
+      ],
+      "sent_via": "gsend.sh"
+     },
+     "S-45132d": {
+      "sent_msg_id": "7000462",
+      "reply_msg_id": "7000748",
+      "axes": [
+       "A1",
+       "A5"
+      ],
+      "sent_via": "gsend.sh"
      }
     },
     "post_memory_check": {
@@ -9013,7 +9342,7 @@
    "network": 0
   },
   "expected_anchor_sha256": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
-  "status": "8회차 패킷 4건 발송(2026-10-20T14:48Z), 기한 2026-10-22T14:48Z"
+  "status": "확정(judge 2 + 제3자 3축) — 2026-10-20"
  },
  "packet_round8": {
   "blind_ids": [
@@ -9060,5 +9389,85 @@
   "note": "K13·K14 공식 검사결과예시(커리어넷) 확보 — 2026-10-20 종결 후보에서 확보로(op:207 A-4).",
   "sent_at": "2026-10-20T14:56Z",
   "deadline": "2026-10-22T14:56Z"
+ },
+ "anchor_check": {
+  "expected_sha256": "fae206adfd565a098ce766c88131c0b06782f979d25e8f94cc6183e1af29ee68",
+  "expected_revealed": {
+   "rule": "op:q90-auto-210 B — 발송 전 봉인. 채점 뒤 공개. 성능표 행 아님(검증용).",
+   "ANC-H": {
+    "A1": 5,
+    "A2": 5,
+    "A3": 5,
+    "A4": 5,
+    "A5": 5
+   },
+   "ANC-L": {
+    "A1": 2,
+    "A2": 1,
+    "A3": 1,
+    "A4": 1,
+    "A5": 1
+   },
+   "tolerance": "judge 값이 기대와 2단계 이상 차이 나면 그 judge의 해당 축 점수에 각주"
+  },
+  "result": {
+   "ANC-H": {
+    "A1": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    },
+    "A2": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    },
+    "A3": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    },
+    "A4": {
+     "expected": 5,
+     "final": 4,
+     "diff": 1
+    },
+    "A5": {
+     "expected": 5,
+     "final": 5,
+     "diff": 0
+    }
+   },
+   "ANC-L": {
+    "A1": {
+     "expected": 2,
+     "final": 3,
+     "diff": 1
+    },
+    "A2": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    },
+    "A3": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    },
+    "A4": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    },
+    "A5": {
+     "expected": 1,
+     "final": 1,
+     "diff": 0
+    }
+   }
+  },
+  "max_diff": 1,
+  "verdict": "통과 — 모든 축 기대와 1단계 이내(각주 없음)",
+  "at": "2026-10-20T15:18Z"
  }
 }
