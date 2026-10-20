@@ -961,19 +961,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://hexaco.org/",
       "http": null,
-      "found": "분모 분류: 온라인 설문 결과 화면 존재(개인별). 공개 샘플 없음."
+      "found": "분모 분류: 온라인 설문 결과 화면 존재(개인별). 공개 샘플 없음.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://hexaco.org/hexaco-online",
       "http": null,
-      "found": "대안 경로 확인: 미확인→보류 — 연구용 설문(대학 호스팅). 공개 비교 목적 응시가 연구 동의 범위 밖일 수 있음 → §26-a 보류 규칙: 약관 확인 불가 시 응시 안 함"
+      "found": "대안 경로 확인: 미확인→보류 — 연구용 설문(대학 호스팅). 공개 비교 목적 응시가 연구 동의 범위 밖일 수 있음 → §26-a 보류 규칙: 약관 확인 불가 시 응시 안 함",
+      "method": "a+"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:hexaco.org sample feedback report results (2026-10-20T12:06Z) — References 페이지만. 대학 사이트 사본(hochschule-bochum.de)은 §21 제3자 호스팅이라 미채택"
+      "found": "google: site:hexaco.org sample feedback report results (2026-10-20T12:06Z) — References 페이지만. 대학 사이트 사본(hochschule-bochum.de)은 §21 제3자 호스팅이라 미채택",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: HEXACO-PI-R online results feedback report example",
+      "http": null,
+      "found": "ⓒ 일반 검색: 공식 hexaco.org 결과 샘플 없음; 대학·scribd 사본만(§21 미채택)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -1267,19 +1278,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://birkman.com/resources/ebooks/sample-signature-report",
       "http": null,
-      "found": "분모 분류: 공식 샘플 있음, 이메일 게이트(리드 수집) — 자동 수집 불가. 제3자(GCSU) 사본은 출처 규칙상 미채택."
+      "found": "분모 분류: 공식 샘플 있음, 이메일 게이트(리드 수집) — 자동 수집 불가. 제3자(GCSU) 사본은 출처 규칙상 미채택.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T23:58Z",
       "url": "https://birkman.com/",
       "http": null,
-      "found": "대안 경로 확인: E2-d 불가(이번 턴) — 공식 샘플 PDF는 birkman.com 이메일 게이트(폼 제출 후 발송). 사설 미러 3곳(대학·코치 사이트, \"JOHN Q. PUBLIC\" 2017판) 검색 노출되나 §21 출처 규칙(제3자 호스팅 미채택, G13 선례)으로 거름. 남은 길: 대표 메일로 정식 요청 → 받으면 E2 "
+      "found": "대안 경로 확인: E2-d 불가(이번 턴) — 공식 샘플 PDF는 birkman.com 이메일 게이트(폼 제출 후 발송). 사설 미러 3곳(대학·코치 사이트, \"JOHN Q. PUBLIC\" 2017판) 검색 노출되나 §21 출처 규칙(제3자 호스팅 미채택, G13 선례)으로 거름. 남은 길: 대표 메일로 정식 요청 → 받으면 E2 ",
+      "method": "a+"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:birkman.com sample signature report pdf (2026-10-20T12:06Z) — 공식 샘플은 다운로드 폼(이메일 게이트) 뒤에만; 공개 PDF 없음. 사설 미러는 §21 미채택"
+      "found": "google: site:birkman.com sample signature report pdf (2026-10-20T12:06Z) — 공식 샘플은 다운로드 폼(이메일 게이트) 뒤에만; 공개 PDF 없음. 사설 미러는 §21 미채택",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: Birkman Signature sample report pdf download",
+      "http": null,
+      "found": "ⓒ 일반 검색: 공식은 다운로드 폼 페이지뿐; gcsu.edu·scribd·코치 사이트 사본만(§21 미채택)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -1873,19 +1895,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.16personalities.com/",
       "http": null,
-      "found": "분모 분류: 유료 Premium 리포트 존재(공식). 공개 샘플 PDF 없음; 유형 아티클은 개인 리포트 아님."
+      "found": "분모 분류: 유료 Premium 리포트 존재(공식). 공개 샘플 PDF 없음; 유형 아티클은 개인 리포트 아님.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:45Z",
       "url": "https://www.16personalities.com/terms",
       "http": null,
-      "found": "대안 경로 확인: 구매 경로 미실행(대표 결정) — 자동 접근을 적극 차단하는 사이트. AI 응시는 사이트 정책과 충돌할 가능성 높음 → 사람(비이해관계자) 열람으로 약관 확인 전까지 보류 | 2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → "
+      "found": "대안 경로 확인: 구매 경로 미실행(대표 결정) — 자동 접근을 적극 차단하는 사이트. AI 응시는 사이트 정책과 충돌할 가능성 높음 → 사람(비이해관계자) 열람으로 약관 확인 전까지 보류 | 2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → ",
+      "method": "a+"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:16personalities.com premium report sample pdf career suite (2026-10-20T12:06Z) — Premium 미리보기 페이지만, 샘플 리포트 PDF 없음 + 사이트 봇 차단(r7·r8 403, 2026-10-20)"
+      "found": "google: site:16personalities.com premium report sample pdf career suite (2026-10-20T12:06Z) — Premium 미리보기 페이지만, 샘플 리포트 PDF 없음 + 사이트 봇 차단(r7·r8 403, 2026-10-20)",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: 16Personalities Premium Career Suite sample report example pages",
+      "http": null,
+      "found": "ⓒ 일반 검색: 공식 개인 리포트 샘플 없음(팀 평가 샘플만, 개인 Premium 아님); scribd 사본만",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2094,19 +2127,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.workinggenius.com/",
       "http": null,
-      "found": "분모 분류: 제3자 호스팅 샘플만 존재 → 출처 규칙상 미채택(G13 유형 원형)."
+      "found": "분모 분류: 제3자 호스팅 샘플만 존재 → 출처 규칙상 미채택(G13 유형 원형).",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:45Z",
       "url": "https://www.workinggenius.com/terms-of-use",
       "http": null,
-      "found": "대안 경로 확인: 구매 경로 미실행(대표 결정) — 2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → 이 행은 \"공개 샘플 없음\"으로 남김"
+      "found": "대안 경로 확인: 구매 경로 미실행(대표 결정) — 2026-10-12 대표: \"구매 승인은 하지 않을게요. 비용이 발생하지 않는 선에서 진행\" → E2-p 미실행. §26-a 경로 전환 금지 → 이 행은 \"공개 샘플 없음\"으로 남김",
+      "method": "a+"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:workinggenius.com sample report pdf (2026-10-20T12:06Z) — Team Map 템플릿만; 개인 리포트 샘플은 scribd·코치 사이트 등 제3자만(§21 미채택)"
+      "found": "google: site:workinggenius.com sample report pdf (2026-10-20T12:06Z) — Team Map 템플릿만; 개인 리포트 샘플은 scribd·코치 사이트 등 제3자만(§21 미채택)",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: Working Genius assessment sample report PDF official",
+      "http": null,
+      "found": "ⓒ 일반 검색: 공식 샘플 없음; scribd·watneyinsights 등 제3자만(§21 미채택)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2442,19 +2486,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.onetcenter.org/",
       "http": null,
-      "found": "분모 분류: Score Report 양식은 있으나 수집본이 빈 양식 → 부적합. 분모에 남김."
+      "found": "분모 분류: Score Report 양식은 있으나 수집본이 빈 양식 → 부적합. 분모에 남김.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T21:50Z",
       "url": "onetinterestprofiler.org 응시 흐름 내 \"Special Notice: User's Agreement\" (정확 URL 미확보 — SPA, 응시자 보고 6112724; 같은 문구가 O*NET 도구 공식 매뉴얼류에 있음)",
       "http": null,
-      "found": "대안 경로 확인: 대안 없음(약관) — 1차 확인(라이선스 페이지 3곳, CC-BY)에는 없던 목적 제한 조항을 **응시 보조가 응시 전 흐름에서 발견**해 멈춤(0문항). 총괄 판정: 공개 비교 채점 용도는 세 목적에 해당하지 않음(보수적) → 응시 안 함. 결함 ⑰(R1: 앱 내 약관을 읽기 전에 \"가\" 선언, 영향 0 "
+      "found": "대안 경로 확인: 대안 없음(약관) — 1차 확인(라이선스 페이지 3곳, CC-BY)에는 없던 목적 제한 조항을 **응시 보조가 응시 전 흐름에서 발견**해 멈춤(0문항). 총괄 판정: 공개 비교 채점 용도는 세 목적에 해당하지 않음(보수적) → 응시 안 함. 결함 ⑰(R1: 앱 내 약관을 읽기 전에 \"가\" 선언, 영향 0 ",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:onetcenter.org Interest Profiler sample completed score report (2026-10-20T12:06Z) — 공식은 빈 양식(IP_Score_Report.pdf)뿐, 작성된 예시 없음; 응시 경로는 약관 목적 제한(2026-10-12)"
+      "found": "google: site:onetcenter.org Interest Profiler sample completed score report (2026-10-20T12:06Z) — 공식은 빈 양식(IP_Score_Report.pdf)뿐, 작성된 예시 없음; 응시 경로는 약관 목적 제한(2026-10-12)",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: O*NET Interest Profiler completed results report example",
+      "http": null,
+      "found": "ⓒ 일반 검색: 공식은 빈 양식; 작성본은 scribd·studocu 등 제3자 개인 결과(§21 미채택)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2808,19 +2863,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.betterup.com/",
       "http": null,
-      "found": "분모 분류: 코칭 플랫폼. \"리포트가 없다\"는 공식 문장 없음 → 결박 규칙상 미확보."
+      "found": "분모 분류: 코칭 플랫폼. \"리포트가 없다\"는 공식 문장 없음 → 결박 규칙상 미확보.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "",
       "http": null,
-      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음"
+      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: sample individual report pdf BetterUp OR CoachHub OR 15Five OR Lattice (2026-10-20T12:06Z) + CoachHub BetterUp coaching individual progress report sample pdf (12:19Z) — 공식 개인 리포트 샘플 없음(블로그·백서만)"
+      "found": "google: sample individual report pdf BetterUp OR CoachHub OR 15Five OR Lattice (2026-10-20T12:06Z) + CoachHub BetterUp coaching individual progress report sample pdf (12:19Z) — 공식 개인 리포트 샘플 없음(블로그·백서만)",
+      "method": "c"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: site:betterup.com sample report individual assessment pdf",
+      "http": null,
+      "found": "ⓑ 공식 도메인 검색: 블로그 예시글·백서만, 개인 리포트 샘플 없음",
+      "method": "b",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -2932,19 +2998,38 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.coachhub.com/",
       "http": null,
-      "found": "분모 분류: 코칭 플랫폼. 동일."
+      "found": "분모 분류: 코칭 플랫폼. 동일.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "",
       "http": null,
-      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음"
+      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "같은 검색 2건(2026-10-20T12:06Z·12:19Z) — CoachHub 공식은 \"Insights\" 소개 문장만, 개인 리포트 샘플 없음"
+      "found": "같은 검색 2건(2026-10-20T12:06Z·12:19Z) — CoachHub 공식은 \"Insights\" 소개 문장만, 개인 리포트 샘플 없음",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: site:coachhub.com sample report coachee pdf",
+      "http": null,
+      "found": "ⓑ 공식 도메인 검색: 게이트 콘텐츠(웰빙 백서)·블로그만, 코치이 리포트 샘플 없음",
+      "method": "b",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: CoachHub coachee report sample 15Five Lattice employee review results sample pdf",
+      "http": null,
+      "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3264,19 +3349,38 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.15five.com/pricing",
       "http": null,
-      "found": "분모 분류: 성과 리뷰 결과(개인별)는 존재하나 B2B 화면, 공개 샘플 리포트 없음."
+      "found": "분모 분류: 성과 리뷰 결과(개인별)는 존재하나 B2B 화면, 공개 샘플 리포트 없음.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "",
       "http": null,
-      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음"
+      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "같은 검색(2026-10-20T12:06Z) — 15Five 공식 도움말 \"Download your performance review results\"(기능 설명)뿐, 샘플 리포트 없음"
+      "found": "같은 검색(2026-10-20T12:06Z) — 15Five 공식 도움말 \"Download your performance review results\"(기능 설명)뿐, 샘플 리포트 없음",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: site:15five.com sample performance review report employee",
+      "http": null,
+      "found": "ⓑ 공식 도메인 검색: 작성법 블로그·도움말만, 결과 리포트 샘플 없음",
+      "method": "b",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: CoachHub coachee report sample 15Five Lattice employee review results sample pdf",
+      "http": null,
+      "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3388,19 +3492,38 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://lattice.com/pricing",
       "http": null,
-      "found": "분모 분류: 성과 리뷰 결과(개인별) 존재, B2B, 공개 샘플 없음."
+      "found": "분모 분류: 성과 리뷰 결과(개인별) 존재, B2B, 공개 샘플 없음.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "",
       "http": null,
-      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음"
+      "found": "대안 경로 확인: 대안 없음(B2B) — 개인이 어떤 경로로도 리포트를 못 받음",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "같은 검색(2026-10-20T12:06Z) — Lattice 공식은 360 리뷰 템플릿(빈 양식)뿐, 개인 결과 샘플 없음"
+      "found": "같은 검색(2026-10-20T12:06Z) — Lattice 공식은 360 리뷰 템플릿(빈 양식)뿐, 개인 결과 샘플 없음",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: site:lattice.com sample review summary report employee",
+      "http": null,
+      "found": "ⓑ 공식 도메인 검색: 문구 예시·빈 템플릿만, 개인 결과 리포트 샘플 없음",
+      "method": "b",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: CoachHub coachee report sample 15Five Lattice employee review results sample pdf",
+      "http": null,
+      "found": "ⓒ 일반 검색: 비교 리뷰·제3자 템플릿·scribd 플레이북만",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -3514,19 +3637,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 로그인 뒤 결과표 제공(공식). 공개 샘플 미발견."
+      "found": "분모 분류: 로그인 뒤 결과표 제공(공식). 공개 샘플 미발견.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -4159,19 +4293,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 동일(고용24). 유튜브 해석 강의는 샘플 아님."
+      "found": "분모 분류: 동일(고용24). 유튜브 해석 강의는 샘플 아님.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -4285,19 +4430,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 동일."
+      "found": "분모 분류: 동일.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -4411,19 +4567,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 동일."
+      "found": "분모 분류: 동일.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -4537,19 +4704,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 동일."
+      "found": "분모 분류: 동일.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -4663,23 +4841,35 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 동일."
+      "found": "분모 분류: 동일.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)"
    }
   },
   {
@@ -4789,23 +4979,35 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "분모 분류: 동일."
+      "found": "분모 분류: 동일.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.work24.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀"
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — 실명 본인인증 필요 추정(TL) → 에이전트 응시 불가, 대표 직접 응시 또는 건너뜀",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보"
+      "found": "google: site:work24.go.kr 직업심리검사 결과표 예시 샘플 (2026-10-20T12:06Z) + 고용24 직업선호도검사 결과표 샘플 pdf (12:19Z) — 공식 목록 페이지 요약에 \"결과 예시\" 링크 단서, 그러나 work24.go.kr는 이 출구에서 결박 측정기 5회·curl 모두 시간 초과(E1 종결 K11·K12와 같은 URL) → 받을 수 없음. 국내 출구 되돌림 후보",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T12:19Z",
+      "url": "google: 고용24 직업선호도검사 결과표 샘플 pdf 직업적성검사 결과 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 대학 취업센터·유튜브 해석 강의·KEIS 연구보고서(2008)만 — 공식 호스팅 결과 샘플 PDF 없음; work24 공식 목록 \"결과 예시\"는 이 출구에서 접속 불가(13:11Z 000)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
-    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)"
+    "reopen_if": "공식 호스팅 샘플을 받으면 정상 절차(가림·눈 확인·채점)로 되돌림(op:207 A-4)",
+    "reason_note": "동일 URL(jobPsyExamList.do)은 다른 행(K01a·K09·K10)에서 r6 200 측정됨 — \"이 행을 잰 시점에 연결 실패\"이며 공식 페이지가 없다는 뜻이 아님(TL 6978370)"
    }
   },
   {
@@ -5113,19 +5315,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.ncs.go.kr/",
       "http": null,
-      "found": "분모 분류: 자가진단 결과 화면 존재 추정이나 서브 페이지 크롤 실패 → 리포트 유무 미확정이므로 분모에 남김(기본값)."
+      "found": "분모 분류: 자가진단 결과 화면 존재 추정이나 서브 페이지 크롤 실패 → 리포트 유무 미확정이므로 분모에 남김(기본값).",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.ncs.go.kr/",
       "http": null,
-      "found": "대안 경로 확인: 미확인→국내 확인 필요 — "
+      "found": "대안 경로 확인: 미확인→국내 확인 필요 — ",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:ncs.go.kr 직무능력진단 결과 예시 자가진단 결과표 (2026-10-20T12:06Z) — 직무능력진단 목록·교육과정 가이드만, 결과표 예시 없음; ncs.go.kr/th04/dutyCompeDgn.do 200(sha d829c08c…)에도 결과 예시 없음"
+      "found": "google: site:ncs.go.kr 직무능력진단 결과 예시 자가진단 결과표 (2026-10-20T12:06Z) — 직무능력진단 목록·교육과정 가이드만, 결과표 예시 없음; ncs.go.kr/th04/dutyCompeDgn.do 200(sha d829c08c…)에도 결과 예시 없음",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: NCS 직업기초능력 자가진단 결과 예시 결과표",
+      "http": null,
+      "found": "ⓒ 일반 검색: 직업공통능력 자가진단은 teenup.or.kr(별도 기관 사이트, 명부 도메인 아님) \"결과표 형태로 개별 응시자들에게 배포\" — 공개 샘플 없음",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -5801,19 +6014,30 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.jobkorea.co.kr/",
       "http": null,
-      "found": "분모 분류: 검사 페이지 로그인 벽. 리포트 유무 미확정 → 분모에 남김."
+      "found": "분모 분류: 검사 페이지 로그인 벽. 리포트 유무 미확정 → 분모에 남김.",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:35Z",
       "url": "https://www.jobkorea.co.kr/",
       "http": null,
-      "found": "대안 경로 확인: 탐색 중 — "
+      "found": "대안 경로 확인: 탐색 중 — ",
+      "method": "dup"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "google: site:jobkorea.co.kr MICT 결과 대표 캐릭터 예시 (2026-10-20T12:06Z) — 보도성 글에 결과 구성 설명만(샘플 리포트 아님); jobkorea.co.kr는 이 출구에서 curl 000·브라우저 시간 초과(2026-10-20T11:55Z)"
+      "found": "google: site:jobkorea.co.kr MICT 결과 대표 캐릭터 예시 (2026-10-20T12:06Z) — 보도성 글에 결과 구성 설명만(샘플 리포트 아님); jobkorea.co.kr는 이 출구에서 curl 000·브라우저 시간 초과(2026-10-20T11:55Z)",
+      "method": "b"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: 잡코리아 MICT 내재역량테스트 결과 화면 예시",
+      "http": null,
+      "found": "ⓒ 일반 검색: 언론 보도·개인 블로그만, 공식 결과 샘플 없음",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",
@@ -5925,19 +6149,38 @@
       "at": "2026-10-12T08:35Z",
       "url": "https://www.16personalities.com/ko",
       "http": null,
-      "found": "분모 분류: 동일(한국어판)."
+      "found": "분모 분류: 동일(한국어판).",
+      "method": "a"
      },
      {
       "at": "2026-10-12T20:45Z",
       "url": "https://www.16personalities.com/terms",
       "http": null,
-      "found": "대안 경로 확인: 미확인→보류 — 자동 접근을 적극 차단하는 사이트. AI 응시는 사이트 정책과 충돌할 가능성 높음 → 사람(비이해관계자) 열람으로 약관 확인 전까지 보류"
+      "found": "대안 경로 확인: 미확인→보류 — 자동 접근을 적극 차단하는 사이트. AI 응시는 사이트 정책과 충돌할 가능성 높음 → 사람(비이해관계자) 열람으로 약관 확인 전까지 보류",
+      "method": "a+"
      },
      {
       "at": "2026-10-20T12:06Z",
       "url": null,
       "http": null,
-      "found": "G11과 같은 검색·같은 도메인(2026-10-20) — 한국어판도 같은 Premium 구조, 공개 샘플 없음 + 403"
+      "found": "G11과 같은 검색·같은 도메인(2026-10-20) — 한국어판도 같은 Premium 구조, 공개 샘플 없음 + 403",
+      "method": "dup"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: site:16personalities.com 프리미엄 보고서 샘플 ko",
+      "http": null,
+      "found": "ⓑ 공식 도메인 검색: 팀 평가 샘플(무작위 데이터)·전문가용 소개만, 개인 Premium 샘플 없음",
+      "method": "b",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+     },
+     {
+      "at": "2026-10-20T13:09Z",
+      "url": "google: 16Personalities 한국어 프리미엄 보고서 샘플",
+      "http": null,
+      "found": "ⓒ 일반 검색: 공식 팀 차트 예시·scribd 개인 결과 사본만(§21 미채택)",
+      "method": "c",
+      "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
      }
     ],
     "closed_at": "2026-10-20T12:35Z",

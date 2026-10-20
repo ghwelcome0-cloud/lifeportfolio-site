@@ -947,25 +947,29 @@
        "at": "2026-10-12",
        "url": "https://birkman.com/",
        "http": null,
-       "found": "4차: 제품·메서드 페이지에 기술 문서 링크 없음"
+       "found": "4차: 제품·메서드 페이지에 기술 문서 링크 없음",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:09Z",
        "url": "https://birkman.com/the-birkman-method",
        "http": 200,
-       "found": "8차 ⓐ: \"focus is on reliability and validity\" 문장만, 문서 링크 없음 (sha 7de49aa1…)"
+       "found": "8차 ⓐ: \"focus is on reliability and validity\" 문장만, 문서 링크 없음 (sha 7de49aa1…)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:13Z",
        "url": "google: site:birkman.com reliability validity research technical report Birkman Method",
        "http": null,
-       "found": "8차 ⓒ: FAQ·블로그 글만(기술 매뉴얼·규준 PDF 없음)"
+       "found": "8차 ⓒ: FAQ·블로그 글만(기술 매뉴얼·규준 PDF 없음)",
+       "method": "c"
       },
       {
        "at": "2026-10-20T12:13Z",
        "url": "google: site:birkman.com technical manual reliability validity Birkman Method pdf",
        "http": null,
-       "found": "8차 ⓒ: 결과 1건(메서드 개요)"
+       "found": "8차 ⓒ: 결과 1건(메서드 개요)",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -1185,25 +1189,29 @@
        "at": "2026-10-12",
        "url": "https://www.insights.com/products/insights-discovery/",
        "http": 200,
-       "found": "4차: 제품·FAQ 페이지 소요시간 미기재(note 기록)"
+       "found": "4차: 제품·FAQ 페이지 소요시간 미기재(note 기록)",
+       "method": "a"
       },
       {
        "at": "2026-10-20T11:50Z",
        "url": "https://www.insights.com/faqs/",
        "http": 200,
-       "found": "8차 ⓑ: FAQ 렌더 770자, 분 표기 없음 (sha 59852580…)"
+       "found": "8차 ⓑ: FAQ 렌더 770자, 분 표기 없음 (sha 59852580…)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T11:51Z",
        "url": "https://www.insights.com/us/products/insights-discovery/",
        "http": 200,
-       "found": "8차 ⓐ: 미국판 제품 페이지 렌더 10023자, \"minute\" 0건 (sha 49e27d44…)"
+       "found": "8차 ⓐ: 미국판 제품 페이지 렌더 10023자, \"minute\" 0건 (sha 49e27d44…)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T11:52Z",
        "url": "google: site:insights.com Insights Discovery evaluator \"20 minutes\" OR \"15 minutes\" questionnaire",
        "http": null,
-       "found": "8차 ⓒ: 공식 도메인 한정 검색 0건; 넓은 검색도 연수 일정(7시간 30분)만"
+       "found": "8차 ⓒ: 공식 도메인 한정 검색 0건; 넓은 검색도 연수 일정(7시간 30분)만",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -1335,25 +1343,29 @@
        "at": "2026-10-12",
        "url": "https://www.16personalities.com/ko",
        "http": 403,
-       "found": "4차: 60바이트(차단)"
+       "found": "4차: 60바이트(차단)",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:04Z",
        "url": "https://www.16personalities.com/articles/how-to-take-a-personality-test",
        "http": 403,
-       "found": "8차 ⓑ: 브라우저 렌더 \"Just a moment...\"(봇 검증) — 본문 미확인 (sha 07008c73…)"
+       "found": "8차 ⓑ: 브라우저 렌더 \"Just a moment...\"(봇 검증) — 본문 미확인 (sha 07008c73…)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:02Z",
        "url": "google: site:16personalities.com test \"minutes\"",
        "http": null,
-       "found": "8차 ⓒ: 검색 요약에 \"about 10 minutes\"가 보이나 본문 직접 확인 불가(봇 차단, crawler도 본문 없음) → 요약은 값으로 쓰지 않음(source_url 원문 확인 원칙)"
+       "found": "8차 ⓒ: 검색 요약에 \"about 10 minutes\"가 보이나 본문 직접 확인 불가(봇 차단, crawler도 본문 없음) → 요약은 값으로 쓰지 않음(source_url 원문 확인 원칙)",
+       "method": "c"
       },
       {
        "at": "2026-10-20T12:03Z",
        "url": "https://www.16personalities.com/articles/how-to-take-a-personality-test",
        "http": 403,
-       "found": "8차: curl 403 5605바이트"
+       "found": "8차: curl 403 5605바이트",
+       "method": "dup"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -2215,25 +2227,29 @@
        "at": "2026-10-13T05:40Z",
        "url": "https://www.coachhub.com/resources",
        "http": 404,
-       "found": "5차"
+       "found": "5차",
+       "method": "a"
       },
       {
        "at": "2026-10-13T05:40Z",
        "url": "https://help.coachhub.com/",
        "http": null,
-       "found": "5차: 연결 실패(000)"
+       "found": "5차: 연결 실패(000)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:00Z",
        "url": "https://www.coachhub.com/",
        "http": 200,
-       "found": "8차 ⓐ: 홈 198291바이트 — Resources(Ebooks·Blogs·Webinars)만, 사용 안내·기술 문서 링크 없음 (sha 2e078889…)"
+       "found": "8차 ⓐ: 홈 198291바이트 — Resources(Ebooks·Blogs·Webinars)만, 사용 안내·기술 문서 링크 없음 (sha 2e078889…)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:13Z",
        "url": "google: site:coachhub.com help center OR support OR \"help.coachhub\"",
        "http": null,
-       "found": "8차 ⓒ: 0건"
+       "found": "8차 ⓒ: 0건",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -2341,19 +2357,38 @@
        "at": "2026-10-12",
        "url": "https://fullfocusstore.com/products/full-focus-planner-linen",
        "http": 429,
-       "found": "렌더 2회 실패"
+       "found": "렌더 2회 실패",
+       "method": "a"
       },
       {
        "at": "2026-10-12",
        "url": "https://fullfocusstore.com/products/full-focus-planner-linen",
        "http": null,
-       "found": "4차: 18바이트(차단)"
+       "found": "4차: 18바이트(차단)",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:00Z",
        "url": "https://fullfocusstore.com/products/full-focus-planner-linen",
        "http": 429,
-       "found": "8차: \"local_rate_limited\" 18바이트 (sha fa2dd01e…); 외부 크롤러도 접근성 문구만"
+       "found": "8차: \"local_rate_limited\" 18바이트 (sha fa2dd01e…); 외부 크롤러도 접근성 문구만",
+       "method": "dup"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "https://fullfocusstore.com/collections/planners",
+       "http": 403,
+       "found": "ⓑ 다른 공식 경로: 403 6924바이트 (sha 24bc16b5…)",
+       "method": "b",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "google: site:fullfocusstore.com Full Focus Planner price",
+       "http": null,
+       "found": "ⓒ 공식 도메인 검색: 요약에 \"Regular price $44.99\"가 보이나 본문 직접 확인 불가(403) → 값 미채택, 되돌림 후보",
+       "method": "c",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -3823,19 +3858,30 @@
        "at": "2026-10-12",
        "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
        "http": null,
-       "found": "r3·r4·r6·r7 측정기 시간 초과(E1 종결 시트 sheets/e1-closures.json과 같은 URL)"
+       "found": "r3·r4·r6·r7 측정기 시간 초과(E1 종결 시트 sheets/e1-closures.json과 같은 URL)",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:21Z",
        "url": "https://m.work24.go.kr/cm/c/f/1100/selecSystInfo.do?currentPageNo=1&recordCountPerPage=10&systClId=SC00000185&systId=SI00000327",
        "http": null,
-       "found": "8차 ⓑ: 공식 고객센터 \"직업심리검사\" 안내 — 검색 요약에 \"20분\" 단서, 직접 접속 연결 실패(000)"
+       "found": "8차 ⓑ: 공식 고객센터 \"직업심리검사\" 안내 — 검색 요약에 \"20분\" 단서, 직접 접속 연결 실패(000)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:19Z",
        "url": "google: 고용24 대학생 진로준비도검사 문항 수 검사 시간 분",
        "http": null,
-       "found": "8차 ⓒ: 대학교 취업센터 등 제3자 페이지에 \"20분\" — 제3자 출처는 값으로 쓰지 않음(source 규칙); 공식 페이지 본문 확인 불가"
+       "found": "8차 ⓒ: 대학교 취업센터 등 제3자 페이지에 \"20분\" — 제3자 출처는 값으로 쓰지 않음(source 규칙); 공식 페이지 본문 확인 불가",
+       "method": "c?"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "google: site:work24.go.kr 대학생 진로준비도검사 20분",
+       "http": null,
+       "found": "ⓒ 공식 도메인 검색: 고객센터 안내 요약에 \"20분~30분\" 단서, work24.go.kr 직접 접속 000(13:11Z) → 미채택",
+       "method": "c",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4185,25 +4231,29 @@
        "at": "2026-10-13T05:40Z",
        "url": "https://www.ncs.go.kr/th03/TH0302List.do",
        "http": 200,
-       "found": "5차: 분류 목록만"
+       "found": "5차: 분류 목록만",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:00Z",
        "url": "https://www.ncs.go.kr/th03/TH0302List.do",
        "http": 200,
-       "found": "8차 ⓐ: 751066바이트, \"자가진단\" 0건 (sha e83292d0…)"
+       "found": "8차 ⓐ: 751066바이트, \"자가진단\" 0건 (sha e83292d0…)",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:09Z",
        "url": "https://www.ncs.go.kr/th04/dutyCompeDgn.do",
        "http": 200,
-       "found": "8차 ⓑ: 직무능력진단 페이지 789518바이트, 소요시간 문장 없음 (sha d829c08c…)"
+       "found": "8차 ⓑ: 직무능력진단 페이지 789518바이트, 소요시간 문장 없음 (sha d829c08c…)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T11:52Z",
        "url": "google: site:ncs.go.kr 직업기초능력 자가진단 소요시간",
        "http": null,
-       "found": "8차 ⓒ: 훈련시간 FAQ만, 검사 소요시간 없음"
+       "found": "8차 ⓒ: 훈련시간 FAQ만, 검사 소요시간 없음",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4247,19 +4297,22 @@
        "at": "2026-10-13T05:40Z",
        "url": "https://www.ncs.go.kr/th03/TH0302List.do",
        "http": 200,
-       "found": "5차: 자가진단 안내 문서 미발견"
+       "found": "5차: 자가진단 안내 문서 미발견",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:09Z",
        "url": "https://www.ncs.go.kr/th04/dutyCompeDgn.do",
        "http": 200,
-       "found": "8차 ⓑ: 진단 안내만, 신뢰도·규준 문서 없음"
+       "found": "8차 ⓑ: 진단 안내만, 신뢰도·규준 문서 없음",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:01Z",
        "url": "google: site:ncs.go.kr 직업기초능력 자가진단 검사",
        "http": null,
-       "found": "8차 ⓒ: 교육과정·훈련 가이드 PDF만, 검사 기술 문서 없음"
+       "found": "8차 ⓒ: 교육과정·훈련 가이드 PDF만, 검사 기술 문서 없음",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4472,25 +4525,37 @@
        "at": "2026-10-12",
        "url": "https://www.career4u.net/Tester/MBTI_Intro.asp",
        "http": null,
-       "found": "소개 페이지에 소요시간 미기재(당시 기록)"
+       "found": "소개 페이지에 소요시간 미기재(당시 기록)",
+       "method": "a"
       },
       {
        "at": "2026-10-20T11:56Z",
        "url": "https://m.career4u.net/Tester/MBTI_Intro",
        "http": null,
-       "found": "8차 ⓐ: 브라우저 45초 시간 초과, curl 000(해외 출구 연결 불가)"
+       "found": "8차 ⓐ: 브라우저 45초 시간 초과, curl 000(해외 출구 연결 불가)",
+       "method": "b"
       },
       {
        "at": "2026-10-20T11:54Z",
        "url": "https://www.career4u.net/Tester/ExamIntro/Intro.asp",
        "http": null,
-       "found": "8차 ⓑ: curl 000"
+       "found": "8차 ⓑ: curl 000",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:08Z",
        "url": "https://m.career4u.net/Tester/MBTI_Intro",
        "http": 200,
-       "found": "8차 ⓒ: 외부 크롤러로는 본문에 \"Form M … 문항수 : 93문항 · 검사시간 : 15 ~ 25분\"이 보이나, 우리 측 직접 접속(HTTP 코드·sha) 불가 → verified 5필드 미충족, 값으로 올리지 않음(되돌림 후보: 국내 출구에서 1회 확인하면 25로 채움)"
+       "found": "8차 ⓒ: 외부 크롤러로는 본문에 \"Form M … 문항수 : 93문항 · 검사시간 : 15 ~ 25분\"이 보이나, 우리 측 직접 접속(HTTP 코드·sha) 불가 → verified 5필드 미충족, 값으로 올리지 않음(되돌림 후보: 국내 출구에서 1회 확인하면 25로 채움)",
+       "method": "dup"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "google: site:career4u.net Form M 검사시간 93문항",
+       "http": null,
+       "found": "ⓒ 공식 도메인 검색: 요약 \"검사시간 : 15분~25분 문항수 : 93문항\"; 직접 접속 000(13:10Z) → verified 미충족, 되돌림 후보(25)",
+       "method": "c",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4623,25 +4688,29 @@
        "at": "2026-10-12",
        "url": "https://inpsyt.co.kr/",
        "http": null,
-       "found": "명부 v2 이관값 30(미확인)"
+       "found": "명부 v2 이관값 30(미확인)",
+       "method": "a"
       },
       {
        "at": "2026-10-14T06:12Z",
        "url": "https://inpsyt.co.kr/",
        "http": 200,
-       "found": "7차: 본문 없음, 상품 페이지 500"
+       "found": "7차: 본문 없음, 상품 페이지 500",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:00Z",
        "url": "https://inpsyt.co.kr/psy/item/view/TCI_RS_SG",
        "http": 500,
-       "found": "8차 ⓐ"
+       "found": "8차 ⓐ",
+       "method": "b"
       },
       {
        "at": "2026-10-20T11:52Z",
        "url": "google: site:inpsyt.co.kr TCI 기질 및 성격검사 소요시간 가격",
        "http": null,
-       "found": "8차 ⓒ: TCI 상품 페이지 검색 노출 없음(K-IIP만)"
+       "found": "8차 ⓒ: TCI 상품 페이지 검색 노출 없음(K-IIP만)",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4668,25 +4737,37 @@
        "at": "2026-10-13T05:40Z",
        "url": "https://inpsyt.co.kr/",
        "http": 500,
-       "found": "5차: TCI 상품 페이지 500(해외 IP)"
+       "found": "5차: TCI 상품 페이지 500(해외 IP)",
+       "method": "a"
       },
       {
        "at": "2026-10-14T06:12Z",
        "url": "https://inpsyt.co.kr/",
        "http": 200,
-       "found": "7차: 271바이트, 본문 없음"
+       "found": "7차: 271바이트, 본문 없음",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:00Z",
        "url": "https://inpsyt.co.kr/psy/item/view/TCI_RS_SG",
        "http": 500,
-       "found": "8차 ⓐ: TCI 상품 경로 500 (sha bf351cff…); 같은 사이트 다른 상품(K-IIP)은 200으로 열림 → TCI만 막힘"
+       "found": "8차 ⓐ: TCI 상품 경로 500 (sha bf351cff…); 같은 사이트 다른 상품(K-IIP)은 200으로 열림 → TCI만 막힘",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:16Z",
        "url": "https://inpsyt.co.kr/psy/search?keyword=TCI",
        "http": 200,
-       "found": "8차 ⓑ: 검색 페이지 26285바이트, TCI 상품 정보 없음"
+       "found": "8차 ⓑ: 검색 페이지 26285바이트, TCI 상품 정보 없음",
+       "method": "b"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "google: site:inpsyt.co.kr TCI 가격 원",
+       "http": null,
+       "found": "ⓒ 공식 도메인 검색: K-IIP만, TCI 가격 없음; TCI 상품 경로 13:11Z 재시도 500",
+       "method": "c",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4718,25 +4799,29 @@
        "at": "2026-10-13T05:40Z",
        "url": "https://inpsyt.co.kr/",
        "http": 500,
-       "found": "5차"
+       "found": "5차",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:00Z",
        "url": "https://inpsyt.co.kr/psy/item/view/TCI_RS_SG",
        "http": 500,
-       "found": "8차 ⓐ"
+       "found": "8차 ⓐ",
+       "method": "b"
       },
       {
        "at": "2026-10-20T12:16Z",
        "url": "https://inpsyt.co.kr/psy/search?keyword=TCI",
        "http": 200,
-       "found": "8차 ⓑ: TCI 문서·매뉴얼 링크 없음"
+       "found": "8차 ⓑ: TCI 문서·매뉴얼 링크 없음",
+       "method": "b"
       },
       {
        "at": "2026-10-20T11:52Z",
        "url": "google: site:inpsyt.co.kr TCI 기질 성격 검사 item view",
        "http": null,
-       "found": "8차 ⓒ: 홈·K-IIP만"
+       "found": "8차 ⓒ: 홈·K-IIP만",
+       "method": "c"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4833,19 +4918,30 @@
        "at": "2026-10-12",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "명부 v2 이관값 15(미확인)"
+       "found": "명부 v2 이관값 15(미확인)",
+       "method": "a"
       },
       {
        "at": "2026-10-14T06:12Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "7차: 연결 실패"
+       "found": "7차: 연결 실패",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:18Z",
        "url": "https://www.jobkorea.co.kr/goodjob/tip/view?News_No=20596",
        "http": 200,
-       "found": "8차 ⓒ: 잡코리아 공식 콘텐츠(외부 크롤러) \"2~3분 내에 완료할 수 있는 간단한 테스트\"(MICT·GSTI·도구리 3종 묶음 문장) — 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품인지 공식 문장 없음 + 우리 측 직접 접속 불가(000) → 값 미채택, 이관값 15 표에서 내림"
+       "found": "8차 ⓒ: 잡코리아 공식 콘텐츠(외부 크롤러) \"2~3분 내에 완료할 수 있는 간단한 테스트\"(MICT·GSTI·도구리 3종 묶음 문장) — 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품인지 공식 문장 없음 + 우리 측 직접 접속 불가(000) → 값 미채택, 이관값 15 표에서 내림",
+       "method": "b"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "google: site:jobkorea.co.kr 역량테스트 MICT 소요시간",
+       "http": null,
+       "found": "ⓒ 공식 도메인 검색: 소요시간 문장 없음(36문항·무료만)",
+       "method": "c",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4864,32 +4960,44 @@
     "note": "가격 정보 미확인(검사 페이지 접근 불가) → 구간 미측정 | 종결(연결 불가(시간 초과)) 2026-10-20 — 시도 4회(closure.attempts), op:207 A",
     "closure": {
      "state": "종결",
-     "reason": "연결 불가(시간 초과)",
+     "reason": "공식 미공개",
      "rule": "op:q90-auto-207 A (comet 6978302)",
      "attempts": [
       {
        "at": "2026-10-12",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "검사 페이지 접근 불가(당시 기록)"
+       "found": "검사 페이지 접근 불가(당시 기록)",
+       "method": "a"
       },
       {
        "at": "2026-10-14T06:12Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "7차: 연결 실패"
+       "found": "7차: 연결 실패",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T11:55Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "8차 ⓐ: curl 000(25초), 브라우저 45초 시간 초과"
+       "found": "8차 ⓐ: curl 000(25초), 브라우저 45초 시간 초과",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:02Z",
        "url": "google: site:jobkorea.co.kr MICT 내재 역량 테스트 무료",
        "http": null,
-       "found": "8차 ⓒ: 보도성 콘텐츠만(\"회원이면 누구나 무료\"), 명부 행과 같은 제품인지 공식 문장 없음 → 가격 미채택"
+       "found": "8차 ⓒ: 보도성 콘텐츠만(\"회원이면 누구나 무료\"), 명부 행과 같은 제품인지 공식 문장 없음 → 가격 미채택",
+       "method": "c"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "https://www.jobkorea.co.kr/help/notice/view?no=14498",
+       "http": 200,
+       "found": "ⓑ 공식 공지 \"역량테스트(MICT) 서비스 오픈!\" 직접 접속 200 (sha 68902274…) — 이번엔 열림. 그러나 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품이라는 공식 문장 없음 → 값 미채택",
+       "method": "b",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4914,32 +5022,44 @@
     "note": "종결(연결 불가(시간 초과)) 2026-10-20 — 시도 4회(closure.attempts), op:207 A",
     "closure": {
      "state": "종결",
-     "reason": "연결 불가(시간 초과)",
+     "reason": "공식 미공개",
      "rule": "op:q90-auto-207 A (comet 6978302)",
      "attempts": [
       {
        "at": "2026-10-12",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "검사 페이지 접근 불가(당시 기록)"
+       "found": "검사 페이지 접근 불가(당시 기록)",
+       "method": "a"
       },
       {
        "at": "2026-10-14T06:12Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "7차: 연결 실패"
+       "found": "7차: 연결 실패",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T11:55Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "8차 ⓐ: curl 000(25초), 브라우저 45초 시간 초과"
+       "found": "8차 ⓐ: curl 000(25초), 브라우저 45초 시간 초과",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:02Z",
        "url": "google: site:jobkorea.co.kr MICT 내재 역량 테스트 무료",
        "http": null,
-       "found": "8차 ⓒ: 보도성 콘텐츠만(\"회원이면 누구나 무료\"), 명부 행과 같은 제품인지 공식 문장 없음 → 문서 미채택"
+       "found": "8차 ⓒ: 보도성 콘텐츠만(\"회원이면 누구나 무료\"), 명부 행과 같은 제품인지 공식 문장 없음 → 문서 미채택",
+       "method": "c"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "https://www.jobkorea.co.kr/help/notice/view?no=14498",
+       "http": 200,
+       "found": "ⓑ 공식 공지 \"역량테스트(MICT) 서비스 오픈!\" 직접 접속 200 (sha 68902274…) — 이번엔 열림. 그러나 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품이라는 공식 문장 없음 → 값 미채택",
+       "method": "b",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -4982,32 +5102,44 @@
     "note": "검사 소개 페이지 접근 실패 → 공식 문구 미수집(채우지 않음) | 종결(연결 불가(시간 초과)) 2026-10-20 — 시도 4회(closure.attempts), op:207 A",
     "closure": {
      "state": "종결",
-     "reason": "연결 불가(시간 초과)",
+     "reason": "공식 미공개",
      "rule": "op:q90-auto-207 A (comet 6978302)",
      "attempts": [
       {
        "at": "2026-10-12",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "검사 페이지 접근 불가(당시 기록)"
+       "found": "검사 페이지 접근 불가(당시 기록)",
+       "method": "a"
       },
       {
        "at": "2026-10-14T06:12Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "7차: 연결 실패"
+       "found": "7차: 연결 실패",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T11:55Z",
        "url": "https://www.jobkorea.co.kr/",
        "http": null,
-       "found": "8차 ⓐ: curl 000(25초), 브라우저 45초 시간 초과"
+       "found": "8차 ⓐ: curl 000(25초), 브라우저 45초 시간 초과",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:02Z",
        "url": "google: site:jobkorea.co.kr MICT 내재 역량 테스트 무료",
        "http": null,
-       "found": "8차 ⓒ: 보도성 콘텐츠만(\"회원이면 누구나 무료\"), 명부 행과 같은 제품인지 공식 문장 없음 → 공식 소개 문구 미채택"
+       "found": "8차 ⓒ: 보도성 콘텐츠만(\"회원이면 누구나 무료\"), 명부 행과 같은 제품인지 공식 문장 없음 → 공식 소개 문구 미채택",
+       "method": "c"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "https://www.jobkorea.co.kr/help/notice/view?no=14498",
+       "http": 200,
+       "found": "ⓑ 공식 공지 \"역량테스트(MICT) 서비스 오픈!\" 직접 접속 200 (sha 68902274…) — 이번엔 열림. 그러나 명부 행 \"성향·역량 검사\"와 MICT가 같은 제품이라는 공식 문장 없음 → 값 미채택",
+       "method": "b",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"
@@ -5067,19 +5199,30 @@
        "at": "2026-10-12",
        "url": "https://www.16personalities.com/ko",
        "http": 403,
-       "found": "4차: 60바이트(차단), render_js 뒤에도 소요시간 문장 없음"
+       "found": "4차: 60바이트(차단), render_js 뒤에도 소요시간 문장 없음",
+       "method": "a"
       },
       {
        "at": "2026-10-20T12:04Z",
        "url": "https://www.16personalities.com/ko",
        "http": 403,
-       "found": "8차 ⓐ: 브라우저 렌더 \"Just a moment...\" (sha fec3770d…)"
+       "found": "8차 ⓐ: 브라우저 렌더 \"Just a moment...\" (sha fec3770d…)",
+       "method": "dup"
       },
       {
        "at": "2026-10-20T12:02Z",
        "url": "google: site:16personalities.com test \"minutes\"",
        "http": null,
-       "found": "8차 ⓒ: 요약만 있고 본문 직접 확인 불가(G11과 같음)"
+       "found": "8차 ⓒ: 요약만 있고 본문 직접 확인 불가(G11과 같음)",
+       "method": "c"
+      },
+      {
+       "at": "2026-10-20T13:09Z",
+       "url": "https://www.16personalities.com/ko/%EB%AC%B4%EB%A3%8C-%EC%84%B1%EA%B2%A9-%EC%9C%A0%ED%98%95-%EA%B2%80%EC%82%AC",
+       "http": 403,
+       "found": "ⓑ 다른 공식 경로(무료 성격 테스트): 403 5680바이트 (sha 3451336c…); 검색 요약 \"10분 만에\"는 본문 확인 불가 → 미채택",
+       "method": "b",
+       "pass": "9차(op:208 보완: ⓐⓑⓒ 각 1회 이상)"
       }
      ],
      "closed_at": "2026-10-20T12:25Z"

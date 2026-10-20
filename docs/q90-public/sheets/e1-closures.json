@@ -2,13 +2,15 @@
  "tool": "closures-e1.cjs",
  "rule": "op:q90-auto-207 A-1·A-2 — 결박 측정기 run 3회 이상 실패(증거=run 폴더 결과) → 종결(사유)",
  "measure_tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
- "generatedAt": "2026-10-20T12:17:45.738Z",
+ "generatedAt": "2026-10-20T13:12:08.177Z",
  "rows": [
   {
    "row": "G11",
    "attempts_n": 3,
    "fails_n": 3,
    "closed": true,
+   "retro_closed": false,
+   "reason_note": null,
    "reason": "접근 차단(403·봇)",
    "attempts": [
     {
@@ -34,7 +36,7 @@
     {
      "run": "2026-10-20-r8",
      "startedAt": "2026-10-20T12:03:13.724Z",
-     "egress": null,
+     "egress": "US",
      "ok": false,
      "status": 403,
      "error": null,
@@ -48,6 +50,8 @@
    "attempts_n": 5,
    "fails_n": 5,
    "closed": true,
+   "retro_closed": true,
+   "reason_note": "이 행을 잰 시점에 연결 실패 — 같은 URL이 다른 행에서 2xx로 측정됐을 수 있음(TL 6978370)",
    "reason": "연결 불가(시간 초과)",
    "attempts": [
     {
@@ -107,6 +111,8 @@
    "attempts_n": 5,
    "fails_n": 5,
    "closed": true,
+   "retro_closed": true,
+   "reason_note": "이 행을 잰 시점에 연결 실패 — 같은 URL이 다른 행에서 2xx로 측정됐을 수 있음(TL 6978370)",
    "reason": "연결 불가(시간 초과)",
    "attempts": [
     {
@@ -166,6 +172,8 @@
    "attempts_n": 3,
    "fails_n": 3,
    "closed": true,
+   "retro_closed": false,
+   "reason_note": null,
    "reason": "접근 차단(403·봇)",
    "attempts": [
     {
@@ -191,7 +199,7 @@
     {
      "run": "2026-10-20-r8",
      "startedAt": "2026-10-20T12:03:13.724Z",
-     "egress": null,
+     "egress": "US",
      "ok": false,
      "status": 403,
      "error": null,

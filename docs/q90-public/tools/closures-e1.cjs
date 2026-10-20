@@ -21,7 +21,9 @@ for (const p of asm.provenance) {
     attempts.push({ run: d, startedAt: res.startedAt, egress: meta.egress_country || (res.limitation_r3 ? 'US' : null), ok, status: (r.mobile && r.mobile.status) || (r.headers && r.headers.status) || null, error: (r.mobile && r.mobile.error) || (r.headers && r.headers.error) || null, title: (r.mobile && r.mobile.title) || null, dom_sha256: (r.mobile && r.mobile.domSha256) || null });
   }
   const fails = attempts.filter(a => !a.ok); const last = fails[fails.length - 1] || {};
-  out.rows.push({ row: p.row, attempts_n: attempts.length, fails_n: fails.length, closed: fails.length >= 3 && fails.length === attempts.length, reason: reason(last), attempts });
+  out.rows.push({ row: p.row, attempts_n: attempts.length, fails_n: fails.length, closed: fails.length >= 3 && fails.length === attempts.length && new Set(fails.map(a => String(a.startedAt).slice(0, 10))).size >= 2, // Peer 6978351: 서로 다른 날짜 run 2개 이상
+    retro_closed: fails.filter(a => String(a.startedAt) < '2026-10-20T11:43').length >= 3, // Method 6978346: 결박 시점에 이미 3회(소급 즉시 종결) 표시
+    reason_note: /TIMED_OUT|timeout|fetch failed/i.test(last.error || '') ? '이 행을 잰 시점에 연결 실패 — 같은 URL이 다른 행에서 2xx로 측정됐을 수 있음(TL 6978370)' : null, reason: reason(last), attempts });
 }
 fs.writeFileSync(path.join(B, 'sheets/e1-closures.json'), JSON.stringify(out, null, 1) + '\n');
 for (const r of out.rows) console.log(r.row, r.closed ? '종결' : '미종결', r.reason, `${r.fails_n}/${r.attempts_n}`, r.attempts.map(a => a.run.replace(/^.*-(r\w+)$/, '$1') + ':' + (a.status || 'TO')).join(' '));
