@@ -4677,18 +4677,66 @@
    "id": "K16",
    "name": "한국가이던스 홀랜드 진로탐색검사",
    "blind_id": "S-8729f4",
-   "sample_url": null,
-   "sample_sha256": null,
+   "sample_url": "https://www.guidance.co.kr/agMain/eTest/Sample/SDA/SDS%EC%A0%81%EC%84%B1%ED%83%90%EC%83%89%EA%B2%80%EC%82%AC.pdf",
+   "sample_sha256": "bca9073845a76248e6d0acc3415eb78bba16d63f0454d285a912e5cde2622a87",
    "redaction": {
     "items_found": [],
-    "tool_sha256": null,
+    "tool_sha256": "935617181e0621654d2ef4b5754f52008d9899d70614329484fea872fee07fca",
+    "images_removed": true,
     "leak_check": {
-     "roster_strings_found": null,
-     "checked_at": null
+     "roster_strings_found": 0,
+     "leaked_terms": [],
+     "text_layer": [],
+     "ocr_layer": {},
+     "ocr_lang": "kor+eng@150dpi",
+     "check_terms_n": 144,
+     "allow_hits": {
+      "text_layer": [],
+      "ocr_layer": {}
+     },
+     "allow_hits_note": "허용 목록(모델명)·STOP 단어가 최종본에 남은 곳 — 차단 아님, 사람 눈 확인 대상",
+     "checked_at": "2026-10-14T07:48:51Z"
     },
-    "redacted_sha256": null
+    "redacted_sha256": "6fb24603e24322fbe0a45896bd91a0620e4af9636341956598a19bb688f3e639",
+    "final_file": "S-8729f4.img.pdf",
+    "final_format": "image-pdf@200dpi",
+    "intermediate_sha256": "c2bdd0563d451132b26b4af1efd49635b988012d70417d810de5e2efbbac6fed",
+    "hidden_structure": {
+     "text_layer_bytes": 0,
+     "fonts": [],
+     "annots": 0,
+     "links": 0,
+     "toc": 0,
+     "embedded_files": 0,
+     "metadata_nonempty": {}
+    },
+    "visual_check": {
+     "contact_sheet": "S-8729f4.img.contact.png",
+     "passed": true,
+     "checked_at": "2026-10-14T07:55Z",
+     "checked_by": "assistant(총괄 AI, 사람 아님) — 40dpi 7쪽 시트 + 머리/바닥글·가림 상자 주변 60~80dpi 확대 + 최종본 150dpi OCR 재검색(홀랜드·Holland·가이던·SDS·홍길·견본·PAR·Messer 0건)",
+     "rounds": [
+      {
+       "n": 1,
+       "finding": "1차: 6쪽 절 제목 '11 Holland진로유형별 특징'에 이론 창시자 성 'Holland' 잔존(그림 글자, OCR 미검출) — KB-02 규칙(사람·회사 유래 이름은 ALLOWLIST 금지)에 따라 가림 대상"
+      },
+      {
+       "n": 2,
+       "finding": "6:0.03,0.125,0.42,0.162 상자 추가 후 재처리. 표지 통째 가림, 2~7쪽 머리글(검사명·저자·한국판 개발자·성명·기관·검사일)·바닥글(회사 로고) 띠 가림, 5쪽 'SDS 적성탐색검사의 활용방법'·7쪽 'SDS검사의 활용' 제목 가림. 내용(점수표·프로파일·직업군·해설) 남음"
+      }
+     ],
+     "note": "체크리스트 6항목: 인물명 ✓ 저자명 ✓(Holland·Messer·한국판 개발자) 주소 해당 없음 · 고유 도표 — RIASEC 육각형·코드는 모델 공통 개념이라 유지 · 표지 ✓ · 내용 남음 ✓. 한계: RIASEC 6유형 구성만으로 Holland 계열 검사임은 짐작 가능(모델명 노출 허용과 같은 수준, guess 칸으로 측정)",
+     "human_check": {
+      "passed": null,
+      "by": null,
+      "at": null,
+      "note": "AI 시각 확인만(Peer 6063344 규칙 (가)안)"
+     }
+    },
+    "boxes": "2:0,0,1,0.128;2:0,0.885,1,0.95;3:0,0,1,0.128;3:0,0.885,1,0.95;4:0,0,1,0.128;4:0,0.885,1,0.95;5:0,0,1,0.128;5:0,0.885,1,0.95;6:0,0,1,0.128;6:0,0.885,1,0.95;7:0,0,1,0.128;7:0,0.885,1,0.95;5:0.03,0.515,0.42,0.548;7:0.03,0.145,0.42,0.185;6:0.03,0.125,0.42,0.162",
+    "extra": "한국가이던스|KOREAGUIDANCE|KOREA GUIDANCE|guidance|가이던스|SDS|Self-Directed|SELF-DIRECTED|Holland|Messer|이동혁|황매향|PAR Inc|홍길동|견본대학교|ABC1234567890|적성탐색검사"
    },
-   "status": "no_sample",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -4743,31 +4791,75 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 18,
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T10:19:34Z",
+    "third_used": [],
+    "aggregate_sha256": "0091f5f1322968c4f1050f0d287c4981354249e8d74b32e20887a632975b2e26"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
-   "packet_sha256": null,
+   "A1": 4,
+   "A2": 4,
+   "A3": 4,
+   "A4": 3,
+   "A5": 3,
+   "packet_sha256": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
    "denominator_class": {
-    "class": "미확보(비공개 포함)",
-    "evidence_url": "https://www.guidance.co.kr/",
+    "class": "확보",
+    "evidence_url": "https://korea.guidance.co.kr/myschool/school_standardization?tab=university",
     "evidence_line": "\"결과확인 > 인증코드 입력 > 결과조회\" — 개인 결과 있음, 기관 허용 시 열람. 공개 샘플 미발견.",
-    "checked_at": "2026-10-12T08:35Z"
+    "checked_at": "2026-10-14T07:55Z"
    },
    "e2_alt": {
     "path_candidate": "E2-d",
     "tos_url": "https://www.guidance.co.kr/",
     "tos_quote": "문서도판 경로 — 약관 대신 공식 문서 내 리포트 전체 쪽 유무 탐색",
-    "tos_verdict": "탐색 중",
+    "tos_verdict": "공개 견본(회사가 고른 예시). 표지 문구 '무단도용·배포 금지' → 원본·가림본 모두 저장소·공개 폴더에 넣지 않음, judge 레벨만 공개(G21 저작권 규칙)",
     "checked_at": "2026-10-12T20:35Z",
-    "note": ""
+    "note": "E3 time_min(45분, 상품 페이지)과 대학 탭 표기(50분)가 다름 — E3 값은 상품 페이지 원문 유지, 차이는 사실로만 기록",
+    "path": "E2 (샘플)",
+    "source": "한국가이던스 공식 사이트 학교표준화심리검사 대학 탭 '적성탐색검사(Holland's SDS)' 결과샘플 PDF(7쪽, 가상 인물·견본 기관). 로그인·결제·본인인증 없음. 응시·구매 아님 → 정식 (샘플) 경로",
+    "source_page": "https://korea.guidance.co.kr/myschool/school_standardization?tab=university",
+    "collected_at": "2026-10-14T07:40Z",
+    "collector": "총괄(US 샌드박스, HTTP 200)"
+   },
+   "packet_files": {
+    "sample.pdf": "6fb24603e24322fbe0a45896bd91a0620e4af9636341956598a19bb688f3e639",
+    "RUBRIC.md": "2ed52c894fe99818632f7d8671b63503a83224c10800279a4fd888bc8c7cbcb3",
+    "README.md": "d7aa31b188c8e7998f1687a42c63e186f1ec412a0737e07be72ed2b1c7aaa00f",
+    "ANSWER.json": "52d623b02a5b1d7b1e4fabec7e80e24c0401104a66a834c09dc87145480df8c2"
+   },
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "round": 6,
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge2_actor": "agent_kxmtj2g9mmyk",
+    "third_needed_axes_n": 0,
+    "post_q2": "judge1 아니오(6968709) · judge2 아니오(6968628) → 6회차 유효",
+    "delay": "6일 무응답 → 재요청 10:11Z(파일·규칙 불변) → 답 judge1 6968021 · judge2 6968002",
+    "aggregate_sha256_16": "0091f5f1322968c4",
+    "aggregate_note": "e2-aggregate.py를 K16 1행만 대상으로 실행(이전 13행은 이미 final, 답안 원본은 이전 샘플박스에 있어 재집계 안 함 — 값 덮어쓰기 금지 원칙)"
    }
   },
   {
@@ -5353,7 +5445,8 @@
   "S-da397f",
   "S-e88b89",
   "S-e9e660",
-  "S-f7229a"
+  "S-f7229a",
+  "S-8729f4"
  ],
  "judge_sessions": {
   "note": "TL 6054779 5조건 + Peer 6057976 ④(받은 쪽 sha) + TL 6058049(read_check). 채점 전 채움. 값은 사실만.",
@@ -5789,6 +5882,22 @@
       "answer_sha256": "d820ca6950f83496f1c32f5d343bee8e7bef267820e5f2717c92e54cc22a3cf3",
       "answered_at": "2026-10-13T00:15:12Z",
       "first_line_declaration_ok": true
+     },
+     "S-8729f4": {
+      "sent_msg_id": "6297410",
+      "sent_at": "2026-10-14T07:53:34Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/KkpBA6CZ",
+      "attachment_sha256_sent": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
+      "attachment_sha256_received_redownload": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
+      "bytes_match": true,
+      "reply_msg_id": "6968002",
+      "answer_sha256": "e3fbd4609f5469cdbb828938df33c1ff9fc07be1ca140cbe344350ea6ae778a6",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T10:16:33Z",
+      "first_line_declaration_ok": true,
+      "nudge_msg_id": "6967684",
+      "nudge_at": "2026-10-20T10:11:28Z",
+      "delay_note": "6일 무응답 → 재요청(파일·규칙 불변). judge1 자기신고: 10-14 채점 중 크레딧 소진으로 중단"
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5802,6 +5911,14 @@
      "S-7da6e0": {
       "reply_msg_id": "6081867",
       "q2_wrote_notes": "아니오",
+      "ruling": "valid"
+     }
+    },
+    "post_memory_check_round6": {
+     "S-8729f4": {
+      "reply_msg_id": "6968628",
+      "q2_wrote_notes": "아니오",
+      "q1_outside_material": "Q1 아니오",
       "ruling": "valid"
      }
     }
@@ -6021,6 +6138,22 @@
       "answer_sha256": "85b92400d6bbc0d6e41e5cb86ef6a8f59b7e899bdd4a19cbbaa6b6789ab51ff9",
       "answered_at": "2026-10-13T00:15:11Z",
       "first_line_declaration_ok": true
+     },
+     "S-8729f4": {
+      "sent_msg_id": "6297387",
+      "sent_at": "2026-10-14T07:53:25Z",
+      "wrapper": "https://www.genspark.ai/api/files/s/KkpBA6CZ",
+      "attachment_sha256_sent": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
+      "attachment_sha256_received_redownload": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
+      "bytes_match": true,
+      "reply_msg_id": "6968021",
+      "answer_sha256": "757016074b30f106067edfd6d95466e816c2b49c2bd02a635cd76b590dc963a2",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T10:16:31Z",
+      "first_line_declaration_ok": true,
+      "nudge_msg_id": "6967646",
+      "nudge_at": "2026-10-20T10:11:12Z",
+      "delay_note": "6일 무응답 → 재요청(파일·규칙 불변). judge1 자기신고: 10-14 채점 중 크레딧 소진으로 중단"
      }
     },
     "team_ok": {
@@ -6037,6 +6170,14 @@
      "S-7da6e0": {
       "reply_msg_id": "6081891",
       "q2_wrote_notes": "아니오",
+      "ruling": "valid"
+     }
+    },
+    "post_memory_check_round6": {
+     "S-8729f4": {
+      "reply_msg_id": "6968709",
+      "q2_wrote_notes": "아니오",
+      "q1_outside_material": "Q1 아니오 — 단, 10-14 직전 패킷 RUBRIC.md와 diff 1회(차이 없음, 이전 샘플·답안 미열람). 공통 루브릭 파일 비교라 블라인드 영향 없음으로 판단",
       "ruling": "valid"
      }
     }
@@ -6816,5 +6957,12 @@
   ],
   "built_at": "2026-10-13T00:13Z",
   "note": "5회차 패킷 1건(K18 TCI 성인용 공식 샘플 2쪽, 대표 국내 수령). 1~4회차 12건 sha 불변."
+ },
+ "packet_round6": {
+  "blind_ids": [
+   "S-8729f4"
+  ],
+  "built_at": "2026-10-14T07:57Z",
+  "note": "6회차 패킷 1건(K16 공식 결과샘플 7쪽, 총괄 US 샌드박스 수령). build-packet의 packet_order 덮어쓰기는 KB-02 절차대로 이전 13건 목록 복구 후 추가. 1~5회차 13건 sha 불변."
  }
 }
