@@ -22,11 +22,11 @@
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
-      script-src https://apis.google.com 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://*.analytics.google.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
+      script-src https://apis.google.com 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://www.googletagmanager.com https://www.google-analytics.com https://*.analytics.google.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com;
       style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
-      connect-src https://lifeporfolio.firebaseapp.com 'self' https://www.gstatic.com https://www.googletagmanager.com https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
-      frame-src https://*.firebaseapp.com https://accounts.google.com 'self' https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
+      connect-src https://lifeporfolio.firebaseapp.com 'self' https://www.gstatic.com https://www.googletagmanager.com https://www.google-analytics.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com;
+      frame-src https://*.firebaseapp.com https://accounts.google.com 'self' https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com;
       img-src 'self' data: https:;" />
   <!-- ※ [결제 차단 수정] form-action 디렉티브는 meta CSP 에서 의도적으로 제거.
        CSP 명세상 form-action 은 default-src 로 폴백되지 않으므로, meta 에서 빼면
@@ -246,12 +246,13 @@
         <li class="flex gap-2"><span>📐</span><span><b class="text-slate-800">핵심 목적:</b> 사명을 발견하고 살아낼 양식(Only One Report)으로 잇기</span></li>
       </ul>
       <p class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 break-keep">
-        세금 포함 단일 가격이며, 추가 비용은 없습니다.
+        세금 포함 가격이며, 추가 비용은 없습니다. 제휴 기업 회원은 제휴 전용 페이지에 표시된 제휴가가 적용됩니다.
       </p>
     </section>
 
     <!-- 상태 메시지 -->
     <p id="statusMsg" class="text-center text-sm mt-6 min-h-[1.5rem]"></p>
+    <div id="payFallback" hidden></div>
 
     <!-- 신뢰 푸터 -->
     <footer class="mt-8 text-center text-xs text-slate-400 leading-relaxed break-keep">
@@ -266,6 +267,7 @@
     </footer>
   </main>
 
+  <script src="/assets/js/pay-fallback.js" defer></script>
   <script type="module">
     // ★[전수점검C] EN 가드 — product-v2 는 한국어+페이플(KRW) 전용 페이지다.
     //   EN 사용자가 ?lang=en 으로 직접 들어오면 의도치 않게 KRW 결제를 보게 되므로,
@@ -313,6 +315,19 @@
     const fnConfirm = httpsCallable(functions, "confirmPayplePayment");
     // [옵션 A] 추가검사 결제 승인 (additionalPayments 토큰 발급)
     const fnConfirmAdditional = httpsCallable(functions, "confirmAdditionalPayplePayment");
+    // 국내 결제 실패 → PayPal 안내 (2026-10-15 대표 확정). 일반 PayPal 주문·캡처 함수를 그대로 쓴다($14.99, 서버가 금액 결정).
+    const fnReportFail = httpsCallable(functions, "reportDomesticFail");
+    const fnPpCreate = httpsCallable(functions, "createPaypalOrder");
+    const fnPpCapture = httpsCallable(functions, "capturePaypalOrder");
+    function showRegularFallback() {
+      window.LP_PAY_FALLBACK.show({
+        mount: document.getElementById("payFallback"), supportHref: (document.querySelector('a[href^="mailto:"]') || {}).href || "#", usdLabel: "$14.99", partner: false,
+        beforeClick: () => { if ($legalAgree && !$legalAgree.checked) { setStatus("결제를 진행하려면 아래 청약철회 제한 사항에 먼저 동의해주세요.", "err"); return false; } return true; },
+        createOrder: async () => (await fnPpCreate({})).data.orderID,
+        onApprove: async (orderID) => { const r = await fnPpCapture({ orderID }); if (!(r && r.data && r.data.ok)) throw new Error("결제 확인에 실패했어요."); window.location.replace("payment-success.html?" + new URLSearchParams({ provider: "paypal", orderID, lang: "ko" }).toString()); },
+        onRetry: () => { setStatus("", "info"); },
+      });
+    }
 
     // DOM
     const $authState = document.getElementById("authState");
@@ -452,6 +467,14 @@
         const rst = (authResult && (authResult.PCD_PAY_RST || authResult.PCD_PAY_RESULT) || "").toString().toLowerCase();
         if (rst !== "success") {
           const msg = (authResult && authResult.PCD_PAY_MSG) || "결제가 취소되었거나 인증에 실패했습니다.";
+          // 국내 결제가 안 됐고 돈이 빠지지 않은 경우: PayPal로 부드럽게 안내 (고객이 스스로 닫은 경우는 제외, 첫 결제만)
+          if (!IS_ADDITIONAL && window.LP_PAY_FALLBACK && !window.LP_PAY_FALLBACK.isUserCancel(authResult)) {
+            setStatus("", "info");
+            try { fnReportFail({ where: "regular", stage: "auth", code: authResult && authResult.PCD_PAY_CODE, msg }).catch(() => {}); } catch (_) {}
+            showRegularFallback();
+            setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false); BUSY = false;
+            return;
+          }
           setStatus("❌ " + msg, "err");
           setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
           BUSY = false;
@@ -500,6 +523,14 @@
         }
       } catch (e) {
         const m = (e && e.message) || "결제 승인 중 오류가 발생했습니다.";
+        // 서버 승인 단계 거절(돈 안 빠짐: failed-precondition)이면 PayPal 안내
+        if (!IS_ADDITIONAL && e && e.code === "functions/failed-precondition" && /승인 실패|인증 실패/.test(m) && window.LP_PAY_FALLBACK) {
+          setStatus("", "info");
+          try { fnReportFail({ where: "regular", stage: "confirm", msg: m }).catch(() => {}); } catch (_) {}
+          showRegularFallback();
+          setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false); BUSY = false;
+          return;
+        }
         setStatus("❌ " + m, "err");
         setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
         BUSY = false;
@@ -616,6 +647,7 @@
         }, 4000);
       } catch (e) {
         console.error("[product-v2] 결제창 호출 실패:", e);
+        if (!IS_ADDITIONAL && window.LP_PAY_FALLBACK) { try { fnReportFail({ where: "regular", stage: "open", msg: String((e && e.message) || "") }).catch(() => {}); } catch (_) {} showRegularFallback(); }
         setStatus("❌ " + ((e && e.message) || "결제창 호출 실패"), "err");
         setBtnLoading(btn, false);
         BUSY = false;
@@ -635,6 +667,7 @@
 
     // ── 로그인 + 설정 로드 ────────────────────────────────────────────
     onAuthStateChanged(auth, async (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
       if (!user) {
         CURRENT_UID = null;
         $authState.innerHTML = '로그인이 필요합니다. <a href="login" class="text-indigo-600 underline font-semibold inline-block py-2 px-1 -my-2">로그인 하기</a>';

@@ -100,7 +100,9 @@ ok('program-files-differ-from-baseline-only-by-approved-prog01-additions',()=>{
    ['          lang: _lockedLang,\n          axisProgram: true,  // PROG-01: explicit regeneration also links grounded four-axis decisions\n          cardShape: "rq-01"  // RQ-01: one chain per card, no repeated lines\n','          lang: _lockedLang\n'],
    ['실행 프로그램을 다시 만들까요?\\n저장된 리포트에 최신 엔진을 적용해, 지금 보이는 프로그램을 새 결과로 바꿉니다.','저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?'],
    ['✅ 최신 엔진으로 실행 프로그램을 다시 만들었습니다.','✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다.'],
-   ['title="저장된 리포트로 실행 프로그램을 다시 만듭니다."','title="저장된 리포트로 실행 계획을 다시 만듭니다."']]){
+   ['title="저장된 리포트로 실행 프로그램을 다시 만듭니다."','title="저장된 리포트로 실행 계획을 다시 만듭니다."'],
+   // 2026-10-16 동의 서버 연결 허용 (PR #438): 화면 보안 규칙에 함수 주소 1개 추가
+   ["connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.googleapis.com","connect-src 'self' https://*.googleapis.com"]]){
    assert.equal(program.split(next).length,2,'approved edit present once: '+next.slice(0,30));program=program.replace(next,old);}
   assert.equal(program,base('program.html'));
 });

@@ -149,7 +149,7 @@
   <meta name="theme-color" content="#FAFAF7">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -1674,7 +1674,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             dec = ext.pathname.split("/").pop() + (ext.search || "") + (ext.hash || "");
           }
           // Explicit same-site destinations only; checkout performs its own server ownership check.
-          if (/^(suvey|mypage|b2b-checkout|diary)(\.html)?(\?|#|$)/.test(dec)) {
+          if (/^(suvey|mypage|b2b-checkout|diary|partner)(\.html)?(\?|#|$)/.test(dec)) {
             return dec;
           }
         }
@@ -2283,6 +2283,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     onAuthStateChanged(auth, (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
       // [2026-06-26 UX] 세션 확정 시점 = 초기 로딩 오버레이 해제 시점.
       // 로그인 사용자는 routeAfterLogin 으로 이동, 비로그인 사용자는 폼 노출.
       hideBootOverlay();

@@ -107,7 +107,7 @@
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -1631,6 +1631,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, _T.auth); // PR#37: 모바일 22s / PC 15s 차등화
 
     onAuthStateChanged(auth, async (user) => {
+      try { if (user && window.LP_CONSENT && window.LP_CONSENT.attachUser) window.LP_CONSENT.attachUser(() => user.getIdToken(), user.uid); } catch (_) {} // 방문 통계 동의: 계정과 맞추기(2026-10-15)
       _renderPendingReports.cache = null;
       _renderPendingReports.showDismissed = false;
       document.getElementById("pendingReportSection").style.display = "none";
@@ -2912,6 +2913,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="/assets/js/mypage-curation.js" defer></script>
   <script src="/assets/js/ask-widget.js" defer></script>
 <footer role="contentinfo"><!-- lp-a11y-core -->
+  <p style="text-align:center;margin:24px 0;font-size:14px"><button type="button" onclick="window.LP_CONSENT&&window.LP_CONSENT.reset()" style="font:inherit;min-height:44px;padding:8px 14px;border:1px solid #c9c2b0;border-radius:8px;background:#fff;color:#384e40;cursor:pointer">방문 통계 동의 선택 바꾸기</button></p>
   <p class="lp-sr-only">인생포트폴리오 · 문의 faise@lifeportfolio.co.kr</p>
 </footer>
 </body>

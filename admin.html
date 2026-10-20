@@ -128,6 +128,26 @@
     .pn-links{font-size:12.5px;margin:0 0 6px}
     .pn-links a{color:#1a2b4a;font-weight:700;margin-right:12px}
     @media (max-width:560px){.pn-kpi{grid-template-columns:repeat(2,1fr)}}
+    .pt-card2{background:#fff;border-radius:14px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid #ece9df;margin-top:24px;word-break:keep-all}
+    .pt-card2 h2{font-size:16px;font-weight:800;margin:0 0 4px;color:#1a2b4a}
+    .pt-card2 .desc{font-size:12.5px;color:#737373;margin:0 0 14px;line-height:1.6}
+    .pt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+    .pt-grid label{display:flex;flex-direction:column;gap:4px;font-size:12.5px;font-weight:700;color:#525252}
+    .pt-grid input,.pt-grid select,.pt-grid textarea{font:inherit;font-size:14px;font-weight:400;padding:9px 10px;border:1px solid #ddd8ca;border-radius:8px;min-height:40px}
+    .pt-verify{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin:12px 0}
+    .pt-verify label{border:1px solid #ece9df;border-radius:10px;padding:10px 12px;cursor:pointer;font-size:13px;display:flex;gap:8px;align-items:flex-start}
+    .pt-verify label:has(input:checked){border-color:#2F5B54;background:#f1f7f5}
+    .pt-verify b{display:block;color:#1a2b4a}
+    .pt-acts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+    .pt-acts button,.pt-card2 .btn{padding:9px 13px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:#f1efe8;color:#1a2b4a;min-height:40px}
+    .pt-card2 .btn.main{background:#2F5B54;color:#fff}.pt-card2 .btn.warn{background:#fbe9e5;color:#9a3412}
+    .pt-logo{display:flex;flex-direction:column;gap:4px;font-size:12.5px;grid-column:1/-1}.pt-logo-t{font-weight:700;color:#525252}.pt-logo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pt-logo-pv{display:inline-flex;align-items:center;justify-content:center;min-width:120px;height:48px;padding:4px 8px;border:1px solid #ddd8ca;border-radius:8px;background:#fff;color:#999;font-size:12px}.pt-logo-pv img{max-height:40px;max-width:180px}#pfLogoMsg{color:#6b6b6b}.pt-thumb{display:block;max-height:28px;max-width:110px;margin-bottom:4px}
+    .pt-testmode{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;padding:10px 12px;border:1px dashed #f0c75e;border-radius:10px;background:#fffaf0;font-size:13px;line-height:1.55;word-break:keep-all}.pt-testmode input{margin-top:3px}.pt-testtag{display:inline-block;margin-left:4px;padding:1px 6px;border-radius:6px;background:#fff4d6;color:#6b4e00;font-size:11px;font-weight:800}
+    .pt-out{background:#f7faf9;border:1px dashed #9fc4bc;border-radius:10px;padding:10px 12px;font-size:13px;word-break:break-all;margin:8px 0}
+    .pt-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:8px}.pt-tbl th,.pt-tbl td{border:1px solid #ece9df;padding:7px 8px;text-align:left;vertical-align:top}.pt-tbl th{background:#faf9f5}
+    .pt-pill{display:inline-block;border-radius:99px;padding:2px 8px;font-size:11.5px;font-weight:800}.pt-pill.active{background:#e3f3ea;color:#22764b}.pt-pill.paused{background:#fff2d9;color:#8a5a00}.pt-pill.ended,.pt-pill.draft{background:#eee;color:#555}
+    .st-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0}.st-kpi div{border:1px solid #ece9df;border-radius:10px;padding:10px;text-align:center}.st-kpi b{display:block;font-size:20px;color:#1a2b4a}.st-kpi span{font-size:11.5px;color:#737373}
+    .st-bar{display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0}.st-bar i{display:block;height:10px;border-radius:5px;background:#468D84}
   </style>
 </head>
 <body>
@@ -196,6 +216,19 @@
         <p class="d">이용약관·개인정보처리방침 개정 안내 메일을 회원에게 보내고, 발송 현황을 확인합니다. (이 페이지 아래)</p>
         <span class="badge" id="pnHubBadge">아래로 이동 ↓</span>
       </a>
+      <a class="hub-card" href="#partnerCard">
+        <div class="ic">🤝</div>
+        <h2 class="t">제휴 관리</h2>
+        <p class="d">제휴사 등록·링크 만들기, 확인 방식(링크·공통 코드·1인 1코드), 인원·기간, 현황·환불·국내 결제 실패를 관리합니다. (이 페이지 아래)</p>
+        <span class="badge" id="ptHubBadge">아래로 이동 ↓</span>
+      </a>
+
+      <a class="hub-card" href="#statsCard">
+        <div class="ic">📈</div>
+        <h2 class="t">서비스 통계</h2>
+        <p class="d">방문 통계 동의 현황과 가입·결제·리포트·다이어리 흐름을 숫자로 봅니다. (이 페이지 아래)</p>
+        <span class="badge">아래로 이동 ↓</span>
+      </a>
     </div>
 
     <!-- 결제 복구 도구 (PR#188 비상) -->
@@ -237,6 +270,64 @@
       <p class="ak-facts" id="akFacts"></p>
     </section>
 
+    <!-- 🤝 제휴 관리 (2026-10-15 대표 승인, docs/partner/00_제휴결제_최종기획안_v3.md 8장) -->
+    <section class="pt-card2" id="partnerCard" aria-labelledby="ptT">
+      <h2 id="ptT">🤝 제휴 관리</h2>
+      <p class="desc">제휴사를 등록하면 <b>추측할 수 없는 링크</b>가 만들어집니다. 등록하지 않은 주소나 틀린 링크는 "찾을 수 없음"만 보입니다. 처음에는 <b>준비 중</b>으로 저장되고, [진행]을 눌러야 열립니다. 금액은 부가세 포함, 첫 결제에만 적용됩니다.</p>
+      <div class="pt-grid">
+        <label>제휴사 이름<input id="pfName" placeholder="예: 한빛스포츠클럽 (가상의 회사)"></label>
+        <label>기업 주소 (영문 소문자)<input id="pfSlug" placeholder="예: hanbit-sports"></label>
+        <label>로고 주소 (https, 선택)<input id="pfLogo" placeholder="예: https://hanbit-sports.example/logo.png"></label>
+        <div class="pt-logo"><span class="pt-logo-t">로고 이미지 파일 (선택 · PNG, JPG, WebP)</span><div class="pt-logo-row"><span class="pt-logo-pv" id="pfLogoPv">없음</span><input id="pfLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><button type="button" class="btn" id="pfLogoDel" hidden>파일 지우기</button></div><small id="pfLogoMsg">파일을 올리면 로고 주소보다 먼저 보여요. 큰 그림은 자동으로 줄여서 저장해요. 둘 다 비우면 이름 글자로 보여요.</small></div>
+        <label>제휴가 (원, 부가세 포함)<input id="pfKrw" type="number" min="1000" max="19900" step="100" value="13000"></label>
+        <label>환율 (원/달러)<input id="pfFx" type="number" step="0.01" placeholder="1345.90"></label>
+        <label>해외가 (달러, 자동 계산 · 수정 가능)<input id="pfUsd" placeholder="9.66"></label>
+        <label>시작일<input id="pfStart" type="date"></label>
+        <label>기간 (일)<input id="pfDays" type="number" min="1" max="3650" value="90"></label>
+        <label>최대 인원<input id="pfSeats" type="number" min="1" max="100000" value="500"></label>
+        <label>안내 문구 (선택)<input id="pfNote" maxlength="200" placeholder="예: 한빛스포츠클럽 회원 전용 혜택이에요."></label>
+        <label>화면 색<select id="pfTheme"><option value="teal">청록 (기본)</option><option value="navy">남색</option><option value="forest">숲 초록</option><option value="plum">자두</option><option value="charcoal">짙은 회색</option></select></label>
+        <label>큰 제목 (선택 · 60자)<input id="pfHead" maxlength="60" placeholder="비우면: ○○ 회원을 위한 인생포트폴리오"></label>
+        <label style="grid-column:1/-1">검사 소개 (선택 · 300자)<textarea id="pfIntro" maxlength="300" rows="2" placeholder="비우면: 인생포트폴리오는 고유함을 자산으로 바꾸는 서비스예요. 리포트로 나만의 사명·비전·강점을 발견하고, 자산화 맞춤 실행 프로그램으로 일상에서 살아내고, 내 다이어리로 하루하루를 기록해 남겨요."></textarea></label>
+        <label style="grid-column:1/-1">감성 문구 (선택 · 120자)<input id="pfEmo" maxlength="120" placeholder="비우면: 당신은 이미 하나뿐인 작품이에요. 이제 그 고유함을 삶으로 써 내려갈 차례예요."></label>
+      </div>
+      <p class="desc" style="margin:12px 0 0"><b>가격 방식</b> · 제휴사가 고를 수 있어요.</p>
+      <div class="pt-verify" role="radiogroup" aria-label="가격 방식">
+        <label><input type="radio" name="pfPrice" value="discount" checked><span><b>제휴 혜택가</b>할인 금액, 남은 혜택, 혜택 기간이 보여요</span></label>
+        <label><input type="radio" name="pfPrice" value="regular"><span><b>정상가 (할인 없음)</b>사이트와 같은 19,900원 / $14.99. 할인·남은 혜택·기간 문구가 보이지 않아요</span></label>
+      </div>
+      <p class="desc" style="margin:12px 0 0"><b>확인 방식</b> · 제휴마다 고를 수 있어요.</p>
+      <div class="pt-verify" role="radiogroup" aria-label="확인 방식">
+        <label><input type="radio" name="pfVerify" value="link"><span><b>① 링크만</b>링크를 가진 사람은 누구나 (사내 교육 등 비공개용)</span></label>
+        <label><input type="radio" name="pfVerify" value="common" checked><span><b>② 공통 코드 + 자동 멈춤</b>모두 같은 코드. 1시간·하루에 너무 몰리면 스스로 멈춤</span></label>
+        <label><input type="radio" name="pfVerify" value="personal"><span><b>③ 1인 1코드</b>최대 인원만큼 서로 다른 코드를 만들어 한 명씩 전달. 코드 1개 = 1명</span></label>
+      </div>
+      <div class="pt-grid" id="pfVelBox">
+        <label>자동 멈춤: 1시간 최대<input id="pfVh" type="number" min="0" value="30"></label>
+        <label>자동 멈춤: 하루 최대<input id="pfVd" type="number" min="0" value="60"></label>
+      </div>
+      <label class="pt-testmode" id="pfTestBox"><input type="checkbox" id="pfTest"> <span><b>🧪 시험용 제휴로 만들기</b> · 결제 시험 서버(페이플 테스트, PayPal 샌드박스)에만 연결돼요. 실제 돈이 빠지지 않고, 회원 결제 상태와 판매 숫자도 바뀌지 않아요. 만든 뒤에는 바꿀 수 없어요.</span></label>
+      <div class="pt-acts"><button type="button" class="btn main" id="pfSave">저장하고 링크 만들기</button><button type="button" class="btn" id="pfClear">새로 입력</button></div>
+      <div id="pfOut"></div>
+      <p class="pn-msg" id="ptMsg2" role="status" aria-live="polite"></p>
+      <p class="pn-sub">제휴 목록</p>
+      <div style="overflow-x:auto"><table class="pt-tbl" id="ptList"></table></div>
+      <p class="pn-sub">확인 필요 · 국내 결제 실패 (돈은 빠지지 않은 건)</p>
+      <div style="overflow-x:auto"><table class="pt-tbl" id="ptFails"></table></div>
+      <p class="pn-sub">제휴 결제 (최근 200건) · 환불은 페이플·페이팔 관리자 화면에서 직접 하신 뒤 [환불 완료 기록]</p>
+      <div style="overflow-x:auto"><table class="pt-tbl" id="ptPays"></table></div>
+      <p class="pn-sub">변경 기록</p>
+      <div style="overflow-x:auto"><table class="pt-tbl" id="ptAudit"></table></div>
+    </section>
+
+    <!-- 📈 서비스 통계 (2026-10-15 대표 승인, 최종 기획안 v3 10.4) -->
+    <section class="pt-card2" id="statsCard" aria-labelledby="stT">
+      <h2 id="stT">📈 서비스 통계</h2>
+      <p class="desc">A. 방문 통계 동의 현황은 버튼을 누른 <b>개수만</b> 셉니다(누가 골랐는지는 저장하지 않음). B. 서비스 흐름은 우리 서버 기록이라 동의와 관계없이 정확합니다. C. 방문·유입 경로는 구글 애널리틱스 연결 뒤 추가됩니다.</p>
+      <div class="pt-acts"><select id="stDays" aria-label="기간"><option value="7">최근 7일</option><option value="30" selected>최근 30일</option><option value="90">최근 90일</option><option value="180">최근 180일</option></select><button type="button" class="btn main" id="stLoad">불러오기</button></div>
+      <div id="stOut"><p class="desc">[불러오기]를 눌러 주세요.</p></div>
+    </section>
+
     <!-- 약관·개인정보처리방침 개정 고지 (법정 고지: 시행 7일 전까지 공지 — 이번 건은 8일 전 + 회원 이메일 + 홈페이지 안내창) -->
     <section class="pn-card" id="policyNoticeCard" aria-labelledby="pnTitle">
       <h2 id="pnTitle">📢 약관·개인정보처리방침 개정 고지</h2>
@@ -255,7 +346,7 @@
         <button type="button" class="btn ghost" id="pnRetryBtn" hidden>↺ 실패분만 다시 보내기</button>
       </div>
       <p class="pn-msg" id="pnMsg" role="status" aria-live="polite"></p>
-      <p class="pn-links"><a href="https://lifeportfolio.co.kr/terms" target="_blank" rel="noopener">개정 약관 ↗</a><a href="https://lifeportfolio.co.kr/privacy" target="_blank" rel="noopener">개정 처리방침 ↗</a><a id="pnPopupLink" href="https://lifeportfolio.co.kr/?policy_notice=preview" target="_blank" rel="noopener">홈페이지 안내창 미리보기 ↗</a></p>
+      <p class="pn-links"><a href="https://lifeportfolio.co.kr/terms?policy_notice=preview" target="_blank" rel="noopener">개정 약관 ↗</a><a href="https://lifeportfolio.co.kr/privacy?policy_notice=preview" target="_blank" rel="noopener">개정 처리방침 ↗</a><a id="pnPopupLink" href="https://lifeportfolio.co.kr/?policy_notice=preview" target="_blank" rel="noopener">홈페이지 안내창 미리보기 ↗</a></p>
       <p class="pn-sub">변경 전 · 후</p>
       <div style="overflow-x:auto"><table class="pn-table" id="pnChanges"></table></div>
       <p class="pn-sub">발송될 이메일 그대로 보기</p>
@@ -334,6 +425,7 @@
         }
         showGate("hub");
         if (window.__pnLoad) window.__pnLoad();
+        if (window.__ptLoad) window.__ptLoad();
         // /admin#policyNoticeCard 로 들어오면(구 21일 페이지 안내 링크) 로그인 뒤 허브가 보인 다음 그 칸으로 이동
         if (location.hash === "#policyNoticeCard") setTimeout(() => { const el = document.getElementById("policyNoticeCard"); if (el) el.scrollIntoView({ block: "start" }); }, 0);
       } catch (_) { if (epoch === authEpoch) showAuthError(); }
@@ -364,7 +456,8 @@
       $pn("pnSteps").innerHTML =
         step("공지 시작 · 안내창 게시", kst(c.noticeStartKst), "안내창은 " + kst(c.popupEndKst) + "까지", now >= st && now <= pe) +
         step("시행일", c.effectiveKo, "공지 시작 " + Math.round((ef - st) / 864e5) + "일 뒤", now >= ef) +
-        step("지금 상태", phase, now < ef ? "시행 전까지 이메일 발송을 마치세요" : "늦게 보낸 메일도 기록됩니다", true);
+        step("지금 상태", phase, now < st ? "공지 시작 전에는 실제 발송이 잠겨 있어요 (시험 발송·대상 확인은 가능)" : now < ef ? "시행 전까지 이메일 발송을 마치세요" : "늦게 보낸 메일도 기록됩니다", true);
+      $pn("pnSendBtn").title = now < st ? "공지 시작(" + kst(c.noticeStartKst) + ") 이후에 누를 수 있어요" : "";
       const pct = k.recipients ? Math.round(100 * k.sent / k.recipients) : 0;
       // 전체 인원 수는 화면에 적지 않는다(대표 지시 2026-10-09). 보냄 · 남음 · 실패만.
       $pn("pnKpi").innerHTML = '<div><b>' + k.sent + '</b><span>보냄</span></div><div><b>' + k.pending + '</b><span>아직 안 보냄</span></div><div><b>' + k.failed + '</b><span>실패</span></div>';
@@ -406,6 +499,189 @@
     $pn("pnSendBtn").addEventListener("click", () => pnRun("send"));
     $pn("pnRetryBtn").addEventListener("click", () => pnRun("retryFailed"));
     window.__pnLoad = pnLoad;
+
+    // ── 🤝 제휴 관리 ─────────────────────────────────────────────
+    const ptList = httpsCallable(functions, "adminPartnerList", { timeout: 60000 });
+    const ptSave = httpsCallable(functions, "adminPartnerSave", { timeout: 60000 });
+    const ptAct = httpsCallable(functions, "adminPartnerAction", { timeout: 300000 });
+    const $p = (id) => document.getElementById(id);
+    const PT = { data: null, editing: null, logoData: "" };
+    const won = (n) => Number(n || 0).toLocaleString("ko-KR") + "원";
+    const dkst = (t) => t ? new Date(t).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" }) : "-";
+    const VNAME = { link: "① 링크만", common: "② 공통 코드", personal: "③ 1인 1코드" };
+    const SNAME = { draft: "준비 중", active: "진행", paused: "멈춤", ended: "종료" };
+    function ptMsg(t, c) { const m = $p("ptMsg2"); m.style.color = c || "#525252"; m.innerHTML = t; }
+    function calcUsd() { const k = Number($p("pfKrw").value), fx = Number($p("pfFx").value); if (k && fx) $p("pfUsd").value = (Math.round((k / fx) * 100) / 100).toFixed(2); }
+    $p("pfKrw").addEventListener("input", calcUsd); $p("pfFx").addEventListener("input", calcUsd);
+    document.querySelectorAll('input[name="pfVerify"]').forEach((r) => r.addEventListener("change", () => { $p("pfVelBox").hidden = document.querySelector('input[name="pfVerify"]:checked').value !== "common"; }));
+    (async () => { // 오늘 환율(유럽중앙은행 기준값)을 미리 채움. 실패하면 직접 입력.
+      try { const r = await fetch("https://api.frankfurter.app/latest?from=USD&to=KRW"); const j = await r.json(); if (j && j.rates && j.rates.KRW && !$p("pfFx").value) { $p("pfFx").value = j.rates.KRW.toFixed(2); $p("pfFx").dataset.date = j.date; calcUsd(); } } catch (_) {}
+    })();
+    const today = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); $p("pfStart").value = today;
+    // 로고 이미지 파일: 큰 그림은 가로 480px 이하로 줄이고 150KB 안으로 맞춘다.
+    const LOGO_MAX = 150 * 1024;
+    function setLogo(data) {
+      PT.logoData = data || ""; const pv = $p("pfLogoPv"); pv.textContent = "";
+      if (PT.logoData) { const im = new Image(); im.alt = "로고 미리보기"; im.src = PT.logoData; pv.appendChild(im); } else pv.textContent = "없음";
+      $p("pfLogoDel").hidden = !PT.logoData; $p("pfLogoFile").value = "";
+    }
+    function logoThumb(p) { const src = p.logoData || p.logoUrl; return src ? '<img class="pt-thumb" alt="" src="' + escapeHtml(src) + '">' : ""; }
+    const b64len = (u) => Math.floor((u.length - u.indexOf(",") - 1) * 3 / 4);
+    function shrinkLogo(file) {
+      return new Promise((ok, no) => {
+        if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return no(new Error("PNG · JPG · WebP 그림만 올릴 수 있어요."));
+        if (file.size > 10 * 1024 * 1024) return no(new Error("10MB보다 큰 파일은 올릴 수 없어요."));
+        const fr = new FileReader();
+        fr.onerror = () => no(new Error("파일을 읽지 못했어요."));
+        fr.onload = () => {
+          const raw = String(fr.result);
+          const im = new Image();
+          im.onerror = () => no(new Error("그림 파일이 아니에요."));
+          im.onload = () => {
+            if (file.size <= LOGO_MAX && im.naturalWidth <= 480) return ok(raw);
+            const tries = [[480, "image/png"], [480, "image/webp", 0.92], [360, "image/webp", 0.88], [280, "image/webp", 0.8], [280, "image/jpeg", 0.85]];
+            for (const [w, type, q] of tries) {
+              const sc = Math.min(1, w / im.naturalWidth), c = document.createElement("canvas");
+              c.width = Math.max(1, Math.round(im.naturalWidth * sc)); c.height = Math.max(1, Math.round(im.naturalHeight * sc));
+              const g = c.getContext("2d"); if (type === "image/jpeg") { g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height); }
+              g.drawImage(im, 0, 0, c.width, c.height);
+              const out = c.toDataURL(type, q);
+              if (out.indexOf("data:" + type) === 0 && b64len(out) <= LOGO_MAX) return ok(out);
+            }
+            no(new Error("그림을 150KB 안으로 줄이지 못했어요. 더 작은 파일을 골라 주세요."));
+          };
+          im.src = raw;
+        };
+        fr.readAsDataURL(file);
+      });
+    }
+    $p("pfLogoFile").addEventListener("change", async (ev) => {
+      const f = ev.target.files && ev.target.files[0]; if (!f) return;
+      $p("pfLogoMsg").textContent = "그림을 준비하는 중…";
+      try { const d = await shrinkLogo(f); setLogo(d); $p("pfLogoMsg").textContent = "✅ 준비됐어요 (" + Math.ceil(b64len(d) / 1024) + "KB). [저장]을 눌러야 반영돼요."; }
+      catch (e) { setLogo(PT.logoData); $p("pfLogoMsg").textContent = "❌ " + (e.message || "올리지 못했어요."); }
+    });
+    $p("pfLogoDel").addEventListener("click", () => { setLogo(""); $p("pfLogoMsg").textContent = "파일을 지웠어요. [저장]을 눌러야 반영돼요."; });
+    const priceMode = () => (document.querySelector('input[name="pfPrice"]:checked') || {}).value || "discount";
+    function applyPriceMode() {
+      const reg = priceMode() === "regular";
+      ["pfKrw", "pfFx", "pfUsd"].forEach((i) => { $p(i).disabled = reg; });
+      if (reg) { $p("pfKrw").value = 19900; $p("pfUsd").value = "14.99"; }
+    }
+    document.querySelectorAll('input[name="pfPrice"]').forEach((r) => r.addEventListener("change", applyPriceMode));
+    function formData() {
+      const st = Date.parse($p("pfStart").value + "T00:00:00+09:00"), days = parseInt($p("pfDays").value, 10) || 90;
+      return { name: $p("pfName").value, slug: $p("pfSlug").value.trim().toLowerCase(), logoUrl: $p("pfLogo").value.trim(), logoData: PT.logoData || "", priceKrw: Number($p("pfKrw").value), priceUsd: $p("pfUsd").value.trim(),
+        fx: { rate: Number($p("pfFx").value) || null, date: $p("pfFx").dataset.date || today, source: "ECB(frankfurter)" }, startAt: st, endAt: st + days * 864e5 - 1000, maxSeats: Number($p("pfSeats").value),
+        verify: document.querySelector('input[name="pfVerify"]:checked').value, note: $p("pfNote").value, velocityHour: Number($p("pfVh").value), velocityDay: Number($p("pfVd").value), testMode: !PT.editing && $p("pfTest").checked, priceMode: priceMode(),
+        theme: $p("pfTheme").value, copy: { headline: $p("pfHead").value, intro: $p("pfIntro").value, emotion: $p("pfEmo").value } };
+    }
+    function outBox(html) { $p("pfOut").innerHTML = '<div class="pt-out">' + html + "</div>"; }
+    function copyBtn(text, label) { const id = "cp" + Math.random().toString(36).slice(2, 8); setTimeout(() => { const b = $p(id); if (b) b.onclick = () => navigator.clipboard.writeText(text).then(() => { b.textContent = "복사됨 ✓"; }); }, 0); return ' <button type="button" class="btn" id="' + id + '">' + (label || "복사") + "</button>"; }
+    function downloadCsv(name, csv) { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" })); a.download = name; a.click(); }
+    $p("pfClear").addEventListener("click", () => { PT.editing = null; $p("pfSlug").disabled = false; $p("pfSave").textContent = "저장하고 링크 만들기"; ["pfName", "pfSlug", "pfLogo", "pfNote"].forEach((i) => { $p(i).value = ""; }); setLogo(""); ["pfHead", "pfIntro", "pfEmo"].forEach((i) => { $p(i).value = ""; }); $p("pfTheme").value = "teal"; $p("pfTest").checked = false; $p("pfTest").disabled = false; document.querySelector('input[name="pfPrice"][value="discount"]').checked = true; applyPriceMode(); $p("pfOut").innerHTML = ""; });
+    $p("pfSave").addEventListener("click", async () => {
+      const d = formData(); $p("pfSave").disabled = true; ptMsg("저장하는 중…");
+      try {
+        const r = (await ptSave(Object.assign(d, PT.editing ? { slug: PT.editing } : { create: true }))).data;
+        let h = "✅ 저장했습니다. 상태: <b>" + (PT.editing ? "그대로" : "준비 중") + "</b> (목록에서 [진행]을 눌러야 열립니다)";
+        if (r.link) h += "<br><b>제휴 링크</b> (지금 한 번만 보여요): <code>" + escapeHtml(r.link) + "</code>" + copyBtn(r.link);
+        if (r.commonCode) h += "<br><b>공통 코드</b>: <code>" + escapeHtml(r.commonCode) + "</code>" + copyBtn(r.commonCode);
+        if (d.verify === "personal" && !PT.editing) h += '<br>③ 1인 1코드: 목록의 <b>[코드 만들기]</b>로 최대 인원(' + d.maxSeats + "명)만큼 만들어 파일로 받으세요.";
+        outBox(h); ptMsg(""); await ptLoad();
+      } catch (e) { ptMsg("❌ " + escapeHtml(e.message || ""), "#c0392b"); }
+      finally { $p("pfSave").disabled = false; }
+    });
+    async function act(slug, action, extra, confirmText) {
+      if (confirmText && !confirm(confirmText)) return null;
+      ptMsg("처리하는 중…");
+      try { const r = (await ptAct(Object.assign({ slug, action }, extra || {}))).data; ptMsg("✅ 완료했습니다.", "#2f7d5b"); await ptLoad(); return r; }
+      catch (e) { ptMsg("❌ " + escapeHtml(e.message || ""), "#c0392b"); return null; }
+    }
+    function edit(p) {
+      PT.editing = p.slug; $p("pfSlug").value = p.slug; $p("pfSlug").disabled = true; $p("pfName").value = p.name; $p("pfLogo").value = p.logoUrl; setLogo(p.logoData || ""); $p("pfTest").checked = p.test === true; $p("pfTest").disabled = true; $p("pfTheme").value = p.theme || "teal"; $p("pfHead").value = (p.copy && p.copy.headline) || ""; $p("pfIntro").value = (p.copy && p.copy.intro) || ""; $p("pfEmo").value = (p.copy && p.copy.emotion) || ""; document.querySelector('input[name="pfPrice"][value="' + (p.priceMode === "regular" ? "regular" : "discount") + '"]').checked = true; applyPriceMode(); $p("pfKrw").value = p.priceKrw; $p("pfUsd").value = p.priceUsd;
+      if (p.fx && p.fx.rate) $p("pfFx").value = p.fx.rate; $p("pfStart").value = new Date(p.startAt + 9 * 3600e3).toISOString().slice(0, 10); $p("pfDays").value = Math.round((p.endAt - p.startAt + 1000) / 864e5);
+      $p("pfSeats").value = p.maxSeats; $p("pfNote").value = p.note; $p("pfVh").value = p.velocityHour; $p("pfVd").value = p.velocityDay;
+      document.querySelector('input[name="pfVerify"][value="' + p.verify + '"]').checked = true; $p("pfVelBox").hidden = p.verify !== "common";
+      $p("pfSave").textContent = "수정 저장"; $p("partnerCard").scrollIntoView({ block: "start" }); outBox("✏️ <b>" + escapeHtml(p.name) + "</b> 수정 중. 링크·코드는 바뀌지 않습니다.");
+    }
+    function ptRender(d) {
+      PT.data = d;
+      const hb = $p("ptHubBadge"); if (hb) hb.textContent = "제휴 " + d.partners.length + "곳 · 확인 필요 " + d.fails.length + "건 · 아래로 이동 ↓";
+      $p("ptList").innerHTML = "<tr><th>제휴사</th><th>상태</th><th>가격</th><th>기간</th><th>자리</th><th>확인 방식</th><th>매출</th><th>작업</th></tr>" + (d.partners.length ? d.partners.map((p) => {
+        const cs = d.codeStats[p.slug] || {};
+        const codeInfo = p.verify === "personal" ? "<br>코드: 미사용 " + (cs.unused || 0) + " · 사용 " + (cs.used || 0) + " · 정지 " + (cs.void || 0) : p.verify === "common" ? "<br>자동 멈춤 " + p.velocityHour + "/시간 · " + p.velocityDay + "/일" : "";
+        const b = (a, t, cls) => '<button type="button" data-s="' + p.slug + '" data-a="' + a + '"' + (cls ? ' class="' + cls + '"' : "") + ">" + t + "</button>";
+        return "<tr><td>" + logoThumb(p) + "<b>" + escapeHtml(p.name) + "</b>" + (p.test ? '<span class="pt-testtag">🧪 시험용</span>' : "") + (p.priceMode === "regular" ? '<span class="pt-testtag" style="background:#e8f1ef;color:#2F5B54">정상가</span>' : "") + "<br><small>" + escapeHtml(p.slug) + "</small></td><td><span class=\"pt-pill " + p.status + "\">" + SNAME[p.status] + "</span>" + (p.pausedReason === "auto-velocity" ? "<br><small style=\"color:#9a3412\">자동 멈춤</small>" : "") + (p.domesticPaused ? "<br><small>국내 결제 쉬는 중</small>" : "") + "</td><td>" + won(p.priceKrw) + "<br>$" + escapeHtml(p.priceUsd) + "</td><td>" + dkst(p.startAt) + "<br>~ " + dkst(p.endAt) + "</td><td>결제 " + p.used + " / " + p.maxSeats + (p.holding ? "<br><small>결제 중 " + p.holding + "</small>" : "") + "</td><td>" + VNAME[p.verify] + codeInfo + "</td><td>" + won(p.sales.krw) + "<br>$" + (p.sales.usd || 0) + "</td><td><div class=\"pt-acts\">" +
+          (p.status !== "active" ? b("go", "진행") : b("pause", "멈춤")) + b("edit", "수정") + b("regen", "링크 다시 만들기") +
+          (p.verify === "common" ? b("rotate", "코드 바꾸기") : "") + (p.verify === "personal" ? b("issue", "코드 만들기") + b("voidone", "코드 1개 정지") + b("voidall", "미사용 코드 모두 정지", "warn") : "") +
+          b("dom", p.domesticPaused ? "국내 결제 다시 열기" : "국내 결제 잠시 쉬기") + (p.status !== "ended" ? b("end", "종료", "warn") : "") + "</div></td></tr>";
+      }).join("") : '<tr><td colspan="8">아직 제휴가 없습니다.</td></tr>');
+      $p("ptFails").innerHTML = "<tr><th>시각</th><th>어디서</th><th>단계</th><th>사유</th><th></th></tr>" + (d.fails.length ? d.fails.map((f) => "<tr><td>" + (f.at ? new Date(f.at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }) : "-") + "</td><td>" + (f.provider === "payple-regular" ? "일반 결제" : "제휴 결제") + "</td><td>" + escapeHtml(f.stage) + "</td><td>" + escapeHtml((f.code ? "[" + f.code + "] " : "") + (f.msg || "")) + '</td><td><button type="button" class="btn" data-fail="' + f.id + '">확인함</button></td></tr>').join("") : '<tr><td colspan="5">없습니다.</td></tr>');
+      $p("ptPays").innerHTML = "<tr><th>시각</th><th>제휴</th><th>결제</th><th>거래번호</th><th>환불</th></tr>" + (d.payments.length ? d.payments.map((x) => "<tr><td>" + (x.at ? new Date(x.at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }) : "-") + "</td><td>" + escapeHtml(x.slug) + (x.test ? '<span class="pt-testtag">🧪 시험</span>' : "") + "</td><td>" + (x.provider === "payple" ? "페이플 " + won(x.amount) : "PayPal $" + escapeHtml(x.amount)) + "</td><td><small>" + escapeHtml(x.ref || "") + (x.captureID ? "<br>" + escapeHtml(x.captureID) : "") + "</small></td><td>" + (x.test ? "<small>시험 결제 (돈 안 빠짐)</small>" : x.refund ? "✅ " + dkst(x.refund.at) + " (" + escapeHtml(x.refund.how) + ")" : (x.provider === "paypal" && x.at && Date.now() - x.at > 180 * 864e5 ? "<small>180일 지남: 계좌 송금</small><br>" : "") + '<button type="button" class="btn" data-ref="' + escapeHtml(x.uid) + '" data-rs="' + escapeHtml(x.slug) + '" data-rp="' + x.provider + '">환불 완료 기록</button>') + "</td></tr>").join("") : '<tr><td colspan="5">아직 없습니다.</td></tr>');
+      const AN = { create: "등록", update: "수정", setStatus: "상태 변경", regenLink: "링크 다시 만들기", rotateCommon: "코드 바꾸기", issueCodes: "코드 만들기", voidCode: "코드 정지", voidUnused: "미사용 코드 정지", recordRefund: "환불 기록", "auto-pause": "자동 멈춤" };
+      $p("ptAudit").innerHTML = "<tr><th>시각</th><th>제휴</th><th>작업</th><th>누가</th></tr>" + (d.audit.length ? d.audit.map((a) => "<tr><td>" + (a.at ? new Date(a.at).toLocaleString("ko-KR", { timeZone: "Asia/Seoul" }) : "-") + "</td><td>" + escapeHtml(a.slug) + "</td><td>" + escapeHtml(AN[a.action] || a.action) + "</td><td>" + escapeHtml(a.by) + "</td></tr>").join("") : '<tr><td colspan="4">없습니다.</td></tr>');
+    }
+    $p("partnerCard").addEventListener("click", async (ev) => {
+      const t = ev.target.closest("button"); if (!t) return;
+      if (t.dataset.fail) { await act("x", "resolveFail", { id: t.dataset.fail }); return; }
+      if (t.dataset.ref) { const memo = prompt("환불 메모 (예: 고객 요청, 페이플 관리자에서 취소함)", ""); if (memo === null) return; await act(t.dataset.rs, "recordRefund", { uid: t.dataset.ref, how: t.dataset.rp, memo }); return; }
+      const slug = t.dataset.s, a = t.dataset.a; if (!slug) return;
+      const p = PT.data.partners.find((x) => x.slug === slug);
+      if (a === "edit") return edit(p);
+      if (a === "go") return act(slug, "setStatus", { status: "active" }, p.name + " 제휴를 진행합니다. 링크로 결제가 열립니다.");
+      if (a === "pause") return act(slug, "setStatus", { status: "paused" });
+      if (a === "end") return act(slug, "setStatus", { status: "ended" }, p.name + " 제휴를 종료합니다. 링크로 더 이상 결제할 수 없습니다.");
+      if (a === "dom") { if (!confirm(p.domesticPaused ? "국내 결제를 다시 엽니다." : "국내 결제를 잠시 쉽니다. 고객에게는 PayPal 안내가 먼저 보입니다.")) return; try { await ptSave({ slug, domesticPaused: !p.domesticPaused }); ptMsg("✅ 완료했습니다.", "#2f7d5b"); await ptLoad(); } catch (e) { ptMsg("❌ " + escapeHtml(e.message || ""), "#c0392b"); } return; }
+      if (a === "regen") { const r = await act(slug, "regenLink", {}, "새 링크를 만들면 옛 링크는 바로 작동하지 않습니다. 계속할까요?"); if (r) outBox("<b>" + escapeHtml(p.name) + " 새 링크</b>: <code>" + escapeHtml(r.link) + "</code>" + copyBtn(r.link)); return; }
+      if (a === "rotate") { const r = await act(slug, "rotateCommon", {}, "코드를 바꾸면 옛 코드는 바로 쓸 수 없습니다. 계속할까요?"); if (r) outBox("<b>" + escapeHtml(p.name) + " 새 공통 코드</b>: <code>" + escapeHtml(r.commonCode) + "</code>" + copyBtn(r.commonCode)); return; }
+      if (a === "issue") {
+        const cs = PT.data.codeStats[slug] || {}; const live = (cs.unused || 0) + (cs.held || 0) + (cs.used || 0); const room = p.maxSeats - live;
+        const n = prompt("만들 코드 개수 (최대 인원 " + p.maxSeats + "명 · 지금 더 만들 수 있는 수 " + room + "개)", String(room)); if (!n) return;
+        const r = await act(slug, "issueCodes", { count: Number(n) });
+        if (r) { downloadCsv(slug + "_codes_" + r.batchId + ".csv", r.csv); outBox("✅ 코드 <b>" + r.codes.length + "개</b>를 만들어 파일(" + slug + "_codes_" + r.batchId + ".csv)로 내려받았습니다. <b>코드는 지금 한 번만 보여요.</b> 제휴사에 전달해 회원 한 명씩 보내 주세요." + copyBtn(r.codes.join("\n"), "코드 전체 복사")); }
+        return;
+      }
+      if (a === "voidone") { const c = prompt("정지할 코드 (예: ABCDE-FGHJK)"); if (c) await act(slug, "voidCode", { code: c }); return; }
+      if (a === "voidall") return act(slug, "voidUnused", {}, "아직 쓰지 않은 코드를 모두 정지합니다. 이미 결제에 쓴 코드는 그대로입니다. 계속할까요?");
+    });
+    async function ptLoad() { try { ptRender((await ptList({})).data); } catch (e) { ptMsg("❌ 목록을 불러오지 못했습니다: " + escapeHtml(e.message || ""), "#c0392b"); } }
+    window.__ptLoad = ptLoad;
+
+    // ── 📈 서비스 통계 ───────────────────────────────────────────
+    const stFn = httpsCallable(functions, "adminServiceStats", { timeout: 120000 });
+    // C. 방문·유입 (구글 애널리틱스)
+    function gaHtml(g) {
+      if (!g) return "";
+      if (!g.ok) {
+        if (g.reason === "permission") return '<p class="pn-sub">C. 방문·유입 (구글 애널리틱스)</p><p class="desc">🔒 아직 읽기 권한이 없어요. 구글 애널리틱스 → 관리 → 속성 액세스 관리 → [＋ 사용자 추가]에 아래 서버 계정을 <b>뷰어</b>로 넣어 주세요.<br><code>' + escapeHtml(g.account || "(계정 확인 실패)") + "</code></p>";
+        return '<p class="pn-sub">C. 방문·유입 (구글 애널리틱스)</p><p class="desc">⚠️ 지금은 불러오지 못했어요. 잠시 뒤 다시 눌러 주세요. <small>' + escapeHtml(g.message || "") + "</small></p>";
+      }
+      const tbl = (title, list) => '<div><b style="font-size:13px">' + title + '</b><table class="pt-tbl">' + (list.length ? list.map((x) => "<tr><td>" + escapeHtml(x.name) + '</td><td style="text-align:right">' + x.n.toLocaleString("ko-KR") + "</td></tr>").join("") : "<tr><td>없음</td></tr>") + "</table></div>";
+      const CH = { "Organic Search": "검색(무료)", "Direct": "직접 방문", "Referral": "다른 사이트 링크", "Organic Social": "SNS", "Paid Search": "검색 광고", "Paid Social": "SNS 광고", "Email": "이메일", "Unassigned": "분류 안 됨", "Display": "배너 광고" };
+      return '<p class="pn-sub">C. 방문·유입 (구글 애널리틱스 · 동의한 방문만)</p>' +
+        '<div class="st-kpi"><div><b>' + g.sessions.toLocaleString("ko-KR") + '</b><span>방문(세션)</span></div><div><b>' + g.users.toLocaleString("ko-KR") + '</b><span>방문자</span></div><div><b>' + g.pageViews.toLocaleString("ko-KR") + "</b><span>페이지 보기</span></div></div>" +
+        '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">' +
+        tbl("들어온 길", g.channels.map((x) => ({ name: CH[x.name] || x.name, n: x.n }))) + tbl("들어온 곳", g.sources) + tbl("많이 본 화면", g.pages) + "</div>";
+    }
+    $p("stLoad").addEventListener("click", async () => {
+      $p("stOut").innerHTML = '<p class="desc">불러오는 중…</p>';
+      try {
+        const d = (await stFn({ days: Number($p("stDays").value) })).data;
+        const max = Math.max(1, ...d.funnel.map((f) => f.n || 0));
+        const rows = d.rows.slice().reverse();
+        $p("stOut").innerHTML =
+          '<p class="pn-sub">A. 방문 통계 동의 (최근 ' + d.days + "일)</p>" +
+          '<div class="st-kpi"><div><b>' + d.consent.granted + '</b><span>동의</span></div><div><b>' + d.consent.denied + '</b><span>거부</span></div><div><b>' + (d.consent.rate == null ? "-" : d.consent.rate + "%") + "</b><span>동의율</span></div></div>" +
+          '<p class="desc">동의한 사람만 구글 애널리틱스 방문 통계에 잡힙니다. 동의율이 낮으면 C(방문·유입) 숫자는 실제보다 작게 보입니다.</p>' +
+          '<p class="pn-sub">B. 서비스 흐름 (전체 누적)</p>' + d.funnel.map((f) => '<div class="st-bar"><span style="width:100px">' + f.step + '</span><i style="width:' + Math.round(240 * (f.n || 0) / max) + 'px"></i><b>' + (f.n == null ? "-" : f.n.toLocaleString("ko-KR")) + "</b>" + (f.rate == null ? "" : '<small style="color:#737373">앞 단계의 ' + f.rate + "%</small>") + "</div>").join("") +
+          '<p class="desc">결제 중 제휴 결제 ' + d.totals.paidPartner + "건. 검사 응답·리포트·다이어리는 사람 수(계정 수)입니다.</p>" +
+          '<p class="pn-sub">날짜별</p><div style="overflow-x:auto"><table class="pt-tbl"><tr><th>날짜</th><th>동의</th><th>거부</th><th>가입</th><th>일반 결제</th><th>제휴 결제</th><th>국내(원)</th><th>해외($)</th></tr>' +
+          rows.map((r) => "<tr><td>" + r.day + "</td><td>" + r.granted + "</td><td>" + r.denied + "</td><td>" + r.signups + "</td><td>" + r.paidRegular + "</td><td>" + r.paidPartner + "</td><td>" + r.paidKrw + "</td><td>" + r.paidUsd + "</td></tr>").join("") + "</table></div>" +
+          gaHtml(d.ga) +
+          '<p class="desc">' + escapeHtml(d.note) + "</p>";
+      } catch (e) { $p("stOut").innerHTML = '<p class="pn-msg" style="color:#c0392b">❌ ' + escapeHtml(e.message || "") + "</p>"; }
+    });
 
     function escapeHtml(s) {
       return (s == null ? "" : String(s))

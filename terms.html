@@ -152,7 +152,7 @@
   <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/terms">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://td.doubleclick.net https://www.googletagmanager.com; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://td.doubleclick.net https://www.googletagmanager.com; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -182,12 +182,13 @@
       ol,ul{padding-left:18px}
       .foot{font-size:12px}
     }
-  </style>
+  .lp-revision{background:#f2f7f6;border:1px solid #cfe0dc;border-left:4px solid #2F5B54;border-radius:10px;padding:12px 14px;margin:12px 0 18px;font-size:14px;line-height:1.7}.lp-revision p{margin:0}.lp-new-tag{color:#2F5B54;font-weight:700}.lp-consent-change{font:inherit;font-size:14px;min-height:44px;padding:8px 14px;border:1px solid #2F5B54;border-radius:8px;background:#fff;color:#2F5B54;cursor:pointer}[hidden]{display:none!important}</style>
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
   <link rel="stylesheet" href="/assets/css/lp-consent.css"><!-- 분석 동의 배너(승인 ⑪) -->
   <script src="/assets/js/lp-consent.js" defer></script>
+  <script src="/assets/js/policy-date-gate.js" defer></script>
 </head>
 <body>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -201,7 +202,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <h1 data-i18n="terms.h1">이용약관</h1>
-    <p class="muted" data-i18n="terms.effective">본 약관은 2026년 10월 17일부터 시행됩니다.</p>
+    <p class="muted" data-lp-until="2026-10-25T00:00:00+09:00" data-i18n="terms.effective">본 약관은 2026년 10월 17일부터 시행됩니다.</p>
+    <p class="muted" data-lp-from="2026-10-25T00:00:00+09:00" data-lp-lang="ko" hidden>본 약관은 2026년 10월 25일부터 시행됩니다.</p><p class="muted" data-lp-from="2026-10-25T00:00:00+09:00" data-lp-lang="en" hidden>These Terms take effect on October 25, 2026.</p>
+    <aside class="lp-revision" data-lp-from="2026-10-18T00:00:00+09:00" data-lp-until="2026-10-25T00:00:00+09:00" data-lp-lang="ko" hidden role="note"><p><b>개정 예고</b> · 아래 제4조 ④가 <b>2026년 10월 25일</b>부터 시행됩니다(2026년 10월 18일 공지). 시행일 전까지는 지금 약관이 적용됩니다. 개정 약관에 동의하지 않으시면 시행일 전까지 문의처로 알려 주시거나 탈퇴하실 수 있으며, 그때까지 거부 의사가 없으시면 동의하신 것으로 봅니다.</p></aside><aside class="lp-revision" data-lp-from="2026-10-18T00:00:00+09:00" data-lp-until="2026-10-25T00:00:00+09:00" data-lp-lang="en" hidden role="note"><p><b>Upcoming change</b> · Art. 4(4) below takes effect on <b>October 25, 2026</b> (announced October 18, 2026). Until then the current Terms apply. If you do not agree, tell us or withdraw before the effective date; if you do not object by then, you will be deemed to have accepted it.</p></aside>
 
     <!-- EN-only legal binding notice (Korean e-commerce law) -->
     <div class="legal-notice" data-lang-only="en" data-i18n-html="terms.legal_notice" style="display:none"></div>
@@ -232,6 +235,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <ol>
       <li data-i18n-html="terms.art4_1">회사는 결제 완료 후 온라인 응답 링크를 제공하고, 이용자의 응답 제출이 확인되면 <b>즉시 자동으로 맞춤형 리포트를 생성</b>하여 마이페이지에서 확인할 수 있도록 제공합니다.</li>
       <li data-i18n="terms.art4_2">기술적 사유 등 불가피한 경우 서비스 내용을 변경할 수 있으며, 이 경우 사전 공지합니다.</li>
+      <li class="lp-new-clause" data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden>회사는 다른 기업·단체와 맺은 제휴 계약에 따라, 그 기업·단체의 회원에게 별도 가격(이하 "제휴가")으로 서비스를 제공할 수 있습니다. 제휴가, 적용 기간, 대상, 이용 인원 및 확인 방법은 해당 제휴 전용 결제 화면에 표시하며, 제휴가는 회원 1인의 첫 결제에 한 번 적용됩니다. 제휴가로 결제한 이용자의 서비스 내용과 청약철회·환불 기준은 일반 결제와 같습니다.<span class="lp-new-tag" data-lp-until="2026-10-25T00:00:00+09:00"> (2026년 10월 25일 시행 예정)</span></li>
+      <li class="lp-new-clause" data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="en" hidden>Under partnership agreements with other companies or organizations, the Company may provide the service to their members at a separate price (the "partner price"). The partner price, period, eligibility, number of seats and verification method are shown on the dedicated partner checkout page, and the partner price applies once, to a member's first payment. Members who pay the partner price receive the same service, and the same withdrawal and refund rules apply as for regular payments.<span class="lp-new-tag" data-lp-until="2026-10-25T00:00:00+09:00"> (effective October 25, 2026)</span></li>
     </ol>
 
     <h2 data-i18n="terms.art5_h">제5조 (서비스의 중단)</h2>
@@ -314,6 +319,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </ol>
 
     <h2 data-i18n="terms.appendix_h">부칙</h2>
+    <p data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="ko" hidden><b>2026년 10월 25일 시행 개정</b>: 제4조 ④(제휴 기업 회원 전용 가격) 신설. 2026년 10월 18일 홈페이지 안내창·약관 페이지·회원 이메일로 공지(시행 7일 전). 시행일 전까지는 이전 약관이 적용됩니다. <a href="/terms-2026-10-17">2026년 10월 17일 시행 약관 보기</a></p>
+    <p data-lp-from="2026-10-18T00:00:00+09:00" data-lp-lang="en" hidden><b>Amendment effective October 25, 2026</b>: new Art. 4(4) (partner price for members of partner companies). Announced October 18, 2026 by site notice, this page and member email (7 days before). Until then the previous Terms apply. <a href="/terms-2026-10-17">View the Terms effective October 17, 2026</a></p>
     <p data-i18n-html="terms.appendix_p">본 약관은 <b>2026년 10월 17일</b>부터 시행합니다. (제2조 6호 「다이어리」 정의 신설, 제3조 ④·⑤ 개정약관 동의 간주와 거부 시 처리 명시, 제8조 저작권 및 이용제한 개정 — 회사 자료와 회원 기록의 권리 구분. 2026년 10월 9일 공지) 시행일 전까지는 이전 약관이 적용됩니다. <a href="/terms-2026-05-14">이전 약관 보기</a></p>
     <p data-i18n-html="terms.appendix_history"><b>개정 이력 (2026-10-17 시행)</b>: 제2조 6호(다이어리 정의) 신설, 제3조 ④·⑤(개정약관 동의 간주 요건과 거부 시 해지권) 신설, 제8조(저작권 및 이용제한) 개정 — 회사 자료와 회원 기록의 권리를 구분하고 개인 인쇄·보관·공유를 명시. 시행 8일 전(2026-10-09) 홈페이지 팝업과 회원 이메일로 공지.<br><b>개정 이력 (2026-05-14 시행)</b>: 제2조 5항(분석 도구 정의) 신설, 제6조 5항(연령 기재 의무) 신설, 제9조(개인정보 보호) 분석 도구 별도 동의 및 거부 시 차별 금지 조항 보강, 제13조(만 14세 미만 아동의 가입 제한) 신설. 본 개정은 이용자 권리를 강화하고 약자 보호(만 14세 미만)를 추가하는 <b>이용자에게 유리한 변경</b>으로, 약관규제법 제3조 제2항 단서에 따라 즉시 시행됩니다.</p>
 

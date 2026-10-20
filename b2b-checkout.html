@@ -227,7 +227,18 @@
       document.getElementById("memoNo").textContent = o.orderNumber || "-";
 
       document.getElementById("sumOrg").textContent = o.orgName || "-";
-      document.getElementById("sumSeats").textContent = `${o.seats}명 × ${won(o.unitPrice)} = ${won(o.seats * o.unitPrice)}`;
+      if (Array.isArray(o.tierBreakdown) && o.tierBreakdown.length && Number.isSafeInteger(o.diagnosisAmount)) {
+        // 구간별 계산 주문(2026-10-15~): 구간 내역을 그대로 보여준다.
+        const el = document.getElementById("sumSeats");
+        el.replaceChildren(document.createTextNode(`${o.seats}명 = ${won(o.diagnosisAmount)}`));
+        for (const r of o.tierBreakdown) {
+          const line = document.createElement("div"); line.style.cssText = "font-size:12px;opacity:.75";
+          line.textContent = `${r.from}~${r.to}번째 ${r.count}명 × ${won(r.unit)} = ${won(r.amount)}`;
+          el.appendChild(line);
+        }
+      } else {
+        document.getElementById("sumSeats").textContent = `${o.seats}명 × ${won(o.unitPrice)} = ${won(o.seats * o.unitPrice)}`;
+      }
 
       if (o.diaryCount > 0) {
         document.getElementById("sumDiaryRow").style.display = "flex";
