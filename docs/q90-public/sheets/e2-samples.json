@@ -4736,7 +4736,7 @@
     "boxes": "2:0,0,1,0.128;2:0,0.885,1,0.95;3:0,0,1,0.128;3:0,0.885,1,0.95;4:0,0,1,0.128;4:0,0.885,1,0.95;5:0,0,1,0.128;5:0,0.885,1,0.95;6:0,0,1,0.128;6:0,0.885,1,0.95;7:0,0,1,0.128;7:0,0.885,1,0.95;5:0.03,0.515,0.42,0.548;7:0.03,0.145,0.42,0.185;6:0.03,0.125,0.42,0.162",
     "extra": "한국가이던스|KOREAGUIDANCE|KOREA GUIDANCE|guidance|가이던스|SDS|Self-Directed|SELF-DIRECTED|Holland|Messer|이동혁|황매향|PAR Inc|홍길동|견본대학교|ABC1234567890|적성탐색검사"
    },
-   "status": "redacted",
+   "status": "resolved",
    "judge1": {
     "A1": {
      "level": null,
@@ -4791,17 +4791,39 @@
    },
    "judge3": null,
    "final": {
-    "A1": null,
-    "A2": null,
-    "A3": null,
-    "A4": null,
-    "A5": null
+    "rule": "diff<=1 → lower; diff>=2 → third picks one; no average/new value",
+    "total": 18,
+    "axes": {
+     "A1": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A2": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A3": {
+      "level": 4,
+      "rule": "diff<=1 → lower"
+     },
+     "A4": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     },
+     "A5": {
+      "level": 3,
+      "rule": "diff<=1 → lower"
+     }
+    },
+    "resolved_at": "2026-10-20T10:19:34Z",
+    "third_used": [],
+    "aggregate_sha256": "0091f5f1322968c4f1050f0d287c4981354249e8d74b32e20887a632975b2e26"
    },
-   "A1": null,
-   "A2": null,
-   "A3": null,
-   "A4": null,
-   "A5": null,
+   "A1": 4,
+   "A2": 4,
+   "A3": 4,
+   "A4": 3,
+   "A5": 3,
    "packet_sha256": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
    "denominator_class": {
     "class": "확보",
@@ -4828,7 +4850,17 @@
     "README.md": "d7aa31b188c8e7998f1687a42c63e186f1ec412a0737e07be72ed2b1c7aaa00f",
     "ANSWER.json": "52d623b02a5b1d7b1e4fabec7e80e24c0401104a66a834c09dc87145480df8c2"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "judging": {
+    "round": 6,
+    "judge1_actor": "agent_eqfq2vg1m72e",
+    "judge2_actor": "agent_kxmtj2g9mmyk",
+    "third_needed_axes_n": 0,
+    "post_q2": "judge1 아니오(6968709) · judge2 아니오(6968628) → 6회차 유효",
+    "delay": "6일 무응답 → 재요청 10:11Z(파일·규칙 불변) → 답 judge1 6968021 · judge2 6968002",
+    "aggregate_sha256_16": "0091f5f1322968c4",
+    "aggregate_note": "e2-aggregate.py를 K16 1행만 대상으로 실행(이전 13행은 이미 final, 답안 원본은 이전 샘플박스에 있어 재집계 안 함 — 값 덮어쓰기 금지 원칙)"
+   }
   },
   {
    "id": "K17",
@@ -5858,9 +5890,14 @@
       "attachment_sha256_sent": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
       "attachment_sha256_received_redownload": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6968002",
+      "answer_sha256": "e3fbd4609f5469cdbb828938df33c1ff9fc07be1ca140cbe344350ea6ae778a6",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T10:16:33Z",
+      "first_line_declaration_ok": true,
+      "nudge_msg_id": "6967684",
+      "nudge_at": "2026-10-20T10:11:28Z",
+      "delay_note": "6일 무응답 → 재요청(파일·규칙 불변). judge1 자기신고: 10-14 채점 중 크레딧 소진으로 중단"
      }
     },
     "dm_history_note": "기존 DM 0건(인사말만)",
@@ -5874,6 +5911,14 @@
      "S-7da6e0": {
       "reply_msg_id": "6081867",
       "q2_wrote_notes": "아니오",
+      "ruling": "valid"
+     }
+    },
+    "post_memory_check_round6": {
+     "S-8729f4": {
+      "reply_msg_id": "6968628",
+      "q2_wrote_notes": "아니오",
+      "q1_outside_material": "Q1 아니오",
       "ruling": "valid"
      }
     }
@@ -6101,9 +6146,14 @@
       "attachment_sha256_sent": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
       "attachment_sha256_received_redownload": "2372449591c33c2a1425ce7f75a172e3c8e056635bd6cfb09f410ab12002daae",
       "bytes_match": true,
-      "reply_msg_id": null,
-      "answer_sha256": null,
-      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)"
+      "reply_msg_id": "6968021",
+      "answer_sha256": "757016074b30f106067edfd6d95466e816c2b49c2bd02a635cd76b590dc963a2",
+      "sent_via": "gsend.sh(발송 게이트, judge-session.py 메시지 틀 동일)",
+      "answered_at": "2026-10-20T10:16:31Z",
+      "first_line_declaration_ok": true,
+      "nudge_msg_id": "6967646",
+      "nudge_at": "2026-10-20T10:11:12Z",
+      "delay_note": "6일 무응답 → 재요청(파일·규칙 불변). judge1 자기신고: 10-14 채점 중 크레딧 소진으로 중단"
      }
     },
     "team_ok": {
@@ -6120,6 +6170,14 @@
      "S-7da6e0": {
       "reply_msg_id": "6081891",
       "q2_wrote_notes": "아니오",
+      "ruling": "valid"
+     }
+    },
+    "post_memory_check_round6": {
+     "S-8729f4": {
+      "reply_msg_id": "6968709",
+      "q2_wrote_notes": "아니오",
+      "q1_outside_material": "Q1 아니오 — 단, 10-14 직전 패킷 RUBRIC.md와 diff 1회(차이 없음, 이전 샘플·답안 미열람). 공통 루브릭 파일 비교라 블라인드 영향 없음으로 판단",
       "ruling": "valid"
      }
     }
