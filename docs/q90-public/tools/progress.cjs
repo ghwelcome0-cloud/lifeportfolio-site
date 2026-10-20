@@ -22,7 +22,9 @@ const filled = (v, id) => v && typeof v === 'object' && v.source_url && v.value 
 // E3 '해당 없음' 칸(value null + note '해당 없음' + 근거 URL)은 분모에서 뺀다(E3 rule 3차-b). 두 분모 병기.
 const na = v => v && typeof v === 'object' && v.value == null && v.source_url && /^해당 없음/.test(v.note || '');
 // op:q90-auto-207 A(대표 결정 ①): 종결 = 시도 3회 이상 + 시도별 증거(closure.attempts). 해당 없음처럼 분모에서 빼고, 실측 수와 종결 수를 함께 적는다.
-const closed = v => !!(v && typeof v === 'object' && v.value == null && v.closure && v.closure.state === '종결' && Array.isArray(v.closure.attempts) && v.closure.attempts.length >= 3);
+// op:208 보완(Method 6978346 · Peer 6978351): 3회 = ⓐⓑⓒ 서로 다른 방법 각 1회 이상(attempt.method a/b/c, 'a+'=다른 공식 경로는 a로 셈). 같은 URL 반복('dup')은 세지 않음.
+const methodsOk = c => { const m = new Set((c.attempts || []).map(a => a.method === 'a+' ? 'a' : a.method)); return c.attempts.length >= 3 && ['a', 'b', 'c'].every(x => m.has(x)); };
+const closed = v => !!(v && typeof v === 'object' && v.value == null && v.closure && v.closure.state === '종결' && Array.isArray(v.closure.attempts) && methodsOk(v.closure));
 let e3cells = 0, e3rowsTouched = 0, e3rowsComplete = 0, e3na = 0, e3closed = 0;
 for (const r of e3.rows) { const n = E3_KEYS.filter(k => filled(r[k], r.id)).length, m = E3_KEYS.filter(k => na(r[k])).length, z = E3_KEYS.filter(k => closed(r[k])).length; e3cells += n; e3na += m; e3closed += z; if (n > 0) e3rowsTouched++; if (n + m + z === E3_KEYS.length) e3rowsComplete++; }
 // E2: 샘플 확보(ready 이상) / 채점 완료(final)
@@ -31,7 +33,7 @@ const st = s => e2.rows.filter(r => r.status === s).length;
 const e2ready = e2.rows.filter(r => ['ready', 'redacted_pending_visual', 'redacted', 'judged', 'resolved', 'final'].includes(r.status)).length;
 // 분모 정정(G21 §21 결박): '해당 없음'(제품 구조상 개인 리포트 없음, 공식 근거)만 분모에서 뺀다. 두 분모를 함께 공개하고 정정 효과를 따로 적는다.
 const e2na = e2.rows.filter(r => r.status === 'not_applicable').length;
-const e2closedRows = e2.rows.filter(r => ['no_sample', 'ineligible'].includes(r.status) && r.closure && r.closure.state === '종결' && Array.isArray(r.closure.attempts) && r.closure.attempts.length >= 3).map(r => r.id);
+const e2closedRows = e2.rows.filter(r => ['no_sample', 'ineligible'].includes(r.status) && r.closure && r.closure.state === '종결' && Array.isArray(r.closure.attempts) && methodsOk(r.closure)).map(r => r.id);
 const e2target = nonOwn.length - e2na - e2closedRows.length;
 const e2final = st('final') + st('judged') + st('resolved'), e2inel = st('ineligible'), e2pend = st('redacted_pending_visual'), e2red = st('redacted');
 // E1: 최신 run에서 a61 또는 a71이 있는 비자사 행
