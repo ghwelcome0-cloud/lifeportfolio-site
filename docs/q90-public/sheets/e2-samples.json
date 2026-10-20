@@ -2364,7 +2364,14 @@
     "README.md": "dc1b65bf963a15df606e8cd17ef602de82ceb8de22d78f5b8601921940a90d22",
     "ANSWER.json": "416c502ae75950eb336e8831b82d51c1ce361a9a4b8768d07ae9497d3cb47bc1"
    },
-   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)"
+   "packet_format": "image-pdf + md + json; tar --sort=name --mtime fixed; gzip -n (byte-reproducible)",
+   "third_pending": {
+    "axes": [
+     "A1"
+    ],
+    "msg": 6997497,
+    "deadline": "2026-10-22T14:50Z"
+   }
   },
   {
    "id": "G13",
