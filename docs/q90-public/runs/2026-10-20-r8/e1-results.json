@@ -1,0 +1,173 @@
+{
+ "tool": "measure-e1.cjs",
+ "tool_sha256": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "roster_version": "v2.1",
+ "evidence": "E1",
+ "startedAt": "2026-10-20T12:03:13.724Z",
+ "results": [
+  {
+   "row": "G11",
+   "name": "16Personalities Premium Career Suite",
+   "group": "진단",
+   "url": "https://www.16personalities.com/premium/career-suite",
+   "skip": false,
+   "origin": "https://www.16personalities.com",
+   "measuredAt": "2026-10-20T12:03:20.835Z",
+   "headers": {
+    "ok": true,
+    "status": 403,
+    "finalUrl": "https://www.16personalities.com/premium/career-suite",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 5527,
+    "bodySha256": "049c6b061750eb203ca2f1d57246d8a0aa12d77c98615bea4f6e85f7492a4e56"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 403,
+    "title": "Just a moment...",
+    "domSha256": "a1f8afb545cf5e29afef19b6ca1a6470fbb4b6e78949f4150696af0961ac8537",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 4,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 222,
+     "chars16": 195
+    },
+    "touch": {
+     "total": 2,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": "en-us"
+   }
+  },
+  {
+   "row": "K20",
+   "name": "16Personalities 한국어판(무료 MBTI류)",
+   "group": "국내",
+   "url": "https://www.16personalities.com/ko",
+   "skip": false,
+   "origin": "https://www.16personalities.com",
+   "measuredAt": "2026-10-20T12:03:26.512Z",
+   "headers": {
+    "ok": true,
+    "status": 403,
+    "finalUrl": "https://www.16personalities.com/ko",
+    "https": true,
+    "hsts": false,
+    "xcto": true,
+    "frame": true,
+    "referrer": true,
+    "permissions": true,
+    "csp": true,
+    "cspReporting": false,
+    "server": "cloudflare",
+    "bodyBytes": 5451,
+    "bodySha256": "72d4b436ca9f37a97d7d7b61bafb41144d26ab5ef5a85ec4459e3354d9efa1de"
+   },
+   "publicSurface": [
+    {
+     "path": "/.env",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.git/HEAD",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/wp-config.php",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/package.json",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/server-status",
+     "status": 403,
+     "exposed": false
+    },
+    {
+     "path": "/.DS_Store",
+     "status": 403,
+     "exposed": false
+    }
+   ],
+   "mobile": {
+    "ok": true,
+    "status": 403,
+    "title": "Just a moment...",
+    "domSha256": "8370b73545da3c40bcd99c5b6761deaec8dd119423ddc1c1a39b1a93d374a681",
+    "viewportMeta": true,
+    "viewportContent": "width=device-width,initial-scale=1",
+    "zoomBlocked": false,
+    "docW": 390,
+    "innerW": 390,
+    "overflow": false,
+    "text": {
+     "blocks": 4,
+     "ge16": 3,
+     "lt12": 0,
+     "chars": 222,
+     "chars16": 195
+    },
+    "touch": {
+     "total": 2,
+     "ok44": 0,
+     "ok24": 0
+    },
+    "lang": "en-us"
+   }
+  }
+ ]
+}

@@ -14,7 +14,9 @@ const NM = '미측정';
 // E3 시트 값은 {value, source_url, ...} 묶음. source_url 없는 value는 표에 올리지 않는다(시트 규칙).
 const NA = '해당 없음';
 // E3 셀: {value,source_url,note}. value null + note '해당 없음' + 근거 URL → '해당 없음'(미측정과 구분, E3 rule 3차-b)
-const v3 = x => x == null ? null : (typeof x === 'object' && 'value' in x) ? (x.value != null && x.source_url ? x.value : (x.source_url && /^해당 없음/.test(x.note || '') ? NA : null)) : x;
+const v3 = x => x == null ? null : (typeof x === 'object' && 'value' in x) ? (x.value != null && x.source_url ? x.value : (x.source_url && /^해당 없음/.test(x.note || '') ? NA : (x.closure && x.closure.state === '종결' ? `종결(${x.closure.reason})` : null))) : x;
+// op:q90-auto-207 A: 종결 = 3회 이상 시도·증거 뒤 '종결(사유)'. 값이 아니므로 점수·평균에 넣지 않는다.
+const e1c = (() => { const f = path.join(path.dirname(E3 || '.'), 'e1-closures.json'); return fs.existsSync(f) ? Object.fromEntries(JSON.parse(fs.readFileSync(f, 'utf8')).rows.filter(r => r.closed).map(r => [r.row, r])) : {}; })();
 // G21 §26: E2 대안 경로 꼬리표 — (샘플)=회사 공개 샘플 · (문서도판)=공식 문서 안 리포트 도판 · (응시)/(구매)=실제 1인 결과. 같은 열이라도 직접 비교 금지.
 const e2tag = s => { const p = s && s.e2_alt && s.e2_alt.path || ''; if (p.includes('문서도판')) { const m = /부분 (\d+\/\d+)/.exec((s.redaction && s.redaction.visual_check && s.redaction.visual_check.note) || ''); return m ? `(문서도판·부분 ${m[1]})` : '(문서도판)'; } if (p.includes('AI응시')) return '(응시)'; if (p.includes('구매')) return '(구매)'; return '(샘플)'; };
 const cell = (v, grade, mark = '', tag = '(샘플)') => v == null ? NM : grade === 'E1' ? `**${v}**` : grade === 'E2' ? `${v}${mark} ${tag}` : grade === 'E3' ? `${v} (문서)` : String(v);
@@ -22,7 +24,7 @@ const cell = (v, grade, mark = '', tag = '(샘플)') => v == null ? NM : grade =
 const third = (s, ax) => (s.final && Array.isArray(s.final.third_used) && s.final.third_used.includes(ax)) ? '‡' : '';
 let thirdCells = [];
 // Method 6130169: E2 대안이 구조적으로 없는 행(본인인증 필수·약관 금지)은 '미측정' 대신 사유 문구(시트 e2_alt.table_cell). 0점 아님, 우리가 안 한 게 아니라 할 수 없음.
-const e2nm = s => (s && s.e2_alt && s.e2_alt.table_cell) ? `미측정 · ${s.e2_alt.table_cell}` : NM;
+const e2nm = s => (s && s.closure && s.closure.state === '종결') ? `종결(${s.closure.reason})` : (s && s.e2_alt && s.e2_alt.table_cell) ? `미측정 · ${s.e2_alt.table_cell}` : NM;
 let noAlt = {};
 // G21 §24: 조립 run(assemble-latest.cjs)이면 E1 칸에 run·출구 국가 태그(예: r4·KR), r3 해외 시간초과 후 r4 측정 행은 각주
 const rtag = x => x.run_tag ? ` <sub>${x.run_tag}</sub>` : '';
@@ -47,7 +49,8 @@ const rows = roster.rows.filter(r => !r.retired).map(r => {
   };
   for (const ax of ['A1','A2','A3','A4','A5']) if (third(s, ax)) thirdCells.push(`${r.id} ${ax}=L${s[ax]}`);
   if (x.prior_failure_note) priorFail.push(`${r.id}: ${x.prior_failure_note}`);
-  if (s.e2_alt && s.e2_alt.table_cell && s.A1 == null) (noAlt[s.e2_alt.table_cell] = noAlt[s.e2_alt.table_cell] || []).push(r.id);
+  if (e1c[r.id] && !x.a6partial && !x.a7grade) { ax.A6 = `종결(${e1c[r.id].reason}, 측정 ${e1c[r.id].fails_n}회)`; ax.A7 = ax.A6; }
+  if (s.e2_alt && s.e2_alt.table_cell && s.A1 == null && !(s.closure && s.closure.state === '종결')) (noAlt[s.e2_alt.table_cell] = noAlt[s.e2_alt.table_cell] || []).push(r.id);
   return { id: r.id, name: r.name, group: r.group, country: r.country, own: !!r.own, appeal: d.appeal || r.appeal || '', limits: d.limits || r.limits || '', price_band: d.price_band || (r.price_krw_band === 0 ? '무료' : null) || NM, time_min: d.time_min != null ? d.time_min : (r.time_min || null), docs_url: d.docs_url || null, ...ax, e4: d.E4 || null };
 });
 const h = ['ID', '도구', '구분', '이럴 때 이 도구', 'A1', 'A2 ★', 'A3 ★', 'A4 ★', 'A5', 'A6', 'A7(등급)', 'A8', '비용 구간', '소요(분)', '한계(공개 문서 기준)'];
@@ -55,7 +58,7 @@ const e1full = Object.values(e1).filter(v => !v.own && v.a61 && v.a71).length; c
 let md = `# 공개 비교표 v2 — ${path.basename(RUN)}\n\n자: rubric ${rubric.version} (sha256 ${sha(RUBRIC).slice(0, 16)}…) · 명부 ${roster.version} (sha256 ${sha(ROSTER).slice(0, 16)}…) · 생성 ${new Date().toISOString()}\n\n`;
 const asm = fs.existsSync(path.join(RUN, 'assembly.json')) ? JSON.parse(fs.readFileSync(path.join(RUN, 'assembly.json'), 'utf8')) : null;
 md += `E1 실측 분모: ${e1n}/${nonOwn}행(전체 ${e1full} + 부분 ${e1n - e1full}; 최종 응답 2xx만 성공으로 셈, 비-2xx 축은 "측정 무효(HTTP 코드)"${asm && asm.url_corrected_rows ? `; 그중 ${asm.url_corrected_rows.rows.length}행(${asm.url_corrected_rows.rows.join('·')})은 명부 URL이 404라 결과 뒤 현행 주소로 교정해 다시 잼(G21 §28)` : ''}) (나머지 행은 E1 미측정). **자사(OWN) 행은 Q90 scorer 전사, 비교 대상은 E2 블라인드 judge — 측정 방식이 다르므로 같은 열이라도 직접 비교 금지.**\n\n`;
-md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서도판)=회사 공식 문서 안에 실린 리포트 도판(쪽수 적음, 부분 n/m=판독 가능 쪽) — **(샘플)과 (문서도판)은 같은 열이라도 직접 비교 금지** · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · "해당 없음"=제품 유형상 그 칸이 성립하지 않음(근거 URL 있음) · \"채점 안 됨\"=측정은 했으나 scorer가 채점 전에 절차 코드로 멈춤(0점·미달 아님, 각주 참조) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
+md += `표기: **굵게**=E1 실측 · (샘플)=E2 공개 샘플 리포트(회사가 고른 최상 예시) · (문서도판)=회사 공식 문서 안에 실린 리포트 도판(쪽수 적음, 부분 n/m=판독 가능 쪽) — **(샘플)과 (문서도판)은 같은 열이라도 직접 비교 금지** · (문서)=E3 공개 문서 · 미측정=근거 없음(0점 아님) · 비용 구간 "비공개"=회사가 가격을 공개하지 않음(공식 출처 확인, 점수 아님) · "해당 없음"=제품 유형상 그 칸이 성립하지 않음(근거 URL 있음) · \"채점 안 됨\"=측정은 했으나 scorer가 채점 전에 절차 코드로 멈춤(0점·미달 아님, 각주 참조) · "종결(사유)"=정해진 방법으로 3회 이상 시도하고 증거를 남겼으나 값을 얻지 못함(op:207, 0점 아님, 진행률 분모에서 뺌 — 실측 수와 종결 수 함께 공개) · ★=고정 축(A2·A3·A4). 순위 없음, 명부 ID 순.\n\n`;
 if (asm) md += `E1 조립(G21 §24): 행마다 성공적으로 측정한 가장 최근 run 값 — 입력 ${asm.inputs.map(i => `${i.run}·${i.egress_country}(${i.rows}행)`).join(', ')} · 도구 sha ${String(asm.tool_sha256).slice(0, 12)}… · E1 칸의 \`rN·CC\` = 측정 run 번호·출구 국가 · 미측정(시간 초과/접근 차단/대상 없음/기타 오류)=실패 분류, 0점 아님 · 미측정(시간 초과)인 고용24 행은 국내 접속에서도 시간 초과.\n\n`;
 md += '| ' + h.join(' | ') + ' |\n|' + h.map(() => '---').join('|') + '|\n';
 for (const r of rows) md += `| ${r.id} | ${r.own ? '**' + r.name + '** (자사)' : r.name} | ${r.group} | ${r.appeal || '_(채움 예정)_'} | ${r.A1} | ${r.A2} | ${r.A3} | ${r.A4} | ${r.A5} | ${r.A6} | ${r.A7} | ${r.A8} | ${r.price_band} | ${r.time_min ?? '—'} | ${r.limits || '_(채움 예정)_'} |\n`;

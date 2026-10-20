@@ -12,11 +12,12 @@
 |---|---|---|---|
 | KB-01 | [blind-judging-playbook.md](blind-judging-playbook.md) | AI 에이전트로 블라인드 채점·제3자 판정을 **공정하게** 돌리는 법(격리 4단계·memory_check·읽기확인·X/Y 익명·집계 규칙) | 실전 1회차 완료(9샘플 45축) |
 | KB-02 | [redaction-pipeline-playbook.md](redaction-pipeline-playbook.md) | PDF 샘플 리포트에서 회사·사람 정보를 가리고 **누출 0을 증명**하는 법 | 10건 처리, 결함 2건 반영 |
-| KB-03 | [public-comparison-table-playbook.md](public-comparison-table-playbook.md) | 경쟁 비교표를 **순위 없이·근거 등급별로** 만들고 분모를 정직하게 세는 법(E1~E4, 두 분모 공개) | 표 v2 생성 중(64%) |
+| KB-03 | [public-comparison-table-playbook.md](public-comparison-table-playbook.md) | 경쟁 비교표를 **순위 없이·근거 등급별로** 만들고 분모를 정직하게 세는 법(E1~E4, 두 분모 공개, ⑥ 종결 규칙) | 진행률 97%(2026-10-20) |
 | KB-04 | [genteam-agent-ops-playbook.md](genteam-agent-ops-playbook.md) | GenTeam에서 에이전트 팀을 **운영**하는 법(CLI 패턴·결박 ref·Genny로 에이전트 생성·1회용 스크립트 규칙) | 매일 사용 |
 | KB-05 | [deploy-governance-playbook.md](deploy-governance-playbook.md) | GitHub Environments로 운영 배포를 **멈추지 않으면서 통제**하는 법(Required reviewers + 위임 승인기 + ALLOW 기록) | 가동 중 |
 | KB-06 | [defect-ledger.md](defect-ledger.md) | 결함을 **뿌리별로** 세고 재발을 줄이는 장부(R1~R5) + 예방 점검 | 14건 분류 |
 | KB-07 | [q90-scorer-chain-playbook.md](q90-scorer-chain-playbook.md) | Q90 자사 측정을 **사전 결박 계약 + 고정 scorer**로 돌리고, 막히면 막힌 그대로 공개하는 법(1·2회차 실전, 3회차 체크리스트) | 2회 실행(둘 다 절차 차단) |
+| 재료 | [ebook/material-log.md](ebook/material-log.md) | **전자책 원고 재료 로그**(대표 지시 2026-10-20: 100% 뒤 0→100% 과정 전자책화) — 날짜·결정·실패·교훈 + 목차 초안 | 누적 중 |
 
 ## 이 베이스가 다루지 않는 것(정직하게)
 - Q90 본류는 KB-07(2026-10-20 추가).

@@ -1,0 +1,48 @@
+{
+ "version": "v2.1",
+ "frozen_before_results": true,
+ "id_rule": "행 ID는 불변. 대상 교체·추가는 새 ID. 삭제 대신 retired:true.",
+ "rows": [
+  {
+   "id": "G11",
+   "name": "16Personalities Premium Career Suite",
+   "group": "진단",
+   "url": "https://www.16personalities.com/premium/career-suite",
+   "provider": "",
+   "country": "INTL",
+   "access": "",
+   "time_min": null,
+   "price_krw_band": null,
+   "sample_report_url": null,
+   "docs_url": null,
+   "appeal": "",
+   "limits": "",
+   "since": "2026-10-08 G18 1판"
+  },
+  {
+   "id": "K20",
+   "name": "16Personalities 한국어판(무료 MBTI류)",
+   "group": "국내",
+   "url": "https://www.16personalities.com/ko",
+   "provider": "NERIS Analytics",
+   "country": "KR",
+   "access": "무료(유료 리포트 옵션)",
+   "time_min": 12,
+   "price_krw_band": 0,
+   "sample_report_url": null,
+   "docs_url": null,
+   "appeal": "",
+   "limits": "",
+   "since": "2026-10-12 G21 §4"
+  }
+ ],
+ "version_history": [
+  {
+   "from": "v2.0",
+   "to": "v2.1",
+   "at": "2026-10-13T01:05Z",
+   "what": "K13·K14 url 교정(경로 이전, 결과 뒤 교정, G21 §28). 대상 교체 아님 — 옛 URL은 두 행이 공유하던 목록 페이지(404). 근거는 명부 이름·제공기관 = 교정 페이지 제목. TL 6126260·Peer 6126270 각 \"예\"",
+   "ids_unchanged": true
+  }
+ ]
+}

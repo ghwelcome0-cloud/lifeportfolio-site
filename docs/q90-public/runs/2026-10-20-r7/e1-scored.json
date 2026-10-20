@@ -1,0 +1,86 @@
+[
+ {
+  "row": "G11",
+  "name": "16Personalities Premium Career Suite",
+  "group": "진단",
+  "url": "https://www.16personalities.com/premium/career-suite",
+  "at": "2026-10-20T11:44:51.802Z",
+  "a6err": "status 403 / blocks 4",
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": false,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "중"
+ },
+ {
+  "row": "K11",
+  "name": "고용24 창업적성검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T11:46:50.458Z",
+  "a6err": "Navigation timeout of 45000 ms exceeded",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K12",
+  "name": "고용24 대학생 진로준비도검사",
+  "group": "국내",
+  "url": "https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "at": "2026-10-20T11:48:16.769Z",
+  "a6err": "net::ERR_CONNECTION_TIMED_OUT at https://www.work24.go.kr/wk/r/c/1000/jobPsyExamList.do",
+  "a7err": "fetch failed",
+  "a58": null,
+  "a59": null,
+  "a7grade": null
+ },
+ {
+  "row": "K20",
+  "name": "16Personalities 한국어판(무료 MBTI류)",
+  "group": "국내",
+  "url": "https://www.16personalities.com/ko",
+  "at": "2026-10-20T11:48:22.433Z",
+  "a6err": "status 403 / blocks 4",
+  "a71": {
+   "https": true,
+   "controls": 4,
+   "hsts": false,
+   "xcto": true,
+   "frame": true,
+   "referrer": true,
+   "permissions": true,
+   "level": 2
+  },
+  "a76": {
+   "csp": true,
+   "reporting": false,
+   "level": 1
+  },
+  "a75probe": {
+   "exposed": [],
+   "tested": 6
+  },
+  "a58": null,
+  "a59": null,
+  "a7grade": "중"
+ }
+]

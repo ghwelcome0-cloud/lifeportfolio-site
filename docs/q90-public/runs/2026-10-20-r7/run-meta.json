@@ -1,0 +1,32 @@
+{
+ "run": "r7",
+ "purpose": "종결 판정용 재시도: 미측정 G11·K20(403)·K11·K12(시간 초과) — 같은 측정기·같은 URL (op:q90-auto-207 6978302 A-2)",
+ "binding_ref": "op:q90-auto-207 comet 6978302",
+ "egress_country": "US",
+ "egress_note": "r6과 같은 샌드박스 계열",
+ "machine_kind": "genspark-sandbox",
+ "network_kind": "cloud",
+ "browser": "chrome-headless-shell 148.0.7778.97",
+ "profile": "fresh",
+ "browser_lang_flag": "en-US",
+ "rows_requested": 4,
+ "bridge_rows": [],
+ "attempts_per_row": 1,
+ "retry": "없음(결박)",
+ "started_utc": "2026-10-20T11:44:32.532Z",
+ "ended_utc": "2026-10-20T11:48:22.551Z",
+ "roster_subset_file": "roster-r7-4rows.json",
+ "roster_subset_sha256": "407dfab7e505f75a2f7d1e2f32c7faf2308428138143a2cd6f68a459aa8f5609",
+ "roster_subset_note": "roster-v2.json에서 미측정 4행만 추림(필드 변경 없음)",
+ "tool_sha_before_run": "c276bb21ab7e1434ab18d5f84c68571aed4a68833428d768de49a7d73bbdb21b",
+ "footnotes": [
+  "G11·K20 같은 도메인(16personalities.com) — 봇 검증 화면(Just a moment...) 403",
+  "K11·K12 같은 URL — 결과 상관됨"
+ ],
+ "scores_viewed": 0,
+ "assembled_into_table": false,
+ "bound_commit": "30bda5ce3846b713ed3dc2914879ce0461d2dfe2",
+ "os_kind": "Linux (genspark sandbox)",
+ "os_timezone": "Etc/UTC",
+ "accept_language_sent": "unknown(측정 직전 헤더 확인 미실시; 도구는 --lang=en-US 플래그만 설정)"
+}
